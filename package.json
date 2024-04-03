@@ -1,0 +1,92 @@
+{
+  "name": "azion",
+  "version": "0.0.1",
+  "description": "Azion Packages for Edge Computing.",
+  "scripts": {
+    "prepare": "husky",
+    "compile": "npm run compile --workspaces",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run eslint lint:fix --workspaces --if-present",
+    "format": "npm run prettier --workspaces --if-present",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "azion",
+    "edge",
+    "computing",
+    "packages"
+  ],
+  "author": "aziontech",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "José Filho",
+      "url": "https://github.com/jcsbfilho"
+    },
+    {
+      "name": "Jessandro Benicio",
+      "url": "https://github.com/enicio"
+    },
+    {
+      "name": "Magnun A V F",
+      "url": "https://github.com/MagnunAVFAzion"
+    },
+    {
+      "name": "João Narciso",
+      "url": "https://jotanarciso.com"
+    }
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": "please-use-npm",
+    "pnpm": "please-use-npm",
+    "npm": ">=10.2.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.1",
+    "@commitlint/config-conventional": "^18.4.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^10.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/release-notes-generator": "^11.0.4",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "conventional-changelog-conventionalcommits": "^4.6.0",
+    "husky": "^9.0.11",
+    "prettier": "^3.2.5",
+    "semantic-release": "^21.0.7",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "files": [
+    "README.md",
+    "package.json",
+    "packages/**/dist/**/*"
+  ],
+  "exports": {
+    "./cookies": {
+      "require": "./packages/cookies/dist/index.js",
+      "import": "./packages/cookies/dist/index.mjs",
+      "types": "./packages/cookies/dist/index.d.ts"
+    },
+    "./router": {
+      "require": "./packages/router/dist/index.js",
+      "import": "./packages/router/dist/index.mjs",
+      "types": "./packages/router/dist/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "cookies": [
+        "./packages/cookies/dist/index.d.ts"
+      ],
+      "router": [
+        "./packages/router/dist/index.d.ts"
+      ]
+    }
+  }
+}
