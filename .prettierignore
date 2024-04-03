@@ -1,0 +1,7 @@
+dist
+node_modules
+DockerFile
+docker-compose.yml
+CHANGELOG.md
+package.json
+LICENSE
