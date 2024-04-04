@@ -1,0 +1,52 @@
+{
+  "branches": [
+    "main",
+    {
+      "name": "stage",
+      "prerelease": true,
+      "channel": "stage"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "options": {
+          "preset": {
+            "name": "conventionalchangelog",
+            "issuePrefixes": [
+              "ISSUE-"
+            ],
+            "issueUrlFormat": "https://github.com/aziontech/lib/issues/{{id}}"
+          }
+        }
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "issuePrefixes": [
+            "ISSUE-"
+          ],
+          "issueUrlFormat": "https://github.com/aziontech/lib/issues/{{id}}"
+        }
+      }
+    ],
+    "@semantic-release/changelog",
+    "@semantic-release/npm",
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "package.json",
+          "CHANGELOG.md"
+        ],
+        "message": "chore(release): ${nextRelease.version} \n\n[skip ci]\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
