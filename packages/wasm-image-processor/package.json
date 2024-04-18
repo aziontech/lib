@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "tsup --config ./tsup.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
@@ -24,5 +24,8 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "devDependencies": {
+    "tsup": "^8.0.2"
+  }
 }
