@@ -1,25 +1,11 @@
 // File based on @cf-wasm/photon implementation
-// More details in: https://github.com/fineshopdesign/cf-wasm
+// More details in:
+// - https://github.com/fineshopdesign/cf-wasm
+// - https://github.com/silvia-odwyer/photon
 
 /* eslint-disable */
 /* tslint:disable */
-import { getWasmModule } from '../../utils.js';
-import * as WASM from './photon.wasm';
-
 let wasm;
-let MODULE;
-
-export async function loadWasm() {
-  if (MODULE === undefined) {
-    MODULE = await getWasmModule(WASM);
-  }
-
-  initSync(MODULE);
-}
-
-(async () => {
-  await loadWasm();
-})();
 
 const heap = new Array(128).fill(undefined);
 
