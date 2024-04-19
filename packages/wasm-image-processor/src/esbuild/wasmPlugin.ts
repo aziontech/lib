@@ -34,7 +34,7 @@ const WasmPlugin: any = {
     });
 
     build.onLoad({ filter: /.*/, namespace: 'wasm-stub' }, async (args: any) => ({
-      contents: `import wasm from ${JSON.stringify(args.path)} export default wasm`,
+      contents: `import wasm from ${JSON.stringify(args.path)}; export default wasm`,
     }));
 
     build.onLoad({ filter: /.*/, namespace: 'wasm-binary' }, async (args: any) => ({

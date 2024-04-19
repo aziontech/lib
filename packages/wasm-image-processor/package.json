@@ -6,8 +6,8 @@
   "module": "./dist/index.mjs",
   "scripts": {
     "compile": "tsup --config ./tsup.config.ts",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "eslint --ignore-pattern dist .",
+    "lint:fix": "eslint --fix --ignore-pattern dist .",
     "prettier": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
