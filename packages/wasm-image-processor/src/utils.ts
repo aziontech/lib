@@ -1,32 +1,10 @@
-import { SUPPORTED_BUNDLERS, VALID_IMG_EXTENSIONS } from './constants';
+import { INVALID_IMG_EXT_MSG, NO_EXTENSION_MSG, VALID_IMG_EXTENSIONS } from './constants';
 
-type InjectedWasmWebpack = {
-  default: string;
-};
-
-async function getWasmModule(
-  wasmFromBuilder: InjectedWasmWebpack,
-  bundler: string = 'webpack',
-): Promise<WebAssembly.Module> {
-  if (!SUPPORTED_BUNDLERS.includes(bundler)) {
-    throw new Error(`Bundler not supported. Supported bundlers: ${SUPPORTED_BUNDLERS.join(',')}`);
+function isUrl(pathOrUrl: string | null | undefined): boolean {
+  if (!pathOrUrl) {
+    return false;
   }
 
-  const wasmString: string = wasmFromBuilder.default;
-
-  // Wasm format after inject: 'data:application/wasm;base64,BASE_64_STRING'
-  const wasmBytes: string = atob(wasmString.split('application/wasm;base64,')[1]);
-  const wasmArray: Uint8Array = new Uint8Array(wasmBytes.length);
-  for (let i = 0; i < wasmBytes.length; i++) {
-    wasmArray[i] = wasmBytes.charCodeAt(i);
-  }
-
-  const wasmModule = await WebAssembly.compile(wasmArray);
-
-  return wasmModule;
-}
-
-function isUrl(pathOrUrl: string): boolean {
   try {
     new URL(pathOrUrl);
 
@@ -36,11 +14,15 @@ function isUrl(pathOrUrl: string): boolean {
   }
 }
 
-function getFileExtension(pathOrUrl: string): string {
+function getFileExtension(pathOrUrl: string | undefined | null): string {
+  if (!pathOrUrl) {
+    throw new Error(NO_EXTENSION_MSG);
+  }
+
   const match: RegExpMatchArray | null = pathOrUrl.match(/(?:\.([^.]+))?$/);
 
   if (!match || !match[1]) {
-    throw new Error('No file extension found');
+    throw new Error(NO_EXTENSION_MSG);
   }
 
   return match[1].toLowerCase();
@@ -51,8 +33,8 @@ function validateImageExtension(pathOrUrl: string) {
   const hasValidExtension = VALID_IMG_EXTENSIONS.includes(extension);
 
   if (!hasValidExtension) {
-    throw new Error(`Invalid image extension. Supported: ${VALID_IMG_EXTENSIONS.join(',')}`);
+    throw new Error(INVALID_IMG_EXT_MSG);
   }
 }
 
-export { getFileExtension, getWasmModule, isUrl, validateImageExtension };
+export { getFileExtension, isUrl, validateImageExtension };
