@@ -82,6 +82,11 @@
       "require": "./packages/router/dist/index.js",
       "import": "./packages/router/dist/index.mjs",
       "types": "./packages/router/dist/index.d.ts"
+    },
+    "./wasm-image-processor": {
+      "require": "./packages/wasm-image-processor/dist/index.js",
+      "import": "./packages/wasm-image-processor/dist/index.mjs",
+      "types": "./packages/wasm-image-processor/dist/index.d.ts"
     }
   },
   "typesVersions": {
@@ -91,6 +96,9 @@
       ],
       "router": [
         "./packages/router/dist/index.d.ts"
+      ],
+      "wasm-image-processor": [
+        "./packages/wasm-image-processor/dist/index.d.ts"
       ]
     }
   }
