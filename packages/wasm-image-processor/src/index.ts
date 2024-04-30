@@ -1,11 +1,7 @@
 import * as photon from './photon/lib/index';
 
-import { isUrl, validateImageExtension } from './utils.js';
-
-const SUPPORTED_FORMATS_IN_RESPONSE: string[] = ['png', 'jpeg', 'webp'];
-
-const LOAD_IMG_ERROR_MSG: string = "Must load image before! Use 'loadImage' function.";
-const OP_NEEDED_ERROR_MSG: string = 'Must run an image processing operation before return the result.';
+import { LOAD_IMG_ERROR_MSG, OP_NEEDED_ERROR_MSG, SUPPORTED_FORMATS_IN_RESPONSE } from './constants';
+import { isUrl, validateImageExtension } from './utils';
 
 let image: photon.PhotonImage | null = null;
 let result: photon.PhotonImage | null = null;
@@ -32,10 +28,10 @@ async function loadImage(pathOrURL: string) {
   image = photon.PhotonImage.new_from_byteslice(imageBytes);
 }
 
-function cleanEnv() {
-  if (image === null) throw new Error(LOAD_IMG_ERROR_MSG);
-
-  image.free();
+function clean() {
+  if (image !== null) {
+    image.free();
+  }
 
   image = null;
   result = null;
@@ -108,7 +104,7 @@ function getImageResponse(format: string, quality = 100.0) {
 
   const imageResponse = new Response(finalImage, { headers });
 
-  cleanEnv();
+  clean();
 
   return imageResponse;
 }
@@ -117,6 +113,7 @@ const WasmImageProcessor = {
   loadImage,
   resize,
   getImageResponse,
+  clean,
 };
 
 export default WasmImageProcessor;

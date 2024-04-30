@@ -30,12 +30,12 @@ describe('WasmImageProcessor - Utils', () => {
     });
 
     it('should throw an error for paths without extensions', () => {
-      expect(() => getFileExtension('file')).toThrowError(NO_EXTENSION_MSG);
-      expect(() => getFileExtension('path/to/file')).toThrowError(NO_EXTENSION_MSG);
-      expect(() => getFileExtension('/path/to/file')).toThrowError(NO_EXTENSION_MSG);
-      expect(() => getFileExtension('')).toThrowError(NO_EXTENSION_MSG);
-      expect(() => getFileExtension(null)).toThrowError(NO_EXTENSION_MSG);
-      expect(() => getFileExtension(undefined)).toThrowError(NO_EXTENSION_MSG);
+      expect(() => getFileExtension('file')).toThrow(NO_EXTENSION_MSG);
+      expect(() => getFileExtension('path/to/file')).toThrow(NO_EXTENSION_MSG);
+      expect(() => getFileExtension('/path/to/file')).toThrow(NO_EXTENSION_MSG);
+      expect(() => getFileExtension('')).toThrow(NO_EXTENSION_MSG);
+      expect(() => getFileExtension(null)).toThrow(NO_EXTENSION_MSG);
+      expect(() => getFileExtension(undefined)).toThrow(NO_EXTENSION_MSG);
     });
   });
 
@@ -47,10 +47,8 @@ describe('WasmImageProcessor - Utils', () => {
     });
 
     it('should throw an error for invalid image extensions', () => {
-      expect(() => validateImageExtension('image.txt')).toThrowError(
-        'Invalid image extension. Supported: jpg,jpeg,png,gif',
-      );
-      expect(() => validateImageExtension('path/to/image.mp4')).toThrowError(
+      expect(() => validateImageExtension('image.txt')).toThrow('Invalid image extension. Supported: jpg,jpeg,png,gif');
+      expect(() => validateImageExtension('path/to/image.mp4')).toThrow(
         'Invalid image extension. Supported: jpg,jpeg,png,gif',
       );
     });
