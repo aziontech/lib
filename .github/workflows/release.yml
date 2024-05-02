@@ -1,10 +1,13 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
-      - stage
+  workflow_dispatch:
+
+# on:
+#   push:
+#     branches:
+#       - main
+#       - stage
 
 permissions: write-all
 
