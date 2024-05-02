@@ -8,7 +8,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run eslint lint:fix --workspaces --if-present",
     "format": "npm run prettier --workspaces --if-present",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test --workspaces --if-present"
   },
   "keywords": [
     "azion",
@@ -77,6 +77,11 @@
       "require": "./packages/router/dist/index.js",
       "import": "./packages/router/dist/index.mjs",
       "types": "./packages/router/dist/index.d.ts"
+    },
+    "./wasm-image-processor": {
+      "require": "./packages/wasm-image-processor/dist/index.js",
+      "import": "./packages/wasm-image-processor/dist/index.mjs",
+      "types": "./packages/wasm-image-processor/dist/index.d.ts"
     }
   },
   "typesVersions": {
@@ -86,6 +91,9 @@
       ],
       "router": [
         "./packages/router/dist/index.d.ts"
+      ],
+      "wasm-image-processor": [
+        "./packages/wasm-image-processor/dist/index.d.ts"
       ]
     }
   }
