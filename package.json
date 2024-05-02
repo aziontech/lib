@@ -8,9 +8,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run eslint lint:fix --workspaces --if-present",
     "format": "npm run prettier --workspaces --if-present",
-    "test": "jest --clearCache && jest -c jest.config.js .",
-    "test:watch": "jest -c jest.config.js . --watch",
-    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
+    "test": "npm run test --workspaces --if-present"
   },
   "keywords": [
     "azion",
@@ -52,16 +50,12 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^9.2.6",
     "@semantic-release/release-notes-generator": "^11.0.4",
-    "@swc/jest": "^0.2.36",
-    "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
     "conventional-changelog-conventionalcommits": "^4.6.0",
     "husky": "^9.0.11",
-    "jest": "^29.7.0",
     "prettier": "^3.2.5",
     "semantic-release": "^21.0.7",
-    "ts-jest": "^29.1.2",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
   },
