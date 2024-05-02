@@ -21,6 +21,19 @@ describe('WasmImageProcessor - index', () => {
       expect(photon.PhotonImage.new_from_byteslice).toHaveBeenCalledTimes(1);
     });
 
+    test('loads image from storage path', async () => {
+      const imageUrl = '/images/image.jpg';
+      const mockedResponse = new Response(new ArrayBuffer(0), { status: 200 });
+
+      jest.spyOn(global, 'fetch').mockResolvedValueOnce(mockedResponse);
+      jest.spyOn(photon.PhotonImage, 'new_from_byteslice');
+
+      await WasmImageProcessor.loadImage(imageUrl);
+
+      expect(fetch).toHaveBeenCalledWith(new URL(imageUrl, 'file://'));
+      expect(photon.PhotonImage.new_from_byteslice).toHaveBeenCalledTimes(1);
+    });
+
     test('throws error when image fetch fails', async () => {
       const imageUrl = 'https://example.com/image.jpg';
       const mockedResponse = new Response(null, { status: 404 });
