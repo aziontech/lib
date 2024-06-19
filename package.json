@@ -68,6 +68,11 @@
     "packages/**/dist/**/*"
   ],
   "exports": {
+    ".": {
+      "require": "./packages/sdk/dist/index.js",
+      "import": "./packages/sdk/dist/index.mjs",
+      "types": "./packages/sdk/dist/index.d.ts"
+    },
     "./cookies": {
       "require": "./packages/cookies/dist/index.js",
       "import": "./packages/cookies/dist/index.mjs",
