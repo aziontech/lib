@@ -62,7 +62,19 @@ const main = async (event) => {
       status: 200,
     });
   } else {
-    response = new Response('Not Found', { status: 404 });
+    const html = `
+    <html>
+    <body>
+      <h1>Bem-vindo</h1>
+      <p>Escolha uma das opções abaixo:</p>
+      <ul>
+        <li><a href="/sql">SQL</a></li>
+        <li><a href="/storage">Storage</a></li>
+      </ul>
+    </body>
+  </html>
+`;
+    response = new Response(html, { headers: new Headers([['Content-Type', 'text/html']]), status: 200 });
   }
 
   return response;
