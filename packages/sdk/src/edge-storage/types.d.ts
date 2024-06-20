@@ -14,7 +14,8 @@ interface BucketCollectionOptions {
 }
 interface BucketObject {
   key: string;
-  size: number;
-  last_modified: string;
-  content_type: string;
+  size?: number;
+  last_modified?: string;
+  content_type?: string;
+  content?: string;
 }

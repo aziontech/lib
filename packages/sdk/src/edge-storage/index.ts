@@ -136,9 +136,9 @@ const getObjectByName = async (
       method: 'GET',
       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
     });
-    const data = await response.json();
+    const data = await response.text();
     if (debug) console.log('Response:', data);
-    return data.data;
+    return { key: objectKey, content: data };
   } catch (error) {
     if (debug) console.error('Error getting object by name:', error);
     throw error;
