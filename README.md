@@ -13,9 +13,9 @@ npm install azion
 Configure your client with your authentication token.
 
 ```javascript
-import { createClient } from 'azion';
+import { Azion } from 'azion';
 
-const user = createClient({ token: process.env.token });
+const user = new Azion({ token: process.env.token });
 ```
 
 ## Usage Examples
@@ -23,9 +23,9 @@ const user = createClient({ token: process.env.token });
 The following example demonstrates how to list, create, update, and delete buckets and objects in Azion Edge Storage.
 
 ```javascript
-import { createClient } from 'azion';
+import { Azion } from 'azion';
 
-const user = createClient({ token: process.env.token });
+const user = new Azion({ token: process.env.token });
 
  const testBucketName = 'hello-guys';
  const testObjectName = 'test-object';
@@ -77,9 +77,9 @@ await edgeStorageExample();
 The following example demonstrates how to create a database, create a table, insert and query data using the Azion SQL client.
 
 ```javascript
-import { createClient } from 'azion';
+import { Azion } from 'azion';
 
-const user = createClient({ token: process.env.token });
+const user = new Azion({ token: process.env.token });
 
  const dbName = 'my-database';
  const dbs = await user.sql.getAll();
