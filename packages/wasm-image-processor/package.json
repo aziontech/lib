@@ -6,9 +6,10 @@
   "module": "./dist/index.mjs",
   "scripts": {
     "compile": "tsup --config ./tsup.config.ts",
-    "lint": "eslint --ignore-pattern dist .",
-    "lint:fix": "eslint --fix --ignore-pattern dist .",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "test": "jest --clearCache && jest -c jest.config.js .",
     "test:watch": "jest -c jest.config.js . --watch",
     "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
