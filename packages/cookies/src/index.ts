@@ -1,9 +1,9 @@
-export const execute = () => {
-  console.log('This is a module cookies!');
-};
+import { getCookie } from './getCookie';
 
 const cookies = {
-  execute,
+  getCookie,
 };
+
+export { getCookie };
 
 export default cookies;
