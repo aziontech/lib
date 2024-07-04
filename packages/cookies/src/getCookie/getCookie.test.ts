@@ -9,7 +9,7 @@ describe('getCookie', () => {
 
   it('should return undefined if the request is not a Request instance', () => {
     // @ts-expect-error Testing invalid input
-    expect(getCookie(undefined)).toEqual({});
+    expect(getCookie(undefined)).toEqual(undefined);
   });
 
   it('should return cookies with no values', () => {
@@ -59,5 +59,9 @@ describe('getCookie', () => {
     expect(getCookie(request, 'one_cookie')).toBe('one');
     expect(getCookie(request, 'two_cookie')).toBe(' two ');
     expect(getCookie(request, 'three_cookie')).toBe(' three ');
+  });
+
+  it('should return an empty object if the cookie header is not set', () => {
+    expect(getCookie(request)).toEqual({});
   });
 });

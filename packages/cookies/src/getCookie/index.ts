@@ -7,8 +7,8 @@ export interface GetCookie {
 }
 
 export const getCookie: GetCookie = (request, key?, prefix?: CookiePrefix) => {
-  if (!(request instanceof Request) || request.headers === undefined) {
-    return typeof key === 'string' ? undefined : {};
+  if (!(request instanceof Request)) {
+    return undefined;
   }
   const cookie = request.headers.get('Cookie');
   if (!cookie) {
