@@ -12,7 +12,7 @@ const createEdgeDB = async (token: string, name: string, debug?: boolean): Promi
     });
     const data = await response.json();
     if (debug) console.log('Response:', data);
-    return { ...data.data, query: (statements: string[]) => queryEdgeDB(token, data.data.id, statements, debug) };
+    return { ...data.data };
   } catch (error) {
     if (debug) console.error('Error creating EdgeDB:', error);
     return null;
@@ -51,6 +51,8 @@ const queryEdgeDB = async (
       body: JSON.stringify({ statements }),
     });
 
+    console.log(response);
+
     if (!response.ok) {
       if (debug) console.error('Error querying EdgeDB:', response.statusText);
       return null;
@@ -79,10 +81,7 @@ const getEdgeDB = async (token: string, id: number, debug?: boolean): Promise<Da
     });
     const database = await response.json();
     if (debug) console.log('Response:', database);
-    return {
-      ...database.data,
-      query: (statements: string[]) => queryEdgeDB(token, id, statements, debug),
-    };
+    return database.data;
   } catch (error) {
     if (debug) console.error('Error getting EdgeDB:', error);
     return null;

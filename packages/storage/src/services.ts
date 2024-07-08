@@ -61,28 +61,20 @@ const deleteBucket = async (token: string, name: string, debug?: boolean): Promi
     throw error;
   }
 };
-
-const getBucketByName = async (token: string, name: string, debug?: boolean): Promise<Bucket> => {
-  try {
-    const response = await fetch(`${BASE_URL}/${name}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
-    return {
-      ...data.data,
-      listObjects: () => getAllObjects(token, name, debug),
-      uploadObject: (objectKey: string, file: string) => postObject(token, name, objectKey, file, debug),
-      getObject: (objectKey: string) => getObjectByName(token, name, objectKey, debug),
-      updateObject: (objectKey: string, file: string) => putObject(token, name, objectKey, file, debug),
-      deleteObject: (objectKey: string) => deleteObject(token, name, objectKey, debug),
-    };
-  } catch (error) {
-    if (debug) console.error('Error getting bucket by name:', error);
-    throw error;
-  }
-};
+// const getBucketByName = async (token: string, name: string, debug?: boolean): Promise<Bucket> => {
+//   try {
+//     const response = await fetch(`${BASE_URL}/${name}`, {
+//       method: 'GET',
+//       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
+//     });
+//     const data = await response.json();
+//     if (debug) console.log('Response:', data);
+//     return data.data;
+//   } catch (error) {
+//     if (debug) console.error('Error getting bucket by name:', error);
+//     throw error;
+//   }
+// };
 
 const getAllObjects = async (token: string, bucketName: string, debug?: boolean): Promise<BucketObject[]> => {
   try {
@@ -189,7 +181,7 @@ export {
   deleteObject,
   getAllBuckets,
   getAllObjects,
-  getBucketByName,
+  // getBucketByName,
   getObjectByName,
   patchBucket,
   postObject,

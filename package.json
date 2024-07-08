@@ -8,7 +8,8 @@
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run eslint lint:fix --workspaces --if-present",
     "format": "npm run prettier --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "build": "tsup"
   },
   "keywords": [
     "azion",
@@ -69,9 +70,19 @@
   ],
   "exports": {
     ".": {
-      "require": "./packages/sdk/dist/index.js",
-      "import": "./packages/sdk/dist/index.mjs",
-      "types": "./packages/sdk/dist/index.d.ts"
+      "require": "./packages/client/dist/index.js",
+      "import": "./packages/client/dist/index.mjs",
+      "types": "./packages/client/dist/index.d.ts"
+    },
+    "./sql": {
+      "require": "./packages/sql/dist/index.js",
+      "import": "./packages/sql/dist/index.mjs",
+      "types": "./packages/sql/dist/index.d.ts"
+    },
+    "./storage": {
+      "require": "./packages/storage/dist/index.js",
+      "import": "./packages/storage/dist/index.mjs",
+      "types": "./packages/storage/dist/index.d.ts"
     },
     "./cookies": {
       "require": "./packages/cookies/dist/index.js",
@@ -91,6 +102,15 @@
   },
   "typesVersions": {
     "*": {
+      "client": [
+        "./packages/client/dist/index.d.ts"
+      ],
+      "storage": [
+        "./packages/storage/dist/index.d.ts"
+      ],
+      "sql": [
+        "./packages/sql/dist/index.d.ts"
+      ],
       "cookies": [
         "./packages/cookies/dist/index.d.ts"
       ],
