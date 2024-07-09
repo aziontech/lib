@@ -1,6 +1,18 @@
+import {
+  ApiCreateDatabaseResponse,
+  ApiDeleteDatabaseResponse,
+  ApiListDatabasesResponse,
+  ApiQueryExecutionResponse,
+  DatabaseCollectionOptions,
+} from './types';
+
 const BASE_URL = 'https://api.azion.com/v4/edge_sql/databases';
 
-const createEdgeDB = async (token: string, name: string, debug?: boolean): Promise<Database | null> => {
+const postEdgeDatabase = async (
+  token: string,
+  name: string,
+  debug?: boolean,
+): Promise<ApiCreateDatabaseResponse | null> => {
   try {
     const response = await fetch(BASE_URL, {
       method: 'POST',
@@ -12,14 +24,18 @@ const createEdgeDB = async (token: string, name: string, debug?: boolean): Promi
     });
     const data = await response.json();
     if (debug) console.log('Response:', data);
-    return { ...data.data };
+    return data;
   } catch (error) {
     if (debug) console.error('Error creating EdgeDB:', error);
     return null;
   }
 };
 
-const deleteEdgeDB = async (token: string, id: number, debug?: boolean): Promise<void | null> => {
+const deleteEdgeDatabase = async (
+  token: string,
+  id: number,
+  debug?: boolean,
+): Promise<ApiDeleteDatabaseResponse | null> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'DELETE',
@@ -35,12 +51,12 @@ const deleteEdgeDB = async (token: string, id: number, debug?: boolean): Promise
   }
 };
 
-const queryEdgeDB = async (
+const postQueryEdgeDatabase = async (
   token: string,
   id: number,
   statements: string[],
   debug?: boolean,
-): Promise<QueryResponse | null> => {
+): Promise<ApiQueryExecutionResponse | null> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}/query`, {
       method: 'POST',
@@ -51,8 +67,6 @@ const queryEdgeDB = async (
       body: JSON.stringify({ statements }),
     });
 
-    console.log(response);
-
     if (!response.ok) {
       if (debug) console.error('Error querying EdgeDB:', response.statusText);
       return null;
@@ -60,18 +74,18 @@ const queryEdgeDB = async (
 
     const json = await response.json();
     if (debug) console.log('Response:', json);
-    return {
-      state: json.state,
-      columns: json.data[0].results.columns,
-      rows: json.data[0].results.rows,
-    };
+    return json;
   } catch (error) {
     if (debug) console.error('Error querying EdgeDB:', error);
     return null;
   }
 };
 
-const getEdgeDB = async (token: string, id: number, debug?: boolean): Promise<Database | null> => {
+const getEdgeDatabaseById = async (
+  token: string,
+  id: number,
+  debug?: boolean,
+): Promise<ApiCreateDatabaseResponse | null> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'GET',
@@ -81,18 +95,18 @@ const getEdgeDB = async (token: string, id: number, debug?: boolean): Promise<Da
     });
     const database = await response.json();
     if (debug) console.log('Response:', database);
-    return database.data;
+    return database;
   } catch (error) {
     if (debug) console.error('Error getting EdgeDB:', error);
     return null;
   }
 };
 
-const getAllEdgeDBs = async (
+const getEdgeDatabases = async (
   token: string,
-  params?: { ordering?: string; page?: number; page_size?: number; search?: string },
+  params?: Partial<DatabaseCollectionOptions>,
   debug?: boolean,
-): Promise<Database[] | null> => {
+): Promise<ApiListDatabasesResponse | null> => {
   try {
     const url = new URL(BASE_URL);
     if (params) {
@@ -110,11 +124,11 @@ const getAllEdgeDBs = async (
     });
     const data = await response.json();
     if (debug) console.log('Response:', data);
-    return data.results;
+    return data;
   } catch (error) {
     if (debug) console.error('Error getting all EdgeDBs:', error);
     return null;
   }
 };
 
-export { createEdgeDB, deleteEdgeDB, getAllEdgeDBs, getEdgeDB, queryEdgeDB };
+export { deleteEdgeDatabase, getEdgeDatabaseById, getEdgeDatabases, postEdgeDatabase, postQueryEdgeDatabase };
