@@ -73,6 +73,11 @@
       "import": "./packages/cookies/dist/index.mjs",
       "types": "./packages/cookies/dist/index.d.ts"
     },
+    "./jwt": {
+      "require": "./packages/jwt/dist/index.js",
+      "import": "./packages/jwt/dist/index.mjs",
+      "types": "./packages/jwt/dist/index.d.ts"
+    },
     "./router": {
       "require": "./packages/router/dist/index.js",
       "import": "./packages/router/dist/index.mjs",
