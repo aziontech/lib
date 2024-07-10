@@ -1,3 +1,10 @@
+## [1.2.0-stage.1](https://github.com/aziontech/lib/compare/v1.1.0...v1.2.0-stage.1) (2024-07-10)
+
+
+### Features
+
+* **cookies:** Implementing package functionalities (#9) ([131dbe4](https://github.com/aziontech/lib/commit/131dbe4781b10970693da1dc22fbb7a28c366e4a))
+
 ## [1.1.0](https://github.com/aziontech/lib/compare/v1.0.0...v1.1.0) (2024-05-03)
 
 
