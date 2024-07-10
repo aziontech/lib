@@ -1,6 +1,8 @@
+import createPurgeClient from 'azion/purge';
 import createSqlClient from 'azion/sql';
-
 import createStorageClient from 'azion/storage';
+
+import { PurgeInternalClient } from '../../purge/src/types';
 import { SQLInternalClient } from '../../sql/src/types';
 import { StorageInternalClient } from '../../storage/src/types';
 
@@ -12,7 +14,7 @@ import { AzionClient, ClientConfig } from './types';
  * @param {ClientConfig} [config] - Client configuration options.
  * @param {string} [config.token] - Authentication token for Azion API.
  * @param {boolean} [config.debug=false] - Enable debug mode for detailed logging.
- * @returns {AzionClient} An object containing SQL and Storage clients.
+ * @returns {AzionClient} An object containing SQL, Storage, and Purge clients.
  *
  * @example
  * // Create a client with a token and debug mode enabled
@@ -29,10 +31,15 @@ import { AzionClient, ClientConfig } from './types';
  * @example
  * // Use the Storage client
  * const buckets = await client.storage.getBuckets();
+ *
+ * @example
+ * // Use the Purge client
+ * const purgeResult = await client.purge.purgeURL('http://example.com/image.jpg');
  */
 function createClient({ token, debug = false }: ClientConfig = {}): AzionClient {
   const storageClient: StorageInternalClient = createStorageClient({ token, debug });
   const sqlClient: SQLInternalClient = createSqlClient({ token, debug });
+  const purgeClient: PurgeInternalClient = createPurgeClient({ token, debug });
 
   return {
     /**
@@ -63,6 +70,20 @@ function createClient({ token, debug = false }: ClientConfig = {}): AzionClient 
      * const queryResult = await client.sql.query('SELECT * FROM users');
      */
     sql: sqlClient,
+    /**
+     * Purge client with methods to interact with Azion Edge Purge.
+     *
+     * @example
+     * // Purge a URL
+     * const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
+     *
+     * // Purge a cache key
+     * const cacheKeyResult = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+     *
+     * // Purge using a wildcard
+     * const wildcardResult = await client.purge.purgeWildCard(['http://example.com/*']);
+     */
+    purge: purgeClient,
   };
 }
 

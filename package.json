@@ -89,6 +89,11 @@
       "import": "./packages/cookies/dist/index.mjs",
       "types": "./packages/cookies/dist/index.d.ts"
     },
+    "./purge": {
+      "require": "./packages/purge/dist/index.js",
+      "import": "./packages/purge/dist/index.mjs",
+      "types": "./packages/purge/dist/index.d.ts"
+    },
     "./router": {
       "require": "./packages/router/dist/index.js",
       "import": "./packages/router/dist/index.mjs",
@@ -110,6 +115,9 @@
       ],
       "sql": [
         "./packages/sql/dist/index.d.ts"
+      ],
+      "purge": [
+        "./packages/purge/dist/index.d.ts"
       ],
       "cookies": [
         "./packages/cookies/dist/index.d.ts"
