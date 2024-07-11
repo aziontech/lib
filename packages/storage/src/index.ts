@@ -21,7 +21,7 @@ import {
 const resolveToken = (token?: string) => {
   return token ?? process.env.AZION_TOKEN ?? '';
 };
-const resolveDebug = (debug: boolean = false) => debug || !!process.env.AZION_DEBUG;
+const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
 
 const createBucketMethod = async (
   token: string,
@@ -82,9 +82,7 @@ const getBucketByNameMethod = async (token: string, name: string, debug: boolean
   // to search for a single bucket by name. When available, it must be replaced
   // by a direct API call.
   const PAGE_SIZE_TEMP = 100000;
-  console.log('ABAIXO');
   const apiResponse = await getBuckets(resolveToken(token), { page_size: PAGE_SIZE_TEMP }, resolveDebug(debug));
-  console.log('ACIMA');
   const buckets = apiResponse.results;
   if (!buckets) return null;
 
@@ -132,7 +130,7 @@ const updateBucketMethod = async (
 const getObjectsMethod = async (token: string, bucketName: string, debug?: boolean): Promise<BucketObject[] | null> => {
   const apiResponse = await getObjects(resolveToken(token), bucketName, resolveDebug(debug));
   if (apiResponse) {
-    return { ...apiResponse.results };
+    return apiResponse.results;
   }
   return null;
 };
@@ -179,6 +177,7 @@ const updateObjectMethod = async (
     return {
       key: apiResponse.data.object_key,
       content: file,
+      state: apiResponse.state,
     };
   }
   return null;

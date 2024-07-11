@@ -2,7 +2,7 @@ import { postPurgeCacheKey, postPurgeURL, postPurgeWildcard } from './services';
 import { ClientConfig, CreatePurgeInternalClient, CreatedPurge, PurgeInternalClient } from './types';
 
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
-const resolveDebug = (debug: boolean = false) => debug || !!process.env.AZION_DEBUG;
+const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
 
 const purgeURLMethod = async (token: string, url: string[], debug: boolean): Promise<CreatedPurge | null> => {
   const apiResponse = await postPurgeURL(resolveToken(token), url, resolveDebug(debug));

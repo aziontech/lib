@@ -16,7 +16,7 @@ import {
 } from './types';
 
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
-const resolveDebug = (debug: boolean = false) => debug || !!process.env.AZION_DEBUG;
+const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
 
 const createDatabaseMethod = async (token: string, name: string, debug: boolean = false): Promise<Database | null> => {
   const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolveDebug(debug));
