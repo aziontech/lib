@@ -1,18 +1,20 @@
-# Azion Libraries
+# Azion Lib
 
-The Azion Libraries provide a suite of tools to interact with various Azion services including Products (Purge, SQL, Storage) and Utilities (WASM Image Processor, Cookies). Each library is configurable and supports debug mode and environment variable-based configuration.
+The Azion Libraries provide a suite of tools to interact with various Azion services, including Products (Purge, SQL, Storage) and Utilities (WASM Image Processor, Cookies). Each library is configurable and supports debug mode and environment variable-based configuration.
+
+These libraries are designed to be versatile and can be used both within and outside of the Azion Runtime environment. When used outside of the Azion Runtime, the libraries will interact with Azion services via REST APIs. However, when used within the `Azion Runtime`, the libraries will leverage internal runtime capabilities for enhanced performance and efficiency.
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Products](#products)
+  - [Client](#client)
   - [Storage](#storage)
   - [SQL](#sql)
   - [Purge](#purge)
 - [Utilities](#utilities)
   - [Cookies](#cookies)
   - [WASM Image Processor](#wasm-image-processor)
-- [Client](#client)
 - [Contributing](#contributing)
 
 ## Installation
@@ -30,6 +32,65 @@ yarn add azion
 ```
 
 ## Products
+
+### Client
+
+The Azion Client provides a unified interface to interact with all Azion services.
+
+#### Examples
+
+**JavaScript:**
+
+```javascript
+import { createClient } from 'azion';
+
+const client = createClient({ token: 'your-api-token', debug: true });
+
+// Storage
+const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
+console.log(`Bucket created with name: ${newBucket.name}`);
+
+const allBuckets = await client.storage.getBuckets();
+console.log(`Retrieved ${allBuckets.length} buckets`);
+
+// SQL
+const newDatabase = await client.sql.createDatabase('my-new-db');
+console.log(`Database created with ID: ${newDatabase.id}`);
+
+const allDatabases = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.length} databases`);
+
+// Purge
+const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
+console.log(`Purge successful: ${purgeResult.items}`);
+```
+
+**TypeScript:**
+
+```typescript
+import { createClient } from 'azion';
+import { AzionClient, Bucket, Database, Purge } from 'azion/types';
+
+const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
+
+// Storage
+const newBucket: Bucket | null = await client.storage.createBucket('my-new-bucket', 'public');
+console.log(`Bucket created with name: ${newBucket.name}`);
+
+const allBuckets: Bucket[] | null = await client.storage.getBuckets();
+console.log(`Retrieved ${allBuckets.length} buckets`);
+
+// SQL
+const newDatabase: Database | null = await client.sql.createDatabase('my-new-db');
+console.log(`Database created with ID: ${newDatabase.id}`);
+
+const allDatabases: Database[] | null = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.length} databases`);
+
+// Purge
+const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
+console.log(`Purge successful: ${purgeResult.items}`);
+```
 
 ### Storage
 
@@ -74,7 +135,7 @@ if (allBuckets) {
 }
 ```
 
-Read more in the [Storage README](azion/storage/README.md).
+Read more in the [Storage README](./packages/storage/README.md).
 
 ### SQL
 
@@ -119,7 +180,7 @@ if (allDatabases) {
 }
 ```
 
-Read more in the [SQL README](azion/sql/README.md).
+Read more in the [SQL README](./packages/sql/README.MD).
 
 ### Purge
 
@@ -149,22 +210,22 @@ if (cacheKeyResult) {
 
 ```typescript
 import { createClient } from 'azion/purge';
-import { PurgeClient, CreatedPurge } from 'azion/purge/types';
+import { PurgeClient, Purge } from 'azion/purge/types';
 
 const client: PurgeClient = createClient({ token: 'your-api-token', debug: true });
 
-const purgeResult: CreatedPurge | null = await client.purgeURL(['http://example.com/image.jpg']);
+const purgeResult: Purge | null = await client.purgeURL(['http://example.com/image.jpg']);
 if (purgeResult) {
   console.log(`Purge successful: ${purgeResult.items}`);
 }
 
-const cacheKeyResult: CreatedPurge | null = await client.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+const cacheKeyResult: Purge | null = await client.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
 if (cacheKeyResult) {
   console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
 }
 ```
 
-Read more in the [Purge README](azion/purge/README.md).
+Read more in the [Purge README](./packages/purge/README.md).
 
 ## Utilities
 
@@ -194,7 +255,7 @@ const options: CookieOptions = { maxAge: 3600 };
 setCookie(response, 'my-cookie', 'cookie-value', options);
 ```
 
-Read more in the [Cookies README](azion/cookies/README.md).
+Read more in the [Cookies README](./packages/cookies/README.md).
 
 ### WASM Image Processor
 
@@ -208,8 +269,8 @@ The WASM Image Processor library provides methods to process images using WebAss
 import { loadImage } from 'azion/wasm-image-processor';
 
 const image = await loadImage('https://example.com/image.jpg');
-wrapper.resize(0.5, 0.5);
-const image = wrapper.getImageResponse('jpeg');
+image.resize(0.5, 0.5);
+const image = image.getImageResponse('jpeg');
 console.log(imageResponse);
 ```
 
@@ -225,66 +286,7 @@ const imageResponse = image.getImageResponse('jpeg');
 console.log(imageResponse);
 ```
 
-Read more in the [WASM Image Processor README](azion/wasm-image-processor/README.md).
-
-## Client
-
-The Azion Client provides a unified interface to interact with all Azion services.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { createClient } from 'azion';
-
-const client = createClient({ token: 'your-api-token', debug: true });
-
-// Storage
-const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
-console.log(`Bucket created with name: ${newBucket.name}`);
-
-const allBuckets = await client.storage.getBuckets();
-console.log(`Retrieved ${allBuckets.length} buckets`);
-
-// SQL
-const newDatabase = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.id}`);
-
-const allDatabases = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
-
-// Purge
-const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
-console.log(`Purge successful: ${purgeResult.items}`);
-```
-
-**TypeScript:**
-
-```typescript
-import { createClient } from 'azion';
-import { AzionClient, Bucket, Database, CreatedPurge } from 'azion/types';
-
-const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
-
-// Storage
-const newBucket: Bucket | null = await client.storage.createBucket('my-new-bucket', 'public');
-console.log(`Bucket created with name: ${newBucket.name}`);
-
-const allBuckets: Bucket[] | null = await client.storage.getBuckets();
-console.log(`Retrieved ${allBuckets.length} buckets`);
-
-// SQL
-const newDatabase: Database | null = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.id}`);
-
-const allDatabases: Database[] | null = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
-
-// Purge
-const purgeResult: CreatedPurge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
-console.log(`Purge successful: ${purgeResult.items}`);
-```
+Read more in the [WASM Image Processor README](./packages/wasm-image-processor/README.md).
 
 ## Contributing
 

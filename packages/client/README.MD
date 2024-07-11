@@ -187,21 +187,21 @@ if (wildcardResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, CreatedPurge } from 'azion/purge/types';
+import { AzionClient, Purge } from 'azion/purge/types';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
-const purgeResult: CreatedPurge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
 if (purgeResult) {
   console.log(`Purge successful: ${purgeResult.items}`);
 }
 
-const cacheKeyResult: CreatedPurge | null = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+const cacheKeyResult: Purge | null = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
 if (cacheKeyResult) {
   console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
 }
 
-const wildcardResult: CreatedPurge | null = await client.purge.purgeWildCard(['http://example.com/*']);
+const wildcardResult: Purge | null = await client.purge.purgeWildCard(['http://example.com/*']);
 if (wildcardResult) {
   console.log(`Wildcard purge successful: ${wildcardResult.items}`);
 }
