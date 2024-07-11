@@ -1,87 +1,128 @@
-# Azion Cookies
+# Azion Cookies Library
 
-The `cookies package` provides functionality for working with HTTP cookies.
+The Azion Cookies Library provides utility functions to get and set cookies in an HTTP request and response. This library is useful for handling cookies in web applications, ensuring ease of use and consistency.
 
-This package allows you to easily manage cookies in your Javascript/Typescript applications. It provides classes and functions for retrive, creating, and manipulating cookies.
+## Table of Contents
 
-### Get Cookies
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Get Cookie](#get-cookie)
+  - [Set Cookie](#set-cookie)
+- [API Reference](#api-reference)
+  - [`getCookie`](#getcookie)
+  - [`setCookie`](#setcookie)
+- [Types](#types)
+  - [`CookiePrefix`](#cookieprefix)
+  - [`CookieOptions`](#cookieoptions)
+- [Contributing](#contributing)
 
-`Function Parameters`
+## Installation
 
-```js
-getCookie(Request, <Cookie Name>, <prefix>);
+Install the package using npm or yarn:
+
+```sh
+npm install azion
 ```
 
-Parameters:
+or
 
-- `Request`: The Request interface of the Fetch API represents a resource request. [https://developer.mozilla.org/en-US/docs/Web/API/Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)
-- `cookieName`: string
-- `prefix`: host | secure
+```sh
+yarn add azion
+```
 
-#### Example
+## Usage
 
-> worker.js
+### Get Cookie
 
-```js
+**JavaScript:**
+
+```javascript
 import { getCookie } from 'azion/cookies';
 
-async function main(event) {
-  const request = event.request;
-  const cookie = getCookie(request, 'auth_cookie', 'secure');
-  if (cookie) {
-    return new Response(`Cookie value: ${cookie}`);
-  }
-  return new Response('No cookie found', { status: 404 });
-}
-
-addEventListener('fetch', (event) => {
-  event.respondWith(main(event));
-});
+const myCookie = getCookie(request, 'my-cookie');
+console.log(myCookie); // Outputs the value of 'my-cookie'
 ```
 
-### SetCookie
+**TypeScript:**
 
-`Function Parameters`
+```typescript
+import { getCookie } from 'azion/cookies';
+import { CookiePrefix } from 'azion/cookies/types';
 
-```js
-setCookie(Response, <Cookie Name>, <Cookie Value>, Options);
+const myCookie: string | undefined = getCookie(request, 'my-cookie');
+const secureCookie: string | undefined = getCookie(request, 'my-cookie', 'secure');
+console.log(myCookie); // Outputs the value of 'my-cookie'
+console.log(secureCookie); // Outputs the value of '__Secure-my-cookie'
 ```
 
-Parameters:
+### Set Cookie
 
-- `Response`: The Response interface of the Fetch API represents the response to a request. [https://developer.mozilla.org/en-US/docs/Web/API/Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
-- `Cookie Name`: string
-- `Cookie Value`: string
-- `Options`
-  - domain: string
-  - expires: Date
-  - httpOnly: boolean
-  - maxAge: number
-  - path: string
-  - secure: boolean
-  - sameSite: 'Strict' | 'Lax' | 'None'
-  - prefix: secure | 'host'
-  - partitioned: boolean
+**JavaScript:**
 
-#### Example
-
-> worker.js
-
-```js
+```javascript
 import { setCookie } from 'azion/cookies';
 
-export default async function main(event) {
-  const response = new Response('Hello, SetCookie', { status: 200 });
-  const cookieKey = 'auth';
-  try {
-    setCookie(response, cookieKey, '123', { maxAge: 120 });
-  } catch (e) {
-    console.error(e);
-  }
-  return response;
-}
-
-addEventListener('fetch', (event) => {
-  event.respondWith(main(event));
-});
+setCookie(response, 'my-cookie', 'cookie-value', { maxAge: 3600 });
 ```
+
+**TypeScript:**
+
+```typescript
+import { setCookie } from 'azion/cookies';
+import { CookieOptions } from 'azion/cookies/types';
+
+const options: CookieOptions = { maxAge: 3600 };
+setCookie(response, 'my-cookie', 'cookie-value', options);
+```
+
+## API Reference
+
+### `getCookie`
+
+Retrieves the value of a cookie from the HTTP request.
+
+**Parameters:**
+
+- `req: Request` - The HTTP request object.
+- `key?: string` - The name of the cookie to retrieve. If not provided, returns all cookies as an object.
+- `prefixOptions?: CookiePrefix` - The prefix for the cookie (`'host'` or `'secure'`).
+
+**Returns:**
+
+- `string | undefined | Record<string, string>` - The cookie value, or an object of all cookies if no key is provided.
+
+### `setCookie`
+
+Sets a cookie in the HTTP response.
+
+**Parameters:**
+
+- `res: Response` - The HTTP response object.
+- `name: string` - The name of the cookie.
+- `value: string` - The value of the cookie.
+- `options?: CookieOptions` - Additional options for setting the cookie.
+
+## Types
+
+### `CookiePrefix`
+
+Specifies the prefix for the cookie.
+
+- `'host'`
+- `'secure'`
+
+### `CookieOptions`
+
+Options for setting a cookie.
+
+- `maxAge?: number`
+- `expires?: Date`
+- `path?: string`
+- `domain?: string`
+- `secure?: boolean`
+- `httpOnly?: boolean`
+- `sameSite?: 'Strict' | 'Lax' | 'None'`
+
+## Contributing
+
+Feel free to submit issues or pull requests to improve the functionality or documentation.
