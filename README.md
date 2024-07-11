@@ -205,22 +205,23 @@ The WASM Image Processor library provides methods to process images using WebAss
 **JavaScript:**
 
 ```javascript
-import WasmImageProcessor from 'azion/wasm-image-processor';
+import { loadImage } from 'azion/wasm-image-processor';
 
-await WasmImageProcessor.loadImage('https://example.com/image.jpg');
-await WasmImageProcessor.resize(0.5, 0.5);
-const imageResponse = WasmImageProcessor.getImageResponse('jpeg');
+const image = await loadImage('https://example.com/image.jpg');
+wrapper.resize(0.5, 0.5);
+const image = wrapper.getImageResponse('jpeg');
 console.log(imageResponse);
 ```
 
 **TypeScript:**
 
 ```typescript
-import WasmImageProcessor from 'azion/wasm-image-processor';
+import { loadImage } from 'azion/wasm-image-processor';
+import { WasmImage } from 'azion/wasm-image-processor/types';
 
-await WasmImageProcessor.loadImage('https://example.com/image.jpg');
-await WasmImageProcessor.resize(0.5, 0.5);
-const imageResponse = WasmImageProcessor.getImageResponse('jpeg');
+const image: WasmImage = await loadImage('https://example.com/image.jpg');
+image.resize(0.5, 0.5);
+const imageResponse = image.getImageResponse('jpeg');
 console.log(imageResponse);
 ```
 
