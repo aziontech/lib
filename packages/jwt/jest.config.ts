@@ -12,6 +12,10 @@ const config: Config = {
   testEnvironment: 'node',
   testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/'],
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
+  transformIgnorePatterns: ['<rootDir>/node_modules/'],
 };
 
 export default config;
