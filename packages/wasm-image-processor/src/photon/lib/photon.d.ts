@@ -1,5 +1,4 @@
 /* tslint:disable */
-/* eslint-disable */
 /**
  *! [temp] Check if WASM is supported.
  */
