@@ -8,7 +8,7 @@ import {
   useQuery,
 } from '../src/index';
 import * as services from '../src/services';
-import { SQLInternalClient } from '../src/types';
+import { SQLClient } from '../src/types';
 
 jest.mock('../src/services');
 
@@ -144,7 +144,7 @@ describe('SQL Module', () => {
   });
 
   describe('Client methods', () => {
-    let client: SQLInternalClient;
+    let client: SQLClient;
 
     beforeEach(() => {
       client = createClient({ token: 'custom-token', debug: false });

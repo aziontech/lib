@@ -1,5 +1,5 @@
 import { createClient, purgeCacheKey, purgeURL, purgeWildCard } from '../src/index';
-import { PurgeInternalClient } from '../src/types';
+import { PurgeClient } from '../src/types';
 
 import * as services from '../src/services';
 
@@ -86,7 +86,7 @@ describe('Purge Module', () => {
   });
 
   describe('Client methods', () => {
-    let client: PurgeInternalClient;
+    let client: PurgeClient;
 
     beforeEach(() => {
       client = createClient({ token: 'custom-token', debug: false });

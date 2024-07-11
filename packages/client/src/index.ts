@@ -2,9 +2,9 @@ import createPurgeClient from 'azion/purge';
 import createSqlClient from 'azion/sql';
 import createStorageClient from 'azion/storage';
 
-import { PurgeInternalClient } from '../../purge/src/types';
-import { SQLInternalClient } from '../../sql/src/types';
-import { StorageInternalClient } from '../../storage/src/types';
+import { PurgeClient } from '../../purge/src/types';
+import { SQLClient } from '../../sql/src/types';
+import { StorageClient } from '../../storage/src/types';
 
 import { AzionClient, ClientConfig } from './types';
 
@@ -37,9 +37,9 @@ import { AzionClient, ClientConfig } from './types';
  * const purgeResult = await client.purge.purgeURL('http://example.com/image.jpg');
  */
 function createClient({ token, debug = false }: ClientConfig = {}): AzionClient {
-  const storageClient: StorageInternalClient = createStorageClient({ token, debug });
-  const sqlClient: SQLInternalClient = createSqlClient({ token, debug });
-  const purgeClient: PurgeInternalClient = createPurgeClient({ token, debug });
+  const storageClient: StorageClient = createStorageClient({ token, debug });
+  const sqlClient: SQLClient = createSqlClient({ token, debug });
+  const purgeClient: PurgeClient = createPurgeClient({ token, debug });
 
   return {
     /**

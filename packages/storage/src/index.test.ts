@@ -12,7 +12,7 @@ import {
   updateObject,
 } from '../src/index';
 import * as services from '../src/services';
-import { StorageInternalClient } from '../src/types';
+import { StorageClient } from '../src/types';
 
 jest.mock('../src/services');
 
@@ -250,7 +250,7 @@ describe('Storage Module', () => {
   });
 
   describe('Client methods', () => {
-    let client: StorageInternalClient;
+    let client: StorageClient;
 
     beforeEach(() => {
       delete process.env.AZION_TOKEN;

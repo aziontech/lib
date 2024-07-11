@@ -83,7 +83,7 @@ export interface DeletedBucket {
   name: string;
   state: 'executed' | 'pending';
 }
-export interface StorageInternalClient {
+export interface StorageClient {
   getBuckets: (options?: BucketCollectionOptions) => Promise<Bucket[] | null>;
   createBucket: (name: string, edge_access: string) => Promise<Bucket | null>;
   updateBucket: (name: string, edge_access: string) => Promise<Bucket | null>;
@@ -96,4 +96,4 @@ export type BucketCollectionOptions = {
   page_size?: number;
 };
 
-export type CreateStorageInternalClient = (token?: string, debug?: boolean) => StorageInternalClient;
+export type CreateStorageClient = (token?: string, debug?: boolean) => StorageClient;

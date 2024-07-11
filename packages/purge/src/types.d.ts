@@ -6,7 +6,7 @@ export interface ApiPurgeResponse {
   };
 }
 
-export interface CreatedPurge {
+export interface Purge {
   state: 'executed' | 'pending';
   items: string[];
 }
@@ -16,10 +16,10 @@ export interface ClientConfig {
   debug?: boolean;
 }
 
-export interface PurgeInternalClient {
-  purgeURL: (urls: string[]) => Promise<CreatedPurge | null>;
-  purgeCacheKey: (cacheKeys: string[]) => Promise<CreatedPurge | null>;
-  purgeWildCard: (wildcards: string[]) => Promise<CreatedPurge | null>;
+export interface PurgeClient {
+  purgeURL: (urls: string[]) => Promise<Purge | null>;
+  purgeCacheKey: (cacheKeys: string[]) => Promise<Purge | null>;
+  purgeWildCard: (wildcards: string[]) => Promise<Purge | null>;
 }
 
-export type CreatePurgeInternalClient = (config?: ClientConfig) => PurgeInternalClient;
+export type CreatePurgeClient = (config?: ClientConfig) => PurgeClient;

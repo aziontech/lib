@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 
-import { PurgeInternalClient } from '../../purge/src/types';
-import { SQLInternalClient } from '../../sql/src/types';
-import { StorageInternalClient } from '../../storage/src/types';
+import { PurgeClient } from '../../purge/src/types';
+import { SQLClient } from '../../sql/src/types';
+import { StorageClient } from '../../storage/src/types';
 
 export interface AzionClient {
-  storage: StorageInternalClient;
-  sql: SQLInternalClient;
-  purge: PurgeInternalClient;
+  storage: StorageClient;
+  sql: SQLClient;
+  purge: PurgeClient;
 }
 
 export interface ClientConfig {

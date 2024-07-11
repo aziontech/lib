@@ -15,7 +15,7 @@ import {
   BucketObject,
   DeletedBucket,
   DeletedBucketObject,
-  StorageInternalClient,
+  StorageClient,
 } from './types';
 
 const resolveToken = (token?: string) => {
@@ -402,7 +402,7 @@ const deleteObjectWrapper = (
  * Creates a Storage client with methods to interact with Azion Edge Storage.
  *
  * @param {Partial<{ token: string; debug: boolean }>} [config] - Configuration options for the Storage client.
- * @returns {StorageInternalClient} An object with methods to interact with Storage.
+ * @returns {StorageClient} An object with methods to interact with Storage.
  *
  * @example
  * const storageClient = createClient({ token: 'your-api-token', debug: true });
@@ -416,11 +416,11 @@ const deleteObjectWrapper = (
  * // Delete a bucket
  * const deletedBucket = await storageClient.deleteBucket('my-bucket');
  */
-const client = (config?: Partial<{ token: string; debug: boolean }>): StorageInternalClient => {
+const client = (config?: Partial<{ token: string; debug: boolean }>): StorageClient => {
   const tokenValue = resolveToken(config?.token);
   const debugValue = resolveDebug(config?.debug);
 
-  const client: StorageInternalClient = {
+  const client: StorageClient = {
     /**
      * Retrieves a list of buckets with optional filtering and pagination.
      * @param {BucketCollectionOptions} [options] - Optional parameters for filtering and pagination.

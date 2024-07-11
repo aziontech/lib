@@ -7,12 +7,12 @@ import {
 } from './services';
 import {
   ApiDatabaseResponse,
-  CreateSQLInternalClient,
+  CreateSQLClient,
   Database,
   DatabaseCollectionOptions,
   DeletedDatabase,
   Query,
-  SQLInternalClient,
+  SQLClient,
 } from './types';
 
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
@@ -191,7 +191,7 @@ const queryDatabaseWrapper = (id: number, statements: string[], debug: boolean =
  * Creates an SQL client with methods to interact with Azion Edge SQL databases.
  *
  * @param {Partial<{ token: string; debug: boolean }>} [config] - Configuration options for the SQL client.
- * @returns {SQLInternalClient} An object with methods to interact with SQL databases.
+ * @returns {SQLClient} An object with methods to interact with SQL databases.
  *
  * @example
  * const sqlClient = createClient({ token: 'your-api-token', debug: true });
@@ -205,11 +205,11 @@ const queryDatabaseWrapper = (id: number, statements: string[], debug: boolean =
  * // Query a database
  * const queryResult = await newDatabase.query(['SELECT * FROM users']);
  */
-const client: CreateSQLInternalClient = (config?: Partial<{ token: string; debug: boolean }>) => {
+const client: CreateSQLClient = (config?: Partial<{ token: string; debug: boolean }>) => {
   const tokenValue = resolveToken(config?.token);
   const debugValue = resolveDebug(config?.debug);
 
-  const client: SQLInternalClient = {
+  const client: SQLClient = {
     /**
      * Creates a new database.
      *

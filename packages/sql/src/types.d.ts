@@ -65,7 +65,7 @@ export interface Query {
   rows: (number | string)[][];
 }
 
-export interface SQLInternalClient {
+export interface SQLClient {
   createDatabase: (name: string) => Promise<Database | null>;
   deleteDatabase: (id: number) => Promise<DeletedDatabase | null>;
   getDatabaseById: (id: number) => Promise<Database | null>;
@@ -77,7 +77,7 @@ export interface SQLInternalClient {
   }) => Promise<Database[] | null>;
 }
 
-export interface SQLInternalClient {
+export interface SQLClient {
   createDatabase: (name: string) => Promise<Database | null>;
   deleteDatabase: (id: number) => Promise<DeletedDatabase | null>;
   getDatabaseById: (id: number) => Promise<Database | null>;
@@ -88,7 +88,7 @@ export interface SQLInternalClient {
     search?: string;
   }) => Promise<Database[] | null>;
 }
-export type CreateSQLInternalClient = (config?: Partial<{ token: string; debug: boolean }>) => SQLInternalClient;
+export type CreateSQLClient = (config?: Partial<{ token: string; debug: boolean }>) => SQLClient;
 
 export type DatabaseCollectionOptions = {
   ordering?: string;
