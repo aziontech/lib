@@ -94,6 +94,9 @@
       "cookies": [
         "./packages/cookies/dist/index.d.ts"
       ],
+      "jwt": [
+        "./packages/jwt/dist/index.d.ts"
+      ],
       "router": [
         "./packages/router/dist/index.d.ts"
       ],
