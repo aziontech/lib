@@ -78,6 +78,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./config": {
+      "require": "./packages/config/dist/index.js",
+      "import": "./packages/config/dist/index.mjs",
+      "types": "./packages/config/dist/index.d.ts"
+    },
     "./sql": {
       "require": "./packages/sql/dist/index.js",
       "import": "./packages/sql/dist/index.mjs",

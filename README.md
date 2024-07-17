@@ -15,6 +15,7 @@ These libraries are designed to be versatile and can be used both within and out
 - [Utilities](#utilities)
   - [Cookies](#cookies)
   - [WASM Image Processor](#wasm-image-processor)
+- [AzionConfig](#config)
 - [Contributing](#contributing)
 
 ## Installation
@@ -287,6 +288,36 @@ console.log(imageResponse);
 ```
 
 Read more in the [WASM Image Processor README](./packages/wasm-image-processor/README.md).
+
+## Config
+
+The Config library provides methods to configure and validate options for the Azion platform.
+
+### Examples
+
+**JavaScript:**
+
+```javascript
+import { AzionConfig } from 'azion';
+
+const config = AzionConfig({
+  origin: [],
+  cache: [],
+  rules: [],
+});
+```
+
+```typescript
+import { AzionConfig } from 'azion';
+
+const config = AzionConfig({
+  origin: [],
+  cache: [],
+  rules: [],
+});
+```
+
+Read more in the [CONFIG README](./packages/config/README.MD).
 
 ## Contributing
 

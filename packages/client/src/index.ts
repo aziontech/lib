@@ -1,3 +1,4 @@
+import { AzionConfig } from 'azion/config';
 import createPurgeClient from 'azion/purge';
 import createSqlClient from 'azion/sql';
 import createStorageClient from 'azion/storage';
@@ -87,5 +88,5 @@ function createClient({ token, debug = false }: ClientConfig = {}): AzionClient 
   };
 }
 
-export { createClient };
+export { AzionConfig, createClient };
 export default createClient;
