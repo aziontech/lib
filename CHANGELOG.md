@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/aziontech/lib/compare/v1.2.0...v1.3.0) (2024-07-18)
+
+
+### Features
+
+*  release pnpm and yarn access ([f8b8ae9](https://github.com/aziontech/lib/commit/f8b8ae9da3a7da4c3f5ff958a84e64675056059b))
+
 ## [1.3.0-stage.1](https://github.com/aziontech/lib/compare/v1.2.0...v1.3.0-stage.1) (2024-07-18)
 
 
