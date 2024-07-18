@@ -1,3 +1,14 @@
+## [1.2.0-stage.2](https://github.com/aziontech/lib/compare/v1.2.0-stage.1...v1.2.0-stage.2) (2024-07-18)
+
+
+### Features
+
+* **config:** azionconfig validator ([7f71be4](https://github.com/aziontech/lib/commit/7f71be43532b48fabb36401710293f10240a9570))
+* edge-sql and edge-storage ([a8f39c6](https://github.com/aziontech/lib/commit/a8f39c687909f4f58c5a4e2ca5045e2c54a656a1))
+* examples ([ff352f2](https://github.com/aziontech/lib/commit/ff352f2a588e4d5da0f60ceb9359faa7bd7be66e))
+* improve types/interfaces ([383eb3c](https://github.com/aziontech/lib/commit/383eb3c97d62ab5be12acda76e3c7bf6bac27f14))
+* purge package ([9c7038b](https://github.com/aziontech/lib/commit/9c7038b8cd8a96d3fb3c62b0f1f7b319c7984ac3))
+
 ## [1.2.0-stage.1](https://github.com/aziontech/lib/compare/v1.1.0...v1.2.0-stage.1) (2024-07-10)
 
 
