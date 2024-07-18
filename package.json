@@ -40,9 +40,6 @@
   ],
   "engines": {
     "node": ">=18.0.0",
-    "yarn": "please-use-npm",
-    "pnpm": "please-use-npm",
-    "npm": ">=10.2.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.1",
