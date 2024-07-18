@@ -1,0 +1,30 @@
+{
+  "name": "@lib/storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "compile": "tsup --config ../../tsup.config.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prettier": "prettier --write .",
+    "test": "jest --clearCache && jest -c jest.config.js .",
+    "test:watch": "jest -c jest.config.js . --watch",
+    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "aziontech",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ]
+}

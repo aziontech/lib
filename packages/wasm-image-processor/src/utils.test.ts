@@ -1,7 +1,7 @@
 import { NO_EXTENSION_MSG } from './constants';
 import { getFileExtension, isUrl, validateImageExtension } from './utils';
 
-describe('WasmImageProcessor - Utils', () => {
+describe('WasmImage - Utils', () => {
   describe('isUrl function', () => {
     it('should return true for a valid URL', () => {
       expect(isUrl('https://www.example.com')).toBe(true);
