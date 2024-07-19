@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prettier:check": "prettier --check ."
   },
   "types": "./dist/index.d.ts",
   "exports": {

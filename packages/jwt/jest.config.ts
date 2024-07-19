@@ -16,6 +16,7 @@ const config: Config = {
     '^.+\\.ts$': 'ts-jest',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  // setupFilesAfterEnv: ['./jest.setup.ts'],
 };
 
 export default config;

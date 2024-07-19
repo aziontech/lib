@@ -4,10 +4,13 @@
  * https://datatracker.ietf.org/doc/html/rfc7515
  */
 
+import crypto from "node:crypto";
 import { CryptoKeyUsage, JwtAlgorithmNotImplemented } from '../common/types';
 import type { SignatureAlgorithm } from '../jwa';
 import { decodeBase64 } from '../utils/encode';
 import { utf8Encoder } from '../utils/utf8';
+
+// console.log("\n\n*** [DEBUG]"); console.log(crypto);
 
 type KeyImporterAlgorithm = Parameters<typeof crypto.subtle.importKey>[2];
 type KeyAlgorithm =

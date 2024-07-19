@@ -1,12 +1,84 @@
+import { SUPPORTED_FORMATS_IN_RESPONSE } from './constants';
 import * as photon from './photon/lib/index';
-
-import { LOAD_IMG_ERROR_MSG, OP_NEEDED_ERROR_MSG, SUPPORTED_FORMATS_IN_RESPONSE } from './constants';
+import { SupportedImageFormat, WasmImage } from './types';
 import { isUrl, validateImageExtension } from './utils';
 
-let image: photon.PhotonImage | null = null;
-let result: photon.PhotonImage | null = null;
+/**
+ * Resizes the given image.
+ */
+function resize(image: photon.PhotonImage, width: number, height: number, usePercent = true): photon.PhotonImage {
+  const imageWidth = image.get_width();
+  const imageHeight = image.get_height();
 
-async function loadImage(pathOrURL: string) {
+  const widthPercent = usePercent ? width : (width * 100.0) / imageWidth;
+  const heightPercent = usePercent ? height : (height * 100.0) / imageHeight;
+
+  return photon.resize(image, (imageWidth * widthPercent) / 100, (imageHeight * heightPercent) / 100, 1);
+}
+
+/**
+ * Gets the image as a Response object in the specified format.
+ */
+function getImageResponse(image: photon.PhotonImage, format: SupportedImageFormat, quality = 100.0): Response {
+  if (!SUPPORTED_FORMATS_IN_RESPONSE.includes(format)) {
+    throw new Error(`Invalid image format in Response. Supported: ${SUPPORTED_FORMATS_IN_RESPONSE.join(',')}`);
+  }
+
+  let finalImage: Uint8Array;
+  let contentType: string;
+
+  switch (format) {
+    case 'webp':
+      finalImage = image.get_bytes_webp();
+      contentType = 'image/webp';
+      break;
+    case 'jpeg':
+      finalImage = image.get_bytes_jpeg(quality);
+      contentType = 'image/jpeg';
+      break;
+    case 'png':
+      finalImage = image.get_bytes();
+      contentType = 'image/png';
+      break;
+  }
+
+  return new Response(finalImage, { headers: { 'Content-Type': contentType } });
+}
+
+/**
+ * Cleans up resources associated with the image.
+ * @param {photon.PhotonImage} image - The image to clean up.
+ */
+function clean(image: photon.PhotonImage): void {
+  image.free();
+}
+
+/**
+ * Loads an image from a given path or URL and returns a WasmImage object.
+ *
+ * @param {string} pathOrURL - The path or URL of the image to load.
+ * @returns {Promise<WasmImage>} A promise that resolves to a WasmImage object.
+ *
+ * @throws {Error} If the image extension is invalid or if there's an error fetching the image.
+ *
+ * @example
+ * // Load an image from a URL
+ * const imageProcessor = await loadImage('https://example.com/image.jpg');
+ *
+ * // Get the image dimensions
+ * const width = imageProcessor.width();
+ * const height = imageProcessor.height();
+ *
+ * // Resize the image
+ * const resizedImage = imageProcessor.resize(800, 600, false);
+ *
+ * // Get the image as a webp response
+ * const webpResponse = resizedImage.getImageResponse('webp');
+ *
+ * // Clean up resources
+ * imageProcessor.clean();
+ */
+async function loadImage(pathOrURL: string): Promise<WasmImage> {
   validateImageExtension(pathOrURL);
 
   let imageUrl: URL;
@@ -25,95 +97,54 @@ async function loadImage(pathOrURL: string) {
   const imageBuffer: ArrayBuffer = await imageResp.arrayBuffer();
   const imageBytes: Uint8Array = new Uint8Array(imageBuffer);
 
-  image = photon.PhotonImage.new_from_byteslice(imageBytes);
-}
+  const image = photon.PhotonImage.new_from_byteslice(imageBytes);
 
-function clean() {
-  if (image !== null) {
-    image.free();
-  }
-
-  image = null;
-  result = null;
-}
-
-function getDimensionPercent(isWidth: boolean, value: number) {
-  if (image === null) throw new Error(LOAD_IMG_ERROR_MSG);
-
-  let dimensionValue;
-  if (isWidth) {
-    dimensionValue = image.get_width();
-  } else {
-    dimensionValue = image.get_height();
-  }
-
-  const percent = (value * 100.0) / dimensionValue;
-
-  return percent;
-}
-
-async function resize(width: number, height: number, usePercent = true) {
-  if (image === null) throw new Error(LOAD_IMG_ERROR_MSG);
-
-  const imageWidth = image.get_width();
-  const imageHeight = image.get_height();
-
-  let widthPercent;
-  let heightPercent;
-  if (!usePercent) {
-    widthPercent = getDimensionPercent(true, width);
-    heightPercent = getDimensionPercent(false, height);
-  } else {
-    widthPercent = width;
-    heightPercent = height;
-  }
-
-  result = photon.resize(image, imageWidth * widthPercent, imageHeight * heightPercent, 1);
-}
-
-function getImageResponse(format: string, quality = 100.0) {
-  if (result === null) throw new Error(OP_NEEDED_ERROR_MSG);
-
-  if (!SUPPORTED_FORMATS_IN_RESPONSE.includes(format)) {
-    throw new Error(`Invalid image format in Response. Supported: ${SUPPORTED_FORMATS_IN_RESPONSE.join(',')}`);
-  }
-
-  let finalImage;
-  let headers;
-  switch (format) {
-    case 'webp':
-      finalImage = result.get_bytes_webp();
-      headers = {
-        'Content-Type': 'image/webp',
+  const wrapper: WasmImage = {
+    image,
+    /**
+     * Get the width of the image.
+     * @returns {number} The width of the image in pixels.
+     */
+    width: (): number => image.get_width(),
+    /**
+     * Get the height of the image.
+     * @returns {number} The height of the image in pixels.
+     */
+    height: (): number => image.get_height(),
+    /**
+     * Resize the image.
+     * @param {number} width - The new width.
+     * @param {number} height - The new height.
+     * @param {boolean} [usePercent=true] - If true, width and height are treated as percentages.
+     * @returns {WasmImage} A new WasmImage object with the resized image.
+     */
+    resize: (width: number, height: number, usePercent = true): WasmImage => {
+      const resizedImage = resize(image, width, height, usePercent);
+      return {
+        ...wrapper,
+        image: resizedImage,
       };
-      break;
-    case 'jpeg':
-      finalImage = result.get_bytes_jpeg(quality);
-      headers = {
-        'Content-Type': 'image/jpeg',
-      };
-      break;
-    // png case
-    default:
-      finalImage = result.get_bytes();
-      headers = {
-        'Content-Type': 'image/png',
-      };
-      break;
-  }
+    },
+    /**
+     * Get the image as a Response object in the specified format.
+     * @param {SupportedImageFormat} format - The desired image format ('webp', 'jpeg', or 'png').
+     * @param {number} [quality=100.0] - The quality of the image (0-100), only applicable for 'jpeg' format.
+     * @returns {Response} The image as a Response object.
+     * @throws {Error} If an unsupported image format is specified.
+     */
+    getImageResponse: (format: SupportedImageFormat, quality = 100.0): Response => {
+      return getImageResponse(image, format, quality);
+    },
+    /**
+     * Clean up resources associated with the image.
+     */
+    clean: () => {
+      clean(image);
+    },
+  };
 
-  const imageResponse = new Response(finalImage, { headers });
-
-  clean();
-
-  return imageResponse;
+  return wrapper;
 }
 
-const WasmImageProcessor = {
-  loadImage,
-  resize,
-  getImageResponse,
-  clean,
-};
-
-export default WasmImageProcessor;
+export { clean, getImageResponse, loadImage, resize };
+export default loadImage;
