@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Crypto, CryptoKey } from '@peculiar/webcrypto';
-
 import {
   JwtAlgorithmNotImplemented,
   JwtTokenExpired,
@@ -12,9 +10,6 @@ import {
 import { AlgorithmTypes } from '../jwa';
 import { encodeBase64 } from '../utils/encode';
 import * as JWT from './index';
-
-globalThis.crypto = new Crypto();
-globalThis.CryptoKey = CryptoKey;
 
 describe('isTokenHeader', () => {
   it('should return true for valid TokenHeader', () => {
