@@ -1,3 +1,10 @@
+## [1.4.0](https://github.com/aziontech/lib/compare/v1.3.0...v1.4.0) (2024-07-25)
+
+
+### Features
+
+* create jwt package (#11) ([b78f30e](https://github.com/aziontech/lib/commit/b78f30eb8def541f0b829bd9f06afacac72a0ab5))
+
 ## [1.4.0-stage.1](https://github.com/aziontech/lib/compare/v1.3.0...v1.4.0-stage.1) (2024-07-25)
 
 
