@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.3.0",
+  "version": "1.4.0-stage.1",
   "description": "Azion Packages for Edge Computing.",
   "scripts": {
     "prepare": "husky",
@@ -95,6 +95,11 @@
       "import": "./packages/cookies/dist/index.mjs",
       "types": "./packages/cookies/dist/index.d.ts"
     },
+    "./jwt": {
+      "require": "./packages/jwt/dist/index.js",
+      "import": "./packages/jwt/dist/index.mjs",
+      "types": "./packages/jwt/dist/index.d.ts"
+    },
     "./purge": {
       "require": "./packages/purge/dist/index.js",
       "import": "./packages/purge/dist/index.mjs",
@@ -127,6 +132,9 @@
       ],
       "cookies": [
         "./packages/cookies/dist/index.d.ts"
+      ],
+      "jwt": [
+        "./packages/jwt/dist/index.d.ts"
       ],
       "router": [
         "./packages/router/dist/index.d.ts"
