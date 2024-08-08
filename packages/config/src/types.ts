@@ -1,4 +1,18 @@
 export type AzionConfig = {
+  domain?: {
+    name: string;
+    cnameAccessOnly?: boolean;
+    cnames?: string[];
+    edgeApplicationId?: number;
+    edgeFirewallId?: number;
+    digitalCertificateId?: string;
+    mtls?: {
+      verification: 'enforce' | 'permissive';
+      trustedCaCertificateId: number;
+      crlLis?: number[];
+    };
+  };
+
   origin?: {
     name: string;
     type: string;
