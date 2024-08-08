@@ -14,12 +14,30 @@ export type AzionConfig = {
   };
 
   origin?: {
+    id?: number;
+    key?: string;
     name: string;
     type: string;
     bucket?: string | null;
     prefix?: string | null;
-    addresses?: string[];
+    addresses?:
+      | string[]
+      | {
+          address: string;
+          weight?: number;
+        }[];
     hostHeader?: string;
+    protocolPolicy?: 'http' | 'https' | 'preserve';
+    redirection?: boolean;
+    method?: 'ip_hash' | 'least_connections' | 'round_robin';
+    path?: string;
+    connectionTimeout?: number;
+    timeoutBetweenBytes?: number;
+    hmac?: {
+      region: string;
+      accessKey: string;
+      secretKey: string;
+    };
   }[];
 
   cache?: {
