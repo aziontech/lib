@@ -136,4 +136,11 @@ export type AzionConfig = {
     listType: string;
     listContent: string[];
   }[];
+
+  purge?: {
+    type: 'url' | 'cachekey' | 'wildcard';
+    urls: string[];
+    method?: 'delete';
+    layer?: 'edge_caching' | 'l2_caching';
+  }[];
 };
