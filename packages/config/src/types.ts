@@ -5,7 +5,7 @@ export type AzionConfig = {
     cnames?: string[];
     edgeApplicationId?: number;
     edgeFirewallId?: number;
-    digitalCertificateId?: string;
+    digitalCertificateId?: string | number | null;
     mtls?: {
       verification: 'enforce' | 'permissive';
       trustedCaCertificateId: number;
