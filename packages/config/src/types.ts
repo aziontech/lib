@@ -9,7 +9,7 @@ export type AzionConfig = {
     mtls?: {
       verification: 'enforce' | 'permissive';
       trustedCaCertificateId: number;
-      crlLis?: number[];
+      crlList?: number[];
     };
   };
 
