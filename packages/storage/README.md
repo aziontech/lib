@@ -26,7 +26,7 @@ Azion Edge Storage Client provides a simple interface to interact with the Azion
   - [`createBucket`](#createbucket)
   - [`deleteBucket`](#deletebucket)
   - [`getBuckets`](#getbuckets)
-  - [`getBucketByName`](#getbucketbyname)
+  - [`getBucket`](#getbucketbyname)
   - [`updateBucket`](#updatebucket)
   - [`createObject`](#createobject)
   - [`getObjectByKey`](#getobjectbykey)
@@ -183,9 +183,9 @@ if (buckets) {
 **JavaScript:**
 
 ```javascript
-import { getBucketByName } from 'azion/storage';
+import { getBucket } from 'azion/storage';
 
-const bucket = await getBucketByName('my-bucket', true);
+const bucket = await getBucket('my-bucket', true);
 if (bucket) {
   console.log(`Retrieved bucket: ${bucket.name}`);
 } else {
@@ -196,10 +196,10 @@ if (bucket) {
 **TypeScript:**
 
 ```typescript
-import { getBucketByName } from 'azion/storage';
+import { getBucket } from 'azion/storage';
 import { Bucket } from 'azion/storage/types';
 
-const bucket: Bucket | null = await getBucketByName('my-bucket', true);
+const bucket: Bucket | null = await getBucket('my-bucket', true);
 if (bucket) {
   console.log(`Retrieved bucket: ${bucket.name}`);
 } else {
@@ -488,7 +488,7 @@ Retrieves a list of buckets with optional filtering and pagination.
 
 - `Promise<Bucket[] | null>` - Array of bucket objects or null if retrieval failed.
 
-### `getBucketByName`
+### `getBucket`
 
 Retrieves a bucket by its name.
 
@@ -615,7 +615,7 @@ An object with methods to interact with Storage.
 - `createBucket: (name: string, edge_access: string) => Promise<Bucket | null>`
 - `updateBucket: (name: string, edge_access: string) => Promise<Bucket | null>`
 - `deleteBucket: (name: string) => Promise<DeletedBucket | null>`
-- `getBucketByName: (name: string) => Promise<Bucket | null>`
+- `getBucket: (name: string) => Promise<Bucket | null>`
 
 ### `Bucket`
 

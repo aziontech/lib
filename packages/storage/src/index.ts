@@ -18,12 +18,24 @@ import {
   StorageClient,
 } from './types';
 
+import { InternalStorageClient, isInternalStorageAvailable } from './runtime';
+
 const resolveToken = (token?: string) => {
   return token ?? process.env.AZION_TOKEN ?? '';
 };
 const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
 
-const createBucketMethod = async (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createInternalOrExternalMethod = <T extends (...args: any[]) => any>(internalMethod: T, externalMethod: T): T => {
+  return ((...args: Parameters<T>): ReturnType<T> => {
+    if (isInternalStorageAvailable()) {
+      return internalMethod(...args);
+    }
+    return externalMethod(...args);
+  }) as T;
+};
+
+export const createBucketMethod = async (
   token: string,
   name: string,
   edge_access: string,
@@ -46,7 +58,11 @@ const createBucketMethod = async (
   }
   return null;
 };
-const deleteBucketMethod = async (token: string, name: string, debug: boolean): Promise<DeletedBucket | null> => {
+export const deleteBucketMethod = async (
+  token: string,
+  name: string,
+  debug: boolean,
+): Promise<DeletedBucket | null> => {
   const apiResponse = await deleteBucket(resolveToken(token), name, resolveDebug(debug));
   if (apiResponse) {
     return { name: apiResponse.data.name, state: apiResponse.state };
@@ -54,7 +70,7 @@ const deleteBucketMethod = async (token: string, name: string, debug: boolean): 
   return null;
 };
 
-const getBucketsMethod = async (
+export const getBucketsMethod = async (
   token: string,
   options?: BucketCollectionOptions,
   debug?: boolean,
@@ -77,33 +93,39 @@ const getBucketsMethod = async (
   return null;
 };
 
-const getBucketByNameMethod = async (token: string, name: string, debug: boolean): Promise<Bucket | null> => {
-  // NOTE: This is a temporary solution because the API does not provide an endpoint
-  // to search for a single bucket by name. When available, it must be replaced
-  // by a direct API call.
-  const PAGE_SIZE_TEMP = 100000;
-  const apiResponse = await getBuckets(resolveToken(token), { page_size: PAGE_SIZE_TEMP }, resolveDebug(debug));
-  const buckets = apiResponse.results;
-  if (!buckets) return null;
+const getBucketMethod = createInternalOrExternalMethod(
+  async (token: string, name: string, debug?: boolean): Promise<Bucket | null> => {
+    const internalClient = new InternalStorageClient(token, debug);
+    return internalClient.getBucket(name);
+  },
+  async (token: string, name: string, debug?: boolean): Promise<Bucket | null> => {
+    // NOTE: This is a temporary solution because the API does not provide an endpoint
+    // to search for a single bucket by name. When available, it must be replaced
+    // by a direct API call.
+    const PAGE_SIZE_TEMP = 100000;
+    const apiResponse = await getBuckets(resolveToken(token), { page_size: PAGE_SIZE_TEMP }, resolveDebug(debug));
+    const buckets = apiResponse.results;
+    if (!buckets) return null;
 
-  const bucket = buckets.find((b) => b.name === name);
-  if (!bucket) return null;
+    const bucket = buckets.find((b) => b.name === name);
+    if (!bucket) return null;
 
-  return {
-    ...bucket,
-    getObjects: (): Promise<BucketObject[] | null> => getObjectsMethod(token, name, debug),
-    getObjectByKey: (objectKey: string): Promise<BucketObject | null> =>
-      getObjectByKeyMethod(token, name, objectKey, debug),
-    createObject: (objectKey: string, file: string): Promise<BucketObject | null> =>
-      createObjectMethod(token, name, objectKey, file, debug),
-    updateObject: (objectKey: string, file: string): Promise<BucketObject | null> =>
-      updateObjectMethod(token, name, objectKey, file, debug),
-    deleteObject: (objectKey: string): Promise<DeletedBucketObject | null> =>
-      deleteObjectMethod(token, name, objectKey, debug),
-  };
-};
+    return {
+      ...bucket,
+      getObjects: (): Promise<BucketObject[] | null> => getObjectsMethod(token, name, debug),
+      getObjectByKey: (objectKey: string): Promise<BucketObject | null> =>
+        getObjectByKeyMethod(token, name, objectKey, debug),
+      createObject: (objectKey: string, file: string): Promise<BucketObject | null> =>
+        createObjectMethod(token, name, objectKey, file, debug),
+      updateObject: (objectKey: string, file: string): Promise<BucketObject | null> =>
+        updateObjectMethod(token, name, objectKey, file, debug),
+      deleteObject: (objectKey: string): Promise<DeletedBucketObject | null> =>
+        deleteObjectMethod(token, name, objectKey, debug),
+    };
+  },
+);
 
-const updateBucketMethod = async (
+export const updateBucketMethod = async (
   token: string,
   name: string,
   edge_access: string,
@@ -126,75 +148,94 @@ const updateBucketMethod = async (
   }
   return null;
 };
+const getObjectsMethod = createInternalOrExternalMethod(
+  async (token: string, bucketName: string, debug?: boolean): Promise<BucketObject[] | null> => {
+    const internalClient = new InternalStorageClient(token, debug);
+    return internalClient.getObjects(bucketName);
+  },
+  async (token: string, bucketName: string, debug?: boolean): Promise<BucketObject[] | null> => {
+    const apiResponse = await getObjects(resolveToken(token), bucketName, resolveDebug(debug));
+    return apiResponse?.results ?? null;
+  },
+);
 
-const getObjectsMethod = async (token: string, bucketName: string, debug?: boolean): Promise<BucketObject[] | null> => {
-  const apiResponse = await getObjects(resolveToken(token), bucketName, resolveDebug(debug));
-  if (apiResponse) {
-    return apiResponse.results;
-  }
-  return null;
-};
+const getObjectByKeyMethod = createInternalOrExternalMethod(
+  async (token: string, bucketName: string, objectKey: string, debug?: boolean): Promise<BucketObject | null> => {
+    const internalClient = new InternalStorageClient(token, debug);
+    return internalClient.getObjectByKey(bucketName, objectKey);
+  },
+  async (token: string, bucketName: string, objectKey: string, debug?: boolean): Promise<BucketObject | null> => {
+    const apiResponse = await getObjectByKey(resolveToken(token), bucketName, objectKey, resolveDebug(debug));
+    return apiResponse ? { key: objectKey, content: apiResponse } : null;
+  },
+);
 
-const createObjectMethod = async (
-  token: string,
-  bucketName: string,
-  objectKey: string,
-  file: string,
-  debug?: boolean,
-): Promise<BucketObject | null> => {
-  const apiResponse = await postObject(resolveToken(token), bucketName, objectKey, file, resolveDebug(debug));
-  if (apiResponse) {
-    return { key: apiResponse.data.object_key, content: file, state: apiResponse.state };
-  }
-  return null;
-};
+const createObjectMethod = createInternalOrExternalMethod(
+  async (
+    token: string,
+    bucketName: string,
+    objectKey: string,
+    file: string,
+    debug?: boolean,
+  ): Promise<BucketObject | null> => {
+    const internalClient = new InternalStorageClient(token, debug);
+    return internalClient.createObject(bucketName, objectKey, file);
+  },
+  async (
+    token: string,
+    bucketName: string,
+    objectKey: string,
+    file: string,
+    debug?: boolean,
+  ): Promise<BucketObject | null> => {
+    const apiResponse = await postObject(resolveToken(token), bucketName, objectKey, file, resolveDebug(debug));
+    return apiResponse ? { key: apiResponse.data.object_key, content: file, state: apiResponse.state } : null;
+  },
+);
 
-const getObjectByKeyMethod = async (
-  token: string,
-  bucketName: string,
-  objectKey: string,
-  debug?: boolean,
-): Promise<BucketObject | null> => {
-  const apiResponse = await getObjectByKey(resolveToken(token), bucketName, objectKey, resolveDebug(debug));
-  if (apiResponse) {
-    return {
-      key: objectKey,
-      content: apiResponse,
-    };
-  }
-  return null;
-};
+const updateObjectMethod = createInternalOrExternalMethod(
+  async (
+    token: string,
+    bucketName: string,
+    objectKey: string,
+    file: string,
+    debug?: boolean,
+  ): Promise<BucketObject | null> => {
+    const internalClient = new InternalStorageClient(token, debug);
+    return internalClient.updateObject(bucketName, objectKey, file);
+  },
+  async (
+    token: string,
+    bucketName: string,
+    objectKey: string,
+    file: string,
+    debug?: boolean,
+  ): Promise<BucketObject | null> => {
+    const apiResponse = await putObject(resolveToken(token), bucketName, objectKey, file, resolveDebug(debug));
+    return apiResponse ? { key: apiResponse.data.object_key, content: file, state: apiResponse.state } : null;
+  },
+);
 
-const updateObjectMethod = async (
-  token: string,
-  bucketName: string,
-  objectKey: string,
-  file: string,
-  debug?: boolean,
-): Promise<BucketObject | null> => {
-  const apiResponse = await putObject(resolveToken(token), bucketName, objectKey, file, resolveDebug(debug));
-  if (apiResponse) {
-    return {
-      key: apiResponse.data.object_key,
-      content: file,
-      state: apiResponse.state,
-    };
-  }
-  return null;
-};
-
-const deleteObjectMethod = async (
-  token: string,
-  bucketName: string,
-  objectKey: string,
-  debug?: boolean,
-): Promise<DeletedBucketObject | null> => {
-  const apiResponse = await deleteObject(resolveToken(token), bucketName, objectKey, resolveDebug(debug));
-  if (apiResponse) {
-    return { key: objectKey, state: apiResponse.state };
-  }
-  return null;
-};
+const deleteObjectMethod = createInternalOrExternalMethod(
+  async (
+    token: string,
+    bucketName: string,
+    objectKey: string,
+    debug?: boolean,
+  ): Promise<DeletedBucketObject | null> => {
+    const internalClient = new InternalStorageClient(token, debug);
+    return internalClient.deleteObject(bucketName, objectKey);
+  },
+  async (
+    token: string,
+    bucketName: string,
+    objectKey: string,
+    debug?: boolean,
+  ): Promise<DeletedBucketObject | null> => {
+    const apiResponse = await deleteObject(resolveToken(token), bucketName, objectKey, resolveDebug(debug));
+    return apiResponse ? { key: objectKey, state: apiResponse.state } : null;
+  },
+);
 
 /**
  * Creates a new bucket.
@@ -259,15 +300,15 @@ const getBucketsWrapper = (options?: BucketCollectionOptions, debug?: boolean): 
  * @returns {Promise<Bucket | null>} The retrieved bucket or null if not found.
  *
  * @example
- * const bucket = await getBucketByName('my-bucket', true);
+ * const bucket = await getBucket('my-bucket', true);
  * if (bucket) {
  *   console.log(`Retrieved bucket: ${bucket.name}`);
  * } else {
  *   console.error('Bucket not found');
  * }
  */
-const getBucketByNameWrapper = (name: string, debug: boolean): Promise<Bucket | null> =>
-  getBucketByNameMethod(resolveToken(), name, resolveDebug(debug));
+const getBucketWrapper = (name: string, debug: boolean): Promise<Bucket | null> =>
+  getBucketMethod(resolveToken(), name, resolveDebug(debug));
 
 /**
  * Updates an existing bucket.
@@ -459,7 +500,7 @@ const client = (config?: Partial<{ token: string; debug: boolean }>): StorageCli
      * @param {string} name - Name of the bucket to retrieve.
      * @returns {Promise<Bucket | null>} The retrieved bucket or null if not found.
      */
-    getBucketByName: (name: string): Promise<Bucket | null> => getBucketByNameMethod(tokenValue, name, debugValue),
+    getBucket: (name: string): Promise<Bucket | null> => getBucketMethod(tokenValue, name, debugValue),
   } as const;
 
   return client;
@@ -471,7 +512,7 @@ export {
   createObjectWrapper as createObject,
   deleteBucketWrapper as deleteBucket,
   deleteObjectWrapper as deleteObject,
-  getBucketByNameWrapper as getBucketByName,
+  getBucketWrapper as getBucket,
   getBucketsWrapper as getBuckets,
   getObjectByKeyWrapper as getObjectByKey,
   getObjectsWrapper as getObjects,

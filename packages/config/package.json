@@ -9,8 +9,7 @@
       "compile": "tsup --config ../../tsup.config.json",
       "lint": "eslint .",
       "lint:fix": "eslint --fix .",
-      "prettier": "prettier --write .",
-      "test": "jest"
+      "prettier": "prettier --write ."
     },
     "author": "aziontech",
     "license": "MIT",

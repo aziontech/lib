@@ -1,4 +1,17 @@
-/* eslint-disable no-unused-vars */
+export declare namespace Azion {
+  class Storage {
+    constructor(bucketName: string);
+    list(): Promise<{ entries: { key: string }[] }>;
+    put(
+      key: string,
+      value: ArrayBuffer,
+      options?: { 'content-length'?: string; 'content-type'?: string },
+    ): Promise<void>;
+    delete(key: string): Promise<void>;
+    get(key: string): Promise<ArrayBuffer>;
+  }
+}
+
 export interface ApiBucket {
   name: string;
   edge_access: string;
@@ -56,13 +69,23 @@ export interface ApiUpdateObjectResponse {
 
 export interface Bucket {
   name: string;
-  edge_access?: string;
+  edge_access: string;
   state?: 'executed' | 'pending';
-  getObjects?: () => Promise<BucketObject[] | null>;
-  getObjectByKey?: (objectKey: string) => Promise<BucketObject | null>;
-  createObject?: (objectKey: string, file: string) => Promise<BucketObject | null>;
-  updateObject?: (objectKey: string, file: string) => Promise<BucketObject | null>;
-  deleteObject?: (objectKey: string) => Promise<DeletedBucketObject | null>;
+  getObjects: (bucketName: string) => Promise<BucketObject[] | null>;
+  getObjectByKey: (bucketName: string, objectKey: string) => Promise<BucketObject | null>;
+  createObject: (
+    bucketName: string,
+    objectKey: string,
+    file: string,
+    options?: { content_type?: string },
+  ) => Promise<BucketObject | null>;
+  updateObject: (
+    bucketName: string,
+    objectKey: string,
+    file: string,
+    options?: { content_type?: string },
+  ) => Promise<BucketObject | null>;
+  deleteObject: (bucketName: string, objectKey: string) => Promise<DeletedBucketObject | null>;
 }
 
 export interface BucketObject {
@@ -88,7 +111,7 @@ export interface StorageClient {
   createBucket: (name: string, edge_access: string) => Promise<Bucket | null>;
   updateBucket: (name: string, edge_access: string) => Promise<Bucket | null>;
   deleteBucket: (name: string) => Promise<DeletedBucket | null>;
-  getBucketByName: (name: string) => Promise<Bucket | null>;
+  getBucket: (name: string) => Promise<Bucket | null>;
 }
 
 export type BucketCollectionOptions = {

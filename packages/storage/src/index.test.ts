@@ -4,7 +4,7 @@ import {
   createObject,
   deleteBucket,
   deleteObject,
-  getBucketByName,
+  getBucket,
   getBuckets,
   getObjectByKey,
   getObjects,
@@ -36,7 +36,7 @@ describe('Storage Module', () => {
       expect(client).toHaveProperty('createBucket');
       expect(client).toHaveProperty('updateBucket');
       expect(client).toHaveProperty('deleteBucket');
-      expect(client).toHaveProperty('getBucketByName');
+      expect(client).toHaveProperty('getBucket');
     });
 
     it('should create a client with custom configuration', () => {
@@ -45,7 +45,7 @@ describe('Storage Module', () => {
       expect(client).toHaveProperty('createBucket');
       expect(client).toHaveProperty('updateBucket');
       expect(client).toHaveProperty('deleteBucket');
-      expect(client).toHaveProperty('getBucketByName');
+      expect(client).toHaveProperty('getBucket');
     });
   });
 
@@ -104,12 +104,12 @@ describe('Storage Module', () => {
     });
   });
 
-  describe('getBucketByName', () => {
+  describe('getBucket', () => {
     it('should successfully get a bucket by name', async () => {
       const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'public' }] };
       (services.getBuckets as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getBucketByName('test-bucket', mockDebug);
+      const result = await getBucket('test-bucket', mockDebug);
       expect(result).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'public' }));
       expect(services.getBuckets).toHaveBeenCalledWith(mockToken, { page_size: 100000 }, mockDebug);
     });
@@ -118,7 +118,7 @@ describe('Storage Module', () => {
       const mockResponse = { results: [] };
       (services.getBuckets as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getBucketByName('non-existent-bucket', mockDebug);
+      const result = await getBucket('non-existent-bucket', mockDebug);
       expect(result).toBeNull();
     });
   });
@@ -289,11 +289,11 @@ describe('Storage Module', () => {
       expect(services.deleteBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', false);
     });
 
-    it('should call getBucketByName method', async () => {
+    it('should call getBucket method', async () => {
       const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'public' }] };
       (services.getBuckets as jest.Mock).mockResolvedValue(mockResponse);
 
-      await client.getBucketByName('test-bucket');
+      await client.getBucket('test-bucket');
       expect(services.getBuckets).toHaveBeenCalledWith('custom-token', { page_size: 100000 }, false);
     });
   });
