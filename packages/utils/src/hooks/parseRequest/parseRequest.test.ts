@@ -1,19 +1,42 @@
-import { FetchEvent } from 'azion/types';
+import { FetchEvent, Metadata } from 'azion/types';
 import parseRequest from './parseRequest';
 
 describe('parseRequest', () => {
   let mockFetchEvent: FetchEvent;
+  let mockMetadata: Metadata;
 
   beforeEach(() => {
+    mockMetadata = {
+      geoip_asn: '12345',
+      geoip_city: 'Sao Paulo',
+      geoip_city_continent_code: 'SA',
+      geoip_city_country_code: 'BR',
+      geoip_city_country_name: 'Brazil',
+      geoip_continent_code: 'SA',
+      geoip_country_code: 'BR',
+      geoip_country_name: 'Brazil',
+      geoip_region: 'SP',
+      geoip_region_name: 'Sao Paulo',
+      remote_addr: '192.168.1.1',
+      remote_port: '12345',
+      remote_user: '',
+      server_protocol: 'HTTP/1.1',
+      ssl_cipher: 'TLS_AES_256_GCM_SHA384',
+      ssl_protocol: 'TLSv1.3',
+    };
+
     mockFetchEvent = {
-      request: new Request('https://example.com/path?query=value', {
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Mozilla/5.0',
-          'X-Forwarded-For': '192.168.1.1',
-          Cookie: 'session=123; user=john',
-        },
-      }),
+      request: Object.assign(
+        new Request('https://example.com/path?query=value', {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'Mozilla/5.0',
+            'X-Forwarded-For': '192.168.1.1',
+            Cookie: 'session=123; user=john',
+          },
+        }),
+        { metadata: mockMetadata },
+      ),
     } as FetchEvent;
   });
 
@@ -36,15 +59,19 @@ describe('parseRequest', () => {
         ip: '192.168.1.1',
         userAgent: 'Mozilla/5.0',
       },
+      metadata: mockMetadata,
     });
   });
 
   it('should handle POST requests with body', async () => {
-    mockFetchEvent.request = new Request('https://example.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: 'value' }),
-    });
+    mockFetchEvent.request = Object.assign(
+      new Request('https://example.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'value' }),
+      }),
+      { metadata: mockMetadata },
+    );
 
     const result = await parseRequest(mockFetchEvent);
 
@@ -54,7 +81,7 @@ describe('parseRequest', () => {
   });
 
   it('should handle requests without cookies', async () => {
-    mockFetchEvent.request = new Request('https://example.com');
+    mockFetchEvent.request = Object.assign(new Request('https://example.com'), { metadata: mockMetadata });
 
     const result = await parseRequest(mockFetchEvent);
 
@@ -62,9 +89,12 @@ describe('parseRequest', () => {
   });
 
   it('should handle requests with authorization header', async () => {
-    mockFetchEvent.request = new Request('https://example.com', {
-      headers: { Authorization: 'Bearer token' },
-    });
+    mockFetchEvent.request = Object.assign(
+      new Request('https://example.com', {
+        headers: { Authorization: 'Bearer token' },
+      }),
+      { metadata: mockMetadata },
+    );
 
     const result = await parseRequest(mockFetchEvent);
 
@@ -72,7 +102,7 @@ describe('parseRequest', () => {
   });
 
   it('should handle requests without optional headers', async () => {
-    mockFetchEvent.request = new Request('https://example.com');
+    mockFetchEvent.request = Object.assign(new Request('https://example.com'), { metadata: mockMetadata });
 
     const result = await parseRequest(mockFetchEvent);
 
@@ -89,10 +119,13 @@ describe('parseRequest', () => {
   });
 
   it('should handle error when reading body', async () => {
-    mockFetchEvent.request = new Request('https://example.com', {
-      method: 'POST',
-      body: 'test',
-    });
+    mockFetchEvent.request = Object.assign(
+      new Request('https://example.com', {
+        method: 'POST',
+        body: 'test',
+      }),
+      { metadata: mockMetadata },
+    );
 
     // Mock the clone method to throw an error
     mockFetchEvent.request.clone = jest.fn().mockImplementation(() => {
@@ -102,5 +135,34 @@ describe('parseRequest', () => {
     const result = await parseRequest(mockFetchEvent);
 
     expect(result.body).toBe('Unable to read body');
+  });
+
+  it('should include metadata in the parsed request', async () => {
+    const result = await parseRequest(mockFetchEvent);
+
+    expect(result.metadata).toEqual(mockMetadata);
+  });
+
+  it('should correctly parse geoip information from metadata', async () => {
+    const result = await parseRequest(mockFetchEvent);
+
+    expect(result.metadata.geoip_city).toBe('Sao Paulo');
+    expect(result.metadata.geoip_country_name).toBe('Brazil');
+    expect(result.metadata.geoip_continent_code).toBe('SA');
+  });
+
+  it('should correctly parse connection information from metadata', async () => {
+    const result = await parseRequest(mockFetchEvent);
+
+    expect(result.metadata.remote_addr).toBe('192.168.1.1');
+    expect(result.metadata.remote_port).toBe('12345');
+    expect(result.metadata.server_protocol).toBe('HTTP/1.1');
+  });
+
+  it('should correctly parse SSL information from metadata', async () => {
+    const result = await parseRequest(mockFetchEvent);
+
+    expect(result.metadata.ssl_cipher).toBe('TLS_AES_256_GCM_SHA384');
+    expect(result.metadata.ssl_protocol).toBe('TLSv1.3');
   });
 });

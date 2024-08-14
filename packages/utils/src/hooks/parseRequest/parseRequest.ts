@@ -1,5 +1,5 @@
 import { FetchEvent } from 'azion/types';
-import { ParsedRequest } from '../types';
+import { ParsedRequest, ParseRequestFunction } from '../types';
 
 /**
  * @function
@@ -13,6 +13,14 @@ import { ParsedRequest } from '../types';
  * // Input: parseRequest(event);
  * // Output: {
  * //   timestamp: "2024-08-14T12:34:56.789Z",
+ * //   metadata: {
+ * //     geoip_asn: "12345",
+ * //     geoip_city: "Sao Paulo",
+ * //     geoip_city_continent_code: "SA",
+ * //     geoip_city_country_code: "BR",
+ * //     geoip_city_country_name: "Brazil",
+ * //     // ... other metadata fields
+ * //   },
  * //   method: "GET",
  * //   url: {
  * //     full: "https://example.com/",
@@ -41,7 +49,7 @@ import { ParsedRequest } from '../types';
  * //   authorization: "Not Present"
  * // }
  */
-const parseRequest = async (event: FetchEvent): Promise<ParsedRequest> => {
+const parseRequest: ParseRequestFunction = async (event: FetchEvent): Promise<ParsedRequest> => {
   const { request } = event;
   const headers = new Headers(request.headers);
   const url = new URL(request.url);
@@ -66,6 +74,7 @@ const parseRequest = async (event: FetchEvent): Promise<ParsedRequest> => {
 
   const requestData = {
     timestamp: new Date().toISOString(),
+    metadata: request.metadata,
     method: request.method,
     url: {
       full: request.url,

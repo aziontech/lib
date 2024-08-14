@@ -1,3 +1,5 @@
+import { Metadata } from 'azion/types';
+
 /**
  * Represents the request URL for the SSG or SPA.
  */
@@ -21,6 +23,13 @@ export type MountSSGFunction = (requestURL: RequestURL) => Promise<Response>;
  * @returns A promise that resolves to the response from the SPA.
  */
 export type MountSPAFunction = (requestURL: RequestURL) => Promise<Response>;
+
+/**
+ * Function that parses and logs the details of an incoming request.
+ * @param event - The incoming FetchEvent object.
+ * @returns A promise that resolves to the ParsedRequest object.
+ */
+export type ParseRequestFunction = (event: FetchEvent) => Promise<ParsedRequest>;
 
 /**
  * Function that parses and logs the details of an incoming request.
@@ -55,4 +64,5 @@ export type ParsedRequest = {
   priority: string;
   host: string;
   authorization: string;
+  metadata: Metadata;
 };
