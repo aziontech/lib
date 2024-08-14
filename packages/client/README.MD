@@ -138,7 +138,7 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Database, Query } from 'azion/sql/types';
+import { AzionClient, Database, QueryResponse } from 'azion/sql/types';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -152,7 +152,7 @@ if (allDatabases) {
   console.log(`Retrieved ${allDatabases.length} databases`);
 }
 
-const queryResult: Query | null = await client.sql.query('SELECT * FROM users');
+const queryResult: QueryResponse | null = await client.sql.query('SELECT * FROM users');
 if (queryResult) {
   console.log(`Query executed. Rows returned: ${queryResult.rows.length}`);
 }
