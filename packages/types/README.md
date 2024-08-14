@@ -72,7 +72,7 @@ import { FetchEvent } from 'azion/types';
 
 addEventListener('fetch', (event: FetchEvent) => {
   const { request } = event;
-  const metadata = request.metadata;
+  const metadata: Metadata = request.metadata;
 
   console.log('Request URL:', request.url);
   console.log('Client IP:', metadata.remote_addr);
