@@ -68,7 +68,7 @@ The `FetchEvent` interface extends the standard `Event` interface to include req
 **TypeScript Example:**
 
 ```typescript
-import { FetchEvent } from 'azion/types';
+import { FetchEvent, Metadata } from 'azion/types';
 
 addEventListener('fetch', (event: FetchEvent) => {
   const { request } = event;
