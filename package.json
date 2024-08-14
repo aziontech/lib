@@ -114,6 +114,11 @@
       "require": "./packages/wasm-image-processor/dist/index.js",
       "import": "./packages/wasm-image-processor/dist/index.mjs",
       "types": "./packages/wasm-image-processor/dist/index.d.ts"
+    },
+    "./utils": {
+      "require": "./packages/utils/dist/index.js",
+      "import": "./packages/utils/dist/index.mjs",
+      "types": "./packages/utils/dist/index.d.ts"
     }
   },
   "typesVersions": {
@@ -141,6 +146,9 @@
       ],
       "wasm-image-processor": [
         "./packages/wasm-image-processor/dist/index.d.ts"
+      ],
+      "wasm-utils-processor": [
+        "./packages/utilsr/dist/index.d.ts"
       ]
     }
   }

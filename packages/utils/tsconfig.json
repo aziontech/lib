@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "target": "ES2022",
+    "target": "es2022",
     "module": "ESNext",
+    "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "azion/types": ["../types/index.ts"]
+    }
   }
 }
