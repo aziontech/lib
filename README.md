@@ -299,10 +299,10 @@ The Utils package provides a set of utility functions that simplify common tasks
 #### Available Functions
 
 - **`mountSPA(requestURL: RequestURL): Promise<Response>`**  
-  Handles routing for Single Page Applications (SPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
+  Handles routing for Single-page Applications (SPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
 
 - **`mountMPA(requestURL: RequestURL): Promise<Response>`**  
-  Handles routing for Multiple Page Applications (MPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
+  Handles routing for Multi-page Applications (MPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
 
 - **`parseRequest(event: FetchEvent): Promise<ParsedRequest>`**  
   Parses and logs the details of an incoming request, extracting key information such as headers, cookies, body, and client data. It provides a structured object with these details for further processing or logging.
