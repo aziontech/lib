@@ -380,7 +380,7 @@ Read more in the [Types README](./packages/types/README.md).
 
 ## Config
 
-The Config library provides methods to configure and validate options for the Azion platform.
+The Config library provides methods to configure and validate options for the Azion.config file.
 
 ### Examples
 
