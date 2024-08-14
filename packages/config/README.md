@@ -1,6 +1,6 @@
 # Azion Edge Application Configuration
 
-This module provides a function to configure and validate options for the Azion Edge Application. It supports various configurations, including origin settings, cache settings, rules, and network lists.
+This module provides a function to configure and validate options for the Azion Edge Application. It supports various configurations, including domain settings, origin settings, cache settings, rules, network lists, and purge operations.
 
 ## Table of Contents
 
@@ -36,11 +36,29 @@ Here's an example of how to configure the Azion Edge Application:
 import { AzionConfig } from 'azion';
 
 const config = AzionConfig({
+  domain: {
+    name: 'example.com',
+    cnameAccessOnly: false,
+    cnames: ['www.example.com', 'cdn.example.com'],
+    edgeApplicationId: 12345,
+    edgeFirewallId: 67890,
+    digitalCertificateId: null,
+    mtls: {
+      verification: 'enforce',
+      trustedCaCertificateId: 98765,
+    },
+  },
   origin: [
     {
       name: 'My Origin',
       type: 'single_origin',
-      addresses: ['example.com'],
+      addresses: [
+        {
+          address: 'origin.example.com',
+          weight: 100,
+        },
+      ],
+      protocolPolicy: 'https',
     },
   ],
   cache: [
@@ -68,6 +86,14 @@ const config = AzionConfig({
       },
     ],
   },
+  purge: [
+    {
+      type: 'url',
+      urls: ['https://example.com/path/to/purge'],
+      method: 'delete',
+      layer: 'edge_caching',
+    },
+  ],
 });
 ```
 
@@ -80,14 +106,34 @@ Configures and validates the options for the Azion Edge Application.
 **Parameters:**
 
 - `config: AzionConfig` - The configuration object for the Azion Edge Application.
-  - `origin: Array<OriginConfig>` - Array of origin configurations.
+  - `domain?: DomainConfig` - Configuration for the domain.
+    - `name: string` - The domain name.
+    - `cnameAccessOnly?: boolean` - Whether to restrict access only to CNAMEs.
+    - `cnames?: string[]` - List of CNAMEs for the domain.
+    - `edgeApplicationId?: number` - ID of the edge application.
+    - `edgeFirewallId?: number` - ID of the edge firewall.
+    - `digitalCertificateId?: string | number | null` - ID of the digital certificate.
+    - `mtls?: MTLSConfig` - Configuration for mTLS.
+      - `verification: 'enforce' | 'permissive'` - mTLS verification mode.
+      - `trustedCaCertificateId: number` - ID of the trusted CA certificate.
+      - `crlList?: number[]` - List of Certificate Revocation Lists (CRLs).
+  - `origin?: OriginConfig[]` - Array of origin configurations.
+    - `id?: number` - ID of the origin.
+    - `key?: string` - Key for the origin.
     - `name: string` - Name of the origin.
     - `type: string` - Type of the origin (e.g., 'single_origin', 'load_balancer').
-    - `bucket?: string` - Bucket name for storage origins.
-    - `prefix?: string` - Prefix for storage origins.
-    - `addresses?: string[]` - Array of addresses for the origin.
+    - `bucket?: string | null` - Bucket name for storage origins.
+    - `prefix?: string | null` - Prefix for storage origins.
+    - `addresses?: (string | { address: string; weight?: number })[]` - Array of addresses for the origin.
     - `hostHeader?: string` - Custom host header.
-  - `cache: Array<CacheConfig>` - Array of cache configurations.
+    - `protocolPolicy?: 'http' | 'https' | 'preserve'` - Protocol policy for the origin.
+    - `redirection?: boolean` - Whether to enable redirection.
+    - `method?: 'ip_hash' | 'least_connections' | 'round_robin'` - Load balancing method.
+    - `path?: string` - Path for the origin.
+    - `connectionTimeout?: number` - Connection timeout in seconds.
+    - `timeoutBetweenBytes?: number` - Timeout between bytes in seconds.
+    - `hmac?: { region: string; accessKey: string; secretKey: string }` - HMAC configuration for the origin.
+  - `cache?: CacheConfig[]` - Array of cache configurations.
     - `name: string` - Name of the cache configuration.
     - `stale?: boolean` - Whether to allow stale content.
     - `queryStringSort?: boolean` - Whether to sort query string parameters.
@@ -105,24 +151,48 @@ Configures and validates the options for the Azion Edge Application.
       - `option: 'ignore' | 'varies' | 'whitelist' | 'blacklist'` - Cache by query string option.
       - `list?: string[]` - List of query string parameters to use for caching.
   - `rules?: RulesConfig` - Rules configuration.
-    - `request: Array<RequestRule>` - Array of request rules.
+    - `request?: RequestRule[]` - Array of request rules.
       - `name: string` - Name of the request rule.
       - `description?: string` - Description of the request rule.
       - `active?: boolean` - Whether the rule is active.
       - `match: string` - Match condition for the rule.
       - `variable?: string` - Variable to match against.
       - `behavior?: RequestBehavior` - Behavior to apply when the rule matches.
-    - `response: Array<ResponseRule>` - Array of response rules.
+        - `setOrigin?: { name: string; type: string }` - Set origin behavior.
+        - `rewrite?: string` - URL rewrite behavior.
+        - `setHeaders?: string[]` - Headers to set.
+        - `bypassCache?: boolean | null` - Whether to bypass cache.
+        - `httpToHttps?: boolean | null` - Redirect HTTP to HTTPS.
+        - `redirectTo301?: string | null` - Redirect with 301 status.
+        - `redirectTo302?: string | null` - Redirect with 302 status.
+        - `forwardCookies?: boolean | null` - Whether to forward cookies.
+        - `setCookie?: string | null` - Set cookie behavior.
+        - `deliver?: boolean | null` - Whether to deliver the response.
+        - `capture?: { match: string; captured: string; subject: string }` - Capture behavior.
+        - `runFunction?: { path: string; name?: string | null }` - Run a custom function.
+        - `setCache?: string | { name: string; browser_cache_settings_maximum_ttl?: number | null; cdn_cache_settings_maximum_ttl?: number | null }` - Set cache behavior.
+    - `response?: ResponseRule[]` - Array of response rules.
       - `name: string` - Name of the response rule.
       - `description?: string` - Description of the response rule.
       - `active?: boolean` - Whether the rule is active.
       - `match: string` - Match condition for the rule.
       - `variable?: string` - Variable to match against.
       - `behavior?: ResponseBehavior` - Behavior to apply when the rule matches.
-  - `networkList?: Array<NetworkListConfig>` - Array of network list configurations.
-    - `id: number` - ID of the network list.
-    - `listType: string` - Type of the network list.
-    - `listContent: string[]` - Content of the network list.
+        - `setCookie?: string | null` - Set cookie behavior.
+        - `setHeaders?: string[]` - Headers to set.
+        - `deliver?: boolean | null` - Whether to deliver the response.
+        - `capture?: { match: string; captured: string; subject: string }` - Capture behavior.
+        - `enableGZIP?: boolean | null` - Enable GZIP compression.
+        - `filterCookie?: string | null` - Filter cookies.
+        - `filterHeader?: string | null` - Filter headers.
+        - `runFunction?: { path: string; name?: string | null }` - Run a custom function.
+        - `redirectTo301?: string | null` - Redirect with 301 status.
+        - `redirectTo302?: string | null` - Redirect with 302 status.
+  - `purge?: PurgeConfig[]` - Array of purge configurations.
+    - `type: 'url' | 'cachekey' | 'wildcard'` - Type of purge operation.
+    - `urls: string[]` - URLs to purge.
+    - `method?: 'delete'` - HTTP method to use for purging.
+    - `layer?: 'edge_caching' | 'l2_caching'` - Caching layer to target.
 
 **Returns:**
 
@@ -136,13 +206,45 @@ The type definition for the AzionConfig.
 
 ```typescript
 export type AzionConfig = {
+  domain?: {
+    name: string;
+    cnameAccessOnly?: boolean;
+    cnames?: string[];
+    edgeApplicationId?: number;
+    edgeFirewallId?: number;
+    digitalCertificateId?: string | number | null;
+    mtls?: {
+      verification: 'enforce' | 'permissive';
+      trustedCaCertificateId: number;
+      crlList?: number[];
+    };
+  };
+
   origin?: {
+    id?: number;
+    key?: string;
     name: string;
     type: string;
     bucket?: string | null;
     prefix?: string | null;
-    addresses?: string[];
+    addresses?:
+      | string[]
+      | {
+          address: string;
+          weight?: number;
+        }[];
     hostHeader?: string;
+    protocolPolicy?: 'http' | 'https' | 'preserve';
+    redirection?: boolean;
+    method?: 'ip_hash' | 'least_connections' | 'round_robin';
+    path?: string;
+    connectionTimeout?: number;
+    timeoutBetweenBytes?: number;
+    hmac?: {
+      region: string;
+      accessKey: string;
+      secretKey: string;
+    };
   }[];
 
   cache?: {
@@ -236,10 +338,11 @@ export type AzionConfig = {
     }[];
   };
 
-  networkList?: {
-    id: number;
-    listType: string;
-    listContent: string[];
+  purge?: {
+    type: 'url' | 'cachekey' | 'wildcard';
+    urls: string[];
+    method?: 'delete';
+    layer?: 'edge_caching' | 'l2_caching';
   }[];
 };
 ```

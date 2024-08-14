@@ -131,12 +131,6 @@ export type AzionConfig = {
     }[];
   };
 
-  networkList?: {
-    id: number;
-    listType: string;
-    listContent: string[];
-  }[];
-
   purge?: {
     type: 'url' | 'cachekey' | 'wildcard';
     urls: string[];
