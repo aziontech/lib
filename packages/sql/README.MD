@@ -16,7 +16,8 @@ Azion Edge SQL Client provides a simple interface to interact with the Azion Edg
     - [Delete Database](#delete-database)
     - [Get Database by ID](#get-database-by-id)
     - [Get Databases](#get-databases)
-    - [Query Database](#query-database)
+    - [Use Query](#use-query)
+    - [Use Execute](#use-execute)
 - [API Reference](#api-reference)
   - [`createDatabase`](#createdatabase)
   - [`deleteDatabase`](#deletedatabase)
@@ -138,16 +139,16 @@ if (result) {
 }
 ```
 
-#### Get Database by ID
+#### Get Database
 
 **JavaScript:**
 
 ```javascript
-import { getDatabaseById } from 'azion/sql';
+import { getDatabase } from 'azion/sql';
 
-const database = await getDatabaseById(123, true);
+const database = await getDatabase('my-db', true);
 if (database) {
-  console.log(`Retrieved database: ${database.name}`);
+  console.log(`Retrieved database: ${database.id}`);
 } else {
   console.error('Database not found');
 }
@@ -156,12 +157,12 @@ if (database) {
 **TypeScript:**
 
 ```typescript
-import { getDatabaseById } from 'azion/sql';
+import { getDatabase } from 'azion/sql';
 import { Database } from 'azion/sql/types';
 
-const database: Database | null = await getDatabaseById(123, true);
+const database: Database | null = await getDatabase('my-db', true);
 if (database) {
-  console.log(`Retrieved database: ${database.name}`);
+  console.log(`Retrieved database: ${database.id}`);
 } else {
   console.error('Database not found');
 }
@@ -196,14 +197,14 @@ if (databases) {
 }
 ```
 
-#### Query Database
+#### Use Query
 
 **JavaScript:**
 
 ```javascript
-import { queryDatabase } from 'azion/sql';
+import { useQuery } from 'azion/sql';
 
-const result = await queryDatabase(123, ['SELECT * FROM users'], true);
+const result = await useQuery('my-db', ['SELECT * FROM users']);
 if (result) {
   console.log(`Query executed. Rows returned: ${result.rows.length}`);
 } else {
@@ -214,15 +215,35 @@ if (result) {
 **TypeScript:**
 
 ```typescript
-import { queryDatabase } from 'azion/sql';
-import { Query } from 'azion/sql/types';
+import { useQuery } from 'azion/sql';
+import { QueryResponse } from 'azion/sql/types';
 
-const result: Query | null = await queryDatabase(123, ['SELECT * FROM users'], true);
+const result: QueryResponse | null = await useQuery('my-db', ['SELECT * FROM users']);
 if (result) {
   console.log(`Query executed. Rows returned: ${result.rows.length}`);
 } else {
   console.error('Query execution failed');
 }
+```
+
+#### Use Execute
+
+**JavaScript:**
+
+```javascript
+import { useExecute } from 'azion/sql';
+
+await useExecute('my-db', [`INSERT INTO users (id, name) VALUES (1, 'John Doe')`]);
+console.log(`Executed`);
+```
+
+**TypeScript:**
+
+```typescript
+import { useExecute } from 'azion/sql';
+
+await useExecute('my-db', [`INSERT INTO users (id, name) VALUES (1, 'John Doe')`]);
+console.log(`Executed`);
 ```
 
 ### Using Client
@@ -254,7 +275,7 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion/sql';
-import { SQLClient, Database, Query } from 'azion/sql/types';
+import { SQLClient, Database, QueryResponse } from 'azion/sql/types';
 
 const client: SQLClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -268,7 +289,7 @@ if (allDatabases) {
   console.log(`Retrieved ${allDatabases.length} databases`);
 }
 
-const queryResult: Query | null = await newDatabase.query(['SELECT * FROM users']);
+const queryResult: QueryResponse | null = await newDatabase.query(['SELECT * FROM users']);
 if (queryResult) {
   console.log(`Query executed. Rows returned: ${queryResult.rows.length}`);
 }
@@ -302,13 +323,13 @@ Deletes a database by its ID.
 
 - `Promise<DeletedDatabase | null>` - Object confirming deletion or null if deletion failed.
 
-### `getDatabaseById`
+### `getDatabase`
 
-Retrieves a database by its ID.
+Retrieves a database by its Name.
 
 **Parameters:**
 
-- `id: number` - ID of the database to retrieve.
+- `name: string` - Name of the database to retrieve.
 - `debug?: boolean` - Enable debug mode for detailed logging.
 
 **Returns:**
@@ -332,19 +353,19 @@ Retrieves a list of databases with optional filtering and pagination.
 
 - `Promise<Database[] | null>` - Array of database objects or null if retrieval failed.
 
-### `queryDatabase`
+### `useQuery`
 
 Executes a query on a specific database.
 
 **Parameters:**
 
-- `id: number` - ID of the database to query.
+- `name: string` - Name of the database to query.
 - `statements: string[]` - Array of SQL statements to execute.
 - `debug?: boolean` - Enable debug mode for detailed logging.
 
 **Returns:**
 
-- `Promise<Query | null>` - Query result object or null if execution failed.
+- `Promise<QueryResponse | null>` - Query result object or null if execution failed.
 
 ### `createClient`
 
@@ -387,8 +408,8 @@ The database object.
 - `created_at: string`
 - `updated_at: string`
 - `deleted_at: string | null`
-- `query: (statements: string[]) => Promise<Query | null>`
-- `execute: (statements: string[]) => Promise<Query | null>`
+- `query: (statements: string[]) => Promise<QueryResponse | null>`
+- `execute: (statements: string[]) => Promise<QueryResponse | null>`
 
 ### `DeletedDatabase`
 

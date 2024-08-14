@@ -2,15 +2,15 @@ import {
   createClient,
   createDatabase,
   deleteDatabase,
-  getDatabaseById,
+  getDatabase,
   getDatabases,
   useExecute,
   useQuery,
 } from '../src/index';
-import * as services from '../src/services';
-import { SQLClient } from '../src/types';
+import * as services from '../src/services/api/index';
+import { SQLClient } from './types';
 
-jest.mock('../src/services');
+jest.mock('../src/services/api/index');
 
 describe('SQL Module', () => {
   const mockToken = 'mock-token';
@@ -27,7 +27,7 @@ describe('SQL Module', () => {
       const client = createClient();
       expect(client).toHaveProperty('createDatabase');
       expect(client).toHaveProperty('deleteDatabase');
-      expect(client).toHaveProperty('getDatabaseById');
+      expect(client).toHaveProperty('getDatabase');
       expect(client).toHaveProperty('getDatabases');
     });
 
@@ -35,7 +35,7 @@ describe('SQL Module', () => {
       const client = createClient({ token: 'custom-token', debug: false });
       expect(client).toHaveProperty('createDatabase');
       expect(client).toHaveProperty('deleteDatabase');
-      expect(client).toHaveProperty('getDatabaseById');
+      expect(client).toHaveProperty('getDatabase');
       expect(client).toHaveProperty('getDatabases');
     });
   });
@@ -76,20 +76,20 @@ describe('SQL Module', () => {
     });
   });
 
-  describe('getDatabaseById', () => {
+  describe('getDatabase', () => {
     it('should successfully retrieve a database', async () => {
-      const mockResponse = { data: { id: 1, name: 'test-db' } };
-      (services.getEdgeDatabaseById as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = { results: [{ id: 1, name: 'test-db' }] };
+      (services.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getDatabaseById(1, mockDebug);
+      const result = await getDatabase('test-db', mockDebug);
       expect(result).toEqual(expect.objectContaining({ id: 1, name: 'test-db' }));
-      expect(services.getEdgeDatabaseById).toHaveBeenCalledWith(mockToken, 1, mockDebug);
+      expect(services.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { search: 'test-db' }, mockDebug);
     });
 
     it('should return null if database not found', async () => {
-      (services.getEdgeDatabaseById as jest.Mock).mockResolvedValue(null);
+      (services.getEdgeDatabases as jest.Mock).mockResolvedValue(null);
 
-      const result = await getDatabaseById(1, mockDebug);
+      const result = await getDatabase('test-db', mockDebug);
       expect(result).toBeNull();
     });
   });
@@ -120,25 +120,51 @@ describe('SQL Module', () => {
 
   describe('useExecute and useQuery', () => {
     it('should successfully execute a query', async () => {
+      const mockResponseDatabases = {
+        results: [
+          { id: 1, name: 'test-db' },
+          { id: 2, name: 'test-db-2' },
+        ],
+      };
+      (services.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
       const mockResponse = {
         state: 'success',
         data: [{ results: { columns: ['id', 'name'], rows: [[1, 'test']] } }],
       };
       (services.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await useExecute(1, ['SELECT * FROM test'], mockDebug);
-      expect(result).toEqual({
+      const result = await useQuery('test-db', ['SELECT * FROM test'], undefined, mockDebug);
+      expect(result).toEqual(
+        expect.objectContaining({
+          state: 'success',
+          data: [{ columns: ['id', 'name'], rows: [[1, 'test']], info: undefined, statement: 'SELECT' }],
+        }),
+      );
+      expect(services.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['SELECT * FROM test'], mockDebug);
+    });
+
+    it('should successfully execution by useExecute', async () => {
+      const mockResponseDatabases = {
+        results: [
+          { id: 1, name: 'test-db' },
+          { id: 2, name: 'test-db-2' },
+        ],
+      };
+      (services.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      const mockResponse = {
         state: 'success',
-        columns: ['id', 'name'],
-        rows: [[1, 'test']],
-      });
+        data: [{ results: { columns: ['id', 'name'], rows: [[1, 'test']] } }],
+      };
+      (services.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
+
+      expect(await useExecute('test-db', ['SELECT * FROM test'], undefined, mockDebug)).toBeNull();
       expect(services.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['SELECT * FROM test'], mockDebug);
     });
 
     it('should return null if query execution fails', async () => {
       (services.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(null);
 
-      const result = await useQuery(1, ['SELECT * FROM test'], mockDebug);
+      const result = await useQuery('test-db', ['SELECT * FROM test'], undefined, mockDebug);
       expect(result).toBeNull();
     });
   });
@@ -166,12 +192,13 @@ describe('SQL Module', () => {
       expect(services.deleteEdgeDatabase).toHaveBeenCalledWith('custom-token', 1, false);
     });
 
-    it('should call getDatabaseById method', async () => {
-      const mockResponse = { data: { id: 1, name: 'test-db' } };
-      (services.getEdgeDatabaseById as jest.Mock).mockResolvedValue(mockResponse);
-
-      await client.getDatabaseById(1);
-      expect(services.getEdgeDatabaseById).toHaveBeenCalledWith('custom-token', 1, false);
+    it('should call getDatabase method', async () => {
+      const mockResponse = { results: [{ id: 1, name: 'test-db' }] };
+      (services.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponse);
+      if (client.getDatabase) {
+        await client.getDatabase('test-db');
+      }
+      expect(services.getEdgeDatabases).toHaveBeenCalledWith('custom-token', { search: 'test-db' }, false);
     });
 
     it('should call getDatabases method', async () => {

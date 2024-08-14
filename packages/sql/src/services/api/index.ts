@@ -1,9 +1,9 @@
-import {
+import { DatabaseCollectionOptions } from '../../types';
+import type {
   ApiCreateDatabaseResponse,
   ApiDeleteDatabaseResponse,
   ApiListDatabasesResponse,
   ApiQueryExecutionResponse,
-  DatabaseCollectionOptions,
 } from './types';
 
 const BASE_URL = 'https://api.azion.com/v4/edge_sql/databases';
