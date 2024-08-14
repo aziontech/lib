@@ -1,8 +1,8 @@
-import { AssetPath, MountSSGFunction, RequestURL } from '../types';
+import { AssetPath, mountMPAFunction, RequestURL } from '../types';
 
 /**
  * @function
- * @description The `mountSSG` function handles requests for Static Site Generation (SSG)
+ * @description The `mountMPA` function handles requests for Static Site Generation (SSG)
  * at the edge, directly within a serverless worker.
  * It processes the incoming request URL, constructs the appropriate asset path,
  * and fetches the corresponding response from the SSG.
@@ -10,18 +10,18 @@ import { AssetPath, MountSSGFunction, RequestURL } from '../types';
  * @returns {Promise<Response>} A promise that resolves to the response from the SSG.
  * @example
  * // Handle a request for a homepage
- * // Input: mountSSG('https://example.com/');
+ * // Input: mountMPA('https://example.com/');
  * // Output: fetch('file:///index.html');
  * @example
  * // Handle a request for an asset (CSS file)
- * // Input: mountSSG('https://example.com/styles/main.css');
+ * // Input: mountMPA('https://example.com/styles/main.css');
  * // Output: fetch('file:///styles/main.css');
  * @example
  * // Handle a request for a specific route
- * // Input: mountSSG('https://example.com/about');
+ * // Input: mountMPA('https://example.com/about');
  * // Output: fetch('file:///about/index.html');
  */
-const mountSSG: MountSSGFunction = (requestURL: RequestURL): Promise<Response> => {
+const mountMPA: mountMPAFunction = (requestURL: RequestURL): Promise<Response> => {
   const requestPath = new URL(requestURL).pathname;
   const cleanRequestPath = requestPath.endsWith('/') ? requestPath.slice(0, -1) : requestPath;
 
@@ -45,4 +45,4 @@ const mountSSG: MountSSGFunction = (requestURL: RequestURL): Promise<Response> =
   return fetch(assetPath);
 };
 
-export default mountSSG;
+export default mountMPA;

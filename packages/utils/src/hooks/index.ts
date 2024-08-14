@@ -1,5 +1,5 @@
+import mountMPA from './mountMPA/mountMPA';
 import mountSPA from './mountSPA/mountSPA';
-import mountSSG from './mountSSG/mountSSG';
 import parseRequest from './parseRequest/parseRequest';
 
-export { mountSPA, mountSSG, parseRequest };
+export { mountMPA, mountSPA, parseRequest };

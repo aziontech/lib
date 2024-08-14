@@ -15,7 +15,7 @@ export type AssetPath = URL;
  * @param requestURL - The original URL from the event request.
  * @returns A promise that resolves to the response from the SSG.
  */
-export type MountSSGFunction = (requestURL: RequestURL) => Promise<Response>;
+export type mountMPAFunction = (requestURL: RequestURL) => Promise<Response>;
 
 /**
  * Function that mounts the SPA for a specific request.

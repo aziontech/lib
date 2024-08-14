@@ -1,6 +1,6 @@
-import mountSSG from './mountSSG';
+import mountMPA from './mountMPA';
 
-describe('mountSSG', () => {
+describe('mountMPA', () => {
   let originalFetch: typeof global.fetch;
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('mountSSG', () => {
     const requestURL = 'http://example.com/assets/image.png';
     const expectedAssetPath = new URL('assets/image.png', 'file:///');
 
-    await mountSSG(requestURL);
+    await mountMPA(requestURL);
 
     expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
   });
@@ -25,7 +25,7 @@ describe('mountSSG', () => {
     const requestURL = 'http://example.com/';
     const expectedAssetPath = new URL('index.html', 'file:///');
 
-    await mountSSG(requestURL);
+    await mountMPA(requestURL);
 
     expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
   });
@@ -34,7 +34,7 @@ describe('mountSSG', () => {
     const requestURL = 'http://example.com/about';
     const expectedAssetPath = new URL('about/index.html', 'file:///');
 
-    await mountSSG(requestURL);
+    await mountMPA(requestURL);
 
     expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
   });
@@ -43,7 +43,7 @@ describe('mountSSG', () => {
     const requestURL = 'http://example.com/about/';
     const expectedAssetPath = new URL('about/index.html', 'file:///');
 
-    await mountSSG(requestURL);
+    await mountMPA(requestURL);
 
     expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
   });
@@ -53,7 +53,7 @@ describe('mountSSG', () => {
     (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
     const requestURL = 'http://example.com/';
-    const result = await mountSSG(requestURL);
+    const result = await mountMPA(requestURL);
 
     expect(result).toEqual(mockResponse);
   });
@@ -64,6 +64,6 @@ describe('mountSSG', () => {
 
     const requestURL = 'http://example.com/';
 
-    await expect(mountSSG(requestURL)).rejects.toThrow('Fetch failed');
+    await expect(mountMPA(requestURL)).rejects.toThrow('Fetch failed');
   });
 });

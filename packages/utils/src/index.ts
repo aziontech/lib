@@ -1,3 +1,3 @@
-import { mountSPA, mountSSG } from './hooks/index';
+import { mountMPA, mountSPA } from './hooks/index';
 
-export { mountSPA, mountSSG };
+export { mountMPA, mountSPA };
