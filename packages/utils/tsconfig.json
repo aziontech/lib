@@ -8,7 +8,7 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "azion/types": ["../types/index.ts"]
+      "azion/types": ["../types/src/index.ts"]
     }
   }
 }

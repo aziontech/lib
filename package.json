@@ -75,6 +75,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./types": {
+      "require": "./packages/types/dist/index.js",
+      "import": "./packages/types/dist/index.mjs",
+      "types": "./packages/types/dist/index.d.ts"
+    },
     "./config": {
       "require": "./packages/config/dist/index.js",
       "import": "./packages/config/dist/index.mjs",
@@ -126,6 +131,9 @@
       "client": [
         "./packages/client/dist/index.d.ts"
       ],
+      "types": [
+        "./packages/types/dist/index.d.ts"
+      ],
       "storage": [
         "./packages/storage/dist/index.d.ts"
       ],
@@ -147,8 +155,8 @@
       "wasm-image-processor": [
         "./packages/wasm-image-processor/dist/index.d.ts"
       ],
-      "wasm-utils-processor": [
-        "./packages/utilsr/dist/index.d.ts"
+      "utils": [
+        "./packages/utils/dist/index.d.ts"
       ]
     }
   }
