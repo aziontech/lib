@@ -301,9 +301,11 @@ The Config library provides methods to configure and validate options for the Az
 import { AzionConfig } from 'azion';
 
 const config = AzionConfig({
+  domain: {},
   origin: [],
   cache: [],
   rules: [],
+  purge: [],
 });
 ```
 
@@ -311,13 +313,15 @@ const config = AzionConfig({
 import { AzionConfig } from 'azion';
 
 const config = AzionConfig({
+  domain: {},
   origin: [],
   cache: [],
   rules: [],
+  purge: [],
 });
 ```
 
-Read more in the [CONFIG README](./packages/config/README.MD).
+Read more in the [CONFIG README](./packages/config/README.md).
 
 ## Contributing
 
