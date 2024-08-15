@@ -15,6 +15,8 @@ These libraries are designed to be versatile and can be used both within and out
 - [Utilities](#utilities)
   - [Cookies](#cookies)
   - [WASM Image Processor](#wasm-image-processor)
+  - [Utils](#utils)
+- [Types](#types)
 - [AzionConfig](#config)
 - [Contributing](#contributing)
 
@@ -289,9 +291,96 @@ console.log(imageResponse);
 
 Read more in the [WASM Image Processor README](./packages/wasm-image-processor/README.md).
 
+
+### Utils
+
+The Utils package provides a set of utility functions that simplify common tasks when working with Azion edge functions.
+
+#### Available Functions
+
+- **`mountSPA(requestURL: RequestURL): Promise<Response>`**  
+  Handles routing for Single-page Applications (SPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
+
+- **`mountMPA(requestURL: RequestURL): Promise<Response>`**  
+  Handles routing for Multi-page Applications (MPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
+
+- **`parseRequest(event: FetchEvent): Promise<ParsedRequest>`**  
+  Parses and logs the details of an incoming request, extracting key information such as headers, cookies, body, and client data. It provides a structured object with these details for further processing or logging.
+
+#### Examples
+
+
+**JavaScript:**
+
+```javascript
+import { mountSPA, mountMPA, parseRequest } from 'azion/utils';
+
+// Handle SPA routing
+const myApp1 = await mountSPA('https://example.com/');
+console.log(myApp1); 
+// Fetches: file:///index.html
+// Response object representing the content of index.html
+
+// Handle MPA routing
+const myApp2 = await mountMPA('https://example.com/about');
+console.log(myApp2); 
+// Fetches: file:///about/index.html
+// Response object representing the content of about/index.html
+
+// Parse a request
+const parsedRequest = await parseRequest(event);
+console.log(parsedRequest); 
+
+```
+
+**TypeScript:**
+
+```typescript
+import { mountSPA, mountMPA, parseRequest } from 'azion/utils';
+import { ParsedRequest } from 'azion/utils/types';
+
+// Handle SPA routing
+const myApp1: Response = await mountSPA('https://example.com/');
+console.log(myApp1);
+// Fetches: file:///index.html
+// Response object representing the content of index.html
+
+// Handle MPA routing
+const myApp2: Response = await mountMPA('https://example.com/about');
+console.log(myApp2);
+// Fetches: file:///about/index.html
+// Response object representing the content of about/index.html
+
+
+// Parse a request
+const parsedRequest: ParsedRequest = await parseRequest(event);
+console.log(parsedRequest);
+```
+
+Read more in the [Utils README](./packages/utils/README.md).
+
+## Types
+
+The Types package provides global TypeScript types that are used across Azion platform, ensuring consistency and reducing redundancy throughout the codebase. 
+
+⚠️ These types are specifically tailored for `Azion Runtime environments`. 
+
+#### Available Types
+
+- **`Metadata`**  
+  Represents metadata information for requests, including GeoIP data, remote address, server protocol, and TLS information.
+
+- **`FetchEvent`**  
+  Represents the FetchEvent interface, which includes the request object and methods to handle fetch events within the Azion Runtime.
+
+- **`FirewallEvent`**  
+  Represents the FirewallEvent interface, including methods to manage firewall events such as denying, dropping, or continuing a request.
+
+Read more in the [Types README](./packages/types/README.md).
+
 ## Config
 
-The Config library provides methods to configure and validate options for the Azion platform.
+The Config library provides methods to configure and validate options for the Azion.config file.
 
 ### Examples
 
@@ -321,7 +410,7 @@ const config = AzionConfig({
 });
 ```
 
-Read more in the [CONFIG README](./packages/config/README.md).
+Read more in the [Azion Config README](./packages/config/README.md).
 
 ## Contributing
 
