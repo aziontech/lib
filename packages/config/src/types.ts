@@ -1,11 +1,43 @@
 export type AzionConfig = {
+  domain?: {
+    name: string;
+    cnameAccessOnly?: boolean;
+    cnames?: string[];
+    edgeApplicationId?: number;
+    edgeFirewallId?: number;
+    digitalCertificateId?: string | number | null;
+    mtls?: {
+      verification: 'enforce' | 'permissive';
+      trustedCaCertificateId: number;
+      crlList?: number[];
+    };
+  };
+
   origin?: {
+    id?: number;
+    key?: string;
     name: string;
     type: string;
     bucket?: string | null;
     prefix?: string | null;
-    addresses?: string[];
+    addresses?:
+      | string[]
+      | {
+          address: string;
+          weight?: number;
+        }[];
     hostHeader?: string;
+    protocolPolicy?: 'http' | 'https' | 'preserve';
+    redirection?: boolean;
+    method?: 'ip_hash' | 'least_connections' | 'round_robin';
+    path?: string;
+    connectionTimeout?: number;
+    timeoutBetweenBytes?: number;
+    hmac?: {
+      region: string;
+      accessKey: string;
+      secretKey: string;
+    };
   }[];
 
   cache?: {
@@ -99,9 +131,10 @@ export type AzionConfig = {
     }[];
   };
 
-  networkList?: {
-    id: number;
-    listType: string;
-    listContent: string[];
+  purge?: {
+    type: 'url' | 'cachekey' | 'wildcard';
+    urls: string[];
+    method?: 'delete';
+    layer?: 'edge_caching' | 'l2_caching';
   }[];
 };

@@ -1,3 +1,10 @@
+## [1.5.0-stage.1](https://github.com/aziontech/lib/compare/v1.4.0...v1.5.0-stage.1) (2024-08-09)
+
+
+### Features
+
+* adding domain, origin and purge types in AzionConfig (#18) ([679d836](https://github.com/aziontech/lib/commit/679d8368d23dfd0ace5fc7832b9c37cf36fe0b4b))
+
 ## [1.4.0](https://github.com/aziontech/lib/compare/v1.3.0...v1.4.0) (2024-07-25)
 
 

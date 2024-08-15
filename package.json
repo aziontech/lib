@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.4.0",
+  "version": "1.5.0-stage.1",
   "description": "Azion Packages for Edge Computing.",
   "scripts": {
     "prepare": "husky",
@@ -75,6 +75,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./types": {
+      "require": "./packages/types/dist/index.js",
+      "import": "./packages/types/dist/index.mjs",
+      "types": "./packages/types/dist/index.d.ts"
+    },
     "./config": {
       "require": "./packages/config/dist/index.js",
       "import": "./packages/config/dist/index.mjs",
@@ -114,12 +119,20 @@
       "require": "./packages/wasm-image-processor/dist/index.js",
       "import": "./packages/wasm-image-processor/dist/index.mjs",
       "types": "./packages/wasm-image-processor/dist/index.d.ts"
+    },
+    "./utils": {
+      "require": "./packages/utils/dist/index.js",
+      "import": "./packages/utils/dist/index.mjs",
+      "types": "./packages/utils/dist/index.d.ts"
     }
   },
   "typesVersions": {
     "*": {
       "client": [
         "./packages/client/dist/index.d.ts"
+      ],
+      "types": [
+        "./packages/types/dist/index.d.ts"
       ],
       "storage": [
         "./packages/storage/dist/index.d.ts"
@@ -141,6 +154,9 @@
       ],
       "wasm-image-processor": [
         "./packages/wasm-image-processor/dist/index.d.ts"
+      ],
+      "utils": [
+        "./packages/utils/dist/index.d.ts"
       ]
     }
   }

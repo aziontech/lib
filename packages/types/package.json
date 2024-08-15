@@ -1,7 +1,7 @@
 {
-  "name": "@lib/config",
+  "name": "@azion/types",
   "version": "1.0.0",
-  "description": "Azion configuration.",
+  "description": "Global types for Azion packages",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
