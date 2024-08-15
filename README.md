@@ -384,21 +384,7 @@ The Config library provides methods to configure and validate options for the Az
 
 ### Examples
 
-**JavaScript:**
-
 ```javascript
-import { AzionConfig } from 'azion';
-
-const config = AzionConfig({
-  domain: {},
-  origin: [],
-  cache: [],
-  rules: [],
-  purge: [],
-});
-```
-
-```typescript
 import { AzionConfig } from 'azion';
 
 const config = AzionConfig({
