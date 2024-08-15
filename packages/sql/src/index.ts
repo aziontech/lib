@@ -243,8 +243,9 @@ const getDatabasesWrapper = (
  * Use Query to execute a query on a database.
  * @param name Name of the database to query.
  * @param statements Array of SQL statements to execute.
- * @param params Optional parameters for the query.
- * @param debug Debug mode for detailed logging.
+ * @param options Optional parameters for the query.
+ * @param options.debug Debug mode for detailed logging.
+ * @param options.force Force the query execution.
  * @returns The query response object or null if the query failed.
  * @example
  * const queryResult = await useQuery('my-db', ['SELECT * FROM users']);
@@ -263,7 +264,8 @@ const useQuery = (name: string, statements: string[], options?: OptionsParams): 
  * Use Execute to execute a set of SQL statements on a database.
  * @param name Name of the database to execute the statements on.
  * @param statements Array of SQL statements to execute.
- * @param options Optional parameters for the query.
+ * @param options.debug Debug mode for detailed logging.
+ * @param options.force Force the query execution.
  * @returns The query response object or null if the query failed.
  * @example
  * const executeResult = await useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
