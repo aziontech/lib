@@ -39,7 +39,7 @@ import { AzionClient, ClientConfig } from './types';
  */
 function createClient({ token, debug = false }: ClientConfig = {}): AzionClient {
   const storageClient: StorageClient = createStorageClient({ token, debug });
-  const sqlClient: SQLClient = createSqlClient({ token, debug });
+  const sqlClient: SQLClient = createSqlClient({ token, options: { debug } });
   const purgeClient: PurgeClient = createPurgeClient({ token, debug });
 
   return {

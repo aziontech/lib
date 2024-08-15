@@ -1,17 +1,16 @@
-import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase, postQueryEdgeDatabase } from './services/api/index';
+import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase } from './services/api/index';
 import { ApiDatabaseResponse } from './services/api/types';
-import { getAzionSql, InternalAzionSql } from './services/runtime/index';
+import { apiQuery, runtimeQuery } from './services/index';
+import { getAzionSql } from './services/runtime/index';
 import type {
   CreateSQLClient,
   Database,
   DatabaseCollectionOptions,
   DeletedDatabase,
-  QueryParams,
+  OptionsParams,
   QueryResponse,
   SQLClient,
 } from './types';
-import { createInternalOrExternalMethod } from './utils/index';
-import { toObjectQueryExecutionResponse } from './utils/mappers/to-object';
 
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
 const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
@@ -23,14 +22,15 @@ const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
  * @param debug Debug mode for detailed logging.
  * @returns The created database object or null if creation failed.
  */
-const createDatabaseMethod = async (token: string, name: string, debug: boolean = false): Promise<Database | null> => {
-  const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolveDebug(debug));
+const createDatabaseMethod = async (token: string, name: string, options?: OptionsParams): Promise<Database | null> => {
+  const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolveDebug(options?.debug));
   if (apiResponse) {
     const { data } = apiResponse;
     return {
       ...data,
-      query: (statements: string[]) => queryDatabaseMethod(token, data.name, statements, undefined, debug),
-      execute: (statements: string[]) => queryDatabaseMethod(token, data.name, statements, undefined, debug),
+      query: (statements: string[]) => queryDatabaseMethod(token, data.name, statements, options),
+      execute: (statements: string[], options?: OptionsParams) =>
+        executeDatabaseMethod(token, data.name, statements, options),
     };
   }
   return null;
@@ -46,9 +46,9 @@ const createDatabaseMethod = async (token: string, name: string, debug: boolean 
 const deleteDatabaseMethod = async (
   token: string,
   id: number,
-  debug: boolean = false,
+  options?: OptionsParams,
 ): Promise<DeletedDatabase | null> => {
-  const apiResponse = await deleteEdgeDatabase(resolveToken(token), id, resolveDebug(debug));
+  const apiResponse = await deleteEdgeDatabase(resolveToken(token), id, resolveDebug(options?.debug));
   if (apiResponse) {
     const { data, state } = apiResponse;
     return {
@@ -67,8 +67,8 @@ const deleteDatabaseMethod = async (
  * @param debug Debug mode for detailed logging.
  * @returns The retrieved database object or null if not found.
  */
-const getDatabaseMethod = async (token: string, name: string, debug: boolean = false): Promise<Database | null> => {
-  const databaseResponse = await getEdgeDatabases(resolveToken(token), { search: name }, resolveDebug(debug));
+const getDatabaseMethod = async (token: string, name: string, options?: OptionsParams): Promise<Database | null> => {
+  const databaseResponse = await getEdgeDatabases(resolveToken(token), { search: name }, resolveDebug(options?.debug));
   if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
     return null;
   }
@@ -78,8 +78,9 @@ const getDatabaseMethod = async (token: string, name: string, debug: boolean = f
   }
   return {
     ...databaseResult,
-    query: (statements: string[]) => queryDatabaseMethod(token, name, statements, undefined, debug),
-    execute: (statements: string[]) => queryDatabaseMethod(token, name, statements, undefined, debug),
+    query: (statements: string[]) => queryDatabaseMethod(token, name, statements, options),
+    execute: (statements: string[], options?: OptionsParams) =>
+      executeDatabaseMethod(token, databaseResult.name, statements, options),
   };
 };
 
@@ -93,170 +94,139 @@ const getDatabaseMethod = async (token: string, name: string, debug: boolean = f
 const getDatabasesMethod = async (
   token: string,
   params?: DatabaseCollectionOptions,
-  debug: boolean = false,
+  options?: OptionsParams,
 ): Promise<Database[] | null> => {
-  const apiResponse = await getEdgeDatabases(resolveToken(token), params, resolveDebug(debug));
+  const apiResponse = await getEdgeDatabases(resolveToken(token), params, resolveDebug(options?.debug));
   if (apiResponse) {
     return apiResponse.results.map((db: ApiDatabaseResponse) => ({
       ...db,
       query: (statements: string[]): Promise<QueryResponse | null> =>
-        queryDatabaseMethod(token, db.name, statements, undefined, debug),
-      execute: (statements: string[]): Promise<QueryResponse | null> =>
-        queryDatabaseMethod(token, db.name, statements, undefined, debug),
+        queryDatabaseMethod(token, db.name, statements, options),
+      execute: (statements: string[], options?: OptionsParams): Promise<QueryResponse | null> =>
+        executeDatabaseMethod(token, db.name, statements, options),
     }));
   }
   return null;
 };
 
 /**
- * Executes a query on a database.
- * Receive createInternalOrExternalMethod as a parameter to create a method that can be used internally or externally.
+ * Query a database with a set of SQL statements.
+ * @param token The token to authenticate with the API.
+ * @param name Name of the database to query.
+ * @param statements Array of SQL statements to execute.
+ * @param options Optional parameters for the query.
+ * @returns
  */
-const queryDatabaseMethod = createInternalOrExternalMethod({
-  validation: getAzionSql(),
+const queryDatabaseMethod = async (
+  token: string,
+  name: string,
+  statements: string[],
+  options?: OptionsParams,
+): Promise<QueryResponse | null> => {
+  const isSelectStatement = statements.some((statement) => statement.trim().toUpperCase().startsWith('SELECT'));
 
-  internal: async (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    token: string,
-    name: string,
-    statements: string[],
-    params?: QueryParams[],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    debug: boolean = false,
-  ): Promise<QueryResponse | null> => {
-    const internalSql = new InternalAzionSql();
-    const internalResult = await internalSql.query(name, statements, params);
-    const resultStatements: QueryResponse = {
-      state: 'pending',
-      data: [],
-    };
-    const data = await internalSql.mapperQuery(internalResult);
-    if (data && data.length > 0) {
-      resultStatements.state = 'executed';
-      resultStatements.data = data;
-    }
-    return {
-      ...resultStatements,
-      toObject: () => toObjectQueryExecutionResponse(resultStatements),
-    };
-  },
-  external: async (
-    token: string,
-    name: string,
-    statements: string[],
-    params?: QueryParams[],
-    debug: boolean = false,
-  ): Promise<QueryResponse | null> => {
-    const databaseResponse = await getEdgeDatabases(resolveToken(token), { search: name }, resolveDebug(debug));
-    if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
-      return null;
-    }
-    const database = databaseResponse?.results[0];
-    if (!database || database?.id === undefined) {
-      return null;
-    }
-    const apiResponse = await postQueryEdgeDatabase(resolveToken(token), database.id, statements, resolveDebug(debug));
-    if (apiResponse) {
-      const resultStatements: QueryResponse = {
-        state: `${apiResponse.state}`,
-        data: apiResponse.data.map((result, index) => {
-          let info;
-          if (result?.results?.query_duration_ms) {
-            info = {
-              durationMs: result?.results?.query_duration_ms,
-              rowsRead: result?.results?.rows_read,
-              rowsWritten: result?.results?.rows_written,
-            };
-          }
-          return {
-            statement: statements[index]?.split(' ')[0], // TODO: This can improve
-            columns: result?.results?.columns,
-            rows: result?.results?.rows,
-            info,
-          };
-        }),
-        toObject: () => toObjectQueryExecutionResponse(resultStatements),
-      };
-      return resultStatements;
-    }
-    return null;
-  },
-});
+  if (!isSelectStatement) {
+    throw new Error('Only read statements are allowed');
+  }
+  if (getAzionSql()) {
+    return runtimeQuery(resolveToken(token), name, statements, { ...options, debug: resolveDebug(options?.debug) });
+  }
+  return apiQuery(resolveToken(token), name, statements, { ...options, debug: resolveDebug(options?.debug) });
+};
 
+/**
+ * Executes a set of SQL statements on a database.
+ * @param token The token to authenticate with the API.
+ * @param name The name of the database to execute the statements on.
+ * @param statements Array of SQL statements to execute.
+ * @param options Optional parameters for the query.
+ * @returns
+ */
 const executeDatabaseMethod = async (
   token: string,
   name: string,
   statements: string[],
-  params?: QueryParams[],
-  debug: boolean = false,
-): Promise<null> => {
-  await queryDatabaseMethod(token, name, statements, params, debug);
-  return null;
+  options?: OptionsParams,
+): Promise<QueryResponse | null> => {
+  const isWriteStatement = statements.some((statement) =>
+    ['INSERT', 'UPDATE', 'DELETE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
+  );
+  const isAdminStatement = statements.some((statement) =>
+    ['CREATE', 'ALTER', 'DROP', 'TRUNCATE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
+  );
+  if (!isAdminStatement && !isWriteStatement) {
+    throw new Error('Only write statements are allowed');
+  }
+  if (isAdminStatement && options?.force === false) {
+    throw new Error('To admin statements, you need to set the force option to true');
+  }
+
+  return apiQuery(token, name, statements, options);
 };
 
 /**
  * Creates a new database.
  *
  * @param {string} name - Name of the database to create.
- * @param {boolean} [debug=false] - Enable debug mode for detailed logging.
+ * @param {OptionsParams} [options] - Optional parameters for the deletion.
  * @returns {Promise<Database | null>} The created database object or null if creation failed.
  *
  * @example
- * const database = await createDatabase('my-new-database', true);
+ * const database = await createDatabase('my-new-database', { debug: true });
  * if (database) {
  *   console.log(`Database created with ID: ${database.id}`);
  * } else {
  *   console.error('Failed to create database');
  * }
  */
-const createDatabaseWrapper = async (name: string, debug: boolean = false): Promise<Database | null> =>
-  await createDatabaseMethod(resolveToken(), name, resolveDebug(debug));
+const createDatabaseWrapper = async (name: string, options?: OptionsParams): Promise<Database | null> =>
+  await createDatabaseMethod(resolveToken(), name, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
  * Deletes a database by its ID.
  *
  * @param {number} id - ID of the database to delete.
- * @param {boolean} [debug=false] - Enable debug mode for detailed logging.
+ * @param {OptionsParams} [options] - Optional parameters for the deletion.
  * @returns {Promise<DeletedDatabase | null>} Object confirming deletion or null if deletion failed.
  *
  * @example
- * const result = await deleteDatabase(123, true);
+ * const result = await deleteDatabase(123, { debug: true });
  * if (result) {
  *   console.log(`Database ${result.id} deleted successfully`);
  * } else {
  *   console.error('Failed to delete database');
  * }
  */
-const deleteDatabaseWrapper = (id: number, debug: boolean = false): Promise<DeletedDatabase | null> =>
-  deleteDatabaseMethod(resolveToken(), id, resolveDebug(debug));
+const deleteDatabaseWrapper = (id: number, options?: OptionsParams): Promise<DeletedDatabase | null> =>
+  deleteDatabaseMethod(resolveToken(), id, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
  * Retrieves a database by its Name.
  *
  * @param {string} name - Name of the database to retrieve.
- * @param {boolean} [debug=false] - Enable debug mode for detailed logging.
+ * @param {OptionsParams} [options] - Optional parameters for the deletion.
  * @returns {Promise<Database | null>} The retrieved database object or null if not found.
  *
  * @example
- * const database = await getDatabase('my-db', true);
+ * const database = await getDatabase('my-db', { debug: true });
  * if (database) {
  *   console.log(`Retrieved database: ${database.id}`);
  * } else {
  *   console.error('Database not found');
  * }
  */
-const getDatabaseWrapper = async (name: string, debug: boolean = false): Promise<Database | null> =>
-  getDatabaseMethod(resolveToken(), name, resolveDebug(debug));
+const getDatabaseWrapper = async (name: string, options?: OptionsParams): Promise<Database | null> =>
+  getDatabaseMethod(resolveToken(), name, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
  * Retrieves a list of databases with optional filtering and pagination.
  *
  * @param {Partial<DatabaseCollectionOptions>} [params] - Optional parameters for filtering and pagination.
- * @param {boolean} [debug=false] - Enable debug mode for detailed logging.
+ * @param {OptionsParams} [options] - Optional parameters for the deletion.
  * @returns {Promise<Database[] | null>} Array of database objects or null if retrieval failed.
  *
  * @example
- * const databases = await getDatabases({ page: 1, page_size: 10 }, true);
+ * const databases = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
  * if (databases) {
  *   console.log(`Retrieved ${databases.length} databases`);
  * } else {
@@ -265,8 +235,9 @@ const getDatabaseWrapper = async (name: string, debug: boolean = false): Promise
  */
 const getDatabasesWrapper = (
   params?: Partial<DatabaseCollectionOptions>,
-  debug: boolean = false,
-): Promise<Database[] | null> => getDatabasesMethod(resolveToken(), params, resolveDebug(debug));
+  options?: OptionsParams,
+): Promise<Database[] | null> =>
+  getDatabasesMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
  * Use Query to execute a query on a database.
@@ -285,39 +256,32 @@ const getDatabasesWrapper = (
  * console.error('Failed to execute query');
  * }
  */
-const useQuery = (
-  name: string,
-  statements: string[],
-  params?: QueryParams[],
-  debug: boolean = false,
-): Promise<QueryResponse | null> => queryDatabaseMethod(resolveToken(), name, statements, params, resolveDebug(debug));
+const useQuery = (name: string, statements: string[], options?: OptionsParams): Promise<QueryResponse | null> =>
+  queryDatabaseMethod(resolveToken(), name, statements, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
- * Use Execute to execute a query on a database.
- * @param name Name of the database to query.
+ * Use Execute to execute a set of SQL statements on a database.
+ * @param name Name of the database to execute the statements on.
  * @param statements Array of SQL statements to execute.
- * @param params Optional parameters for the query.
- * @param debug Debug mode for detailed logging.
- * @returns null if the query failed.
+ * @param options Optional parameters for the query.
+ * @returns The query response object or null if the query failed.
  * @example
- * await useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
- * console.log('Query executed successfully');
+ * const executeResult = await useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
+ * if (executeResult?.state === 'executed') {
+ *   console.log(`Executed with success`);
+ * }
  */
-const useExecute = (
-  name: string,
-  statements: string[],
-  params?: QueryParams[],
-  debug: boolean = false,
-): Promise<null> => executeDatabaseMethod(resolveToken(), name, statements, params, resolveDebug(debug));
+const useExecute = async (name: string, statements: string[], options?: OptionsParams): Promise<QueryResponse | null> =>
+  executeDatabaseMethod(resolveToken(), name, statements, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
  * Creates an SQL client with methods to interact with Azion Edge SQL databases.
  *
- * @param {Partial<{ token: string; debug: boolean }>} [config] - Configuration options for the SQL client.
+ * @param {Partial<{ token: string; options?: OptionsParams; }>} [config] - Configuration options for the SQL client.
  * @returns {SQLClient} An object with methods to interact with SQL databases.
  *
  * @example
- * const sqlClient = createClient({ token: 'your-api-token', debug: true });
+ * const sqlClient = createClient({ token: 'your-api-token', options: { debug: true } });
  *
  * // Create a new database
  * const newDatabase = await sqlClient.createDatabase('my-new-db');
@@ -328,9 +292,9 @@ const useExecute = (
  * // Query a database
  * const queryResult = await newDatabase.query(['SELECT * FROM users']);
  */
-const client: CreateSQLClient = (config?: Partial<{ token: string; debug: boolean }>): SQLClient => {
+const client: CreateSQLClient = (config?: Partial<{ token: string; options?: OptionsParams }>): SQLClient => {
   const tokenValue = resolveToken(config?.token);
-  const debugValue = resolveDebug(config?.debug);
+  const debugValue = resolveDebug(config?.options?.debug);
 
   const client: SQLClient = {
     /**
@@ -347,7 +311,8 @@ const client: CreateSQLClient = (config?: Partial<{ token: string; debug: boolea
      *   console.error('Failed to create database');
      * }
      */
-    createDatabase: (name: string): Promise<Database | null> => createDatabaseMethod(tokenValue, name, debugValue),
+    createDatabase: (name: string): Promise<Database | null> =>
+      createDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
 
     /**
      * Deletes a database by its ID.
@@ -363,7 +328,8 @@ const client: CreateSQLClient = (config?: Partial<{ token: string; debug: boolea
      *   console.error('Failed to delete database');
      * }
      */
-    deleteDatabase: (id: number): Promise<DeletedDatabase | null> => deleteDatabaseMethod(tokenValue, id, debugValue),
+    deleteDatabase: (id: number): Promise<DeletedDatabase | null> =>
+      deleteDatabaseMethod(tokenValue, id, { ...config, debug: debugValue }),
 
     /**
      * Retrieves a database by its Name.
@@ -379,7 +345,8 @@ const client: CreateSQLClient = (config?: Partial<{ token: string; debug: boolea
      *   console.error('Database not found');
      * }
      */
-    getDatabase: (name: string): Promise<Database | null> => getDatabaseMethod(tokenValue, name, debugValue),
+    getDatabase: (name: string): Promise<Database | null> =>
+      getDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
 
     /**
      * Retrieves a list of databases with optional filtering and pagination.
@@ -401,7 +368,7 @@ const client: CreateSQLClient = (config?: Partial<{ token: string; debug: boolea
      * }
      */
     getDatabases: (params?: DatabaseCollectionOptions): Promise<Database[] | null> =>
-      getDatabasesMethod(tokenValue, params, debugValue),
+      getDatabasesMethod(tokenValue, params, { ...config, debug: debugValue }),
   } as const;
 
   return client;

@@ -5,6 +5,7 @@
  * @param validation Validation flag
  * @returns Method that can be used internally or externally
  */
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createInternalOrExternalMethod = <T extends (...args: any[]) => any>({
   internal,

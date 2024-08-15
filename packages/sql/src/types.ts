@@ -9,8 +9,8 @@ export interface Database {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  query?: (statements: string[]) => Promise<QueryResponse | null>;
-  execute?: (statements: string[]) => Promise<QueryResponse | null>;
+  query?: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>;
+  execute?: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>;
 }
 
 export interface DeletedDatabase {
@@ -52,18 +52,6 @@ export type QueryResponse = {
 export interface SQLClient {
   createDatabase: (name: string) => Promise<Database | null>;
   deleteDatabase: (id: number) => Promise<DeletedDatabase | null>;
-  getDatabaseById?: (id: number) => Promise<Database | null>;
-  getDatabases: (params?: {
-    ordering?: string;
-    page?: number;
-    page_size?: number;
-    search?: string;
-  }) => Promise<Database[] | null>;
-}
-
-export interface SQLClient {
-  createDatabase: (name: string) => Promise<Database | null>;
-  deleteDatabase: (id: number) => Promise<DeletedDatabase | null>;
   getDatabase?: (name: string) => Promise<Database | null>;
   getDatabases: (params?: {
     ordering?: string;
@@ -72,11 +60,16 @@ export interface SQLClient {
     search?: string;
   }) => Promise<Database[] | null>;
 }
-export type CreateSQLClient = (config?: Partial<{ token: string; debug: boolean }>) => SQLClient;
+export type CreateSQLClient = (config?: Partial<{ token: string; options?: OptionsParams }>) => SQLClient;
 
 export type DatabaseCollectionOptions = {
   ordering?: string;
   page?: number;
   page_size?: number;
   search?: string;
+};
+
+export type OptionsParams = {
+  debug?: boolean;
+  force?: boolean;
 };

@@ -1,4 +1,4 @@
-import { NonSelectQueryResult, QueryParams, QueryResult } from '../../types';
+import { NonSelectQueryResult, QueryResult } from '../../types';
 import { Azion } from './types';
 
 export const getAzionSql = () => {
@@ -43,15 +43,11 @@ export class InternalAzionSql {
     return Promise.resolve(resultStatements);
   };
 
-  query = async (
-    name: string,
-    statements: string[],
-    params?: QueryParams[],
-  ): Promise<{ statement: string; result: Azion.Sql.Rows }[]> => {
+  query = async (name: string, statements: string[]): Promise<{ statement: string; result: Azion.Sql.Rows }[]> => {
     if (this.database?.open) {
       const conn = await this.database?.open(name);
       const promises = statements.map(async (statement) => {
-        const result = await conn?.query(statement, params);
+        const result = await conn?.query(statement);
         return { statement, result };
       });
       const results = await Promise.all(promises);

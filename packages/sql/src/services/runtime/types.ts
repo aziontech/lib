@@ -1,10 +1,10 @@
-import { QueryParams } from '../../types';
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Azion {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   export namespace Sql {
     interface Connection {
-      query: (sql: string, params?: QueryParams[]) => Promise<Rows>;
+      query: (sql: string) => Promise<Rows>;
+      execute: (sql: string) => Promise<null>;
     }
     export interface Rows {
       next: () => Promise<Row>;
