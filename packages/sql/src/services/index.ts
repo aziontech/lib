@@ -9,14 +9,14 @@ export const apiQuery = async (
   name: string,
   statements: string[],
   options?: OptionsParams,
-): Promise<QueryResponse | null> => {
+): Promise<QueryResponse> => {
   const databaseResponse = await getEdgeDatabases(token, { search: name }, options?.debug);
   if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
-    return null;
+    throw new Error(`Database ${name} not found`);
   }
   const database = databaseResponse?.results[0];
   if (!database || database?.id === undefined) {
-    return null;
+    throw new Error(`Database ${name} not found`);
   }
   const apiResponse = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
   if (apiResponse) {
@@ -42,7 +42,10 @@ export const apiQuery = async (
     };
     return resultStatements;
   }
-  return null;
+  return {
+    state: 'executed',
+    data: [],
+  };
 };
 
 // Runtime Query Internal Method to execute a query on a database
@@ -53,7 +56,7 @@ export const runtimeQuery = async (
   statements: string[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options?: OptionsParams,
-): Promise<QueryResponse | null> => {
+): Promise<QueryResponse> => {
   const internalSql = new InternalAzionSql();
   const internalResult = await internalSql.query(name, statements);
   const resultStatements: QueryResponse = {
@@ -68,5 +71,8 @@ export const runtimeQuery = async (
       toObject: () => toObjectQueryExecutionResponse(resultStatements),
     };
   }
-  return null;
+  return {
+    state: 'executed',
+    data: [],
+  };
 };

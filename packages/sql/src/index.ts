@@ -122,7 +122,7 @@ const queryDatabaseMethod = async (
   name: string,
   statements: string[],
   options?: OptionsParams,
-): Promise<QueryResponse | null> => {
+): Promise<QueryResponse> => {
   const isSelectStatement = statements.some((statement) => statement.trim().toUpperCase().startsWith('SELECT'));
 
   if (!isSelectStatement) {
@@ -147,7 +147,7 @@ const executeDatabaseMethod = async (
   name: string,
   statements: string[],
   options?: OptionsParams,
-): Promise<QueryResponse | null> => {
+): Promise<QueryResponse> => {
   const isWriteStatement = statements.some((statement) =>
     ['INSERT', 'UPDATE', 'DELETE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
   );
@@ -160,8 +160,11 @@ const executeDatabaseMethod = async (
   if (isAdminStatement && options?.force === false) {
     throw new Error('To admin statements, you need to set the force option to true');
   }
-
-  return apiQuery(token, name, statements, options);
+  const resultQuery = await apiQuery(token, name, statements, options);
+  return {
+    state: resultQuery.state,
+    data: {},
+  };
 };
 
 /**

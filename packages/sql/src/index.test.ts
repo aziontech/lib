@@ -196,11 +196,11 @@ describe('SQL Module', () => {
       );
     });
 
-    it('should return null if query execution fails', async () => {
+    it('should return if query execution fails', async () => {
       (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(null);
 
       const result = await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
-      expect(result).toBeNull();
+      expect(result).toEqual({ state: 'executed', data: [] });
     });
 
     it.todo('should successfully execute useQuery with apiQuery called');
