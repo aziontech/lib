@@ -149,4 +149,4 @@ async function loadImage(pathOrURL: string): Promise<WasmImage> {
 export { clean, getImageResponse, loadImage, resize };
 export default loadImage;
 
-export * from './types';
+export type * from './types';

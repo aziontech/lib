@@ -17,4 +17,4 @@ export { decode, sign, verify };
 
 export default jwt;
 
-export * from './common/types';
+export type * from './common/types';
