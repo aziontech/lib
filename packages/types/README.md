@@ -3,6 +3,7 @@
 The Types package provides global TypeScript types that are used across Azion platform, ensuring consistency and reducing redundancy throughout the codebase.
 
 ⚠️ These types are specifically tailored for Azion Runtime environments.
+
 ## Table of Contents
 
 - [Installation](#installation)

@@ -291,7 +291,6 @@ console.log(imageResponse);
 
 Read more in the [WASM Image Processor README](./packages/wasm-image-processor/README.md).
 
-
 ### Utils
 
 The Utils package provides a set of utility functions that simplify common tasks when working with Azion edge functions.
@@ -309,7 +308,6 @@ The Utils package provides a set of utility functions that simplify common tasks
 
 #### Examples
 
-
 **JavaScript:**
 
 ```javascript
@@ -317,20 +315,19 @@ import { mountSPA, mountMPA, parseRequest } from 'azion/utils';
 
 // Handle SPA routing
 const myApp1 = await mountSPA('https://example.com/');
-console.log(myApp1); 
+console.log(myApp1);
 // Fetches: file:///index.html
 // Response object representing the content of index.html
 
 // Handle MPA routing
 const myApp2 = await mountMPA('https://example.com/about');
-console.log(myApp2); 
+console.log(myApp2);
 // Fetches: file:///about/index.html
 // Response object representing the content of about/index.html
 
 // Parse a request
 const parsedRequest = await parseRequest(event);
-console.log(parsedRequest); 
-
+console.log(parsedRequest);
 ```
 
 **TypeScript:**
@@ -351,7 +348,6 @@ console.log(myApp2);
 // Fetches: file:///about/index.html
 // Response object representing the content of about/index.html
 
-
 // Parse a request
 const parsedRequest: ParsedRequest = await parseRequest(event);
 console.log(parsedRequest);
@@ -361,9 +357,9 @@ Read more in the [Utils README](./packages/utils/README.md).
 
 ## Types
 
-The Types package provides global TypeScript types that are used across Azion platform, ensuring consistency and reducing redundancy throughout the codebase. 
+The Types package provides global TypeScript types that are used across Azion platform, ensuring consistency and reducing redundancy throughout the codebase.
 
-⚠️ These types are specifically tailored for `Azion Runtime environments`. 
+⚠️ These types are specifically tailored for `Azion Runtime environments`.
 
 #### Available Types
 
