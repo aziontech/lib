@@ -8,7 +8,7 @@ import {
   useQuery,
 } from '../src/index';
 import * as servicesApi from '../src/services/api/index';
-import { SQLClient } from './types';
+import { AzionSQLClient } from './types';
 
 jest.mock('../src/services/api/index');
 
@@ -208,7 +208,7 @@ describe('SQL Module', () => {
   });
 
   describe('Client methods', () => {
-    let client: SQLClient;
+    let client: AzionSQLClient;
 
     beforeEach(() => {
       client = createClient({ token: 'custom-token', options: { debug: false } });

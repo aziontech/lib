@@ -4,7 +4,7 @@ import createSqlClient from 'azion/sql';
 import createStorageClient from 'azion/storage';
 
 import { PurgeClient } from '../../purge/src/types';
-import { SQLClient } from '../../sql/src/types';
+import { AzionSQLClient } from '../../sql/src/types';
 import { StorageClient } from '../../storage/src/types';
 
 import { AzionClient, ClientConfig } from './types';
@@ -39,7 +39,7 @@ import { AzionClient, ClientConfig } from './types';
  */
 function createClient({ token, debug = false }: ClientConfig = {}): AzionClient {
   const storageClient: StorageClient = createStorageClient({ token, debug });
-  const sqlClient: SQLClient = createSqlClient({ token, options: { debug } });
+  const sqlClient: AzionSQLClient = createSqlClient({ token, options: { debug } });
   const purgeClient: PurgeClient = createPurgeClient({ token, debug });
 
   return {

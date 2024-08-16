@@ -1,7 +1,7 @@
 import { JsonObjectQueryExecutionResponse } from './utils/mappers/to-object';
 
 /* eslint-disable no-unused-vars */
-export interface Database {
+export interface AzionDatabase {
   id: number;
   name: string;
   client_id: string;
@@ -13,7 +13,7 @@ export interface Database {
   execute?: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>;
 }
 
-export interface DeletedDatabase {
+export interface DeletedAzionDatabase {
   id: number;
   state: 'executed' | 'pending';
   data: null;
@@ -49,18 +49,18 @@ export type QueryResponse = {
   toObject?: () => JsonObjectQueryExecutionResponse;
 };
 
-export interface SQLClient {
-  createDatabase: (name: string) => Promise<Database | null>;
-  deleteDatabase: (id: number) => Promise<DeletedDatabase | null>;
-  getDatabase?: (name: string) => Promise<Database | null>;
+export interface AzionSQLClient {
+  createDatabase: (name: string) => Promise<AzionDatabase | null>;
+  deleteDatabase: (id: number) => Promise<DeletedAzionDatabase | null>;
+  getDatabase?: (name: string) => Promise<AzionDatabase | null>;
   getDatabases: (params?: {
     ordering?: string;
     page?: number;
     page_size?: number;
     search?: string;
-  }) => Promise<Database[] | null>;
+  }) => Promise<AzionDatabase[] | null>;
 }
-export type CreateSQLClient = (config?: Partial<{ token: string; options?: OptionsParams }>) => SQLClient;
+export type CreateAzionSQLClient = (config?: Partial<{ token: string; options?: OptionsParams }>) => AzionSQLClient;
 
 export type DatabaseCollectionOptions = {
   ordering?: string;

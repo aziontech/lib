@@ -120,7 +120,7 @@ const client = createClient({ token: 'your-api-token', debug: true });
 
 const newDatabase = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
+  console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
 const allDatabases = await client.sql.getDatabases();
@@ -138,16 +138,16 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Database, QueryResponse } from 'azion/sql/types';
+import { AzionClient, AzionDatabase, QueryResponse } from 'azion/sql/types';
 
 const client: AzionClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDatabase: Database | null = await client.sql.createDatabase('my-new-db');
+const newDatabase: AzionDatabase | null = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
+  console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: Database[] | null = await client.sql.getDatabases();
+const allDatabases: AzionDatabase[] | null = await client.sql.getDatabases();
 if (allDatabases) {
   console.log(`Retrieved ${allDatabases.length} databases`);
 }
@@ -241,7 +241,7 @@ Configuration options for the Azion client.
 An object with methods to interact with Azion services.
 
 - `storage: StorageClient`
-- `sql: SQLClient`
+- `sql: AzionSQLClient`
 - `purge: PurgeClient`
 
 ## Contributing

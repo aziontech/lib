@@ -14,7 +14,7 @@ Azion Edge SQL Client provides a simple interface to interact with the Azion Edg
   - [API Examples](#api-examples)
     - [Create Database](#create-database)
     - [Delete Database](#delete-database)
-    - [Get Database by ID](#get-database-by-id)
+    - [Get Database](#get-database)
     - [Get Databases](#get-databases)
     - [Use Query](#use-query)
     - [Use Execute](#use-execute)
@@ -27,9 +27,9 @@ Azion Edge SQL Client provides a simple interface to interact with the Azion Edg
   - [`createClient`](#createclient)
 - [Types](#types)
   - [`ClientConfig`](#clientconfig)
-  - [`SQLClient`](#sqlclient)
-  - [`Database`](#database)
-  - [`DeletedDatabase`](#deleteddatabase)
+  - [`AzionSQLClient`](#sqlclient)
+  - [`AzionDatabase`](#aziondatabase)
+  - [`DeletedAzionDatabase`](#deletedaziondatabase)
   - [`Query`](#query)
 - [Contributing](#contributing)
 
@@ -100,9 +100,9 @@ if (database) {
 
 ```typescript
 import { createDatabase } from 'azion/sql';
-import { Database } from 'azion/sql/types';
+import { AzionDatabase } from 'azion/sql/types';
 
-const database: Database | null = await createDatabase('my-new-database', { debug: true });
+const database: AzionDatabase | null = await createDatabase('my-new-database', { debug: true });
 if (database) {
   console.log(`Database created with ID: ${database.id}`);
 } else {
@@ -129,9 +129,9 @@ if (result) {
 
 ```typescript
 import { deleteDatabase } from 'azion/sql';
-import { DeletedDatabase } from 'azion/sql/types';
+import { DeletedAzionDatabase } from 'azion/sql/types';
 
-const result: DeletedDatabase | null = await deleteDatabase(123, { debug: true });
+const result: DeletedAzionDatabase | null = await deleteDatabase(123, { debug: true });
 if (result) {
   console.log(`Database ${result.id} deleted successfully`);
 } else {
@@ -158,9 +158,9 @@ if (database) {
 
 ```typescript
 import { getDatabase } from 'azion/sql';
-import { Database } from 'azion/sql/types';
+import { AzionDatabase } from 'azion/sql/types';
 
-const database: Database | null = await getDatabase('my-db', { debug: true });
+const database: AzionDatabase | null = await getDatabase('my-db', { debug: true });
 if (database) {
   console.log(`Retrieved database: ${database.id}`);
 } else {
@@ -187,9 +187,9 @@ if (databases) {
 
 ```typescript
 import { getDatabases } from 'azion/sql';
-import { Database } from 'azion/sql/types';
+import { AzionDatabase } from 'azion/sql/types';
 
-const databases: Database[] | null = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
+const databases: AzionDatabase[] | null = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
 if (databases) {
   console.log(`Retrieved ${databases.length} databases`);
 } else {
@@ -275,16 +275,16 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion/sql';
-import { SQLClient, Database, QueryResponse } from 'azion/sql/types';
+import { AzionSQLClient, AzionDatabase, QueryResponse } from 'azion/sql/types';
 
-const client: SQLClient = createClient({ token: 'your-api-token', { debug: true } });
+const client: AzionSQLClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDatabase: Database | null = await client.createDatabase('my-new-db');
+const newDatabase: AzionDatabase | null = await client.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`Database created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: Database[] | null = await client.getDatabases();
+const allDatabases: AzionDatabase[] | null = await client.getDatabases();
 if (allDatabases) {
   console.log(`Retrieved ${allDatabases.length} databases`);
 }
@@ -308,7 +308,7 @@ Creates a new database.
 
 **Returns:**
 
-- `Promise<Database | null>` - The created database object or null if creation failed.
+- `Promise<AzionDatabase | null>` - The created database object or null if creation failed.
 
 ### `deleteDatabase`
 
@@ -321,7 +321,7 @@ Deletes a database by its ID.
 
 **Returns:**
 
-- `Promise<DeletedDatabase | null>` - Object confirming deletion or null if deletion failed.
+- `Promise<DeletedAzionDatabase | null>` - Object confirming deletion or null if deletion failed.
 
 ### `getDatabase`
 
@@ -335,7 +335,7 @@ Retrieves a database by its Name.
 
 **Returns:**
 
-- `Promise<Database | null>` - The retrieved database object or null if not found.
+- `Promise<AzionDatabase | null>` - The retrieved database object or null if not found.
 
 ### `getDatabases`
 
@@ -353,7 +353,7 @@ Retrieves a list of databases with optional filtering and pagination.
 
 **Returns:**
 
-- `Promise<Database[] | null>` - Array of database objects or null if retrieval failed.
+- `Promise<AzionDatabase[] | null>` - Array of database objects or null if retrieval failed.
 
 ### `useQuery`
 
@@ -380,7 +380,7 @@ Creates an SQL client with methods to interact with Azion Edge SQL databases.
 
 **Returns:**
 
-- `SQLClient` - An object with methods to interact with SQL databases.
+- `AzionSQLClient` - An object with methods to interact with SQL databases.
 
 ## Types
 
@@ -392,16 +392,16 @@ Configuration options for the SQL client.
 - `options?: OptionsParams` - Object options params.
   - `debug?: boolean` - Enable debug mode for detailed logging.
 
-### `SQLClient`
+### `AzionSQLClient`
 
 An object with methods to interact with SQL databases.
 
-- `createDatabase: (name: string) => Promise<Database | null>`
-- `deleteDatabase: (id: number) => Promise<DeletedDatabase | null>`
-- `getDatabase: (name: string) => Promise<Database | null>`
-- `getDatabases: (params?: DatabaseCollectionOptions) => Promise<Database[] | null>`
+- `createDatabase: (name: string) => Promise<AzionDatabase | null>`
+- `deleteDatabase: (id: number) => Promise<DeletedAzionDatabase | null>`
+- `getDatabase: (name: string) => Promise<AzionDatabase | null>`
+- `getDatabases: (params?: DatabaseCollectionOptions) => Promise<AzionDatabase[] | null>`
 
-### `Database`
+### `AzionDatabase`
 
 The database object.
 
@@ -415,7 +415,7 @@ The database object.
 - `query: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>`
 - `execute: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>`
 
-### `DeletedDatabase`
+### `DeletedAzionDatabase`
 
 The response object from a delete database request.
 

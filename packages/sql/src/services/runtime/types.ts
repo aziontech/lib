@@ -19,7 +19,7 @@ export namespace Azion {
       getValue: (index: number) => any;
       getString: (index: number) => string;
     }
-    export interface Database {
+    export interface AzionDatabase {
       connection: Connection;
       open?: (name: string) => Promise<Connection>;
     }
