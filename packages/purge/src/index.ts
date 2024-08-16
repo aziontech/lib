@@ -164,3 +164,5 @@ export {
   purgeWildCardWrapper as purgeWildCard,
 };
 export default client;
+
+export type * from './types';

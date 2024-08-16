@@ -1,16 +1,41 @@
-import { AzionConfig as AzionConfigType } from './types';
+import { AzionConfig } from './types';
 
 /**
  * Configures and validates the options for the Azion Edge Application.
  *
  * @param {AzionConfig} config - The configuration object for the Azion Edge Application.
+ *
+ * @param {Object} [config.domain] - Configuration for the domain.
+ * @param {string} config.domain.name - The domain name.
+ * @param {boolean} [config.domain.cnameAccessOnly] - Whether to restrict access only to CNAMEs.
+ * @param {string[]} [config.domain.cnames] - List of CNAMEs for the domain.
+ * @param {number} [config.domain.edgeApplicationId] - ID of the edge application.
+ * @param {number} [config.domain.edgeFirewallId] - ID of the edge firewall.
+ * @param {string|number|null} [config.domain.digitalCertificateId] - ID of the digital certificate.
+ * @param {Object} [config.domain.mtls] - Configuration for mTLS.
+ * @param {('enforce'|'permissive')} config.domain.mtls.verification - mTLS verification mode.
+ * @param {number} config.domain.mtls.trustedCaCertificateId - ID of the trusted CA certificate.
+ * @param {number[]} [config.domain.mtls.crlList] - List of Certificate Revocation Lists (CRLs).
+ *
  * @param {Object[]} [config.origin] - Array of origin configurations.
+ * @param {number} [config.origin[].id] - ID of the origin.
+ * @param {string} [config.origin[].key] - Key for the origin.
  * @param {string} config.origin[].name - Name of the origin.
  * @param {string} config.origin[].type - Type of the origin (e.g., 'single_origin', 'load_balancer').
  * @param {string} [config.origin[].bucket] - Bucket name for storage origins.
  * @param {string} [config.origin[].prefix] - Prefix for storage origins.
- * @param {string[]} [config.origin[].addresses] - Array of addresses for the origin.
+ * @param {Array<string|{address: string, weight?: number}>} [config.origin[].addresses] - Array of addresses for the origin.
  * @param {string} [config.origin[].hostHeader] - Custom host header.
+ * @param {('http'|'https'|'preserve')} [config.origin[].protocolPolicy] - Protocol policy for the origin.
+ * @param {boolean} [config.origin[].redirection] - Whether to enable redirection.
+ * @param {('ip_hash'|'least_connections'|'round_robin')} [config.origin[].method] - Load balancing method.
+ * @param {string} [config.origin[].path] - Path for the origin.
+ * @param {number} [config.origin[].connectionTimeout] - Connection timeout in seconds.
+ * @param {number} [config.origin[].timeoutBetweenBytes] - Timeout between bytes in seconds.
+ * @param {Object} [config.origin[].hmac] - HMAC configuration for the origin.
+ * @param {string} config.origin[].hmac.region - HMAC region.
+ * @param {string} config.origin[].hmac.accessKey - HMAC access key.
+ * @param {string} config.origin[].hmac.secretKey - HMAC secret key.
  *
  * @param {Object[]} [config.cache] - Array of cache configurations.
  * @param {string} config.cache[].name - Name of the cache configuration.
@@ -38,21 +63,91 @@ import { AzionConfig as AzionConfigType } from './types';
  * @param {string} config.rules.request[].match - Match condition for the rule.
  * @param {string} [config.rules.request[].variable] - Variable to match against.
  * @param {Object} [config.rules.request[].behavior] - Behavior to apply when the rule matches.
+ * @param {Object} [config.rules.request[].behavior.setOrigin] - Set origin behavior.
+ * @param {string} config.rules.request[].behavior.setOrigin.name - Name of the origin to set.
+ * @param {string} config.rules.request[].behavior.setOrigin.type - Type of the origin to set.
+ * @param {string} [config.rules.request[].behavior.rewrite] - URL rewrite behavior.
+ * @param {string[]} [config.rules.request[].behavior.setHeaders] - Headers to set.
+ * @param {boolean|null} [config.rules.request[].behavior.bypassCache] - Whether to bypass cache.
+ * @param {boolean|null} [config.rules.request[].behavior.httpToHttps] - Redirect HTTP to HTTPS.
+ * @param {string|null} [config.rules.request[].behavior.redirectTo301] - Redirect with 301 status.
+ * @param {string|null} [config.rules.request[].behavior.redirectTo302] - Redirect with 302 status.
+ * @param {boolean|null} [config.rules.request[].behavior.forwardCookies] - Whether to forward cookies.
+ * @param {string|null} [config.rules.request[].behavior.setCookie] - Set cookie behavior.
+ * @param {boolean|null} [config.rules.request[].behavior.deliver] - Whether to deliver the response.
+ * @param {Object} [config.rules.request[].behavior.capture] - Capture behavior.
+ * @param {string} config.rules.request[].behavior.capture.match - Capture match condition.
+ * @param {string} config.rules.request[].behavior.capture.captured - Captured content.
+ * @param {string} config.rules.request[].behavior.capture.subject - Subject for capture.
+ * @param {Object} [config.rules.request[].behavior.runFunction] - Run a custom function.
+ * @param {string} config.rules.request[].behavior.runFunction.path - Path to the function.
+ * @param {string|null} [config.rules.request[].behavior.runFunction.name] - Name of the function.
+ * @param {string|Object} [config.rules.request[].behavior.setCache] - Set cache behavior.
+ * @param {string} config.rules.request[].behavior.setCache.name - Cache name.
+ * @param {number|null} [config.rules.request[].behavior.setCache.browser_cache_settings_maximum_ttl] - Browser cache maximum TTL.
+ * @param {number|null} [config.rules.request[].behavior.setCache.cdn_cache_settings_maximum_ttl] - CDN cache maximum TTL.
+ *
+ * @param {Object[]} [config.rules.response] - Array of response rules.
+ * @param {string} config.rules.response[].name - Name of the response rule.
+ * @param {string} [config.rules.response[].description] - Description of the response rule.
+ * @param {boolean} [config.rules.response[].active] - Whether the rule is active.
+ * @param {string} config.rules.response[].match - Match condition for the rule.
+ * @param {string} [config.rules.response[].variable] - Variable to match against.
+ * @param {Object} [config.rules.response[].behavior] - Behavior to apply when the rule matches.
+ * @param {string|null} [config.rules.response[].behavior.setCookie] - Set cookie behavior.
+ * @param {string[]} [config.rules.response[].behavior.setHeaders] - Headers to set.
+ * @param {boolean|null} [config.rules.response[].behavior.deliver] - Whether to deliver the response.
+ * @param {Object} [config.rules.response[].behavior.capture] - Capture behavior.
+ * @param {string} config.rules.response[].behavior.capture.match - Capture match condition.
+ * @param {string} config.rules.response[].behavior.capture.captured - Captured content.
+ * @param {string} config.rules.response[].behavior.capture.subject - Subject for capture.
+ * @param {boolean|null} [config.rules.response[].behavior.enableGZIP] - Enable GZIP compression.
+ * @param {string|null} [config.rules.response[].behavior.filterCookie] - Filter cookies.
+ * @param {string|null} [config.rules.response[].behavior.filterHeader] - Filter headers.
+ * @param {Object} [config.rules.response[].behavior.runFunction] - Run a custom function.
+ * @param {string} config.rules.response[].behavior.runFunction.path - Path to the function.
+ * @param {string|null} [config.rules.response[].behavior.runFunction.name] - Name of the function.
+ * @param {string|null} [config.rules.response[].behavior.redirectTo301] - Redirect with 301 status.
+ * @param {string|null} [config.rules.response[].behavior.redirectTo302] - Redirect with 302 status.
  *
  * @param {Object[]} [config.networkList] - Array of network list configurations.
  * @param {number} config.networkList[].id - ID of the network list.
  * @param {string} config.networkList[].listType - Type of the network list.
  * @param {string[]} config.networkList[].listContent - Content of the network list.
  *
+ * @param {Object[]} [config.purge] - Array of purge configurations.
+ * @param {('url'|'cachekey'|'wildcard')} config.purge[].type - Type of purge operation.
+ * @param {string[]} config.purge[].urls - URLs to purge.
+ * @param {('delete')} [config.purge[].method] - HTTP method to use for purging.
+ * @param {('edge_caching'|'l2_caching')} [config.purge[].layer] - Caching layer to target.
+ *
  * @returns {AzionConfig} The validated configuration object.
  *
  * @example
  * const config = AzionConfig({
+ *   domain: {
+ *     name: 'example.com',
+ *     cnameAccessOnly: false,
+ *     cnames: ['www.example.com', 'cdn.example.com'],
+ *     edgeApplicationId: 12345,
+ *     edgeFirewallId: 67890,
+ *     digitalCertificateId: null,
+ *     mtls: {
+ *       verification: 'enforce',
+ *       trustedCaCertificateId: 98765,
+ *     },
+ *   },
  *   origin: [
  *     {
  *       name: 'My Origin',
  *       type: 'single_origin',
- *       addresses: ['example.com'],
+ *       addresses: [
+ *         {
+ *           address: 'origin.example.com',
+ *           weight: 100,
+ *         },
+ *       ],
+ *       protocolPolicy: 'https',
  *     },
  *   ],
  *   cache: [
@@ -66,11 +161,33 @@ import { AzionConfig as AzionConfigType } from './types';
  *       },
  *     },
  *   ],
+ *   rules: {
+ *     request: [
+ *       {
+ *         name: 'Example Rule',
+ *         match: 'path',
+ *         behavior: {
+ *           setOrigin: {
+ *             name: 'My Origin',
+ *             type: 'single_origin',
+ *           },
+ *         },
+ *       },
+ *     ],
+ *   },
+ *   purge: [
+ *     {
+ *       type: 'url',
+ *       urls: ['https://example.com/path/to/purge'],
+ *       method: 'delete',
+ *       layer: 'edge_caching',
+ *     },
+ *   ],
  *   // ... other configurations
  * });
  */
-export function AzionConfig(config: AzionConfigType): AzionConfigType {
+export function defineConfig(config: AzionConfig): AzionConfig {
   return config;
 }
 
-export * from './types';
+export type * from './types';

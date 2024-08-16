@@ -1,3 +1,23 @@
+## [1.5.0-stage.2](https://github.com/aziontech/lib/compare/v1.5.0-stage.1...v1.5.0-stage.2) (2024-08-16)
+
+
+### Features
+
+* defineConfig() and export types (#22) ([ecb3e1e](https://github.com/aziontech/lib/commit/ecb3e1e7e21264f2b6b8ee6ed2e81e42b26dae6b))
+* utils and types packages (#21) ([224f569](https://github.com/aziontech/lib/commit/224f5695572439a25e59db84b9a34dbca2a8a255))
+
+
+### Bug Fixes
+
+* types export (#23) ([6413f52](https://github.com/aziontech/lib/commit/6413f52c889bb1ee1ef999fb544506a3661dba0f))
+
+## [1.5.0-stage.1](https://github.com/aziontech/lib/compare/v1.4.0...v1.5.0-stage.1) (2024-08-09)
+
+
+### Features
+
+* adding domain, origin and purge types in AzionConfig (#18) ([679d836](https://github.com/aziontech/lib/commit/679d8368d23dfd0ace5fc7832b9c37cf36fe0b4b))
+
 ## [1.4.0](https://github.com/aziontech/lib/compare/v1.3.0...v1.4.0) (2024-07-25)
 
 
