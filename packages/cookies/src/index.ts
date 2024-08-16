@@ -9,3 +9,5 @@ const cookies = {
 export { getCookie, setCookie };
 
 export default cookies;
+
+export * from './common/types';

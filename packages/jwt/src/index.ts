@@ -16,3 +16,5 @@ const jwt = { decode, sign, verify };
 export { decode, sign, verify };
 
 export default jwt;
+
+export * from './common/types';
