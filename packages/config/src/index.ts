@@ -1,4 +1,4 @@
-import { AzionConfig as AzionConfigType } from './types';
+import { AzionConfig } from './types';
 
 /**
  * Configures and validates the options for the Azion Edge Application.
@@ -186,7 +186,7 @@ import { AzionConfig as AzionConfigType } from './types';
  *   // ... other configurations
  * });
  */
-export function AzionConfig(config: AzionConfigType): AzionConfigType {
+export function defineConfig(config: AzionConfig): AzionConfig {
   return config;
 }
 
