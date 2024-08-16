@@ -91,4 +91,4 @@ function createClient({ token, debug = false }: ClientConfig = {}): AzionClient 
 export { createClient, defineConfig };
 export default createClient;
 
-export * from './types';
+export type * from './types';

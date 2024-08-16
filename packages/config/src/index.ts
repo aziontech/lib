@@ -190,4 +190,4 @@ export function defineConfig(config: AzionConfig): AzionConfig {
   return config;
 }
 
-export * from './types';
+export type * from './types';
