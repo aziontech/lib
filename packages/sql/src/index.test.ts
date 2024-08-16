@@ -8,6 +8,7 @@ import {
   useQuery,
 } from '../src/index';
 import * as servicesApi from '../src/services/api/index';
+import * as services from '../src/services/index';
 import { AzionSQLClient } from './types';
 
 jest.mock('../src/services/api/index');
@@ -203,8 +204,33 @@ describe('SQL Module', () => {
       expect(result).toEqual({ state: 'executed', data: [] });
     });
 
-    it.todo('should successfully execute useQuery with apiQuery called');
-    it.todo('should successfully execute useQuery with runtimeQuery called');
+    it('should successfully execute useQuery with apiQuery called', async () => {
+      const spyApiQuery = jest.spyOn(services, 'apiQuery').mockResolvedValue({ state: 'executed', data: [] });
+
+      await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
+
+      expect(spyApiQuery).toHaveBeenCalled();
+      expect(spyApiQuery).toHaveBeenCalledWith(mockToken, 'test-db', ['SELECT * FROM test'], {
+        debug: mockDebug,
+      });
+
+      spyApiQuery.mockRestore();
+    });
+
+    it('should successfully execute useQuery with runtimeQuery called', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).Azion = { Sql: {} };
+      const spyRuntimeQuery = jest.spyOn(services, 'runtimeQuery').mockResolvedValue({ state: 'executed', data: [] });
+
+      await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
+
+      expect(spyRuntimeQuery).toHaveBeenCalled();
+      expect(spyRuntimeQuery).toHaveBeenCalledWith(mockToken, 'test-db', ['SELECT * FROM test'], {
+        debug: mockDebug,
+      });
+
+      spyRuntimeQuery.mockRestore();
+    });
   });
 
   describe('Client methods', () => {
