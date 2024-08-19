@@ -1,10 +1,10 @@
-import { Azion, Bucket, BucketObject, DeletedBucketObject } from '../../types';
+import { Azion, AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
 
 export const isInternalStorageAvailable = (): boolean => {
   return typeof Azion !== 'undefined' && Azion.Storage !== undefined;
 };
 
-export class InternalStorageClient implements Bucket {
+export class InternalStorageClient implements AzionBucket {
   private storage: Azion.Storage | null = null;
 
   constructor(
@@ -21,7 +21,7 @@ export class InternalStorageClient implements Bucket {
   name: string = '';
   edge_access: string = 'unknown';
 
-  async getBucket(name: string): Promise<Bucket | null> {
+  async getBucket(name: string): Promise<AzionBucket | null> {
     this.initializeStorage(name);
     if (this.storage) {
       return {
@@ -39,7 +39,7 @@ export class InternalStorageClient implements Bucket {
     return null;
   }
 
-  async getObjects(bucketName: string): Promise<BucketObject[] | null> {
+  async getObjects(bucketName: string): Promise<AzionBucketObject[] | null> {
     this.initializeStorage(bucketName);
     try {
       const objectList = await this.storage!.list();
@@ -53,7 +53,7 @@ export class InternalStorageClient implements Bucket {
     }
   }
 
-  async getObjectByKey(bucketName: string, objectKey: string): Promise<BucketObject | null> {
+  async getObjectByKey(bucketName: string, objectKey: string): Promise<AzionBucketObject | null> {
     this.initializeStorage(bucketName);
     try {
       const storageObject = await this.storage!.get(objectKey);
@@ -75,7 +75,7 @@ export class InternalStorageClient implements Bucket {
     objectKey: string,
     content: string,
     options?: { content_type?: string },
-  ): Promise<BucketObject | null> {
+  ): Promise<AzionBucketObject | null> {
     this.initializeStorage(bucketName);
     try {
       const contentBuffer = new TextEncoder().encode(content);
@@ -99,11 +99,11 @@ export class InternalStorageClient implements Bucket {
     objectKey: string,
     content: string,
     options?: { content_type?: string },
-  ): Promise<BucketObject | null> {
+  ): Promise<AzionBucketObject | null> {
     return this.createObject(bucketName, objectKey, content, options);
   }
 
-  async deleteObject(bucketName: string, objectKey: string): Promise<DeletedBucketObject | null> {
+  async deleteObject(bucketName: string, objectKey: string): Promise<AzionDeletedBucketObject | null> {
     this.initializeStorage(bucketName);
     try {
       await this.storage!.delete(objectKey);

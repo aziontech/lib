@@ -129,9 +129,9 @@ if (result) {
 
 ```typescript
 import { deleteDatabase } from 'azion/sql';
-import { DeletedAzionDatabase } from 'azion/sql/types';
+import { AzionDeletedDatabase } from 'azion/sql/types';
 
-const result: DeletedAzionDatabase | null = await deleteDatabase(123, { debug: true });
+const result: AzionDeletedDatabase | null = await deleteDatabase(123, { debug: true });
 if (result) {
   console.log(`Database ${result.id} deleted successfully`);
 } else {
@@ -216,9 +216,9 @@ if (result) {
 
 ```typescript
 import { useQuery } from 'azion/sql';
-import { QueryResponse } from 'azion/sql/types';
+import { AzionQueryResponse } from 'azion/sql/types';
 
-const result: QueryResponse | null = await useQuery('my-db', ['SELECT * FROM users'], { debug: true });
+const result: AzionQueryResponse | null = await useQuery('my-db', ['SELECT * FROM users'], { debug: true });
 if (result) {
   console.log(`Query executed. Rows returned: ${result.rows.length}`);
 } else {
@@ -275,7 +275,7 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion/sql';
-import { AzionSQLClient, AzionDatabase, QueryResponse } from 'azion/sql/types';
+import { AzionSQLClient, AzionDatabase, AzionQueryResponse } from 'azion/sql/types';
 
 const client: AzionSQLClient = createClient({ token: 'your-api-token', { debug: true } });
 
@@ -289,7 +289,7 @@ if (allDatabases) {
   console.log(`Retrieved ${allDatabases.length} databases`);
 }
 
-const queryResult: QueryResponse | null = await newDatabase.query(['SELECT * FROM users'], { debug: true });
+const queryResult: AzionQueryResponse | null = await newDatabase.query(['SELECT * FROM users'], { debug: true });
 if (queryResult) {
   console.log(`Query executed. Rows returned: ${queryResult.rows.length}`);
 }
@@ -321,7 +321,7 @@ Deletes a database by its ID.
 
 **Returns:**
 
-- `Promise<DeletedAzionDatabase | null>` - Object confirming deletion or null if deletion failed.
+- `Promise<AzionDeletedDatabase | null>` - Object confirming deletion or null if deletion failed.
 
 ### `getDatabase`
 
@@ -343,7 +343,7 @@ Retrieves a list of databases with optional filtering and pagination.
 
 **Parameters:**
 
-- `params?: DatabaseCollectionOptions` - Optional parameters for filtering and pagination.
+- `params?: AzionDatabaseCollectionOptions` - Optional parameters for filtering and pagination.
   - `ordering?: string` - Field to order the results by.
   - `page?: number` - Page number for pagination.
   - `page_size?: number` - Number of items per page.

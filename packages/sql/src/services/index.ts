@@ -1,4 +1,4 @@
-import { OptionsParams, QueryResponse } from '../types';
+import { AzionClientOptions, AzionQueryResponse } from '../types';
 import { toObjectQueryExecutionResponse } from '../utils/mappers/to-object';
 import { getEdgeDatabases, postQueryEdgeDatabase } from './api/index';
 import { InternalAzionSql } from './runtime/index';
@@ -8,8 +8,8 @@ export const apiQuery = async (
   token: string,
   name: string,
   statements: string[],
-  options?: OptionsParams,
-): Promise<QueryResponse> => {
+  options?: AzionClientOptions,
+): Promise<AzionQueryResponse> => {
   const databaseResponse = await getEdgeDatabases(token, { search: name }, options?.debug);
   if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
     throw new Error(`Database ${name} not found`);
@@ -20,7 +20,7 @@ export const apiQuery = async (
   }
   const apiResponse = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
   if (apiResponse) {
-    const resultStatements: QueryResponse = {
+    const resultStatements: AzionQueryResponse = {
       state: 'executed',
       data: apiResponse.data.map((result, index) => {
         let info;
@@ -55,11 +55,11 @@ export const runtimeQuery = async (
   name: string,
   statements: string[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  options?: OptionsParams,
-): Promise<QueryResponse> => {
+  options?: AzionClientOptions,
+): Promise<AzionQueryResponse> => {
   const internalSql = new InternalAzionSql();
   const internalResult = await internalSql.query(name, statements);
-  const resultStatements: QueryResponse = {
+  const resultStatements: AzionQueryResponse = {
     state: 'executed',
     data: [],
   };

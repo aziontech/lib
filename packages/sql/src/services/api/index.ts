@@ -1,4 +1,4 @@
-import { DatabaseCollectionOptions } from '../../types';
+import { AzionDatabaseCollectionOptions } from '../../types';
 import type {
   ApiCreateDatabaseResponse,
   ApiDeleteDatabaseResponse,
@@ -104,7 +104,7 @@ const getEdgeDatabaseById = async (
 
 const getEdgeDatabases = async (
   token: string,
-  params?: Partial<DatabaseCollectionOptions>,
+  params?: Partial<AzionDatabaseCollectionOptions>,
   debug?: boolean,
 ): Promise<ApiListDatabasesResponse | null> => {
   try {
