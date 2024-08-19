@@ -9,41 +9,41 @@ export interface AzionDatabase {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  query?: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>;
-  execute?: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>;
+  query?: (statements: string[], options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
+  execute?: (statements: string[], options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
 }
 
-export interface DeletedAzionDatabase {
+export interface AzionDeletedDatabase {
   id: number;
   state: 'executed' | 'pending';
   data: null;
 }
 
-export type QueryParams = string | number | boolean | null;
+export type AzionQueryParams = string | number | boolean | null;
 
-export type QueryExecutionParams = {
+export type AzionQueryExecutionParams = {
   statements: string[];
-  params?: (QueryParams | Record<string, QueryParams>)[];
+  params?: (AzionQueryParams | Record<string, AzionQueryParams>)[];
 };
 
-export type QueryExecutionInfo = {
+export type AzionQueryExecutionInfo = {
   rowsRead?: number;
   rowsWritten?: number;
   durationMs?: number;
 };
 
 export type NonSelectQueryResult = {
-  info?: QueryExecutionInfo;
+  info?: AzionQueryExecutionInfo;
 };
 
 export type QueryResult = {
   columns?: string[];
   rows?: (number | string)[][];
   statement?: string;
-  info?: QueryExecutionInfo;
+  info?: AzionQueryExecutionInfo;
 };
 
-export type QueryResponse = {
+export type AzionQueryResponse = {
   state: 'executed' | 'pending';
   data: QueryResult[] | NonSelectQueryResult;
   toObject?: () => JsonObjectQueryExecutionResponse;
@@ -51,7 +51,7 @@ export type QueryResponse = {
 
 export interface AzionSQLClient {
   createDatabase: (name: string) => Promise<AzionDatabase | null>;
-  deleteDatabase: (id: number) => Promise<DeletedAzionDatabase | null>;
+  deleteDatabase: (id: number) => Promise<AzionDeletedDatabase | null>;
   getDatabase?: (name: string) => Promise<AzionDatabase | null>;
   getDatabases: (params?: {
     ordering?: string;
@@ -60,16 +60,18 @@ export interface AzionSQLClient {
     search?: string;
   }) => Promise<AzionDatabase[] | null>;
 }
-export type CreateAzionSQLClient = (config?: Partial<{ token: string; options?: OptionsParams }>) => AzionSQLClient;
+export type CreateAzionSQLClient = (
+  config?: Partial<{ token: string; options?: AzionClientOptions }>,
+) => AzionSQLClient;
 
-export type DatabaseCollectionOptions = {
+export type AzionDatabaseCollectionOptions = {
   ordering?: string;
   page?: number;
   page_size?: number;
   search?: string;
 };
 
-export type OptionsParams = {
+export type AzionClientOptions = {
   debug?: boolean;
   force?: boolean;
 };

@@ -51,7 +51,7 @@ export interface AzionDeletedBucket {
   name: string;
   state: 'executed' | 'pending';
 }
-export interface StorageClient {
+export interface AzionStorageClient {
   getBuckets: (options?: BucketCollectionOptions) => Promise<Bucket[] | null>;
   createBucket: (name: string, edge_access: string) => Promise<Bucket | null>;
   updateBucket: (name: string, edge_access: string) => Promise<Bucket | null>;
@@ -64,4 +64,11 @@ export type AzionBucketCollectionOptions = {
   page_size?: number;
 };
 
-export type CreateStorageClient = (token?: string, debug?: boolean) => StorageClient;
+export type AzionClientOptions = {
+  debug?: boolean;
+  force?: boolean;
+};
+
+export type CreateAzionStorageClient = (
+  config?: Partial<{ token: string; options?: AzionClientOptions }>,
+) => AzionStorageClient;
