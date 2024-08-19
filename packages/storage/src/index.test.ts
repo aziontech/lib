@@ -11,8 +11,8 @@ import {
   updateBucket,
   updateObject,
 } from '../src/index';
-import * as services from '../src/services';
 import { StorageClient } from '../src/types';
+import * as services from './services/api/index';
 
 jest.mock('../src/services');
 

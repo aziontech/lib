@@ -110,9 +110,9 @@ if (bucket) {
 
 ```typescript
 import { createBucket } from 'azion/storage';
-import { Bucket } from 'azion/storage/types';
+import { AzionBucket } from 'azion/storage/types';
 
-const bucket: Bucket | null = await createBucket('my-new-bucket', 'public', true);
+const bucket: AzionBucket | null = await createBucket('my-new-bucket', 'public', true);
 if (bucket) {
   console.log(`Bucket created with name: ${bucket.name}`);
 } else {
@@ -139,9 +139,9 @@ if (result) {
 
 ```typescript
 import { deleteBucket } from 'azion/storage';
-import { DeletedBucket } from 'azion/storage/types';
+import { AzionDeletedBucket } from 'azion/storage/types';
 
-const result: DeletedBucket | null = await deleteBucket('my-bucket', true);
+const result: AzionDeletedBucket | null = await deleteBucket('my-bucket', true);
 if (result) {
   console.log(`Bucket ${result.name} deleted successfully`);
 } else {
@@ -168,9 +168,9 @@ if (buckets) {
 
 ```typescript
 import { getBuckets } from 'azion/storage';
-import { Bucket } from 'azion/storage/types';
+import { AzionBucket } from 'azion/storage/types';
 
-const buckets: Bucket[] | null = await getBuckets({ page: 1, page_size: 10 }, true);
+const buckets: AzionBucket[] | null = await getBuckets({ page: 1, page_size: 10 }, true);
 if (buckets) {
   console.log(`Retrieved ${buckets.length} buckets`);
 } else {
@@ -197,9 +197,9 @@ if (bucket) {
 
 ```typescript
 import { getBucket } from 'azion/storage';
-import { Bucket } from 'azion/storage/types';
+import { AzionBucket } from 'azion/storage/types';
 
-const bucket: Bucket | null = await getBucket('my-bucket', true);
+const bucket: AzionBucket | null = await getBucket('my-bucket', true);
 if (bucket) {
   console.log(`Retrieved bucket: ${bucket.name}`);
 } else {
@@ -226,9 +226,9 @@ if (updatedBucket) {
 
 ```typescript
 import { updateBucket } from 'azion/storage';
-import { Bucket } from 'azion/storage/types';
+import { AzionBucket } from 'azion/storage/types';
 
-const updatedBucket: Bucket | null = await updateBucket('my-bucket', 'private', true);
+const updatedBucket: AzionBucket | null = await updateBucket('my-bucket', 'private', true);
 if (updatedBucket) {
   console.log(`Bucket updated: ${updatedBucket.name}`);
 } else {
@@ -256,9 +256,9 @@ if (newObject) {
 
 ```typescript
 import { createObject } from 'azion/storage';
-import { BucketObject } from 'azion/storage/types';
+import { AzionBucketObject } from 'azion/storage/types';
 
-const newObject: BucketObject | null = await createObject('my-bucket', 'new-file.txt', 'File content', true);
+const newObject: AzionBucketObject | null = await createObject('my-bucket', 'new-file.txt', 'File content', true);
 if (newObject) {
   console.log(`Object created with key: ${newObject.key}`);
   console.log(`Object content: ${newObject.content}`);
@@ -286,9 +286,9 @@ if (object) {
 
 ```typescript
 import { getObjectByKey } from 'azion/storage';
-import { BucketObject } from 'azion/storage/types';
+import { AzionBucketObject } from 'azion/storage/types';
 
-const object: BucketObject | null = await getObjectByKey('my-bucket', 'file.txt', true);
+const object: AzionBucketObject | null = await getObjectByKey('my-bucket', 'file.txt', true);
 if (object) {
   console.log(`Retrieved object: ${object.key}`);
 } else {
@@ -315,9 +315,9 @@ if (objects) {
 
 ```typescript
 import { getObjects } from 'azion/storage';
-import { BucketObject } from 'azion/storage/types';
+import { AzionBucketObject } from 'azion/storage/types';
 
-const objects: BucketObject[] | null = await getObjects('my-bucket', true);
+const objects: AzionBucketObject[] | null = await getObjects('my-bucket', true);
 if (objects) {
   console.log(`Retrieved ${objects.length} objects from the bucket`);
 } else {
@@ -345,9 +345,9 @@ if (updatedObject) {
 
 ```typescript
 import { updateObject } from 'azion/storage';
-import { BucketObject } from 'azion/storage/types';
+import { AzionBucketObject } from 'azion/storage/types';
 
-const updatedObject: BucketObject | null = await updateObject('my-bucket', 'file.txt', 'Updated content', true);
+const updatedObject: AzionBucketObject | null = await updateObject('my-bucket', 'file.txt', 'Updated content', true);
 if (updatedObject) {
   console.log(`Object updated: ${updatedObject.key}`);
   console.log(`New content: ${updatedObject.content}`);
@@ -375,9 +375,9 @@ if (result) {
 
 ```typescript
 import { deleteObject } from 'azion/storage';
-import { DeletedBucketObject } from 'azion/storage/types';
+import { AzionDeletedBucketObject } from 'azion/storage/types';
 
-const result: DeletedBucketObject | null = await deleteObject('my-bucket', 'file.txt', true);
+const result: AzionDeletedBucketObject | null = await deleteObject('my-bucket', 'file.txt', true);
 if (result) {
   console.log(`Object ${result.key} deleted successfully`);
 } else {
@@ -419,26 +419,26 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion/storage';
-import { StorageClient, Bucket, BucketObject, DeletedBucket, DeletedBucketObject } from 'azion/storage/types';
+import { StorageClient, AzionBucket, AzionBucketObject } from 'azion/storage/types';
 
 const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
 
-const newBucket: Bucket | null = await client.createBucket('my-new-bucket', 'public');
+const newBucket: AzionBucket | null = await client.createBucket('my-new-bucket', 'public');
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
 
-const allBuckets: Bucket[] | null = await client.getBuckets();
+const allBuckets: AzionBucket[] | null = await client.getBuckets();
 if (allBuckets) {
   console.log(`Retrieved ${allBuckets.length} buckets`);
 }
 
-const newObject: BucketObject | null = await client.createObject('my-new-bucket', 'new-file.txt', 'File content');
+const newObject: AzionBucketObject | null = await client.createObject('my-new-bucket', 'new-file.txt', 'File content');
 if (newObject) {
   console.log(`Object created with key: ${newObject.key}`);
 }
 
-const updatedObject: BucketObject | null = await newObject.updateObject('new-file.txt', 'Updated content');
+const updatedObject: AzionBucketObject | null = await newObject.updateObject('new-file.txt', 'Updated content');
 if (updatedObject) {
   console.log(`Object updated with key: ${updatedObject.key}`);
 }
@@ -458,7 +458,7 @@ Creates a new bucket.
 
 **Returns:**
 
-- `Promise<Bucket | null>` - The created bucket object or null if creation failed.
+- `Promise<AzionBucket | null>` - The created bucket object or null if creation failed.
 
 ### `deleteBucket`
 
@@ -471,7 +471,7 @@ Deletes a bucket by its name.
 
 **Returns:**
 
-- `Promise<DeletedBucket | null>` - Object confirming deletion or null if deletion failed.
+- `Promise<AzionDeletedBucket | null>` - Object confirming deletion or null if deletion failed.
 
 ### `getBuckets`
 
@@ -479,14 +479,14 @@ Retrieves a list of buckets with optional filtering and pagination.
 
 **Parameters:**
 
-- `options?: BucketCollectionOptions` - Optional parameters for filtering and pagination.
+- `options?: AzionBucketCollectionOptions` - Optional parameters for filtering and pagination.
   - `page?: number` - Page number for pagination.
   - `page_size?: number` - Number of items per page.
 - `debug?: boolean` - Enable debug mode for detailed logging.
 
 **Returns:**
 
-- `Promise<Bucket[] | null>` - Array of bucket objects or null if retrieval failed.
+- `Promise<AzionBucket[] | null>` - Array of bucket objects or null if retrieval failed.
 
 ### `getBucket`
 
@@ -499,7 +499,7 @@ Retrieves a bucket by its name.
 
 **Returns:**
 
-- `Promise<Bucket | null>` - The retrieved bucket object or null if not found.
+- `Promise<AzionBucket | null>` - The retrieved bucket object or null if not found.
 
 ### `updateBucket`
 
@@ -513,7 +513,7 @@ Updates an existing bucket.
 
 **Returns:**
 
-- `Promise<Bucket | null>` - The updated bucket object or null if update failed.
+- `Promise<AzionBucket | null>` - The updated bucket object or null if update failed.
 
 ### `createObject`
 
@@ -528,7 +528,7 @@ Creates a new object in a specific bucket.
 
 **Returns:**
 
-- `Promise<BucketObject | null>` - The created object or null if creation failed.
+- `Promise<AzionBucketObject | null>` - The created object or null if creation failed.
 
 ### `getObjectByKey`
 
@@ -542,7 +542,7 @@ Retrieves an object from a specific bucket by its key.
 
 **Returns:**
 
-- `Promise<BucketObject | null>` - The retrieved object or null if not found.
+- `Promise<AzionBucketObject | null>` - The retrieved object or null if not found.
 
 ### `getObjects`
 
@@ -555,7 +555,7 @@ Retrieves a list of objects in a specific bucket.
 
 **Returns:**
 
-- `Promise<BucketObject[] | null>` - Array of bucket objects or null if retrieval failed.
+- `Promise<AzionBucketObject[] | null>` - Array of bucket objects or null if retrieval failed.
 
 ### `updateObject`
 
@@ -570,7 +570,7 @@ Updates an existing object in a specific bucket.
 
 **Returns:**
 
-- `Promise<BucketObject | null>` - The updated object or null if update failed.
+- `Promise<AzionBucketObject | null>` - The updated object or null if update failed.
 
 ### `deleteObject`
 
@@ -584,7 +584,7 @@ Deletes an object from a specific bucket.
 
 **Returns:**
 
-- `Promise<DeletedBucketObject | null>` - Confirmation of deletion or null if deletion failed.
+- `Promise<AzionDeletedBucketObject | null>` - Confirmation of deletion or null if deletion failed.
 
 ### `createClient`
 
@@ -611,26 +611,26 @@ Configuration options for the Storage client.
 
 An object with methods to interact with Storage.
 
-- `getBuckets: (options?: BucketCollectionOptions) => Promise<Bucket[] | null>`
-- `createBucket: (name: string, edge_access: string) => Promise<Bucket | null>`
-- `updateBucket: (name: string, edge_access: string) => Promise<Bucket | null>`
-- `deleteBucket: (name: string) => Promise<DeletedBucket | null>`
-- `getBucket: (name: string) => Promise<Bucket | null>`
+- `getBuckets: (options?: BucketCollectionOptions) => Promise<AzionBucket[] | null>`
+- `createBucket: (name: string, edge_access: string) => Promise<AzionBucket | null>`
+- `updateBucket: (name: string, edge_access: string) => Promise<AzionBucket | null>`
+- `deleteBucket: (name: string) => Promise<AzionDeletedBucket | null>`
+- `getBucket: (name: string) => Promise<AzionBucket | null>`
 
-### `Bucket`
+### `AzionBucket`
 
 The bucket object.
 
 - `name: string`
 - `edge_access?: string`
 - `state?: 'executed' | 'pending'`
-- `getObjects?: () => Promise<BucketObject[] | null>`
-- `getObjectByKey?: (objectKey: string) => Promise<BucketObject | null>`
-- `createObject?: (objectKey: string, file: string) => Promise<BucketObject | null>`
-- `updateObject?: (objectKey: string, file: string) => Promise<BucketObject | null>`
-- `deleteObject?: (objectKey: string) => Promise<DeletedBucketObject | null>`
+- `getObjects?: () => Promise<AzionBucketObject[] | null>`
+- `getObjectByKey?: (objectKey: string) => Promise<AzionBucketObject | null>`
+- `createObject?: (objectKey: string, file: string) => Promise<AzionBucketObject | null>`
+- `updateObject?: (objectKey: string, file: string) => Promise<AzionBucketObject | null>`
+- `deleteObject?: (objectKey: string) => Promise<AzionDeletedBucketObject | null>`
 
-### `BucketObject`
+### `AzionBucketObject`
 
 The bucket object.
 
@@ -641,14 +641,14 @@ The bucket object.
 - `content_type?: string`
 - `content?: string`
 
-### `DeletedBucket`
+### `AzionDeletedBucket`
 
 The response object from a delete bucket request.
 
 - `name: string`
 - `state: 'executed' | 'pending'`
 
-### `DeletedBucketObject`
+### `AzionDeletedBucketObject`
 
 The response object from a delete object request.
 

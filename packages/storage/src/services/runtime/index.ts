@@ -1,4 +1,4 @@
-import { Azion, Bucket, BucketObject, DeletedBucketObject } from './types';
+import { Azion, Bucket, BucketObject, DeletedBucketObject } from '../../types';
 
 export const isInternalStorageAvailable = (): boolean => {
   return typeof Azion !== 'undefined' && Azion.Storage !== undefined;

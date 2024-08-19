@@ -12,62 +12,7 @@ export declare namespace Azion {
   }
 }
 
-export interface ApiBucket {
-  name: string;
-  edge_access: string;
-}
-
-export interface ApiListBucketsResponse {
-  links: {
-    next: string | null;
-    previous: string | null;
-  };
-  count: number;
-  results: ApiBucket[];
-}
-
-export interface ApiCreateBucketResponse {
-  state: 'executed' | 'pending';
-  data: ApiBucket;
-}
-
-export interface ApiEditBucketResponse {
-  state: 'executed' | 'pending';
-  data: ApiBucket;
-}
-
-export interface ApiDeleteBucketResponse {
-  state: 'executed' | 'pending';
-  data: Bucket;
-}
-
-export interface ApiListObjectsResponse {
-  continuation_token: string | null;
-  results: BucketObject[];
-}
-
-export interface ApiCreateObjectResponse {
-  state: 'executed' | 'pending';
-  data: {
-    object_key: string;
-  };
-}
-
-export interface ApiDeleteObjectResponse {
-  state: 'executed' | 'pending';
-  data: {
-    object_key: string;
-  };
-}
-
-export interface ApiUpdateObjectResponse {
-  state: 'executed' | 'pending';
-  data: {
-    object_key: string;
-  };
-}
-
-export interface Bucket {
+export interface AzionBucket {
   name: string;
   edge_access: string;
   state?: 'executed' | 'pending';
@@ -88,7 +33,7 @@ export interface Bucket {
   deleteObject: (bucketName: string, objectKey: string) => Promise<DeletedBucketObject | null>;
 }
 
-export interface BucketObject {
+export interface AzionBucketObject {
   key: string;
   state?: 'executed' | 'pending';
   size?: number;
@@ -97,12 +42,12 @@ export interface BucketObject {
   content?: string;
 }
 
-export interface DeletedBucketObject {
+export interface AzionDeletedBucketObject {
   key: string;
   state: 'executed' | 'pending';
 }
 
-export interface DeletedBucket {
+export interface AzionDeletedBucket {
   name: string;
   state: 'executed' | 'pending';
 }
@@ -114,7 +59,7 @@ export interface StorageClient {
   getBucket: (name: string) => Promise<Bucket | null>;
 }
 
-export type BucketCollectionOptions = {
+export type AzionBucketCollectionOptions = {
   page?: number;
   page_size?: number;
 };
