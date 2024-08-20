@@ -4,21 +4,19 @@ export interface AzionBucket {
   name: string;
   edge_access: string;
   state?: 'executed' | 'executed-runtime' | 'pending';
-  getObjects: (bucketName: string) => Promise<AzionBucketObject[] | null>;
-  getObjectByKey: (bucketName: string, objectKey: string) => Promise<AzionBucketObject | null>;
+  getObjects: () => Promise<AzionBucketObject[] | null>;
+  getObjectByKey: (objectKey: string) => Promise<AzionBucketObject | null>;
   createObject: (
-    bucketName: string,
     objectKey: string,
     file: string,
     options?: { content_type?: string },
   ) => Promise<AzionBucketObject | null>;
   updateObject: (
-    bucketName: string,
     objectKey: string,
     file: string,
     options?: { content_type?: string },
   ) => Promise<AzionBucketObject | null>;
-  deleteObject: (bucketName: string, objectKey: string) => Promise<AzionDeletedBucketObject | null>;
+  deleteObject: (objectKey: string) => Promise<AzionDeletedBucketObject | null>;
 }
 
 export interface AzionBucketObject {

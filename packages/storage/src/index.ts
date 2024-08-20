@@ -22,6 +22,8 @@ import {
 
 import { InternalStorageClient, isInternalStorageAvailable } from './services/runtime/index';
 
+import { findBucketByName } from './utils/index';
+
 const envDebugFlag = process.env.AZION_DEBUG && process.env.AZION_DEBUG === 'true';
 const resolveToken = (token?: string) => {
   return token ?? process.env.AZION_TOKEN ?? '';
@@ -88,7 +90,7 @@ export const getBucketsMethod = async (
 ): Promise<AzionBucket[] | null> => {
   const apiResponse = await getBuckets(resolveToken(token), options, resolveDebug(clientOptions?.debug));
   if (apiResponse) {
-    return apiResponse.results.map((bucket) => ({
+    return apiResponse.results?.map((bucket) => ({
       ...bucket,
       getObjects: (): Promise<AzionBucketObject[] | null> => getObjectsMethod(token, bucket.name, clientOptions),
       getObjectByKey: (objectKey: string): Promise<AzionBucketObject | null> =>
@@ -106,6 +108,12 @@ export const getBucketsMethod = async (
 
 const getBucketMethod = createInternalOrExternalMethod(
   async (token: string, name: string, options?: AzionClientOptions): Promise<AzionBucket | null> => {
+    // NOTE: This is a temporary solution because the API does not provide an endpoint
+    // to search for a single bucket by name. When available, it must be replaced
+    // by a direct API call.
+    const bucket = await findBucketByName(token, name, options);
+    if (!bucket) return null;
+
     const internalClient = new InternalStorageClient(token, options?.debug);
     return internalClient.getBucket(name);
   },
@@ -113,16 +121,7 @@ const getBucketMethod = createInternalOrExternalMethod(
     // NOTE: This is a temporary solution because the API does not provide an endpoint
     // to search for a single bucket by name. When available, it must be replaced
     // by a direct API call.
-    const PAGE_SIZE_TEMP = 100000;
-    const apiResponse = await getBuckets(
-      resolveToken(token),
-      { page_size: PAGE_SIZE_TEMP },
-      resolveDebug(options?.debug),
-    );
-    const buckets = apiResponse.results;
-    if (!buckets) return null;
-
-    const bucket = buckets.find((b) => b.name === name);
+    const bucket = await findBucketByName(token, name, options);
     if (!bucket) return null;
 
     return {
@@ -167,7 +166,8 @@ export const updateBucketMethod = async (
 const getObjectsMethod = createInternalOrExternalMethod(
   async (token: string, bucketName: string, options?: AzionClientOptions): Promise<AzionBucketObject[] | null> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
-    return internalClient.getObjects(bucketName);
+    internalClient.name = bucketName;
+    return internalClient.getObjects();
   },
   async (token: string, bucketName: string, options?: AzionClientOptions): Promise<AzionBucketObject[] | null> => {
     const apiResponse = await getObjects(resolveToken(token), bucketName, resolveDebug(options?.debug));
@@ -183,7 +183,8 @@ const getObjectByKeyMethod = createInternalOrExternalMethod(
     options?: AzionClientOptions,
   ): Promise<AzionBucketObject | null> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
-    return internalClient.getObjectByKey(bucketName, objectKey);
+    internalClient.name = bucketName;
+    return internalClient.getObjectByKey(objectKey);
   },
   async (
     token: string,
@@ -205,7 +206,8 @@ const createObjectMethod = createInternalOrExternalMethod(
     options?: AzionClientOptions,
   ): Promise<AzionBucketObject | null> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
-    return internalClient.createObject(bucketName, objectKey, file);
+    internalClient.name = bucketName;
+    return internalClient.createObject(objectKey, file);
   },
   async (
     token: string,
@@ -234,7 +236,8 @@ const updateObjectMethod = createInternalOrExternalMethod(
     options?: AzionClientOptions,
   ): Promise<AzionBucketObject | null> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
-    return internalClient.updateObject(bucketName, objectKey, file);
+    internalClient.name = bucketName;
+    return internalClient.updateObject(objectKey, file);
   },
   async (
     token: string,
@@ -256,7 +259,8 @@ const deleteObjectMethod = createInternalOrExternalMethod(
     options?: AzionClientOptions,
   ): Promise<AzionDeletedBucketObject | null> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
-    return internalClient.deleteObject(bucketName, objectKey);
+    internalClient.name = bucketName;
+    return internalClient.deleteObject(objectKey);
   },
   async (
     token: string,

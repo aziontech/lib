@@ -3,14 +3,21 @@ export namespace Azion {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   export declare namespace Storage {
     export interface StorageInstance {
-      list(): Promise<{ entries: { key: string }[] }>;
+      list(): Promise<{ entries: { key: string; content_length?: number }[] }>;
       put(
         key: string,
         value: ArrayBuffer,
         options?: { 'content-length'?: string; 'content-type'?: string },
       ): Promise<void>;
       delete(key: string): Promise<void>;
-      get(key: string): Promise<ArrayBuffer>;
+      get(key: string): Promise<StorageObject>;
+    }
+
+    export interface StorageObject {
+      arrayBuffer(): Promise<ArrayBuffer>;
+      metadata: Map<string, string>;
+      contentType: string;
+      contentLength: number;
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-namespace

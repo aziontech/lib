@@ -1,11 +1,19 @@
 import { Azion } from 'azion/types';
 import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
+import { retryWithBackoff } from '../../utils/index';
 
 export const isInternalStorageAvailable = (): boolean => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (globalThis as any).Azion?.Sql || null;
 };
 
+/**
+ * InternalStorageClient class to interact with Azion's Runtime  Storage API.
+ *
+ * This class provides methods to perform CRUD operations on the storage.
+ * Due to eventual consistency, operations may fail temporarily after creating a storage instance.
+ * To handle this, methods use retry with exponential backoff.
+ */
 export class InternalStorageClient implements AzionBucket {
   private storage: Azion.Storage.StorageInstance | null = null;
 
@@ -14,6 +22,11 @@ export class InternalStorageClient implements AzionBucket {
     private debug: boolean | undefined,
   ) {}
 
+  /**
+   * Initializes the storage instance if not already initialized.
+   *
+   * @param {string} bucketName The name of the bucket to initialize.
+   */
   private initializeStorage(bucketName: string) {
     if (!this.storage) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,50 +37,84 @@ export class InternalStorageClient implements AzionBucket {
   name: string = '';
   edge_access: string = 'unknown';
 
+  /**
+   * Retrieves a bucket by name.
+   *
+   * @param {string} name The name of the bucket.
+   * @returns {Promise<AzionBucket | null>} The bucket object or null if not found.
+   */
   async getBucket(name: string): Promise<AzionBucket | null> {
     this.initializeStorage(name);
     if (this.storage) {
+      this.name = name;
       return {
         name,
         edge_access: 'unknown',
         state: 'executed-runtime',
-        getObjects: (bucketName: string) => this.getObjects(bucketName),
-        getObjectByKey: (bucketName: string, objectKey: string) => this.getObjectByKey(bucketName, objectKey),
-        createObject: (bucketName: string, objectKey: string, file: string, options?: { content_type?: string }) =>
-          this.createObject(bucketName, objectKey, file, options),
-        updateObject: (bucketName: string, objectKey: string, file: string, options?: { content_type?: string }) =>
-          this.updateObject(bucketName, objectKey, file, options),
-        deleteObject: (bucketName: string, objectKey: string) => this.deleteObject(bucketName, objectKey),
+        getObjects: this.getObjects.bind(this),
+        getObjectByKey: this.getObjectByKey.bind(this),
+        createObject: this.createObject.bind(this),
+        updateObject: this.updateObject.bind(this),
+        deleteObject: this.deleteObject.bind(this),
       };
     }
     return null;
   }
 
-  async getObjects(bucketName: string): Promise<AzionBucketObject[] | null> {
-    this.initializeStorage(bucketName);
+  /**
+   * Retrieves all objects in the bucket.
+   *
+   * Uses retry with exponential backoff to handle eventual consistency delays.
+   *
+   * @returns {Promise<AzionBucketObject[] | null>} The list of objects or null if an error occurs.
+   */
+  async getObjects(): Promise<AzionBucketObject[] | null> {
+    this.initializeStorage(this.name);
     try {
-      const objectList = await this.storage!.list();
-      return objectList.entries.map((entry: { key: string; content_length?: number }) => ({
-        key: entry.key,
-        size: entry.content_length,
-      }));
+      const objectList = await retryWithBackoff(() => this.storage!.list());
+      const objects = await Promise.all(
+        objectList.entries.map(async (entry: { key: string; content_length?: number }) => {
+          const storageObject = await this.storage!.get(entry.key);
+          const arrayBuffer = await storageObject.arrayBuffer();
+          const decoder = new TextDecoder();
+          const content = decoder.decode(arrayBuffer);
+          return {
+            key: entry.key,
+            size: entry.content_length,
+            content: content,
+            content_type: storageObject.metadata.get('content-type'),
+            state: 'executed-runtime' as const,
+          };
+        }),
+      );
+      return objects;
     } catch (error) {
       if (this.debug) console.error('Error getting objects:', error);
       return null;
     }
   }
 
-  async getObjectByKey(bucketName: string, objectKey: string): Promise<AzionBucketObject | null> {
-    this.initializeStorage(bucketName);
+  /**
+   * Retrieves an object by key.
+   *
+   * Uses retry with exponential backoff to handle eventual consistency delays.
+   *
+   * @param {string} objectKey The key of the object to retrieve.
+   * @returns {Promise<AzionBucketObject | null>} The object or null if an error occurs.
+   */
+  async getObjectByKey(objectKey: string): Promise<AzionBucketObject | null> {
+    this.initializeStorage(this.name);
     try {
-      const storageObject = await this.storage!.get(objectKey);
-      const uint8Array = new Uint8Array(storageObject);
-      const content = btoa(String.fromCharCode.apply(null, Array.from(uint8Array)));
+      const storageObject = await retryWithBackoff(() => this.storage!.get(objectKey));
+      const arrayBuffer = await storageObject.arrayBuffer();
+      const decoder = new TextDecoder();
+      const content = decoder.decode(arrayBuffer);
       return {
         state: 'executed-runtime',
         key: objectKey,
-        size: storageObject.byteLength,
+        size: storageObject.contentLength,
         content: content,
+        content_type: storageObject.metadata.get('content-type'),
       };
     } catch (error) {
       if (this.debug) console.error('Error getting object by key:', error);
@@ -75,18 +122,29 @@ export class InternalStorageClient implements AzionBucket {
     }
   }
 
+  /**
+   * Creates a new object in the bucket.
+   *
+   * Uses retry with exponential backoff to handle eventual consistency delays.
+   *
+   * @param {string} objectKey The key of the object to create.
+   * @param {string} content The content of the object.
+   * @param {{ content_type?: string }} [options] Optional metadata for the object.
+   * @returns {Promise<AzionBucketObject | null>} The created object or null if an error occurs.
+   */
   async createObject(
-    bucketName: string,
     objectKey: string,
     content: string,
     options?: { content_type?: string },
   ): Promise<AzionBucketObject | null> {
-    this.initializeStorage(bucketName);
+    this.initializeStorage(this.name);
     try {
       const contentBuffer = new TextEncoder().encode(content);
-      await this.storage!.put(objectKey, contentBuffer, {
-        'content-type': options?.content_type,
-      });
+      await retryWithBackoff(() =>
+        this.storage!.put(objectKey, contentBuffer, {
+          'content-type': options?.content_type,
+        }),
+      );
       return {
         state: 'executed-runtime',
         key: objectKey,
@@ -100,19 +158,36 @@ export class InternalStorageClient implements AzionBucket {
     }
   }
 
+  /**
+   * Updates an existing object in the bucket.
+   *
+   * Uses retry with exponential backoff to handle eventual consistency delays.
+   *
+   * @param {string} objectKey The key of the object to update.
+   * @param {string} content The new content of the object.
+   * @param {{ content_type?: string }} [options] Optional metadata for the object.
+   * @returns {Promise<AzionBucketObject | null>} The updated object or null if an error occurs.
+   */
   async updateObject(
-    bucketName: string,
     objectKey: string,
     content: string,
     options?: { content_type?: string },
   ): Promise<AzionBucketObject | null> {
-    return this.createObject(bucketName, objectKey, content, options);
+    return this.createObject(objectKey, content, options);
   }
 
-  async deleteObject(bucketName: string, objectKey: string): Promise<AzionDeletedBucketObject | null> {
-    this.initializeStorage(bucketName);
+  /**
+   * Deletes an object from the bucket.
+   *
+   * Uses retry with exponential backoff to handle eventual consistency delays.
+   *
+   * @param {string} objectKey The key of the object to delete.
+   * @returns {Promise<AzionDeletedBucketObject | null>} Confirmation of deletion or null if an error occurs.
+   */
+  async deleteObject(objectKey: string): Promise<AzionDeletedBucketObject | null> {
+    this.initializeStorage(this.name);
     try {
-      await this.storage!.delete(objectKey);
+      await retryWithBackoff(() => this.storage!.delete(objectKey));
       return { key: objectKey, state: 'executed-runtime' };
     } catch (error) {
       if (this.debug) console.error('Error deleting object:', error);
