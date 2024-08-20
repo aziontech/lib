@@ -1,17 +1,4 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
-export declare namespace Azion {
-  class Storage {
-    constructor(bucketName: string);
-    list(): Promise<{ entries: { key: string }[] }>;
-    put(
-      key: string,
-      value: ArrayBuffer,
-      options?: { 'content-length'?: string; 'content-type'?: string },
-    ): Promise<void>;
-    delete(key: string): Promise<void>;
-    get(key: string): Promise<ArrayBuffer>;
-  }
-}
 
 export interface AzionBucket {
   name: string;

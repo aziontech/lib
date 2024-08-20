@@ -1,11 +1,13 @@
-import { Azion, AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
+import { Azion } from 'azion/types';
+import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
 
 export const isInternalStorageAvailable = (): boolean => {
-  return typeof Azion !== 'undefined' && Azion.Storage !== undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (globalThis as any).Azion?.Sql || null;
 };
 
 export class InternalStorageClient implements AzionBucket {
-  private storage: Azion.Storage | null = null;
+  private storage: Azion.Storage.StorageInstance | null = null;
 
   constructor(
     private token: string,
@@ -14,7 +16,8 @@ export class InternalStorageClient implements AzionBucket {
 
   private initializeStorage(bucketName: string) {
     if (!this.storage) {
-      this.storage = new Azion.Storage(bucketName);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.storage = new (globalThis as any).Azion.Storage(bucketName);
     }
   }
 

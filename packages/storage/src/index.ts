@@ -32,22 +32,15 @@ const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
  * @template T The type of the function being created.
  * @param {T} internalMethod The method to be executed internally.
  * @param {T} externalMethod The method to be executed externally.
- * @param {string} token The token for API authentication.
- * @param {AzionClientOptions} [options] Additional options, including debug mode.
  * @returns {T} A function that executes either the internal or external method, depending on availability.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createInternalOrExternalMethod = <T extends (...args: any[]) => Promise<any>>(
-  internalMethod: T,
-  externalMethod: T,
-  token: string,
-  options?: AzionClientOptions,
-): T => {
-  return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
+const createInternalOrExternalMethod = <T extends (...args: any[]) => any>(internalMethod: T, externalMethod: T): T => {
+  return ((...args: Parameters<T>): ReturnType<T> => {
     if (isInternalStorageAvailable()) {
-      return internalMethod(token, ...args, options);
+      return internalMethod(...args);
     }
-    return externalMethod(token, ...args, options);
+    return externalMethod(...args);
   }) as T;
 };
 
@@ -116,6 +109,9 @@ const getBucketMethod = createInternalOrExternalMethod(
     return internalClient.getBucket(name);
   },
   async (token: string, name: string, options?: AzionClientOptions): Promise<AzionBucket | null> => {
+    // NOTE: This is a temporary solution because the API does not provide an endpoint
+    // to search for a single bucket by name. When available, it must be replaced
+    // by a direct API call.
     const PAGE_SIZE_TEMP = 100000;
     const apiResponse = await getBuckets(
       resolveToken(token),
@@ -141,8 +137,6 @@ const getBucketMethod = createInternalOrExternalMethod(
         deleteObjectMethod(token, name, objectKey, options),
     };
   },
-  resolveToken(),
-  { debug: resolveDebug() },
 );
 
 export const updateBucketMethod = async (
@@ -178,8 +172,6 @@ const getObjectsMethod = createInternalOrExternalMethod(
     const apiResponse = await getObjects(resolveToken(token), bucketName, resolveDebug(options?.debug));
     return apiResponse?.results ?? null;
   },
-  resolveToken(),
-  { debug: resolveDebug() },
 );
 
 const getObjectByKeyMethod = createInternalOrExternalMethod(
@@ -201,8 +193,6 @@ const getObjectByKeyMethod = createInternalOrExternalMethod(
     const apiResponse = await getObjectByKey(resolveToken(token), bucketName, objectKey, resolveDebug(options?.debug));
     return apiResponse ? { key: objectKey, content: apiResponse } : null;
   },
-  resolveToken(),
-  { debug: resolveDebug() },
 );
 
 const createObjectMethod = createInternalOrExternalMethod(
@@ -232,8 +222,6 @@ const createObjectMethod = createInternalOrExternalMethod(
     );
     return apiResponse ? { key: apiResponse.data.object_key, content: file, state: apiResponse.state } : null;
   },
-  resolveToken(),
-  { debug: resolveDebug() },
 );
 
 const updateObjectMethod = createInternalOrExternalMethod(
@@ -257,8 +245,6 @@ const updateObjectMethod = createInternalOrExternalMethod(
     const apiResponse = await putObject(resolveToken(token), bucketName, objectKey, file, resolveDebug(options?.debug));
     return apiResponse ? { key: apiResponse.data.object_key, content: file, state: apiResponse.state } : null;
   },
-  resolveToken(),
-  { debug: resolveDebug() },
 );
 
 const deleteObjectMethod = createInternalOrExternalMethod(
@@ -280,8 +266,6 @@ const deleteObjectMethod = createInternalOrExternalMethod(
     const apiResponse = await deleteObject(resolveToken(token), bucketName, objectKey, resolveDebug(options?.debug));
     return apiResponse ? { key: objectKey, state: apiResponse.state } : null;
   },
-  resolveToken(),
-  { debug: resolveDebug() },
 );
 
 /**

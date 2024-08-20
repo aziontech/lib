@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { QueryResponse } from '../../types';
+import { AzionQueryResponse } from '../../types';
 
 export type JsonObjectQueryExecutionResponse = {
   state: 'executed' | 'pending';
@@ -14,7 +14,7 @@ export type JsonObjectQueryExecutionResponse = {
   };
 };
 
-export const toObjectQueryExecutionResponse = ({ state, data }: QueryResponse) => {
+export const toObjectQueryExecutionResponse = ({ state, data }: AzionQueryResponse) => {
   let transformedData: any = null;
   if (data instanceof Array) {
     let transformedRows: any = null;

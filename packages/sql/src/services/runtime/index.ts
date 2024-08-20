@@ -1,5 +1,5 @@
+import { Azion } from 'azion/types';
 import { NonSelectQueryResult, QueryResult } from '../../types';
-import { Azion } from './types';
 
 export const getAzionSql = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
