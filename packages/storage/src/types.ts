@@ -3,7 +3,7 @@
 export interface AzionBucket {
   name: string;
   edge_access: string;
-  state?: 'executed' | 'pending';
+  state?: 'executed' | 'executed-runtime' | 'pending';
   getObjects: (bucketName: string) => Promise<AzionBucketObject[] | null>;
   getObjectByKey: (bucketName: string, objectKey: string) => Promise<AzionBucketObject | null>;
   createObject: (
@@ -23,7 +23,7 @@ export interface AzionBucket {
 
 export interface AzionBucketObject {
   key: string;
-  state?: 'executed' | 'pending';
+  state?: 'executed' | 'executed-runtime' | 'pending';
   size?: number;
   last_modified?: string;
   content_type?: string;
@@ -32,12 +32,12 @@ export interface AzionBucketObject {
 
 export interface AzionDeletedBucketObject {
   key: string;
-  state: 'executed' | 'pending';
+  state?: 'executed' | 'executed-runtime' | 'pending';
 }
 
 export interface AzionDeletedBucket {
   name: string;
-  state: 'executed' | 'pending';
+  state?: 'executed' | 'executed-runtime' | 'pending';
 }
 export interface AzionStorageClient {
   getBuckets: (options?: AzionBucketCollectionOptions) => Promise<AzionBucket[] | null>;

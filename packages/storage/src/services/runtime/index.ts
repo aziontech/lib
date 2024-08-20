@@ -30,6 +30,7 @@ export class InternalStorageClient implements AzionBucket {
       return {
         name,
         edge_access: 'unknown',
+        state: 'executed-runtime',
         getObjects: (bucketName: string) => this.getObjects(bucketName),
         getObjectByKey: (bucketName: string, objectKey: string) => this.getObjectByKey(bucketName, objectKey),
         createObject: (bucketName: string, objectKey: string, file: string, options?: { content_type?: string }) =>
@@ -63,6 +64,7 @@ export class InternalStorageClient implements AzionBucket {
       const uint8Array = new Uint8Array(storageObject);
       const content = btoa(String.fromCharCode.apply(null, Array.from(uint8Array)));
       return {
+        state: 'executed-runtime',
         key: objectKey,
         size: storageObject.byteLength,
         content: content,
@@ -86,6 +88,7 @@ export class InternalStorageClient implements AzionBucket {
         'content-type': options?.content_type,
       });
       return {
+        state: 'executed-runtime',
         key: objectKey,
         size: contentBuffer.byteLength,
         content_type: options?.content_type,
@@ -110,7 +113,7 @@ export class InternalStorageClient implements AzionBucket {
     this.initializeStorage(bucketName);
     try {
       await this.storage!.delete(objectKey);
-      return { key: objectKey, state: 'executed' };
+      return { key: objectKey, state: 'executed-runtime' };
     } catch (error) {
       if (this.debug) console.error('Error deleting object:', error);
       return null;
