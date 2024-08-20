@@ -1,5 +1,5 @@
 import { AzionClientOptions, AzionQueryResponse, QueryResult } from '../types';
-import { limitArraySize } from '../utils';
+import { limitArraySize, retryWithBackoff } from '../utils';
 import { toObjectQueryExecutionResponse } from '../utils/mappers/to-object';
 import { getEdgeDatabases, postQueryEdgeDatabase } from './api/index';
 import { InternalAzionSql } from './runtime/index';
@@ -19,7 +19,9 @@ export const apiQuery = async (
   if (!database || database?.id === undefined) {
     throw new Error(`Database ${name} not found`);
   }
-  const apiResponse = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
+  const apiResponse = await retryWithBackoff(() =>
+    postQueryEdgeDatabase(token, database.id, statements, options?.debug),
+  );
   if (apiResponse) {
     const resultStatements: AzionQueryResponse = {
       state: 'executed',
@@ -59,7 +61,7 @@ export const runtimeQuery = async (
   options?: AzionClientOptions,
 ): Promise<AzionQueryResponse> => {
   const internalSql = new InternalAzionSql();
-  const internalResult = await internalSql.query(name, statements, options);
+  const internalResult = await retryWithBackoff(() => internalSql.query(name, statements, options));
   const resultStatements: AzionQueryResponse = {
     state: 'executed-runtime',
     data: [],

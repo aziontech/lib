@@ -70,10 +70,16 @@ const postQueryEdgeDatabase = async (
 
     if (!response.ok) {
       if (debug) console.error('Error querying EdgeDB:', response.statusText);
-      return null;
+      throw new Error(`Error querying EdgeDB: ${response.statusText}`);
     }
 
     const json = await response.json();
+
+    if (json.error) {
+      if (debug) console.error('Error querying EdgeDB:', json.error);
+      throw new Error(json.error);
+    }
+
     if (debug) {
       // limit the size of the array to 10
       const limitedData: ApiQueryExecutionResponse = {
@@ -93,7 +99,7 @@ const postQueryEdgeDatabase = async (
     return json;
   } catch (error) {
     if (debug) console.error('Error querying EdgeDB:', error);
-    return null;
+    throw new Error((error as Error)?.message);
   }
 };
 
