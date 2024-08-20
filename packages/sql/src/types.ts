@@ -44,7 +44,7 @@ export type QueryResult = {
 };
 
 export type AzionQueryResponse = {
-  state: 'executed' | 'pending';
+  state: 'executed' | 'pending' | 'executed-runtime';
   data: QueryResult[] | NonSelectQueryResult;
   toObject?: () => JsonObjectQueryExecutionResponse;
 };

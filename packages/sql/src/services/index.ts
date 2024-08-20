@@ -60,12 +60,12 @@ export const runtimeQuery = async (
   const internalSql = new InternalAzionSql();
   const internalResult = await internalSql.query(name, statements);
   const resultStatements: AzionQueryResponse = {
-    state: 'executed',
+    state: 'executed-runtime',
     data: [],
   };
   const data = await internalSql.mapperQuery(internalResult);
   if (data && data.length > 0) {
-    resultStatements.state = 'executed';
+    resultStatements.state = 'executed-runtime';
     resultStatements.data = data;
   }
   return {

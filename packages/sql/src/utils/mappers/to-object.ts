@@ -2,7 +2,7 @@
 import { AzionQueryResponse } from '../../types';
 
 export type JsonObjectQueryExecutionResponse = {
-  state: 'executed' | 'pending';
+  state: 'executed' | 'pending' | 'executed-runtime';
   data: {
     statement?: string;
     rows: { [key: string]: any }[];
