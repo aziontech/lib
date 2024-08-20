@@ -1,5 +1,5 @@
 import { Azion } from 'azion/types';
-import { NonSelectQueryResult, QueryResult } from '../../types';
+import { AzionClientOptions, NonSelectQueryResult, QueryResult } from '../../types';
 
 export const getAzionSql = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,17 +43,27 @@ export class InternalAzionSql {
     return Promise.resolve(resultStatements);
   };
 
-  query = async (name: string, statements: string[]): Promise<{ statement: string; result: Azion.Sql.Rows }[]> => {
+  query = async (
+    name: string,
+    statements: string[],
+    options?: AzionClientOptions,
+  ): Promise<{ statement: string; result: Azion.Sql.Rows }[]> => {
     if (this.database?.open) {
       const conn = await this.database?.open(name);
       const promises = statements.map(async (statement) => {
         const result = await conn?.query(statement);
         return { statement, result };
       });
-      const results = await Promise.all(promises);
-
-      if (results.every((item) => item.result?.columnCount() > 0)) {
-        return results;
+      try {
+        const results = await Promise.all(promises);
+        if (results.every((item) => item.result?.columnCount() > 0)) {
+          return results;
+        }
+      } catch (error) {
+        if (options?.debug) {
+          console.error('Error querying:', (error as Error)?.message);
+        }
+        throw error;
       }
     }
     return [];

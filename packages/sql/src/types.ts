@@ -61,7 +61,7 @@ export interface AzionSQLClient {
   }) => Promise<AzionDatabase[] | null>;
 }
 export type CreateAzionSQLClient = (
-  config?: Partial<{ token: string; options?: AzionClientOptions }>,
+  config?: Partial<{ token?: string; options?: AzionClientOptions }>,
 ) => AzionSQLClient;
 
 export type AzionDatabaseCollectionOptions = {

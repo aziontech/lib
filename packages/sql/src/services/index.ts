@@ -1,4 +1,5 @@
-import { AzionClientOptions, AzionQueryResponse } from '../types';
+import { AzionClientOptions, AzionQueryResponse, QueryResult } from '../types';
+import { limitArraySize } from '../utils';
 import { toObjectQueryExecutionResponse } from '../utils/mappers/to-object';
 import { getEdgeDatabases, postQueryEdgeDatabase } from './api/index';
 import { InternalAzionSql } from './runtime/index';
@@ -58,7 +59,7 @@ export const runtimeQuery = async (
   options?: AzionClientOptions,
 ): Promise<AzionQueryResponse> => {
   const internalSql = new InternalAzionSql();
-  const internalResult = await internalSql.query(name, statements);
+  const internalResult = await internalSql.query(name, statements, options);
   const resultStatements: AzionQueryResponse = {
     state: 'executed-runtime',
     data: [],
@@ -67,6 +68,19 @@ export const runtimeQuery = async (
   if (data && data.length > 0) {
     resultStatements.state = 'executed-runtime';
     resultStatements.data = data;
+  }
+  if (options?.debug) {
+    // limit the size of the array to 10
+    const limitedData: AzionQueryResponse = {
+      ...resultStatements,
+      data: (resultStatements.data as QueryResult[]).map((data) => {
+        return {
+          ...data,
+          rows: limitArraySize(data?.rows || [], 10),
+        };
+      }),
+    };
+    console.log('Response Query:', JSON.stringify(limitedData));
   }
   return {
     ...resultStatements,

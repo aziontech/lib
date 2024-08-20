@@ -33,9 +33,16 @@ const createDatabaseMethod = async (
     const { data } = apiResponse;
     return {
       ...data,
-      query: (statements: string[]) => queryDatabaseMethod(token, data.name, statements, options),
+      query: (statements: string[]) =>
+        queryDatabaseMethod(resolveToken(token), data.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
       execute: (statements: string[], options?: AzionClientOptions) =>
-        executeDatabaseMethod(token, data.name, statements, options),
+        executeDatabaseMethod(resolveToken(token), data.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
     };
   }
   return null;
@@ -77,19 +84,29 @@ const getDatabaseMethod = async (
   name: string,
   options?: AzionClientOptions,
 ): Promise<AzionDatabase | null> => {
+  if (!name || name === '') {
+    throw new Error('Database name is required');
+  }
   const databaseResponse = await getEdgeDatabases(resolveToken(token), { search: name }, resolveDebug(options?.debug));
   if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
-    return null;
+    throw new Error(`Database with name '${name}' not found`);
   }
   const databaseResult = databaseResponse?.results[0];
-  if (!databaseResult || databaseResult.id === undefined) {
-    return null;
+  if (!databaseResult || databaseResult.id === undefined || databaseResult.name !== name) {
+    throw new Error(`Database with name '${name}' not found`);
   }
   return {
     ...databaseResult,
-    query: (statements: string[]) => queryDatabaseMethod(token, name, statements, options),
+    query: (statements: string[], options?: AzionClientOptions) =>
+      queryDatabaseMethod(resolveToken(token), databaseResult.name, statements, {
+        ...options,
+        debug: resolveDebug(options?.debug),
+      }),
     execute: (statements: string[], options?: AzionClientOptions) =>
-      executeDatabaseMethod(token, databaseResult.name, statements, options),
+      executeDatabaseMethod(resolveToken(token), databaseResult.name, statements, {
+        ...options,
+        debug: resolveDebug(options?.debug),
+      }),
   };
 };
 
@@ -110,9 +127,15 @@ const getDatabasesMethod = async (
     return apiResponse.results.map((db: ApiDatabaseResponse) => ({
       ...db,
       query: (statements: string[]): Promise<AzionQueryResponse | null> =>
-        queryDatabaseMethod(token, db.name, statements, options),
+        queryDatabaseMethod(resolveToken(token), db.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
       execute: (statements: string[], options?: AzionClientOptions): Promise<AzionQueryResponse | null> =>
-        executeDatabaseMethod(token, db.name, statements, options),
+        executeDatabaseMethod(resolveToken(token), db.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
     }));
   }
   return null;
@@ -132,6 +155,15 @@ const queryDatabaseMethod = async (
   statements: string[],
   options?: AzionClientOptions,
 ): Promise<AzionQueryResponse> => {
+  if (!name || name === '') {
+    throw new Error('Database name is required');
+  }
+  if (options?.debug) {
+    console.log(`Executing statements on database ${name}: ${statements}`);
+  }
+  if (!Array.isArray(statements) || statements.length === 0) {
+    throw new Error('No statements to execute. Please provide at least one statement. e.g ["SELECT * FROM users"]');
+  }
   const isSelectStatement = statements.some((statement) => statement.trim().toUpperCase().startsWith('SELECT'));
 
   if (!isSelectStatement) {
@@ -157,6 +189,17 @@ const executeDatabaseMethod = async (
   statements: string[],
   options?: AzionClientOptions,
 ): Promise<AzionQueryResponse> => {
+  if (options?.debug) {
+    console.log(`Executing statements on database ${name}: ${statements}`);
+  }
+  if (!name || name === '') {
+    throw new Error('Database name is required');
+  }
+  if (!Array.isArray(statements) || statements.length === 0) {
+    throw new Error(
+      'No statements to execute. Please provide at least one statement. e.g ["INSERT INTO users (name) VALUES (\'John\')"]',
+    );
+  }
   const isWriteStatement = statements.some((statement) =>
     ['INSERT', 'UPDATE', 'DELETE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
   );
@@ -299,7 +342,7 @@ const useExecute = async (
 /**
  * Creates an SQL client with methods to interact with Azion Edge SQL databases.
  *
- * @param {Partial<{ token: string; options?: AzionClientOptions; }>} [config] - Configuration options for the SQL client.
+ * @param {Partial<{ token?: string; options?: AzionClientOptions; }>} [config] - Configuration options for the SQL client.
  * @returns {AzionSQLClient} An object with methods to interact with SQL databases.
  *
  * @example
@@ -315,7 +358,7 @@ const useExecute = async (
  * const queryResult = await newDatabase.query(['SELECT * FROM users']);
  */
 const client: CreateAzionSQLClient = (
-  config?: Partial<{ token: string; options?: AzionClientOptions }>,
+  config?: Partial<{ token?: string; options?: AzionClientOptions }>,
 ): AzionSQLClient => {
   const tokenValue = resolveToken(config?.token);
   const debugValue = resolveDebug(config?.options?.debug);

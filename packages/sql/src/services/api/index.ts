@@ -1,4 +1,5 @@
 import { AzionDatabaseCollectionOptions } from '../../types';
+import { limitArraySize } from '../../utils';
 import type {
   ApiCreateDatabaseResponse,
   ApiDeleteDatabaseResponse,
@@ -23,7 +24,7 @@ const postEdgeDatabase = async (
       body: JSON.stringify({ name }),
     });
     const data = await response.json();
-    if (debug) console.log('Response:', data);
+    if (debug) console.log('Response', data);
     return data;
   } catch (error) {
     if (debug) console.error('Error creating EdgeDB:', error);
@@ -73,7 +74,22 @@ const postQueryEdgeDatabase = async (
     }
 
     const json = await response.json();
-    if (debug) console.log('Response:', json);
+    if (debug) {
+      // limit the size of the array to 10
+      const limitedData: ApiQueryExecutionResponse = {
+        ...json,
+        data: (json as ApiQueryExecutionResponse)?.data?.map((data) => {
+          return {
+            ...data,
+            results: {
+              ...data.results,
+              rows: limitArraySize(data.results.rows, 10),
+            },
+          };
+        }),
+      };
+      console.log('Response Query:', JSON.stringify(limitedData));
+    }
     return json;
   } catch (error) {
     if (debug) console.error('Error querying EdgeDB:', error);
@@ -116,14 +132,21 @@ const getEdgeDatabases = async (
         }
       });
     }
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url?.toString(), {
       method: 'GET',
       headers: {
         Authorization: `Token ${token}`,
       },
     });
     const data = await response.json();
-    if (debug) console.log('Response:', data);
+    if (debug) {
+      // limit the size of the array to 10
+      const limitedData = {
+        ...data,
+        results: limitArraySize(data.results, 10),
+      };
+      console.log('Response Databases:', JSON.stringify(limitedData));
+    }
     return data;
   } catch (error) {
     if (debug) console.error('Error getting all EdgeDBs:', error);

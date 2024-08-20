@@ -15,8 +15,14 @@ export type JsonObjectQueryExecutionResponse = {
 };
 
 export const toObjectQueryExecutionResponse = ({ state, data }: AzionQueryResponse) => {
-  let transformedData: any = null;
+  let transformedData: any = [];
   if (data instanceof Array) {
+    if (data.length === 0) {
+      return {
+        state,
+        data: [],
+      };
+    }
     let transformedRows: any = null;
     transformedData = data?.map((item) => {
       if (item?.rows) {
