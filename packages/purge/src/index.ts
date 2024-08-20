@@ -1,8 +1,9 @@
 import { postPurgeCacheKey, postPurgeURL, postPurgeWildcard } from './services';
 import { AzionClientOptions, AzionPurge, AzionPurgeClient, CreateAzionPurgeClient } from './types';
 
+const envDebugFlag = process.env.AZION_DEBUG && process.env.AZION_DEBUG === 'true';
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
-const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
+const resolveDebug = (debug?: boolean) => debug ?? !!envDebugFlag;
 
 const purgeURLMethod = async (
   token: string,

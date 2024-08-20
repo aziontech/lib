@@ -22,10 +22,11 @@ import {
 
 import { InternalStorageClient, isInternalStorageAvailable } from './services/runtime/index';
 
+const envDebugFlag = process.env.AZION_DEBUG && process.env.AZION_DEBUG === 'true';
 const resolveToken = (token?: string) => {
   return token ?? process.env.AZION_TOKEN ?? '';
 };
-const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
+const resolveDebug = (debug?: boolean) => debug ?? !!envDebugFlag;
 
 /**
  * Creates a method that can be executed internally or externally.

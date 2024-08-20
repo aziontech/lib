@@ -12,8 +12,9 @@ import type {
   CreateAzionSQLClient,
 } from './types';
 
+const envDebugFlag = process.env.AZION_DEBUG && process.env.AZION_DEBUG === 'true';
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
-const resolveDebug = (debug?: boolean) => debug ?? !!process.env.AZION_DEBUG;
+const resolveDebug = (debug?: boolean) => debug ?? !!envDebugFlag;
 
 /**
  * Creates a new database.
