@@ -1,3 +1,10 @@
+## [1.6.0-stage.1](https://github.com/aziontech/lib/compare/v1.5.0...v1.6.0-stage.1) (2024-08-21)
+
+
+### Features
+
+* azion runtime internal sql and storage (#24) ([a4311aa](https://github.com/aziontech/lib/commit/a4311aab8ddd0cd3ee80cfcb5c37e534a2185ce9))
+
 ## [1.5.0](https://github.com/aziontech/lib/compare/v1.4.0...v1.5.0) (2024-08-16)
 
 
