@@ -1,3 +1,51 @@
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace Azion {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export declare namespace Storage {
+    export interface StorageInstance {
+      list(): Promise<{ entries: { key: string; content_length?: number }[] }>;
+      put(
+        key: string,
+        value: ArrayBuffer,
+        options?: { 'content-length'?: string; 'content-type'?: string },
+      ): Promise<void>;
+      delete(key: string): Promise<void>;
+      get(key: string): Promise<StorageObject>;
+    }
+
+    export interface StorageObject {
+      arrayBuffer(): Promise<ArrayBuffer>;
+      metadata: Map<string, string>;
+      contentType: string;
+      contentLength: number;
+    }
+  }
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export namespace Sql {
+    interface Connection {
+      query: (sql: string) => Promise<Rows>;
+      execute: (sql: string) => Promise<null>;
+    }
+    export interface Rows {
+      next: () => Promise<Row>;
+      columnCount: () => number;
+      columnName: (index: number) => string;
+      columnType: (index: number) => string;
+    }
+    export interface Row {
+      columnName: (index: number) => string;
+      columnType: (index: number) => string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      getValue: (index: number) => any;
+      getString: (index: number) => string;
+    }
+    export interface Database {
+      connection: Connection;
+      open?: (name: string) => Promise<Connection>;
+    }
+  }
+}
+
 export interface Metadata {
   // GeoIP
   geoip_asn: string;

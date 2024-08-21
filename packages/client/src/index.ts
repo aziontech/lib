@@ -3,16 +3,16 @@ import createPurgeClient from 'azion/purge';
 import createSqlClient from 'azion/sql';
 import createStorageClient from 'azion/storage';
 
-import { PurgeClient } from '../../purge/src/types';
-import { SQLClient } from '../../sql/src/types';
-import { StorageClient } from '../../storage/src/types';
+import { AzionPurgeClient } from '../../purge/src/types';
+import { AzionSQLClient } from '../../sql/src/types';
+import { AzionStorageClient } from '../../storage/src/types';
 
-import { AzionClient, ClientConfig } from './types';
+import { AzionClient, AzionClientConfig } from './types';
 
 /**
  * Creates an Azion Client with methods to interact with Azion
  *
- * @param {ClientConfig} [config] - Client configuration options.
+ * @param {AzionClientConfig} [config] - Client configuration options.
  * @param {string} [config.token] - Authentication token for Azion API.
  * @param {boolean} [config.debug=false] - Enable debug mode for detailed logging.
  * @returns {AzionClient} An object containing SQL, Storage, and Purge clients.
@@ -37,10 +37,10 @@ import { AzionClient, ClientConfig } from './types';
  * // Use the Purge client
  * const purgeResult = await client.purge.purgeURL('http://example.com/image.jpg');
  */
-function createClient({ token, debug = false }: ClientConfig = {}): AzionClient {
-  const storageClient: StorageClient = createStorageClient({ token, debug });
-  const sqlClient: SQLClient = createSqlClient({ token, debug });
-  const purgeClient: PurgeClient = createPurgeClient({ token, debug });
+function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
+  const storageClient: AzionStorageClient = createStorageClient({ token, options });
+  const sqlClient: AzionSQLClient = createSqlClient({ token, options });
+  const purgeClient: AzionPurgeClient = createPurgeClient({ token, options });
 
   return {
     /**

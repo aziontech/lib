@@ -4,16 +4,16 @@ import {
   ApiDeleteBucketResponse,
   ApiDeleteObjectResponse,
   ApiEditBucketResponse,
+  ApiListBucketsOptions,
   ApiListBucketsResponse,
   ApiListObjectsResponse,
-  BucketCollectionOptions,
 } from './types';
 
 const BASE_URL = 'https://api.azion.com/v4/storage/buckets';
 
 const getBuckets = async (
   token: string,
-  options?: BucketCollectionOptions,
+  options?: ApiListBucketsOptions,
   debug?: boolean,
 ): Promise<ApiListBucketsResponse> => {
   try {
