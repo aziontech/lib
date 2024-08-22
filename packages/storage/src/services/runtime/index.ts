@@ -74,15 +74,9 @@ export class InternalStorageClient implements AzionBucket {
       const objectList = await retryWithBackoff(() => this.storage!.list());
       const objects = await Promise.all(
         objectList.entries.map(async (entry: { key: string; content_length?: number }) => {
-          const storageObject = await this.storage!.get(entry.key);
-          const arrayBuffer = await storageObject.arrayBuffer();
-          const decoder = new TextDecoder();
-          const content = decoder.decode(arrayBuffer);
           return {
             key: entry.key,
             size: entry.content_length,
-            content: content,
-            content_type: storageObject.metadata.get('content-type'),
             state: 'executed-runtime' as const,
           };
         }),
