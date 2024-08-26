@@ -1,6 +1,6 @@
 import { Azion } from 'azion/types';
 import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
-import { retryWithBackoff } from '../../utils/index';
+import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 
 export const isInternalStorageAvailable = (): boolean => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,7 +75,7 @@ export class InternalStorageClient implements AzionBucket {
       const objects = await Promise.all(
         objectList.entries.map(async (entry: { key: string; content_length?: number }) => {
           return {
-            key: entry.key,
+            key: removeLeadingSlash(entry.key),
             size: entry.content_length,
             state: 'executed-runtime' as const,
           };
@@ -105,7 +105,7 @@ export class InternalStorageClient implements AzionBucket {
       const content = decoder.decode(arrayBuffer);
       return {
         state: 'executed-runtime',
-        key: objectKey,
+        key: removeLeadingSlash(objectKey),
         size: storageObject.contentLength,
         content: content,
         content_type: storageObject.metadata.get('content-type'),
@@ -141,7 +141,7 @@ export class InternalStorageClient implements AzionBucket {
       );
       return {
         state: 'executed-runtime',
-        key: objectKey,
+        key: removeLeadingSlash(objectKey),
         size: contentBuffer.byteLength,
         content_type: options?.content_type,
         content: content,
@@ -182,7 +182,7 @@ export class InternalStorageClient implements AzionBucket {
     this.initializeStorage(this.name);
     try {
       await retryWithBackoff(() => this.storage!.delete(objectKey));
-      return { key: objectKey, state: 'executed-runtime' };
+      return { key: removeLeadingSlash(objectKey), state: 'executed-runtime' };
     } catch (error) {
       if (this.debug) console.error('Error deleting object:', error);
       return null;
