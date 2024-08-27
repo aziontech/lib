@@ -42,10 +42,12 @@ describe('SQL Module', () => {
   });
 
   describe('createDatabase', () => {
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
     it('should successfully create a database', async () => {
       const mockResponse = { data: { id: 1, name: 'test-db' } };
       (servicesApi.postEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
-
       const result = await createDatabase('test-db', { debug: mockDebug });
       expect(result).toEqual(expect.objectContaining({ id: 1, name: 'test-db' }));
       expect(servicesApi.postEdgeDatabase).toHaveBeenCalledWith(mockToken, 'test-db', true);
@@ -53,17 +55,18 @@ describe('SQL Module', () => {
 
     it('should return null on failure', async () => {
       (servicesApi.postEdgeDatabase as jest.Mock).mockResolvedValue(null);
-
       const result = await createDatabase('test-db', { debug: mockDebug });
       expect(result).toBeNull();
     });
   });
 
   describe('deleteDatabase', () => {
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
     it('should successfully delete a database', async () => {
       const mockResponse = { data: { message: 'Database deleted' }, state: 'success' };
       (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
-
       const result = await deleteDatabase(1, { debug: mockDebug });
       expect(result).toEqual({ id: 1, data: { message: 'Database deleted' }, state: 'success' });
       expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, true);
@@ -71,13 +74,15 @@ describe('SQL Module', () => {
 
     it('should return null on failure', async () => {
       (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue(null);
-
       const result = await deleteDatabase(1, { debug: mockDebug });
       expect(result).toBeNull();
     });
   });
 
   describe('getDatabase', () => {
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
     it('should successfully retrieve a database', async () => {
       const mockResponse = { results: [{ id: 1, name: 'test-db' }] };
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponse);
@@ -87,15 +92,19 @@ describe('SQL Module', () => {
       expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { search: 'test-db' }, true);
     });
 
-    it('should return null if database not found', async () => {
-      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(null);
+    it('should throw an error if database is not found', async () => {
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue({ results: [] });
 
-      const result = await getDatabase('test-db', { debug: mockDebug });
-      expect(result).toBeNull();
+      await expect(getDatabase('test-db', { debug: mockDebug })).rejects.toThrow(
+        "Database with name 'test-db' not found",
+      );
     });
   });
 
   describe('getDatabases', () => {
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
     it('should successfully retrieve databases', async () => {
       const mockResponse = {
         results: [
@@ -120,6 +129,9 @@ describe('SQL Module', () => {
   });
 
   describe('useExecute and useQuery', () => {
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
     it('should successfully execute a query', async () => {
       const mockResponseDatabases = {
         results: [
@@ -235,6 +247,10 @@ describe('SQL Module', () => {
 
   describe('Client methods', () => {
     let client: AzionSQLClient;
+
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
 
     beforeEach(() => {
       client = createClient({ token: 'custom-token', options: { debug: false } });
