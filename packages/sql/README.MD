@@ -18,16 +18,17 @@ Azion Edge SQL Client provides a simple interface to interact with the Azion Edg
     - [Get Databases](#get-databases)
     - [Use Query](#use-query)
     - [Use Execute](#use-execute)
+    - [List Tables](#list-tables)
 - [API Reference](#api-reference)
   - [`createDatabase`](#createdatabase)
   - [`deleteDatabase`](#deletedatabase)
   - [`getDatabaseById`](#getdatabasebyid)
   - [`getDatabases`](#getdatabases)
-  - [`queryDatabase`](#querydatabase)
+  - [`getDatabase`](#getdatabase)
   - [`createClient`](#createclient)
 - [Types](#types)
   - [`ClientConfig`](#clientconfig)
-  - [`AzionSQLClient`](#sqlclient)
+  - [`AzionSQLClient`](#azionsqlclient)
   - [`AzionDatabase`](#aziondatabase)
   - [`DeletedAzionDatabase`](#deletedaziondatabase)
   - [`Query`](#query)
@@ -100,7 +101,7 @@ if (database) {
 
 ```typescript
 import { createDatabase } from 'azion/sql';
-import { AzionDatabase } from 'azion/sql/types';
+import { AzionDatabase } from 'azion/sql';
 
 const database: AzionDatabase | null = await createDatabase('my-new-database', { debug: true });
 if (database) {
@@ -129,7 +130,7 @@ if (result) {
 
 ```typescript
 import { deleteDatabase } from 'azion/sql';
-import { AzionDeletedDatabase } from 'azion/sql/types';
+import { AzionDeletedDatabase } from 'azion/sql';
 
 const result: AzionDeletedDatabase | null = await deleteDatabase(123, { debug: true });
 if (result) {
@@ -158,7 +159,7 @@ if (database) {
 
 ```typescript
 import { getDatabase } from 'azion/sql';
-import { AzionDatabase } from 'azion/sql/types';
+import { AzionDatabase } from 'azion/sql';
 
 const database: AzionDatabase | null = await getDatabase('my-db', { debug: true });
 if (database) {
@@ -187,7 +188,7 @@ if (databases) {
 
 ```typescript
 import { getDatabases } from 'azion/sql';
-import { AzionDatabase } from 'azion/sql/types';
+import { AzionDatabase } from 'azion/sql';
 
 const databases: AzionDatabase[] | null = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
 if (databases) {
@@ -216,7 +217,7 @@ if (result) {
 
 ```typescript
 import { useQuery } from 'azion/sql';
-import { AzionQueryResponse } from 'azion/sql/types';
+import { AzionQueryResponse } from 'azion/sql';
 
 const result: AzionQueryResponse | null = await useQuery('my-db', ['SELECT * FROM users'], { debug: true });
 if (result) {
@@ -275,7 +276,7 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion/sql';
-import { AzionSQLClient, AzionDatabase, AzionQueryResponse } from 'azion/sql/types';
+import { AzionSQLClient, AzionDatabase, AzionQueryResponse } from 'azion/sql';
 
 const client: AzionSQLClient = createClient({ token: 'your-api-token', { debug: true } });
 
@@ -284,14 +285,51 @@ if (newDatabase) {
   console.log(`Database created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: AzionDatabase[] | null = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+const databaseResult: AzionDatabase | null = await client.getDatabase('my-new-db');
+if (databaseResult) {
+  console.log(databaseResult);
+}
+
+const listTablesResult: AzionQueryResponse | null = await databaseResult.listTables();
+
+if (listTablesResult) {
+  console.log(listTablesResult);
 }
 
 const queryResult: AzionQueryResponse | null = await newDatabase.query(['SELECT * FROM users'], { debug: true });
 if (queryResult) {
   console.log(`Query executed. Rows returned: ${queryResult.rows.length}`);
+}
+```
+
+### List Tables
+
+**JavaScript:**
+
+```javascript
+import { listTables } from 'azion/sql';
+
+const result = await listTables('my-db', { debug: true });
+
+if (result) {
+  console.log(result);
+} else {
+  console.error('Query execution failed');
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { listTables } from 'azion/sql';
+import type { AzionQueryResponse } from 'azion/sql';
+
+const result: AzionQueryResponse = await listTables('my-db', { debug: true });
+
+if (result) {
+  console.log(result);
+} else {
+  console.error('Query execution failed');
 }
 ```
 
@@ -414,6 +452,7 @@ The database object.
 - `deleted_at: string | null`
 - `query: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>`
 - `execute: (statements: string[], options?: OptionsParams) => Promise<QueryResponse | null>`
+- `listTables: (options?: OptionsParams) => Promise<QueryResponse | null>`
 
 ### `DeletedAzionDatabase`
 

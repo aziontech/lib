@@ -11,6 +11,7 @@ export interface AzionDatabase {
   deleted_at: string | null;
   query?: (statements: string[], options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
   execute?: (statements: string[], options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
+  listTables?: (options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
 }
 
 export interface AzionDeletedDatabase {
