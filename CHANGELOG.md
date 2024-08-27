@@ -1,3 +1,10 @@
+## [1.6.0-stage.3](https://github.com/aziontech/lib/compare/v1.6.0-stage.2...v1.6.0-stage.3) (2024-08-27)
+
+
+### Features
+
+* add listTables method to sql package (#28) ([9bd7366](https://github.com/aziontech/lib/commit/9bd73665598400f1c062de353a6b8a8682f02021))
+
 ## [1.6.0-stage.2](https://github.com/aziontech/lib/compare/v1.6.0-stage.1...v1.6.0-stage.2) (2024-08-27)
 
 
