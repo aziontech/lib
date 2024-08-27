@@ -111,7 +111,7 @@ describe('Storage Module', () => {
 
       const result = await getBucket('test-bucket', { debug });
       expect(result).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'public' }));
-      expect(services.getBuckets).toHaveBeenCalledWith(mockToken, { page_size: 100000 }, debug);
+      expect(services.getBuckets).toHaveBeenCalledWith(mockToken, { page_size: 1000000 }, debug);
     });
 
     it('should return null if bucket is not found', async () => {
@@ -205,16 +205,16 @@ describe('Storage Module', () => {
       };
       (services.getObjects as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getObjects('test-bucket', { debug });
+      const result = await getObjects('test-bucket', { max_object_count: 50 }, { debug });
       expect(result).toHaveLength(2);
       expect(result![0]).toEqual(expect.objectContaining({ key: 'object1' }));
-      expect(services.getObjects).toHaveBeenCalledWith(mockToken, 'test-bucket', debug);
+      expect(services.getObjects).toHaveBeenCalledWith(mockToken, 'test-bucket', { max_object_count: 50 }, debug);
     });
 
     it('should return null on failure', async () => {
       (services.getObjects as jest.Mock).mockResolvedValue(null);
 
-      const result = await getObjects('test-bucket', { debug });
+      const result = await getObjects('test-bucket', { max_object_count: 50 }, { debug });
       expect(result).toBeNull();
     });
   });
@@ -288,7 +288,7 @@ describe('Storage Module', () => {
       (services.getBuckets as jest.Mock).mockResolvedValue(mockResponse);
 
       await client.getBucket('test-bucket');
-      expect(services.getBuckets).toHaveBeenCalledWith('custom-token', { page_size: 100000 }, debug);
+      expect(services.getBuckets).toHaveBeenCalledWith('custom-token', { page_size: 1000000 }, debug);
     });
   });
 });

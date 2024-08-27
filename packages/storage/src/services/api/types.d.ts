@@ -53,7 +53,11 @@ export interface ApiUpdateObjectResponse {
   };
 }
 
-export type ApiListBucketsOptions = {
+export type ApiListBucketsParams = {
   page?: number;
   page_size?: number;
+};
+
+export type ApiListObjectsParams = {
+  max_object_count?: number;
 };

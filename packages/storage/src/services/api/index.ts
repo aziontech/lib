@@ -4,8 +4,9 @@ import {
   ApiDeleteBucketResponse,
   ApiDeleteObjectResponse,
   ApiEditBucketResponse,
-  ApiListBucketsOptions,
+  ApiListBucketsParams,
   ApiListBucketsResponse,
+  ApiListObjectsParams,
   ApiListObjectsResponse,
 } from './types';
 
@@ -13,11 +14,11 @@ const BASE_URL = 'https://api.azion.com/v4/storage/buckets';
 
 const getBuckets = async (
   token: string,
-  options?: ApiListBucketsOptions,
+  params?: ApiListBucketsParams,
   debug?: boolean,
 ): Promise<ApiListBucketsResponse> => {
   try {
-    const { page_size = 10, page = 1 } = options || {};
+    const { page_size = 10, page = 1 } = params || {};
     const queryParams = new URLSearchParams({ page_size: String(page_size), page: String(page) });
     const response = await fetch(`${BASE_URL}?${queryParams.toString()}`, {
       method: 'GET',
@@ -89,9 +90,16 @@ const deleteBucket = async (token: string, name: string, debug?: boolean): Promi
   }
 };
 
-const getObjects = async (token: string, bucketName: string, debug?: boolean): Promise<ApiListObjectsResponse> => {
+const getObjects = async (
+  token: string,
+  bucketName: string,
+  params?: ApiListObjectsParams,
+  debug?: boolean,
+): Promise<ApiListObjectsResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${bucketName}/objects`, {
+    const { max_object_count = 10000 } = params || {};
+    const queryParams = new URLSearchParams({ max_object_count: String(max_object_count) });
+    const response = await fetch(`${BASE_URL}/${bucketName}/objects?${queryParams.toString()}`, {
       method: 'GET',
       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
     });
