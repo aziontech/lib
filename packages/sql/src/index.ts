@@ -43,6 +43,11 @@ const createDatabaseMethod = async (
           ...options,
           debug: resolveDebug(options?.debug),
         }),
+      listTables: (options?: AzionClientOptions) =>
+        listTablesWrapper(data.name, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
     };
   }
   return null;
@@ -107,6 +112,11 @@ const getDatabaseMethod = async (
         ...options,
         debug: resolveDebug(options?.debug),
       }),
+    listTables: (options?: AzionClientOptions) =>
+      listTablesWrapper(databaseResult.name, {
+        ...options,
+        debug: resolveDebug(options?.debug),
+      }),
   };
 };
 
@@ -133,6 +143,11 @@ const getDatabasesMethod = async (
         }),
       execute: (statements: string[], options?: AzionClientOptions): Promise<AzionQueryResponse | null> =>
         executeDatabaseMethod(resolveToken(token), db.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
+      listTables: (options?: AzionClientOptions): Promise<AzionQueryResponse | null> =>
+        listTablesWrapper(db.name, {
           ...options,
           debug: resolveDebug(options?.debug),
         }),
@@ -164,9 +179,11 @@ const queryDatabaseMethod = async (
   if (!Array.isArray(statements) || statements.length === 0) {
     throw new Error('No statements to execute. Please provide at least one statement. e.g ["SELECT * FROM users"]');
   }
-  const isSelectStatement = statements.some((statement) => statement.trim().toUpperCase().startsWith('SELECT'));
+  const isStatement = statements.some((statement) =>
+    ['SELECT', 'PRAGMA'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
+  );
 
-  if (!isSelectStatement) {
+  if (!isStatement) {
     throw new Error('Only read statements are allowed');
   }
   if (getAzionSql()) {
@@ -293,6 +310,22 @@ const getDatabasesWrapper = (
   options?: AzionClientOptions,
 ): Promise<AzionDatabase[] | null> =>
   getDatabasesMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
+
+/**
+ * List tables from a database.
+ * @param databaseName Name of the database to list tables from.
+ * @param options Optional parameters for the query.
+ * @returns The query response object or null if the query failed.
+ */
+const listTablesWrapper = async (
+  databaseName: string,
+  options?: AzionClientOptions,
+): Promise<AzionQueryResponse | null> => {
+  return queryDatabaseMethod(resolveToken(), databaseName, ['PRAGMA table_list'], {
+    ...options,
+    debug: resolveDebug(options?.debug),
+  });
+};
 
 /**
  * Use Query to execute a query on a database.
@@ -446,6 +479,7 @@ export {
   deleteDatabaseWrapper as deleteDatabase,
   getDatabaseWrapper as getDatabase,
   getDatabasesWrapper as getDatabases,
+  listTablesWrapper as listTables,
   useExecute,
   useQuery,
 };

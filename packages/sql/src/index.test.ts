@@ -4,6 +4,7 @@ import {
   deleteDatabase,
   getDatabase,
   getDatabases,
+  listTables,
   useExecute,
   useQuery,
 } from '../src/index';
@@ -242,6 +243,45 @@ describe('SQL Module', () => {
       });
 
       spyRuntimeQuery.mockRestore();
+    });
+  });
+
+  describe('listTables', () => {
+    it('should successfully list tables', async () => {
+      const mockResponseDatabases = {
+        results: [
+          { id: 1, name: 'test-db' },
+          { id: 2, name: 'test-db-2' },
+        ],
+      };
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      const mockResponse = {
+        state: 'executed',
+        data: [
+          {
+            results: {
+              columns: ['schema', 'name', 'type', 'ncol', 'wr', 'strict'],
+              rows: [['main', 'users', 'table', 2, 0, 0]],
+            },
+          },
+        ],
+      };
+      (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await listTables('test-db', { debug: mockDebug });
+      expect(result).toEqual(
+        expect.objectContaining({
+          state: 'executed',
+          data: [
+            {
+              statement: 'PRAGMA',
+              columns: ['schema', 'name', 'type', 'ncol', 'wr', 'strict'],
+              rows: [['main', 'users', 'table', 2, 0, 0]],
+            },
+          ],
+        }),
+      );
+      expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['PRAGMA table_list'], true);
     });
   });
 
