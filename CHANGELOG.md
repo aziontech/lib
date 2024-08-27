@@ -1,3 +1,16 @@
+## [1.6.0-stage.2](https://github.com/aziontech/lib/compare/v1.6.0-stage.1...v1.6.0-stage.2) (2024-08-27)
+
+
+### Features
+
+* max_object_count param ([2185a67](https://github.com/aziontech/lib/commit/2185a670c65ca987fb11be5f5c402837305fabfa))
+
+
+### Bug Fixes
+
+* remove  (getObjects list) ([bde5ee4](https://github.com/aziontech/lib/commit/bde5ee46117d69ed467b895e5a50084a2b9023f2))
+* standardize key return ([5243f37](https://github.com/aziontech/lib/commit/5243f37d465f20816275f9467a796972a1820f13))
+
 ## [1.6.0-stage.1](https://github.com/aziontech/lib/compare/v1.5.0...v1.6.0-stage.1) (2024-08-21)
 
 
