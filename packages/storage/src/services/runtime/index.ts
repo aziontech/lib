@@ -1,5 +1,5 @@
 import { Azion } from 'azion/types';
-import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
+import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject, AzionObjectCollectionParams } from '../../types';
 import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 
 export const isInternalStorageAvailable = (): boolean => {
@@ -66,14 +66,16 @@ export class InternalStorageClient implements AzionBucket {
    *
    * Uses retry with exponential backoff to handle eventual consistency delays.
    *
+   * @param {AzionObjectCollectionParams} params - Parameters for object collection.
    * @returns {Promise<AzionBucketObject[] | null>} The list of objects or null if an error occurs.
    */
-  async getObjects(): Promise<AzionBucketObject[] | null> {
+  async getObjects(params?: AzionObjectCollectionParams): Promise<AzionBucketObject[] | null> {
     this.initializeStorage(this.name);
     try {
       const objectList = await retryWithBackoff(() => this.storage!.list());
+      const max_object_count = params?.max_object_count ?? objectList.entries.length;
       const objects = await Promise.all(
-        objectList.entries.map(async (entry: { key: string; content_length?: number }) => {
+        objectList.entries.slice(0, max_object_count).map(async (entry: { key: string; content_length?: number }) => {
           return {
             key: removeLeadingSlash(entry.key),
             size: entry.content_length,

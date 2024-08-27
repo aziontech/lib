@@ -11,11 +11,12 @@ import {
 } from './services//api/index';
 import {
   AzionBucket,
-  AzionBucketCollectionOptions,
+  AzionBucketCollectionParams,
   AzionBucketObject,
   AzionClientOptions,
   AzionDeletedBucket,
   AzionDeletedBucketObject,
+  AzionObjectCollectionParams,
   AzionStorageClient,
   CreateAzionStorageClient,
 } from './types';
@@ -57,7 +58,8 @@ export const createBucketMethod = async (
   if (apiResponse) {
     return {
       ...apiResponse.data,
-      getObjects: (): Promise<AzionBucketObject[] | null> => getObjectsMethod(token, name, options),
+      getObjects: (params: AzionObjectCollectionParams): Promise<AzionBucketObject[] | null> =>
+        getObjectsMethod(token, name, params, options),
       getObjectByKey: (objectKey: string): Promise<AzionBucketObject | null> =>
         getObjectByKeyMethod(token, name, objectKey, options),
       createObject: (objectKey: string, file: string): Promise<AzionBucketObject | null> =>
@@ -85,22 +87,23 @@ export const deleteBucketMethod = async (
 
 export const getBucketsMethod = async (
   token: string,
-  options?: AzionBucketCollectionOptions,
-  clientOptions?: AzionClientOptions,
+  params?: AzionBucketCollectionParams,
+  options?: AzionClientOptions,
 ): Promise<AzionBucket[] | null> => {
-  const apiResponse = await getBuckets(resolveToken(token), options, resolveDebug(clientOptions?.debug));
+  const apiResponse = await getBuckets(resolveToken(token), params, resolveDebug(options?.debug));
   if (apiResponse) {
     return apiResponse.results?.map((bucket) => ({
       ...bucket,
-      getObjects: (): Promise<AzionBucketObject[] | null> => getObjectsMethod(token, bucket.name, clientOptions),
+      getObjects: (params: AzionObjectCollectionParams): Promise<AzionBucketObject[] | null> =>
+        getObjectsMethod(token, bucket.name, params, options),
       getObjectByKey: (objectKey: string): Promise<AzionBucketObject | null> =>
-        getObjectByKeyMethod(token, bucket.name, objectKey, clientOptions),
+        getObjectByKeyMethod(token, bucket.name, objectKey, options),
       createObject: (objectKey: string, file: string): Promise<AzionBucketObject | null> =>
-        createObjectMethod(token, bucket.name, objectKey, file, clientOptions),
+        createObjectMethod(token, bucket.name, objectKey, file, options),
       updateObject: (objectKey: string, file: string): Promise<AzionBucketObject | null> =>
-        updateObjectMethod(token, bucket.name, objectKey, file, clientOptions),
+        updateObjectMethod(token, bucket.name, objectKey, file, options),
       deleteObject: (objectKey: string): Promise<AzionDeletedBucketObject | null> =>
-        deleteObjectMethod(token, bucket.name, objectKey, clientOptions),
+        deleteObjectMethod(token, bucket.name, objectKey, options),
     }));
   }
   return null;
@@ -126,7 +129,8 @@ const getBucketMethod = createInternalOrExternalMethod(
 
     return {
       ...bucket,
-      getObjects: (): Promise<AzionBucketObject[] | null> => getObjectsMethod(token, name, options),
+      getObjects: (params: AzionObjectCollectionParams): Promise<AzionBucketObject[] | null> =>
+        getObjectsMethod(token, name, params, options),
       getObjectByKey: (objectKey: string): Promise<AzionBucketObject | null> =>
         getObjectByKeyMethod(token, name, objectKey, options),
       createObject: (objectKey: string, file: string): Promise<AzionBucketObject | null> =>
@@ -149,7 +153,8 @@ export const updateBucketMethod = async (
   if (apiResponse) {
     return {
       ...apiResponse.data,
-      getObjects: (): Promise<AzionBucketObject[] | null> => getObjectsMethod(token, name, options),
+      getObjects: (params: AzionObjectCollectionParams): Promise<AzionBucketObject[] | null> =>
+        getObjectsMethod(token, name, params, options),
       getObjectByKey: (objectKey: string): Promise<AzionBucketObject | null> =>
         getObjectByKeyMethod(token, name, objectKey, options),
       createObject: (objectKey: string, file: string): Promise<AzionBucketObject | null> =>
@@ -164,13 +169,23 @@ export const updateBucketMethod = async (
 };
 
 const getObjectsMethod = createInternalOrExternalMethod(
-  async (token: string, bucketName: string, options?: AzionClientOptions): Promise<AzionBucketObject[] | null> => {
+  async (
+    token: string,
+    bucketName: string,
+    params?: AzionObjectCollectionParams,
+    options?: AzionClientOptions,
+  ): Promise<AzionBucketObject[] | null> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
     internalClient.name = bucketName;
-    return internalClient.getObjects();
+    return internalClient.getObjects(params);
   },
-  async (token: string, bucketName: string, options?: AzionClientOptions): Promise<AzionBucketObject[] | null> => {
-    const apiResponse = await getObjects(resolveToken(token), bucketName, resolveDebug(options?.debug));
+  async (
+    token: string,
+    bucketName: string,
+    params?: AzionObjectCollectionParams,
+    options?: AzionClientOptions,
+  ): Promise<AzionBucketObject[] | null> => {
+    const apiResponse = await getObjects(resolveToken(token), bucketName, params, options?.debug);
     return apiResponse?.results ?? null;
   },
 );
@@ -317,7 +332,7 @@ const deleteBucketWrapper = (name: string, options?: AzionClientOptions): Promis
 /**
  * Retrieves a list of buckets with optional filtering and pagination.
  *
- * @param {BucketCollectionOptions} [options] - Optional parameters for filtering and pagination.
+ * @param {AzionBucketCollectionParams} [params] - Optional parameters for filtering and pagination.
  * @param {boolean} [debug=false] - Enable debug mode for detailed logging.
  * @returns {Promise<Bucket[] | null>} Array of bucket objects or null if retrieval failed.
  *
@@ -330,10 +345,10 @@ const deleteBucketWrapper = (name: string, options?: AzionClientOptions): Promis
  * }
  */
 const getBucketsWrapper = (
-  options?: AzionBucketCollectionOptions,
+  params?: AzionBucketCollectionParams,
   clientOptions?: AzionClientOptions,
 ): Promise<AzionBucket[] | null> =>
-  getBucketsMethod(resolveToken(), options, { ...clientOptions, debug: resolveDebug(clientOptions?.debug) });
+  getBucketsMethod(resolveToken(), params, { ...clientOptions, debug: resolveDebug(clientOptions?.debug) });
 
 /**
  * Retrieves a bucket by its name.
@@ -380,20 +395,23 @@ const updateBucketWrapper = (
  * Retrieves a list of objects in a specific bucket.
  *
  * @param {string} bucketName - Name of the bucket to retrieve objects from.
- * @param {boolean} [debug=false] - Enable debug mode for detailed logging.
+ * @param {AzionObjectCollectionParams} [params] - Optional parameters for object collection.
+ * @param {AzionClientOptions} [clientOptions] - Optional client configuration.
  * @returns {Promise<BucketObject[] | null>} Array of bucket objects or null if retrieval failed.
  *
  * @example
- * const objects = await getObjects('my-bucket', true);
+ * const objects = await getObjects('my-bucket', { max_object_count: 50 }, { debug: true });
  * if (objects) {
  *   console.log(`Retrieved ${objects.length} objects from the bucket`);
  * } else {
  *   console.error('Failed to retrieve objects');
  * }
  */
-const getObjectsWrapper = (bucketName: string, options?: AzionClientOptions): Promise<AzionBucketObject[] | null> =>
-  getObjectsMethod(resolveToken(), bucketName, { ...options, debug: resolveDebug(options?.debug) });
-
+const getObjectsWrapper = (
+  bucketName: string,
+  params?: AzionObjectCollectionParams,
+  options?: AzionClientOptions,
+): Promise<AzionBucketObject[] | null> => getObjectsMethod(resolveToken(), bucketName, params, options);
 /**
  * Creates a new object in a specific bucket.
  *
@@ -528,11 +546,11 @@ const client: CreateAzionStorageClient = (
   const client: AzionStorageClient = {
     /**
      * Retrieves a list of buckets with optional filtering and pagination.
-     * @param {BucketCollectionOptions} [options] - Optional parameters for filtering and pagination.
+     * @param {BucketCollectionParams} [params] - Optional parameters for filtering and pagination.
      * @returns {Promise<Bucket[] | null>} Array of buckets or null if retrieval failed.
      */
-    getBuckets: (options?: AzionBucketCollectionOptions): Promise<AzionBucket[] | null> =>
-      getBucketsMethod(tokenValue, options, { ...config, debug: debugValue }),
+    getBuckets: (params?: AzionBucketCollectionParams): Promise<AzionBucket[] | null> =>
+      getBucketsMethod(tokenValue, params, { ...config, debug: debugValue }),
 
     /**
      * Creates a new bucket.

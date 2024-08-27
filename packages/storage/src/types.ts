@@ -4,7 +4,7 @@ export interface AzionBucket {
   name: string;
   edge_access: string;
   state?: 'executed' | 'executed-runtime' | 'pending';
-  getObjects: () => Promise<AzionBucketObject[] | null>;
+  getObjects: (params: AzionObjectCollectionParams) => Promise<AzionBucketObject[] | null>;
   getObjectByKey: (objectKey: string) => Promise<AzionBucketObject | null>;
   createObject: (
     objectKey: string,
@@ -38,16 +38,20 @@ export interface AzionDeletedBucket {
   state?: 'executed' | 'executed-runtime' | 'pending';
 }
 export interface AzionStorageClient {
-  getBuckets: (options?: AzionBucketCollectionOptions) => Promise<AzionBucket[] | null>;
+  getBuckets: (options?: AzionBucketCollectionParams) => Promise<AzionBucket[] | null>;
   createBucket: (name: string, edge_access: string) => Promise<AzionBucket | null>;
   updateBucket: (name: string, edge_access: string) => Promise<AzionBucket | null>;
   deleteBucket: (name: string) => Promise<AzionDeletedBucket | null>;
   getBucket: (name: string) => Promise<AzionBucket | null>;
 }
 
-export type AzionBucketCollectionOptions = {
+export type AzionBucketCollectionParams = {
   page?: number;
   page_size?: number;
+};
+
+export type AzionObjectCollectionParams = {
+  max_object_count?: number;
 };
 
 export type AzionClientOptions = {
