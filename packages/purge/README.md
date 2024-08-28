@@ -82,7 +82,7 @@ You can create a client instance with specific configurations.
 import { purgeURL } from 'azion/purge';
 
 const url = ['http://www.domain.com/path/image.jpg'];
-const response = await purgeURL(url, true);
+const response = await purgeURL(url, { debug: true });
 if (response) {
   console.log('Purge successful:', response);
 } else {
@@ -94,10 +94,10 @@ if (response) {
 
 ```typescript
 import { purgeURL } from 'azion/purge';
-import { Purge } from 'azion/purge/types';
+import { AzionPurge } from 'azion/purge/types';
 
 const url: string[] = ['http://www.domain.com/path/image.jpg'];
-const response: Purge | null = await purgeURL(url, true);
+const response: AzionPurge | null = await purgeURL(url, { debug: true });
 if (response) {
   console.log('Purge successful:', response);
 } else {
@@ -113,7 +113,7 @@ if (response) {
 import { purgeCacheKey } from 'azion/purge';
 
 const cacheKey = ['http://www.domain.com/path/image.jpg'];
-const response = await purgeCacheKey(cacheKey, true);
+const response = await purgeCacheKey(cacheKey, { debug: true });
 if (response) {
   console.log('Purge successful:', response);
 } else {
@@ -125,10 +125,10 @@ if (response) {
 
 ```typescript
 import { purgeCacheKey } from 'azion/purge';
-import { Purge } from 'azion/purge/types';
+import { AzionPurge } from 'azion/purge/types';
 
 const cacheKey: string[] = ['http://www.domain.com/path/image.jpg'];
-const response: Purge | null = await purgeCacheKey(cacheKey, true);
+const response: AzionPurge | null = await purgeCacheKey(cacheKey, { debug: true });
 if (response) {
   console.log('Purge successful:', response);
 } else {
@@ -144,7 +144,7 @@ if (response) {
 import { purgeWildCard } from 'azion/purge';
 
 const wildcard = ['http://www.domain.com/path/image.jpg*'];
-const response = await purgeWildCard(wildcard, true);
+const response = await purgeWildCard(wildcard, { debug: true });
 if (response) {
   console.log('Purge successful:', response);
 } else {
@@ -156,10 +156,10 @@ if (response) {
 
 ```typescript
 import { purgeWildCard } from 'azion/purge';
-import { Purge } from 'azion/purge/types';
+import { AzionPurge } from 'azion/purge/types';
 
 const wildcard: string[] = ['http://www.domain.com/path/image.jpg*'];
-const response: Purge | null = await purgeWildCard(wildcard, true);
+const response: AzionPurge | null = await purgeWildCard(wildcard, { debug: true });
 if (response) {
   console.log('Purge successful:', response);
 } else {
@@ -174,7 +174,7 @@ if (response) {
 ```javascript
 import { createClient } from 'azion/purge';
 
-const client = createClient({ token: 'your-api-token', debug: true });
+const client = createClient({ token: 'your-api-token', options: { debug: true } });
 
 const purgeURLResponse = await client.purgeURL(['http://www.domain.com/path/image.jpg']);
 if (purgeURLResponse) {
@@ -202,25 +202,25 @@ if (purgeWildCardResponse) {
 
 ```typescript
 import { createClient } from 'azion/purge';
-import { Purge, PurgeClient } from 'azion/purge/types';
+import { AzionPurge, AzionPurgeClient } from 'azion/purge/types';
 
-const client: PurgeClient = createClient({ token: 'your-api-token', debug: true });
+const client: AzionPurgeClient = createClient({ token: 'your-api-token', options: { debug: true } });
 
-const purgeURLResponse: Purge | null = await client.purgeURL(['http://www.domain.com/path/image.jpg']);
+const purgeURLResponse: AzionPurge | null = await client.purgeURL(['http://www.domain.com/path/image.jpg']);
 if (purgeURLResponse) {
   console.log('Purge successful:', purgeURLResponse);
 } else {
   console.error('Purge failed');
 }
 
-const purgeCacheKeyResponse: Purge | null = await client.purgeCacheKey(['http://www.domain.com/path/image.jpg']);
+const purgeCacheKeyResponse: AzionPurge | null = await client.purgeCacheKey(['http://www.domain.com/path/image.jpg']);
 if (purgeCacheKeyResponse) {
   console.log('Purge successful:', purgeCacheKeyResponse);
 } else {
   console.error('Purge failed');
 }
 
-const purgeWildCardResponse: Purge | null = await client.purgeWildCard(['http://www.domain.com/path/image.jpg*']);
+const purgeWildCardResponse: AzionPurge | null = await client.purgeWildCard(['http://www.domain.com/path/image.jpg*']);
 if (purgeWildCardResponse) {
   console.log('Purge successful:', purgeWildCardResponse);
 } else {

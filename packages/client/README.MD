@@ -120,7 +120,7 @@ const client = createClient({ token: 'your-api-token', debug: true });
 
 const newDatabase = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
+  console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
 const allDatabases = await client.sql.getDatabases();
@@ -138,23 +138,23 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Database, Query } from 'azion/sql/types';
+import { AzionClient, AzionDatabase, QueryResponse } from 'azion/sql/types';
 
-const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
+const client: AzionClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDatabase: Database | null = await client.sql.createDatabase('my-new-db');
+const newDatabase: AzionDatabase | null = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
+  console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: Database[] | null = await client.sql.getDatabases();
+const allDatabases: AzionDatabase[] | null = await client.sql.getDatabases();
 if (allDatabases) {
   console.log(`Retrieved ${allDatabases.length} databases`);
 }
 
-const queryResult: Query | null = await client.sql.query('SELECT * FROM users');
+const queryResult: QueryResponse | null = await client.sql.query(['SELECT * FROM users']);
 if (queryResult) {
-  console.log(`Query executed. Rows returned: ${queryResult.rows.length}`);
+  console.log(`Query executed. Rows returned: ${queryResult.data.length}`);
 }
 ```
 
@@ -165,7 +165,7 @@ if (queryResult) {
 ```javascript
 import { createClient } from 'azion';
 
-const client = createClient({ token: 'your-api-token', debug: true });
+const client = createClient({ token: 'your-api-token', { debug: true } });
 
 const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
 if (purgeResult) {
@@ -218,6 +218,8 @@ Creates an Azion Client with methods to interact with Azion.
 - `config?: ClientConfig` - Client configuration options.
   - `token?: string` - Authentication token for Azion API.
   - `debug?: boolean` - Enable debug mode for detailed logging.
+  - `options?: OptionsParams` - Object options params.
+    - `debug?: boolean` - Enable debug mode for detailed logging.
 
 **Returns:**
 
@@ -231,13 +233,15 @@ Configuration options for the Azion client.
 
 - `token?: string` - Your Azion API token.
 - `debug?: boolean` - Enable debug mode for detailed logging.
+- `options?: OptionsParams` - Object options params.
+  - `debug?: boolean` - Enable debug mode for detailed logging.
 
 ### `AzionClient`
 
 An object with methods to interact with Azion services.
 
 - `storage: StorageClient`
-- `sql: SQLClient`
+- `sql: AzionSQLClient`
 - `purge: PurgeClient`
 
 ## Contributing

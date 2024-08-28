@@ -1,4 +1,4 @@
-import { Metadata } from 'azion/types';
+import { FetchEvent, Metadata } from 'azion/types';
 
 /**
  * Represents the request URL for the SSG or SPA.
