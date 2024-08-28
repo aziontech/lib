@@ -1,3 +1,18 @@
+## [1.6.0](https://github.com/aziontech/lib/compare/v1.5.0...v1.6.0) (2024-08-28)
+
+
+### Features
+
+* add listTables method to sql package (#28) ([9bd7366](https://github.com/aziontech/lib/commit/9bd73665598400f1c062de353a6b8a8682f02021))
+* azion runtime internal sql and storage (#24) ([a4311aa](https://github.com/aziontech/lib/commit/a4311aab8ddd0cd3ee80cfcb5c37e534a2185ce9))
+* max_object_count param ([2185a67](https://github.com/aziontech/lib/commit/2185a670c65ca987fb11be5f5c402837305fabfa))
+
+
+### Bug Fixes
+
+* remove  (getObjects list) ([bde5ee4](https://github.com/aziontech/lib/commit/bde5ee46117d69ed467b895e5a50084a2b9023f2))
+* standardize key return ([5243f37](https://github.com/aziontech/lib/commit/5243f37d465f20816275f9467a796972a1820f13))
+
 ## [1.6.0-stage.3](https://github.com/aziontech/lib/compare/v1.6.0-stage.2...v1.6.0-stage.3) (2024-08-27)
 
 
