@@ -1,4 +1,4 @@
-import { createDomain, getDomainById, listDomains } from './services/api';
+import { createDomain, getDomainById, listDomains, updateDomain } from './services/api';
 import { ApiAzionDomainResponse, ApiAzionListDomainsResponse } from './services/api/types';
 import {
   AzionClientOptions,
@@ -7,6 +7,7 @@ import {
   AzionDomainResponse,
   AzionDomainsClient,
   AzionListDomainsResponse,
+  AzionUpdateDomain,
 } from './types';
 import { resolveDebug, resolveToken } from './utils';
 
@@ -102,7 +103,7 @@ const getDomainMethod = async (
     debug: resolveDebug(options?.debug),
   });
   return {
-    state: apiResponse?.id ? 'executed' : 'failed',
+    state: 'executed',
     data: {
       id: apiResponse.id,
       name: apiResponse?.name,
@@ -119,6 +120,65 @@ const getDomainMethod = async (
             verification: apiResponse.mtls_verification as 'enforce' | 'permissive',
             trustedCaCertificateId: apiResponse.mtls_trusted_ca_certificate_id as number,
             crlList: apiResponse.crl_list,
+          }
+        : undefined,
+    },
+  };
+};
+
+/**
+ *
+ * @param token The token to authenticate
+ * @param domainId The domain ID
+ * @param domain The domain to update
+ * @param options Options to update the domain
+ * @returns Domain updated
+ */
+const updateDomainMethod = async (
+  token: string,
+  domainId: number,
+  domain: AzionUpdateDomain,
+  options?: AzionClientOptions,
+): Promise<AzionDomainResponse> => {
+  if (domain?.edgeApplicationId === undefined) {
+    return {
+      state: 'failed',
+      data: {
+        message: 'Edge Application ID is required',
+      },
+    };
+  }
+
+  const apiResponse = await updateDomain(resolveToken(token), domainId, domain, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+  });
+
+  if (!apiResponse?.results?.id) {
+    return {
+      state: 'failed',
+      data: apiResponse,
+    };
+  }
+
+  return {
+    state: 'executed',
+    data: {
+      id: apiResponse?.results.id,
+      name: apiResponse?.results?.name,
+      url: apiResponse?.results?.domain_name,
+      environment: apiResponse?.results?.environment,
+      active: apiResponse?.results?.is_active,
+      cnameAccessOnly: apiResponse?.results?.cname_access_only,
+      digitalCertificateId: apiResponse?.results?.digital_certificate_id,
+      cnames: apiResponse?.results?.cnames,
+      edgeApplicationId: apiResponse?.results?.edge_application_id,
+      edgeFirewallId: apiResponse?.results?.edge_firewall_id,
+      mtls: apiResponse?.results?.is_mtls_enabled
+        ? {
+            verification: apiResponse?.results.mtls_verification as 'enforce' | 'permissive',
+            trustedCaCertificateId: apiResponse?.results.mtls_trusted_ca_certificate_id as number,
+            crlList: apiResponse?.results.crl_list,
           }
         : undefined,
     },
@@ -159,6 +219,21 @@ const listDomainsWrapper = async (
  */
 const getDomainWrapper = async (domainId: number, options?: AzionClientOptions): Promise<AzionDomainResponse> => {
   return getDomainMethod(resolveToken(), domainId, options);
+};
+
+/**
+ * Update a domain
+ * @param domainId Domain ID
+ * @param domain Domain to update
+ * @param options Options to update the domain
+ * @returns Domain updated
+ */
+const updateDomainWrapper = async (
+  domainId: number,
+  domain: AzionUpdateDomain,
+  options?: AzionClientOptions,
+): Promise<AzionDomainResponse> => {
+  return updateDomainMethod(resolveToken(), domainId, domain, options);
 };
 
 /**
@@ -221,6 +296,21 @@ const createClient: AzionDomainsClient = (
      */
     getDomain: (domainId: number, options?: AzionClientOptions) =>
       getDomainMethod(tokenValue, domainId, { ...options, debug: debugValue }),
+
+    /**
+     * Update a domain
+     * @param domainId Domain ID
+     * @param domain Domain to update
+     * @param options Options to update the domain
+     * @returns Domain updated
+     *
+     * @example
+     * const domain = { name: 'example.com', edgeApplicationId: 123 };
+     * const result = await client.updateDomain(123, domain);
+     * console.log(result);
+     */
+    updateDomain: (domainId: number, domain: AzionUpdateDomain, options?: AzionClientOptions) =>
+      updateDomainMethod(tokenValue, domainId, domain, { ...options, debug: debugValue }),
   };
   return client;
 };
@@ -230,6 +320,7 @@ export {
   createDomainWrapper as createDomain,
   getDomainWrapper as getDomain,
   listDomainsWrapper as listDomains,
+  updateDomainWrapper as updateDomain,
 };
 
 export default createClient;

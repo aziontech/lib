@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import createClient, { createDomain, getDomain, listDomains } from '.';
+import createClient, { createDomain, getDomain, listDomains, updateDomain } from '.';
 import * as services from './services/api';
 
 describe('Domains Package', () => {
@@ -246,6 +246,190 @@ describe('Domains Package', () => {
       });
       expect(services.getDomainById).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
     });
+
+    it('should get a domain by id with all fields', async () => {
+      const mockResponse = {
+        results: {
+          id: 123,
+          name: 'example.com',
+          domain_name: 'example.com',
+          environment: 'production',
+          is_active: true,
+          cnames: ['cname1', 'cname2'],
+          cname_access_only: true,
+          digital_certificate_id: 'lets_encrypt',
+          edge_application_id: 123,
+          is_mtls_enabled: true,
+          mtls_verification: 'enforce',
+          mtls_trusted_ca_certificate_id: 123,
+          crl_list: [111],
+        },
+      };
+      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(services, 'getDomainById');
+
+      const result = await getDomain(123, { debug: mockDebug });
+      expect(result).toEqual({
+        state: 'executed',
+        data: {
+          id: 123,
+          name: 'example.com',
+          url: 'example.com',
+          environment: 'production',
+          active: true,
+          cnames: ['cname1', 'cname2'],
+          cnameAccessOnly: true,
+          digitalCertificateId: 'lets_encrypt',
+          edgeApplicationId: 123,
+          mtls: {
+            verification: 'enforce',
+            trustedCaCertificateId: 123,
+            crlList: [111],
+          },
+        },
+      });
+      expect(services.getDomainById).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
+    });
+  });
+
+  describe('updateDomain', () => {
+    it('should update a domain', async () => {
+      const mockResponse = {
+        results: {
+          id: 170,
+          name: 'Overwritten Domain',
+          cnames: ['different-cname.org', 'new-domain.net'],
+          cname_access_only: false,
+          digital_certificate_id: 61561,
+          edge_application_id: 123,
+          is_active: false,
+          domain_name: 'n3wd0ma1n9.map.azionedge.net',
+          environment: 'production',
+          is_mtls_enabled: false,
+          mtls_verification: 'enforce',
+          mtls_trusted_ca_certificate_id: null,
+          crl_list: null,
+          edge_firewall_id: null,
+        },
+      };
+      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(services, 'updateDomain');
+
+      const result = await updateDomain(
+        170,
+        { name: 'Overwritten Domain', edgeApplicationId: 123, active: false },
+        { debug: mockDebug },
+      );
+      expect(result).toEqual({
+        state: 'executed',
+        data: {
+          id: 170,
+          name: 'Overwritten Domain',
+          url: 'n3wd0ma1n9.map.azionedge.net',
+          environment: 'production',
+          active: false,
+          cnameAccessOnly: false,
+          cnames: ['different-cname.org', 'new-domain.net'],
+          digitalCertificateId: 61561,
+          edgeApplicationId: 123,
+          edgeFirewallId: null,
+          mtls: undefined,
+        },
+      });
+      expect(services.updateDomain).toHaveBeenCalledWith(
+        mockToken,
+        170,
+        { name: 'Overwritten Domain', edgeApplicationId: 123, active: false },
+        { debug: mockDebug },
+      );
+    });
+
+    it('should fail to update a domain if edgeApplicationId is not provided', async () => {
+      const mockResponse = {
+        edge_application_id: ['This field is required.'],
+      };
+      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+
+      const result = await updateDomain(170, { name: 'Overwritten Domain', active: false }, { debug: mockDebug });
+
+      expect(result).toEqual({
+        state: 'failed',
+        data: { message: 'Edge Application ID is required' },
+      });
+    });
+
+    it('should fail to update a domain if the some field is invalid', async () => {
+      const mockResponse = {
+        duplicated_domain_name: 'my domain',
+      };
+      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+
+      const result = await updateDomain(170, { name: 'my domain', edgeApplicationId: 123 }, { debug: mockDebug });
+
+      expect(result).toEqual({
+        state: 'failed',
+        data: { duplicated_domain_name: 'my domain' },
+      });
+    });
+
+    it('should update a domain with all fields', async () => {
+      const mockResponse = {
+        results: {
+          id: 170,
+          name: 'Overwritten Domain',
+          cnames: ['different-cname.org', 'new-domain.net'],
+          cname_access_only: false,
+          digital_certificate_id: 61561,
+          edge_application_id: 123,
+          is_active: false,
+          domain_name: 'n3wd0ma1n9.map.azionedge.net',
+          environment: 'production',
+          is_mtls_enabled: true,
+          mtls_verification: 'enforce',
+          mtls_trusted_ca_certificate_id: 123,
+          crl_list: [111],
+          edge_firewall_id: null,
+        },
+      };
+      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(services, 'updateDomain');
+
+      const domain: any = {
+        name: 'Overwritten Domain',
+        cnames: ['different-cname.org', 'new-domain.net'],
+        cnameAccessOnly: false,
+        digitalCertificateId: 61561,
+        edgeApplicationId: 123,
+        active: false,
+        mtls: {
+          verification: 'enforce',
+          trustedCaCertificateId: 123,
+          crlList: [111],
+        },
+      };
+      const result = await updateDomain(170, domain, { debug: mockDebug });
+      expect(result).toEqual({
+        state: 'executed',
+        data: {
+          id: 170,
+          name: 'Overwritten Domain',
+          url: 'n3wd0ma1n9.map.azionedge.net',
+          environment: 'production',
+          active: false,
+          cnameAccessOnly: false,
+          cnames: ['different-cname.org', 'new-domain.net'],
+          digitalCertificateId: 61561,
+          edgeApplicationId: 123,
+          edgeFirewallId: null,
+          mtls: {
+            verification: 'enforce',
+            trustedCaCertificateId: 123,
+            crlList: [111],
+          },
+        },
+      });
+      expect(services.updateDomain).toHaveBeenCalledWith(mockToken, 170, domain, { debug: mockDebug });
+    });
   });
 
   describe('createClient', () => {
@@ -343,6 +527,54 @@ describe('Domains Package', () => {
       expect(result).toEqual({
         state: 'executed',
         data: { id: 123, name: 'example.com', url: 'example.com', environment: 'production', active: true },
+      });
+      expect(client).toBeDefined();
+    });
+
+    it('should create a client with updateDomain', async () => {
+      const mockResponse = {
+        results: {
+          id: 170,
+          name: 'Overwritten Domain',
+          cnames: ['different-cname.org', 'new-domain.net'],
+          cname_access_only: false,
+          digital_certificate_id: 61561,
+          edge_application_id: 123,
+          is_active: false,
+          domain_name: 'n3wd0ma1n9.map.azionedge.net',
+          environment: 'production',
+          is_mtls_enabled: false,
+          mtls_verification: 'enforce',
+          mtls_trusted_ca_certificate_id: null,
+          crl_list: null,
+          edge_firewall_id: null,
+        },
+      };
+      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(services, 'updateDomain');
+
+      const client = createClient({ token: mockToken, options: { debug: mockDebug } });
+
+      const result = await client.updateDomain(
+        170,
+        { name: 'Overwritten Domain', edgeApplicationId: 123, active: false },
+        { debug: mockDebug },
+      );
+      expect(result).toEqual({
+        state: 'executed',
+        data: {
+          id: 170,
+          name: 'Overwritten Domain',
+          url: 'n3wd0ma1n9.map.azionedge.net',
+          environment: 'production',
+          active: false,
+          cnameAccessOnly: false,
+          cnames: ['different-cname.org', 'new-domain.net'],
+          digitalCertificateId: 61561,
+          edgeApplicationId: 123,
+          edgeFirewallId: null,
+          mtls: undefined,
+        },
       });
       expect(client).toBeDefined();
     });

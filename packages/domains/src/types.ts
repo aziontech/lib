@@ -18,6 +18,8 @@ export type AzionDomain = {
 
 export type AzionCreateDomain = Omit<AzionDomain, 'id' | 'environment' | 'active' | 'url'>;
 
+export type AzionUpdateDomain = Omit<AzionDomain, 'id' | 'environment' | 'url'>;
+
 export type AzionClientOptions = {
   debug?: boolean | undefined;
   force?: boolean | undefined;
@@ -25,7 +27,7 @@ export type AzionClientOptions = {
 
 export type AzionDomainResponse = {
   state: 'pending' | 'executed' | 'failed';
-  data: AzionDomain;
+  data: AzionDomain | unknown;
 };
 
 export type AzionListDomainsResponse = {
@@ -46,4 +48,9 @@ export interface AzionCreateClientDomains {
     queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
   ) => Promise<AzionListDomainsResponse>;
   getDomain: (domainId: number, options?: AzionClientOptions) => Promise<AzionDomainResponse>;
+  updateDomain: (
+    domainId: number,
+    domain: AzionUpdateDomain,
+    options?: AzionClientOptions,
+  ) => Promise<AzionDomainResponse>;
 }

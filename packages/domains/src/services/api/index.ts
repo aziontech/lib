@@ -1,10 +1,5 @@
 import { AzionClientOptions, AzionDomain } from '../../types';
-import {
-  ApiAzionCreateDomainResponse,
-  ApiAzionGetDomainResponse,
-  ApiAzionListDomainsResponse,
-  ApiAzionQueryListDomainsResponse,
-} from './types';
+import { ApiAzionDomainResult, ApiAzionListDomainsResponse, ApiAzionQueryListDomainsResponse } from './types';
 
 const BASE_URL = 'https://api.azionapi.net/domains';
 
@@ -18,7 +13,7 @@ const createDomain = async (
   token: string,
   domain: AzionDomain,
   { debug }: AzionClientOptions,
-): Promise<ApiAzionCreateDomainResponse> => {
+): Promise<ApiAzionDomainResult> => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let body: any = {
@@ -83,7 +78,7 @@ const getDomainById = async (
   token: string,
   domainId: number,
   options?: AzionClientOptions,
-): Promise<ApiAzionGetDomainResponse> => {
+): Promise<ApiAzionDomainResult> => {
   try {
     const response = await fetch(`${BASE_URL}/${domainId}`, {
       method: 'GET',
@@ -98,4 +93,49 @@ const getDomainById = async (
   }
 };
 
-export { createDomain, getDomainById, listDomains };
+const updateDomain = async (
+  token: string,
+  domainId: number,
+  domain: AzionDomain,
+  options?: AzionClientOptions,
+): Promise<ApiAzionDomainResult> => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let body: any = {
+      name: domain.name,
+      cnames: domain?.cnames ?? [],
+      cname_access_only: domain?.cnameAccessOnly ?? false,
+      digital_certificate_id: domain?.digitalCertificateId ?? undefined,
+      edge_application_id: domain.edgeApplicationId,
+      edge_firewall_id: domain?.edgeFirewallId ?? undefined,
+      is_active: domain.active ?? true,
+    };
+
+    if (domain?.mtls) {
+      if (domain.mtls.verification !== 'enforce' && domain.mtls.verification !== 'permissive') {
+        throw new Error('mtls.verification must be enforce or permissive');
+      }
+      body = {
+        ...body,
+        is_mtls_enabled: true,
+        mtls_verification: domain.mtls.verification,
+        mtls_trusted_ca_certificate_id: domain.mtls.trustedCaCertificateId,
+        crl_list: domain.mtls.crlList,
+      };
+    }
+
+    const response = await fetch(`${BASE_URL}/${domainId}`, {
+      method: 'PUT',
+      headers: makeHeaders(token),
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    if (options?.debug) console.log('Response Put Domains', data);
+    return data;
+  } catch (error) {
+    if (options?.debug) console.error('Error updating Domain:', error);
+    throw error;
+  }
+};
+
+export { createDomain, getDomainById, listDomains, updateDomain };

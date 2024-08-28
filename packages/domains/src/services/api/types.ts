@@ -15,11 +15,7 @@ export type ApiAzionDomainResponse = {
   crl_list?: number[];
 };
 
-export type ApiAzionCreateDomainResponse = {
-  results: ApiAzionDomainResponse;
-};
-
-export type ApiAzionGetDomainResponse = {
+export type ApiAzionDomainResult = {
   results: ApiAzionDomainResponse;
 };
 

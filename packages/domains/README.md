@@ -15,6 +15,7 @@ Azion Edge SQL Domains provides a simple interface to interact with the Azion Ed
     - [Create Domain](#create-domain)
     - [List Domains](#listdomains)
     - [Get Domain](#getdomain)
+    - [Update Domain](#updatedomain)
 - [API Reference](#api-reference)
   - [`createDomain`](#createdomain)
 - [Types](#types)
@@ -197,6 +198,20 @@ Get a domain by ID.
 **Returns:**
 
 - `Promise<AzionDomainResponse>` - The domain object or throw if the domain does not exist.
+
+### `updateDomain`
+
+Update a domain.
+
+**Parameters:**
+
+- `domainId: number` - Domain ID.
+- `domain: AzionUpdateDomain` - Domain object.
+- `options?: { debug?: boolean }` - Object options params.
+
+**Returns:**
+
+- `Promise<AzionDomainResponse>` - The updated domain object or throw if the update failed.
 
 ### `createClient`
 
