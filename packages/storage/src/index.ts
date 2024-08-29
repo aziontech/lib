@@ -684,50 +684,14 @@ const client: CreateAzionStorageClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionStorageClient = {
-    /**
-     * Retrieves a list of buckets with optional filtering and pagination.
-     * @param {Object} params - Parameters for retrieving buckets.
-     * @param {AzionBucketCollectionParams} [params.params] - Optional parameters for filtering and pagination.
-     * @returns {Promise<AzionBucket[] | null>} Array of buckets or null if retrieval failed.
-     */
     getBuckets: (params?: { params?: AzionBucketCollectionParams }): Promise<AzionBucket[] | null> =>
       getBucketsMethod(tokenValue, params?.params, { ...config, debug: debugValue }),
-
-    /**
-     * Creates a new bucket.
-     * @param {Object} params - Parameters for creating a bucket.
-     * @param {string} params.name - Name of the new bucket.
-     * @param {string} params.edge_access - Edge access configuration for the bucket.
-     * @returns {Promise<AzionBucket | null>} The created bucket or null if creation failed.
-     */
     createBucket: ({ name, edge_access }: { name: string; edge_access: string }): Promise<AzionBucket | null> =>
       createBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue }),
-
-    /**
-     * Updates an existing bucket.
-     * @param {Object} params - Parameters for updating a bucket.
-     * @param {string} params.name - Name of the bucket to update.
-     * @param {string} params.edge_access - New edge access configuration for the bucket.
-     * @returns {Promise<AzionBucket | null>} The updated bucket or null if update failed.
-     */
     updateBucket: ({ name, edge_access }: { name: string; edge_access: string }): Promise<AzionBucket | null> =>
       updateBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue }),
-
-    /**
-     * Deletes a bucket by its name.
-     * @param {Object} params - Parameters for deleting a bucket.
-     * @param {string} params.name - Name of the bucket to delete.
-     * @returns {Promise<AzionDeletedBucket | null>} Confirmation of deletion or null if deletion failed.
-     */
     deleteBucket: ({ name }: { name: string }): Promise<AzionDeletedBucket | null> =>
       deleteBucketMethod(tokenValue, name, { ...config, debug: debugValue }),
-
-    /**
-     * Retrieves a bucket by its name.
-     * @param {Object} params - Parameters for retrieving a bucket.
-     * @param {string} params.name - Name of the bucket to retrieve.
-     * @returns {Promise<AzionBucket | null>} The retrieved bucket or null if not found.
-     */
     getBucket: ({ name }: { name: string }): Promise<AzionBucket | null> =>
       getBucketMethod(tokenValue, name, { ...config, debug: debugValue }),
   } as const;

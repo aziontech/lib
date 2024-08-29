@@ -119,57 +119,10 @@ const client: CreateAzionPurgeClient = (
   const tokenValue = resolveToken(config?.token);
 
   const client: AzionPurgeClient = {
-    /**
-     * Purge a URL from the Azion Edge cache.
-     *
-     * @param {string[]} url - URLs to purge.
-     * @param {AzionClientOptions} [options] - Client options including debug mode.
-     * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
-     *
-     * @example
-     * const response = await purgeClient.purgeURL(['http://www.domain.com/path/image.jpg'], { debug: true });
-     * if (response) {
-     *   console.log('Purge successful:', response);
-     * } else {
-     *   console.error('Purge failed');
-     * }
-     */
     purgeURL: (url: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
       purgeURLMethod(tokenValue, url, options),
-
-    /**
-     * Purge a Cache Key from the Azion Edge cache.
-     *
-     * @param {string[]} cacheKey - Cache Keys to purge.
-     * @param {AzionClientOptions} [options] - Client options including debug mode.
-     * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
-     *
-     * @example
-     * const response = await purgeClient.purgeCacheKey(['http://www.domain.com/path/image.jpg'], { debug: true });
-     * if (response) {
-     *   console.log('Purge successful:', response);
-     * } else {
-     *   console.error('Purge failed');
-     * }
-     */
     purgeCacheKey: (cacheKey: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
       purgeCacheKeyMethod(tokenValue, cacheKey, options),
-
-    /**
-     * Purge using a wildcard expression from the Azion Edge cache.
-     *
-     * @param {string[]} wildcard - Wildcard expressions to purge.
-     * @param {AzionClientOptions} [options] - Client options including debug mode.
-     * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
-     *
-     * @example
-     * const response = await purgeClient.purgeWildCard(['http://www.domain.com/path/image.jpg*'], { debug: true });
-     * if (response) {
-     *   console.log('Purge successful:', response);
-     * } else {
-     *   console.error('Purge failed');
-     * }
-     */
     purgeWildCard: (wildcard: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
       purgeWildCardMethod(tokenValue, wildcard, options),
   };
@@ -183,6 +136,7 @@ export {
   purgeURLWrapper as purgeURL,
   purgeWildCardWrapper as purgeWildCard,
 };
+
 export default client;
 
 export type * from './types';

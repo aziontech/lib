@@ -397,76 +397,12 @@ const client: CreateAzionSQLClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionSQLClient = {
-    /**
-     * Creates a new database.
-     *
-     * @param {string} name - Name of the new database.
-     * @returns {Promise<AzionDatabase | null>} The created database object or null if creation failed.
-     *
-     * @example
-     * const newDatabase = await sqlClient.createDatabase('my-new-db');
-     * if (newDatabase) {
-     *   console.log(`Database created with ID: ${newDatabase.id}`);
-     * } else {
-     *   console.error('Failed to create database');
-     * }
-     */
     createDatabase: (name: string): Promise<AzionDatabase | null> =>
       createDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
-
-    /**
-     * Deletes a database by its ID.
-     *
-     * @param {number} id - ID of the database to delete.
-     * @returns {Promise<AzionDeletedDatabase | null>} Object confirming deletion or null if deletion failed.
-     *
-     * @example
-     * const result = await sqlClient.deleteDatabase(123);
-     * if (result) {
-     *   console.log(`Database ${result.id} deleted successfully`);
-     * } else {
-     *   console.error('Failed to delete database');
-     * }
-     */
     deleteDatabase: (id: number): Promise<AzionDeletedDatabase | null> =>
       deleteDatabaseMethod(tokenValue, id, { ...config, debug: debugValue }),
-
-    /**
-     * Retrieves a database by its Name.
-     *
-     * @param {string} name - Name of the database to retrieve.
-     * @returns {Promise<AzionDatabase | null>} The retrieved database object or null if not found.
-     *
-     * @example
-     * const database = await sqlClient.getDatabase('my-db');
-     * if (database) {
-     *   console.log(`Retrieved database: ${database.name}`);
-     * } else {
-     *   console.error('Database not found');
-     * }
-     */
     getDatabase: (name: string): Promise<AzionDatabase | null> =>
       getDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
-
-    /**
-     * Retrieves a list of databases with optional filtering and pagination.
-     *
-     * @param {AzionDatabaseCollectionOptions} [params] - Optional parameters for filtering and pagination.
-     * @param {string} [params.ordering] - Field to order the results by.
-     * @param {number} [params.page] - Page number for pagination.
-     * @param {number} [params.page_size] - Number of items per page.
-     * @param {string} [params.search] - Search term to filter databases.
-     * @returns {Promise<AzionDatabase[] | null>} Array of database objects or null if retrieval failed.
-     *
-     * @example
-     * const databases = await sqlClient.getDatabases({ page: 1, page_size: 10, search: 'test' });
-     * if (databases) {
-     *   console.log(`Retrieved ${databases.length} databases`);
-     *   databases.forEach(db => console.log(`- ${db.name} (ID: ${db.id})`));
-     * } else {
-     *   console.error('Failed to retrieve databases');
-     * }
-     */
     getDatabases: (params?: AzionDatabaseCollectionOptions): Promise<AzionDatabase[] | null> =>
       getDatabasesMethod(tokenValue, params, { ...config, debug: debugValue }),
   } as const;
