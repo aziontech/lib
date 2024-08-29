@@ -14,6 +14,7 @@ These libraries are designed to be versatile and can be used both within and out
   - [Purge](#purge)
 - [Utilities](#utilities)
   - [Cookies](#cookies)
+  - [Jwt](#jwt)
   - [WASM Image Processor](#wasm-image-processor)
   - [Utils](#utils)
 - [Types](#types)
@@ -259,6 +260,60 @@ setCookie(response, 'my-cookie', 'cookie-value', options);
 ```
 
 Read more in the [Cookies README](./packages/cookies/README.md).
+
+### Jwt
+
+The Jwt library provides methods to sign, verify and decode tokens.
+
+#### Examples
+
+**JavaScript:**
+
+```javascript
+import { sign, verify, decode } from "azion/jwt";
+
+const key = 'your-key';
+
+// sign
+const inputPayload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
+const token = await sign(inputPayload, key);
+console.log(`created token: ${token}`);
+
+// verify
+const verifyResult = await verify(token, key);
+console.log(`verify result: ${JSON.stringify(verifyResult)}`);
+
+// decode
+const { header, payload } = decode(token);
+console.log(`decode result: ${JSON.stringify({header, payload})}`);
+```
+
+**TypeScript:**
+
+```typescript
+import { sign, verify, decode } from "azion/jwt";
+import type { JWTPayload } from 'azion/jwt';
+
+const key: string = 'your-key';
+
+// sign
+const inputPayload: JWTPayload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
+const token: string = await sign(inputPayload, key);
+console.log(`created token: ${token}`);
+
+// verify
+const verifyResult: JWTPayload = await verify(token, key);
+console.log(`verify result: ${JSON.stringify(verifyResult)}`);
+
+// decode
+const { header, payload }: {
+  header: any;
+  payload: JWTPayload;
+} = decode(token);
+console.log(`decode result: ${JSON.stringify({header, payload})}`);
+```
+
+Read more in the [Jwt README](./packages/jwt/README.md).
 
 ### WASM Image Processor
 
