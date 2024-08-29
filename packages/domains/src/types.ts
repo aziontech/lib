@@ -53,4 +53,5 @@ export interface AzionCreateClientDomains {
     domain: AzionUpdateDomain,
     options?: AzionClientOptions,
   ) => Promise<AzionDomainResponse>;
+  deleteDomain: (domainId: number, options?: AzionClientOptions) => Promise<AzionDomainResponse>;
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import createClient, { createDomain, getDomain, listDomains, updateDomain } from '.';
+import createClient, { createDomain, deleteDomain, getDomain, listDomains, updateDomain } from '.';
 import * as services from './services/api';
 
 describe('Domains Package', () => {
@@ -86,9 +86,10 @@ describe('Domains Package', () => {
     it('should throw an error if the domain edgeApplicationId is not provided', async () => {
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve({}) } as any);
       // @eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await expect(createDomain({ name: 'example.com' } as any, { debug: mockDebug })).rejects.toThrow(
-        'Domain name and Edge Application ID are required',
-      );
+      await expect(createDomain({ name: 'example.com' } as any, { debug: mockDebug })).resolves.toEqual({
+        state: 'failed',
+        data: { message: 'Domain name and Edge Application ID are required' },
+      });
     });
 
     it('should create a domain with status failed', async () => {
@@ -238,7 +239,6 @@ describe('Domains Package', () => {
       jest.spyOn(services, 'getDomainById');
 
       const result = await getDomain(123, { debug: mockDebug });
-      console.log(result);
 
       expect(result).toEqual({
         state: 'executed',
@@ -432,6 +432,38 @@ describe('Domains Package', () => {
     });
   });
 
+  describe('deleteDomain', () => {
+    it('should delete a domain', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, status: 204 } as any);
+      jest.spyOn(services, 'deleteDomain');
+
+      const result = await deleteDomain(123, { debug: mockDebug });
+      expect(result).toEqual(expect.objectContaining({ state: 'executed', data: { id: 123 } }));
+      expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
+    });
+
+    it('should throw an error if the domain deletion fails', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue({ ok: false, status: 500 } as any);
+      jest.spyOn(services, 'deleteDomain');
+      const result = await deleteDomain(123, { debug: mockDebug });
+      expect(result).toEqual(expect.objectContaining({ state: 'failed', data: { message: 'Error deleting domain' } }));
+      expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
+    });
+
+    it('should throw an error if the domain deletion fails with a message', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 404,
+        json: () => Promise.resolve({ detail: 'Not found.' }),
+      } as any);
+      jest.spyOn(services, 'deleteDomain');
+
+      const result = await deleteDomain(123, { debug: mockDebug });
+      expect(result).toEqual(expect.objectContaining({ state: 'failed', data: { message: 'Not found.' } }));
+      expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
+    });
+  });
+
   describe('createClient', () => {
     it('should create a client with createDomain', async () => {
       const mockResponse = {
@@ -575,6 +607,20 @@ describe('Domains Package', () => {
           edgeFirewallId: null,
           mtls: undefined,
         },
+      });
+      expect(client).toBeDefined();
+    });
+
+    it('should create a client with deleteDomain', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, status: 204 } as any);
+      jest.spyOn(services, 'deleteDomain');
+
+      const client = createClient({ token: mockToken, options: { debug: mockDebug } });
+
+      const result = await client.deleteDomain(123, { debug: mockDebug });
+      expect(result).toEqual({
+        state: 'executed',
+        data: { id: 123 },
       });
       expect(client).toBeDefined();
     });

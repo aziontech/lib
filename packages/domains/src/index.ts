@@ -1,4 +1,4 @@
-import { createDomain, getDomainById, listDomains, updateDomain } from './services/api';
+import { createDomain, deleteDomain, getDomainById, listDomains, updateDomain } from './services/api';
 import { ApiAzionDomainResponse, ApiAzionListDomainsResponse } from './services/api/types';
 import {
   AzionClientOptions,
@@ -25,7 +25,12 @@ const createDomainMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionDomainResponse> => {
   if (domain.name === undefined || domain.edgeApplicationId === undefined) {
-    throw new Error('Domain name and Edge Application ID are required');
+    return {
+      state: 'failed',
+      data: {
+        message: 'Domain name and Edge Application ID are required',
+      },
+    };
   }
   const { results: apiResponse } = await createDomain(resolveToken(token), domain, {
     ...options,
@@ -186,6 +191,39 @@ const updateDomainMethod = async (
 };
 
 /**
+ * Delete a domain
+ * @param token Token to authenticate
+ * @param domainId Domain ID
+ * @param options Options to delete the domain
+ * @returns Domain deleted
+ */
+const deleteDomainMethod = async (
+  token: string,
+  domainId: number,
+  options?: AzionClientOptions,
+): Promise<AzionDomainResponse> => {
+  try {
+    await deleteDomain(resolveToken(token), domainId, {
+      ...options,
+      debug: resolveDebug(options?.debug),
+    });
+    return {
+      state: 'executed',
+      data: {
+        id: domainId,
+      },
+    };
+  } catch (error) {
+    return {
+      state: 'failed',
+      data: {
+        message: (error as Error).message,
+      },
+    };
+  }
+};
+
+/**
  * Create a new domain
  * @param domain Domain to create
  * @param options Options to create the domain
@@ -234,6 +272,16 @@ const updateDomainWrapper = async (
   options?: AzionClientOptions,
 ): Promise<AzionDomainResponse> => {
   return updateDomainMethod(resolveToken(), domainId, domain, options);
+};
+
+/**
+ * Delete a domain
+ * @param domainId Domain ID
+ * @param options Options to delete the domain
+ * @returns Domain deleted
+ */
+const deleteDomainWrapper = async (domainId: number, options?: AzionClientOptions): Promise<AzionDomainResponse> => {
+  return deleteDomainMethod(resolveToken(), domainId, options);
 };
 
 /**
@@ -311,6 +359,18 @@ const createClient: AzionDomainsClient = (
      */
     updateDomain: (domainId: number, domain: AzionUpdateDomain, options?: AzionClientOptions) =>
       updateDomainMethod(tokenValue, domainId, domain, { ...options, debug: debugValue }),
+
+    /**
+     * Delete a domain
+     * @param domainId Domain ID
+     * @param options Options to delete the domain
+     * @returns Domain deleted
+     * @example
+     * const result = await client.deleteDomain(123);
+     * console.log(result);
+     */
+    deleteDomain: (domainId: number, options?: AzionClientOptions) =>
+      deleteDomainMethod(tokenValue, domainId, { ...options, debug: debugValue }),
   };
   return client;
 };
@@ -318,6 +378,7 @@ const createClient: AzionDomainsClient = (
 export {
   createClient,
   createDomainWrapper as createDomain,
+  deleteDomainWrapper as deleteDomain,
   getDomainWrapper as getDomain,
   listDomainsWrapper as listDomains,
   updateDomainWrapper as updateDomain,

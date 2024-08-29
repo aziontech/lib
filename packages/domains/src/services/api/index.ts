@@ -138,4 +138,27 @@ const updateDomain = async (
   }
 };
 
-export { createDomain, getDomainById, listDomains, updateDomain };
+const deleteDomain = async (token: string, domainId: number, options?: AzionClientOptions): Promise<void> => {
+  try {
+    const result = await fetch(`${BASE_URL}/${domainId}`, {
+      method: 'DELETE',
+      headers: makeHeaders(token),
+    });
+
+    if (!result.ok) {
+      throw new Error('Error deleting domain');
+    }
+
+    if (result.status !== 204) {
+      const message = await result.json();
+      throw new Error(message?.detail ?? 'Error deleting domain');
+    }
+
+    if (options?.debug) console.log('Response Delete Domain');
+  } catch (error) {
+    if (options?.debug) console.error('Error deleting Domain:', error);
+    throw error;
+  }
+};
+
+export { createDomain, deleteDomain, getDomainById, listDomains, updateDomain };
