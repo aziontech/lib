@@ -4,19 +4,19 @@ export interface AzionBucket {
   name: string;
   edge_access: string;
   state?: 'executed' | 'executed-runtime' | 'pending';
-  getObjects: (params: AzionObjectCollectionParams) => Promise<AzionBucketObject[] | null>;
-  getObjectByKey: (objectKey: string) => Promise<AzionBucketObject | null>;
-  createObject: (
-    objectKey: string,
-    file: string,
-    options?: { content_type?: string },
-  ) => Promise<AzionBucketObject | null>;
-  updateObject: (
-    objectKey: string,
-    file: string,
-    options?: { content_type?: string },
-  ) => Promise<AzionBucketObject | null>;
-  deleteObject: (objectKey: string) => Promise<AzionDeletedBucketObject | null>;
+  getObjects: (params: { params: AzionObjectCollectionParams }) => Promise<AzionBucketObject[] | null>;
+  getObjectByKey: (params: { key: string }) => Promise<AzionBucketObject | null>;
+  createObject: (params: {
+    key: string;
+    content: string;
+    options?: { content_type?: string };
+  }) => Promise<AzionBucketObject | null>;
+  updateObject: (params: {
+    key: string;
+    content: string;
+    options?: { content_type?: string };
+  }) => Promise<AzionBucketObject | null>;
+  deleteObject: (params: { key: string }) => Promise<AzionDeletedBucketObject | null>;
 }
 
 export interface AzionBucketObject {
@@ -37,12 +37,13 @@ export interface AzionDeletedBucket {
   name: string;
   state?: 'executed' | 'executed-runtime' | 'pending';
 }
+
 export interface AzionStorageClient {
-  getBuckets: (options?: AzionBucketCollectionParams) => Promise<AzionBucket[] | null>;
-  createBucket: (name: string, edge_access: string) => Promise<AzionBucket | null>;
-  updateBucket: (name: string, edge_access: string) => Promise<AzionBucket | null>;
-  deleteBucket: (name: string) => Promise<AzionDeletedBucket | null>;
-  getBucket: (name: string) => Promise<AzionBucket | null>;
+  getBuckets: (params?: { params?: AzionBucketCollectionParams }) => Promise<AzionBucket[] | null>;
+  createBucket: (params: { name: string; edge_access: string }) => Promise<AzionBucket | null>;
+  updateBucket: (params: { name: string; edge_access: string }) => Promise<AzionBucket | null>;
+  deleteBucket: (params: { name: string }) => Promise<AzionDeletedBucket | null>;
+  getBucket: (params: { name: string }) => Promise<AzionBucket | null>;
 }
 
 export type AzionBucketCollectionParams = {

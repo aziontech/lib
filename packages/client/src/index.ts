@@ -31,7 +31,7 @@ import { AzionClient, AzionClientConfig } from './types';
  *
  * @example
  * // Use the Storage client
- * const buckets = await client.storage.getBuckets();
+ * const buckets = await client.storage.getBuckets({ params: { page: 1, page_size: 10 } });
  *
  * @example
  * // Use the Purge client
@@ -48,13 +48,13 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
      *
      * @example
      * // Create a new bucket
-     * const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
+     * const newBucket = await client.storage.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
      *
      * // Get all buckets
-     * const allBuckets = await client.storage.getBuckets();
+     * const allBuckets = await client.storage.getBuckets({ params: { page: 1, page_size: 10 } });
      *
      * // Delete a bucket
-     * const deletedBucket = await client.storage.deleteBucket('my-bucket');
+     * const deletedBucket = await client.storage.deleteBucket({ name: 'my-bucket' });
      */
     storage: storageClient,
     /**
