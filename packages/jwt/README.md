@@ -57,8 +57,7 @@ sign(payload, privateKey).then((token) => console.log(token)); // Outputs the si
 **TypeScript:**
 
 ```typescript
-import { sign } from 'azion/jwt';
-import type { JWTPayload } from 'azion/jwt/types';
+import { sign, JWTPayload } from 'azion/jwt';
 
 const privateKey: string = 'your-private-key';
 const payload: JWTPayload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
@@ -82,8 +81,7 @@ verify(token, publicKey)
 **TypeScript:**
 
 ```typescript
-import { verify } from 'azion/jwt';
-import type { JWTPayload } from 'azion/jwt/types';
+import { verify, JWTPayload } from 'azion/jwt';
 
 const publicKey: string = 'your-public-key';
 const token: string = 'your-jwt-token';
@@ -107,8 +105,7 @@ console.log(header, payload); // Outputs the decoded header and payload
 **TypeScript:**
 
 ```typescript
-import { decode } from 'azion/jwt';
-import type { TokenHeader, JWTPayload } from 'azion/jwt/types';
+import { decode, TokenHeader, JWTPayload } from 'azion/jwt';
 
 const token: string = 'your-jwt-token';
 const { header, payload }: { header: TokenHeader; payload: JWTPayload } = decode(token);
