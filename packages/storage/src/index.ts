@@ -750,3 +750,5 @@ export {
 };
 
 export default client;
+
+export type * from './types';
