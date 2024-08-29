@@ -1,6 +1,6 @@
 # Azion Edge Domains
 
-Azion Edge SQL Domains provides a simple interface to interact with the Azion Edge Domains API, allowing you to create, delete, and query databases. This client is configurable and supports both debug mode and environment variable-based configuration.
+Azion Edge Domains provides a simple interface to interact with the Azion Edge Domains API, allowing you to create, list, get, update, and delete domains.
 
 ## Table of Contents
 
@@ -13,11 +13,17 @@ Azion Edge SQL Domains provides a simple interface to interact with the Azion Ed
   - [Client Configuration](#client-configuration)
   - [API Examples](#api-examples)
     - [Create Domain](#create-domain)
-    - [List Domains](#listdomains)
-    - [Get Domain](#getdomain)
-    - [Update Domain](#updatedomain)
+    - [List Domains](#list-domains)
+    - [Get Domain](#get-domain)
+    - [Update Domain](#update-domain)
+    - [Delete Domain](#delete-domain)
+    - [Using Client](#using-client)
 - [API Reference](#api-reference)
   - [`createDomain`](#createdomain)
+  - [`listDomains`](#listdomains)
+  - [`getDomain`](#getdomain)
+  - [`updateDomain`](#updatedomain)
+  - [`deleteDomain`](#deletedomain)
 - [Types](#types)
   - [`ClientConfig`](#clientconfig)
 - [Contributing](#contributing)
@@ -62,7 +68,7 @@ You can use the environment variables to configure the client without passing th
 
 ### Direct Method Calls
 
-You can use the provided wrapper methods to perform database operations directly.
+You can use the provided wrapper methods to interact with the Azion Edge Domains.
 
 ### Client Configuration
 
@@ -99,6 +105,136 @@ if (domain) {
 }
 ```
 
+### List Domains
+
+**JavaScript:**
+
+```javascript
+import { listDomains } from 'azion/domains';
+
+const domains = await listDomains();
+
+if (domains) {
+  console.log(`Found ${domains.length} domains`);
+} else {
+  console.error('Failed to list domains');
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { listDomains } from 'azion/domains';
+import type { AzionListDomainsResponse } from 'azion/domains';
+
+const domains: AzionListDomainsResponse = await listDomains();
+
+if (domains) {
+  console.log(`Found ${domains.data.length} domains`);
+} else {
+  console.error('Failed to list domains');
+}
+```
+
+### Get Domain
+
+**JavaScript:**
+
+```javascript
+import { getDomain } from 'azion/domains';
+
+const domainId = 123;
+const domain = await getDomain(domainId);
+
+if (domain) {
+  console.log(`Found domain with name: ${domain.name}`);
+} else {
+  console.error('Failed to get domain');
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { getDomain } from 'azion/domains';
+import type { AzionDomainResponse } from 'azion/domains';
+
+const domainId = 123;
+const domain: AzionDomainResponse = await getDomain(domainId);
+
+if (domain) {
+  console.log(`Found domain with name: ${domain.data.name}`);
+} else {
+  console.error('Failed to get domain');
+}
+```
+
+### Update Domain
+
+**JavaScript:**
+
+```javascript
+import { updateDomain } from 'azion/domains';
+
+const domainId = 123;
+const domain = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
+
+if (domain) {
+  console.log(`Updated domain with name: ${domain.name}`);
+} else {
+  console.error('Failed to update domain');
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { updateDomain } from 'azion/domains';
+import type { AzionDomainResponse } from 'azion/domains';
+
+const domainId = 123;
+const domain: AzionDomainResponse = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
+
+if (domain) {
+  console.log(`Updated domain with name: ${domain.data.name}`);
+} else {
+  console.error('Failed to update domain');
+}
+```
+
+### Delete Domain
+
+**JavaScript:**
+
+```javascript
+import { deleteDomain } from 'azion/domains';
+
+const domainId = 123;
+const deletedDomain = await deleteDomain(domainId);
+
+if (deletedDomain) {
+  console.log(`Deleted domain with ID: ${deletedDomain}`);
+} else {
+  console.error('Failed to delete domain');
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { deleteDomain } from 'azion/domains';
+import type { AzionDomainResponse } from 'azion/domains';
+
+const domainId = 123;
+const deletedDomain: AzionDomainResponse = await deleteDomain(domainId);
+
+if (deletedDomain) {
+  console.log(`Deleted domain with ID: ${deletedDomain.data.id}`);
+} else {
+  console.error('Failed to delete domain');
+}
+```
+
 ### Using Client
 
 **JavaScript:**
@@ -126,7 +262,7 @@ const client: AzionDomainsClient = createClient({ token: 'your-api-token', { deb
 
 const newDomain: AzionDomainResponse = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (newDomain) {
-  console.log(`Database created with ID: ${newDomain.id}`);
+  console.log(`Domain created with ID: ${newDomain.id}`);
 }
 
 ```
@@ -159,7 +295,7 @@ Creates a new domain.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The created domain object or throw if creation failed.
+- `Promise<AzionDomainResponse>` - The created domain object or state failed.
 
 > AzionDomainResponse
 
@@ -197,7 +333,7 @@ Get a domain by ID.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The domain object or throw if the domain does not exist.
+- `Promise<AzionDomainResponse>` - The domain object or state failed.
 
 ### `updateDomain`
 
@@ -211,11 +347,24 @@ Update a domain.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The updated domain object or throw if the update failed.
+- `Promise<AzionDomainResponse>` - The updated domain object or state failed.
+
+### `deleteDomain`
+
+Delete a domain.
+
+**Parameters:**
+
+- `domainId: number` - Domain ID.
+- `options?: { debug?: boolean }` - Object options params.
+
+**Returns:**
+
+- `Promise<AzionDomainResponse>` - The deleted domain id or state failed.
 
 ### `createClient`
 
-Creates an SQL client with methods to interact with Azion Edge SQL databases.
+Creates a new Azion Domains client.
 
 **Parameters:**
 
@@ -229,7 +378,7 @@ Creates an SQL client with methods to interact with Azion Edge SQL databases.
 
 ### `ClientConfig`
 
-Configuration options for the SQL client.
+Configuration options for the Azion Domains client.
 
 - `token?: string` - Your Azion API token.
 - `options?: OptionsParams` - Object options params.
