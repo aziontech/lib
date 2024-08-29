@@ -133,6 +133,11 @@ describe('SQL Module', () => {
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
+
+    afterAll(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).Azion = {};
+    });
     it('should successfully execute a query', async () => {
       const mockResponseDatabases = {
         results: [
@@ -282,6 +287,26 @@ describe('SQL Module', () => {
         }),
       );
       expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['PRAGMA table_list'], true);
+    });
+
+    it('should return empty array if list tables is empty', async () => {
+      const mockResponseDatabases = {
+        results: [{ id: 1, name: 'test-db' }],
+      };
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      const mockResponse = {
+        state: 'executed',
+        data: [],
+      };
+      (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await listTables('test-db', { debug: mockDebug });
+      expect(result).toEqual(
+        expect.objectContaining({
+          state: 'executed',
+          data: [],
+        }),
+      );
     });
   });
 
