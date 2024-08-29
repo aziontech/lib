@@ -9,6 +9,13 @@ import type {
 
 const BASE_URL = 'https://api.azion.com/v4/edge_sql/databases';
 
+/**
+ * Creates a new Edge Database.
+ * @param {string} token - The authorization token.
+ * @param {string} name - The name of the database.
+ * @param {boolean} [debug] - Optional debug flag.
+ * @returns {Promise<ApiCreateDatabaseResponse | null>} The response from the API or null if an error occurs.
+ */
 const postEdgeDatabase = async (
   token: string,
   name: string,
@@ -32,6 +39,13 @@ const postEdgeDatabase = async (
   }
 };
 
+/**
+ * Deletes an existing Edge Database.
+ * @param {string} token - The authorization token.
+ * @param {number} id - The ID of the database to delete.
+ * @param {boolean} [debug] - Optional debug flag.
+ * @returns {Promise<ApiDeleteDatabaseResponse | null>} The response from the API or null if an error occurs.
+ */
 const deleteEdgeDatabase = async (
   token: string,
   id: number,
@@ -52,6 +66,14 @@ const deleteEdgeDatabase = async (
   }
 };
 
+/**
+ * Executes a query on an Edge Database.
+ * @param {string} token - The authorization token.
+ * @param {number} id - The ID of the database to query.
+ * @param {string[]} statements - The SQL statements to execute.
+ * @param {boolean} [debug] - Optional debug flag.
+ * @returns {Promise<ApiQueryExecutionResponse | null>} The response from the API or null if an error occurs.
+ */
 const postQueryEdgeDatabase = async (
   token: string,
   id: number,
@@ -103,6 +125,13 @@ const postQueryEdgeDatabase = async (
   }
 };
 
+/**
+ * Retrieves an Edge Database by ID.
+ * @param {string} token - The authorization token.
+ * @param {number} id - The ID of the database to retrieve.
+ * @param {boolean} [debug] - Optional debug flag.
+ * @returns {Promise<ApiCreateDatabaseResponse | null>} The response from the API or null if an error occurs.
+ */
 const getEdgeDatabaseById = async (
   token: string,
   id: number,
@@ -124,6 +153,13 @@ const getEdgeDatabaseById = async (
   }
 };
 
+/**
+ * Retrieves a list of Edge Databases.
+ * @param {string} token - The authorization token.
+ * @param {Partial<AzionDatabaseCollectionOptions>} [params] - Optional query parameters.
+ * @param {boolean} [debug] - Optional debug flag.
+ * @returns {Promise<ApiListDatabasesResponse | null>} The response from the API or null if an error occurs.
+ */
 const getEdgeDatabases = async (
   token: string,
   params?: Partial<AzionDatabaseCollectionOptions>,
