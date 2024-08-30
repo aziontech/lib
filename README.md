@@ -59,10 +59,10 @@ console.log(`Retrieved ${allBuckets.length} buckets`);
 
 // SQL
 const newDatabase = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.id}`);
+console.log(`Database created with ID: ${newDatabase.data.id}`);
 
 const allDatabases = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
+console.log(`Retrieved ${allDatabases.data.length} databases`);
 
 // Purge
 const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
@@ -73,7 +73,8 @@ console.log(`Purge successful: ${purgeResult.items}`);
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Bucket, AzionDatabase, Purge } from 'azion/types';
+import type { AzionClient, Bucket, Purge } from 'azion/client';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sql';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -85,11 +86,11 @@ const allBuckets: Bucket[] | null = await client.storage.getBuckets();
 console.log(`Retrieved ${allBuckets.length} buckets`);
 
 // SQL
-const newDatabase: AzionDatabase | null = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.id}`);
+const newDatabase: AzionDatabaseResponse = await client.sql.createDatabase('my-new-db');
+console.log(`Database created with ID: ${newDatabase.data.id}`);
 
-const allDatabases: AzionDatabase[] | null = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
+const allDatabases: AzionDatabaseResponse = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.data.length} databases`);
 
 // Purge
 const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
@@ -154,14 +155,14 @@ import { createClient } from 'azion/sql';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const newDatabase = await client.createDatabase('my-new-db');
+const { data: newDatabase, error } = await client.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`Database created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+const { data, error } = await client.getDatabases();
+if (data) {
+  console.log(`Retrieved ${data.length} databases`);
 }
 ```
 
@@ -169,18 +170,18 @@ if (allDatabases) {
 
 ```typescript
 import { createClient } from 'azion/sql';
-import { AzionSQLClient, AzionDatabase } from 'azion/sql/types';
+import type { AzionSQLClient, AzionDatabaseResponse } from 'azion/sql';
 
 const client: AzionSQLClient = createClient({ token: 'your-api-token', debug: true });
 
-const newDatabase: AzionDatabase | null = await client.createDatabase('my-new-db');
-if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
+const { data, error }: AzionDatabaseResponse = await client.createDatabase('my-new-db');
+if (data) {
+  console.log(`Database created with ID: ${data.id}`);
 }
 
-const allDatabases: AzionDatabase[] | null = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+const allDatabases: AzionDatabaseResponse = await client.getDatabases();
+if (allDatabases.data) {
+  console.log(`Retrieved ${allDatabases.data.length} databases`);
 }
 ```
 
@@ -270,7 +271,7 @@ The Jwt library provides methods to sign, verify and decode tokens.
 **JavaScript:**
 
 ```javascript
-import { sign, verify, decode } from "azion/jwt";
+import { sign, verify, decode } from 'azion/jwt';
 
 const key = 'your-key';
 
@@ -285,13 +286,13 @@ console.log(`verify result: ${JSON.stringify(verifyResult)}`);
 
 // decode
 const { header, payload } = decode(token);
-console.log(`decode result: ${JSON.stringify({header, payload})}`);
+console.log(`decode result: ${JSON.stringify({ header, payload })}`);
 ```
 
 **TypeScript:**
 
 ```typescript
-import { sign, verify, decode } from "azion/jwt";
+import { sign, verify, decode } from 'azion/jwt';
 import type { JWTPayload } from 'azion/jwt';
 
 const key: string = 'your-key';
@@ -306,11 +307,14 @@ const verifyResult: JWTPayload = await verify(token, key);
 console.log(`verify result: ${JSON.stringify(verifyResult)}`);
 
 // decode
-const { header, payload }: {
+const {
+  header,
+  payload,
+}: {
   header: any;
   payload: JWTPayload;
 } = decode(token);
-console.log(`decode result: ${JSON.stringify({header, payload})}`);
+console.log(`decode result: ${JSON.stringify({ header, payload })}`);
 ```
 
 Read more in the [Jwt README](./packages/jwt/README.md).

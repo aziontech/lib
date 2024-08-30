@@ -93,8 +93,7 @@ if (response) {
 **TypeScript:**
 
 ```typescript
-import { purgeURL } from 'azion/purge';
-import { AzionPurge } from 'azion/purge/types';
+import { purgeURL, AzionPurge } from 'azion/purge';
 
 const url: string[] = ['http://www.domain.com/path/image.jpg'];
 const response: AzionPurge | null = await purgeURL(url, { debug: true });
@@ -124,8 +123,7 @@ if (response) {
 **TypeScript:**
 
 ```typescript
-import { purgeCacheKey } from 'azion/purge';
-import { AzionPurge } from 'azion/purge/types';
+import { purgeCacheKey, AzionPurge } from 'azion/purge';
 
 const cacheKey: string[] = ['http://www.domain.com/path/image.jpg'];
 const response: AzionPurge | null = await purgeCacheKey(cacheKey, { debug: true });
@@ -155,8 +153,7 @@ if (response) {
 **TypeScript:**
 
 ```typescript
-import { purgeWildCard } from 'azion/purge';
-import { AzionPurge } from 'azion/purge/types';
+import { purgeWildCard, AzionPurge } from 'azion/purge';
 
 const wildcard: string[] = ['http://www.domain.com/path/image.jpg*'];
 const response: AzionPurge | null = await purgeWildCard(wildcard, { debug: true });
@@ -201,8 +198,7 @@ if (purgeWildCardResponse) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion/purge';
-import { AzionPurge, AzionPurgeClient } from 'azion/purge/types';
+import { createClient, AzionPurge, AzionPurgeClient } from 'azion/purge';
 
 const client: AzionPurgeClient = createClient({ token: 'your-api-token', options: { debug: true } });
 
@@ -237,7 +233,7 @@ Purge a URL from the Azion Edge cache.
 **Parameters:**
 
 - `url: string[]` - URL(s) to purge.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `options?: AzionClientOptions` - Client options including debug mode.
 
 **Returns:**
 
@@ -250,7 +246,7 @@ Purge a Cache Key from the Azion Edge cache.
 **Parameters:**
 
 - `cacheKey: string[]` - Cache Key(s) to purge.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `options?: AzionClientOptions` - Client options including debug mode.
 
 **Returns:**
 
@@ -263,7 +259,7 @@ Purge using a wildcard expression from the Azion Edge cache.
 **Parameters:**
 
 - `wildcard: string[]` - Wildcard expression(s) to purge.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `options?: AzionClientOptions` - Client options including debug mode.
 
 **Returns:**
 
@@ -288,15 +284,15 @@ Creates a Purge client with methods to interact with Azion Edge Purge.
 Configuration options for the Purge client.
 
 - `token?: string` - Your Azion API token.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `options?: AzionClientOptions` - Additional options for the client.
 
 ### `PurgeClient`
 
 An object with methods to interact with Purge.
 
-- `purgeURL: (urls: string[]) => Promise<Purge | null>`
-- `purgeCacheKey: (cacheKeys: string[]) => Promise<Purge | null>`
-- `purgeWildCard: (wildcards: string[]) => Promise<Purge | null>`
+- `purgeURL: (urls: string[], options?: AzionClientOptions) => Promise<Purge | null>`
+- `purgeCacheKey: (cacheKeys: string[], options?: AzionClientOptions) => Promise<Purge | null>`
+- `purgeWildCard: (wildcards: string[], options?: AzionClientOptions) => Promise<Purge | null>`
 
 ### `Purge`
 

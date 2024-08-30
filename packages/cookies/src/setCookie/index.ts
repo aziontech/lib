@@ -11,9 +11,35 @@ export type CookieOptions = {
 };
 
 export interface SetCookie {
+  /**
+   * Sets a cookie in the response headers.
+   *
+   * @param {Response} res - The HTTP response object.
+   * @param {string} key - The key of the cookie to set.
+   * @param {string} value - The value of the cookie to set.
+   * @param {CookieOptions} [options] - Optional settings for the cookie.
+   * @returns {Response} The modified response object with the Set-Cookie header.
+   */
   (res: Response, key: string, value: string, options?: CookieOptions): Response;
 }
 
+/**
+ * Sets a cookie in the response headers.
+ *
+ * @param {Response} response - The HTTP response object.
+ * @param {string} key - The key of the cookie to set.
+ * @param {string} value - The value of the cookie to set.
+ * @param {CookieOptions} [options] - Optional settings for the cookie.
+ * @returns {Response} The modified response object with the Set-Cookie header.
+ *
+ * @example
+ * // Set a simple cookie
+ * setCookie(response, 'session_id', 'abc123');
+ *
+ * @example
+ * // Set a cookie with options
+ * setCookie(response, 'session_id', 'abc123', { httpOnly: true, secure: true });
+ */
 export const setCookie: SetCookie = (response, key, value, options) => {
   if (!(response instanceof Response)) {
     throw new Error('response is not an instance of Response');
@@ -68,6 +94,13 @@ export const setCookie: SetCookie = (response, key, value, options) => {
   return response;
 };
 
+/**
+ * Modifies the cookie key based on the prefix options.
+ *
+ * @param {string} key - The original cookie key.
+ * @param {CookieOptions} [options] - Optional settings for the cookie.
+ * @returns {string} The modified cookie key with the appropriate prefix.
+ */
 const changeKeyOnPrefix = (key: string, options?: CookieOptions) => {
   let cookieKey = key;
   if (options?.prefix === 'secure') {
