@@ -75,6 +75,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./application": {
+      "require": "./packages/application/dist/index.js",
+      "import": "./packages/application/dist/index.mjs",
+      "types": "./packages/application/dist/index.d.ts"
+    },
     "./types": {
       "require": "./packages/types/dist/index.js",
       "import": "./packages/types/dist/index.mjs",
@@ -128,6 +133,9 @@
   },
   "typesVersions": {
     "*": {
+      "application": [
+        "./packages/application/dist/index.d.ts"
+      ],
       "client": [
         "./packages/client/dist/index.d.ts"
       ],
