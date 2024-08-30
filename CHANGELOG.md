@@ -1,3 +1,10 @@
+## [1.7.0-stage.1](https://github.com/aziontech/lib/compare/v1.6.0...v1.7.0-stage.1) (2024-08-30)
+
+
+### Features
+
+* jsdoc for azion client ([a4a2bd3](https://github.com/aziontech/lib/commit/a4a2bd39a2e01184aaf0bbf320c194d2364853e6))
+
 ## [1.6.0](https://github.com/aziontech/lib/compare/v1.5.0...v1.6.0) (2024-08-28)
 
 
