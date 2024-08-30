@@ -55,11 +55,11 @@ export interface AzionClient {
    *
    * @example
    * // Get all databases
-   * const allDatabases = await client.sql.getDatabases();
+   * const { data, error } = await client.sql.getDatabases();
    *
    * @example
    * // Get a specific database and perform operations
-   * const db = await client.sql.getDatabase('my-db');
+   * const { data:db, error } = await client.sql.getDatabase('my-db');
    * if (db) {
    *   // Execute a query
    *   const queryResult = await db.query(['SELECT * FROM users WHERE id = ?', 1]);
@@ -76,7 +76,7 @@ export interface AzionClient {
    *
    * @example
    * // Delete a database
-   * const deletedDatabase = await client.sql.deleteDatabase(123); // Using database ID
+   * const { data, error } = await client.sql.deleteDatabase(123); // Using database ID
    */
   sql: AzionSQLClient;
 

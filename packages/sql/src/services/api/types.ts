@@ -2,17 +2,17 @@
 export interface ApiDatabaseResponse {
   id: number;
   name: string;
-  client_id: string;
+  clientId: string;
   status: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-  is_active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  isActive: boolean;
 }
 
 export interface ApiListDatabasesResponse {
   count: number;
-  links: {
+  links?: {
     first: string | null;
     last: string | null;
     next: string | null;
@@ -22,8 +22,8 @@ export interface ApiListDatabasesResponse {
 }
 
 export interface ApiQueryExecutionResponse {
-  state: 'executed' | 'pending';
-  data: {
+  state: 'executed' | 'pending' | 'failed';
+  data?: {
     results: {
       columns: string[];
       rows: (number | string)[][];
@@ -32,11 +32,17 @@ export interface ApiQueryExecutionResponse {
       query_duration_ms?: number;
     };
   }[];
+  error?: {
+    detail: string;
+  };
 }
 
 export interface ApiCreateDatabaseResponse {
-  state: 'executed' | 'pending';
-  data: ApiDatabaseResponse;
+  state: 'executed' | 'pending' | 'failed';
+  data?: ApiDatabaseResponse;
+  error?: {
+    detail: string;
+  };
 }
 
 export interface ApiDeleteDatabaseResponse {

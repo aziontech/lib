@@ -1,20 +1,28 @@
 import { JsonObjectQueryExecutionResponse } from './utils/mappers/to-object';
 
+export type AzionDatabaseResponse = {
+  data?: AzionDatabase | AzionDatabase[] | Pick<AzionDatabase, 'id'>;
+  error?: {
+    message: string;
+    operation: string;
+  };
+};
+
 /* eslint-disable no-unused-vars */
 export interface AzionDatabase {
   id: number;
   name: string;
-  client_id: string;
+  clientId: string;
   status: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
   /**
    * Executes a query or multiple queries on the database.
    *
    * @param {string[]} statements - An array of SQL statements to execute.
    * @param {AzionClientOptions} [options] - Additional options for the query execution.
-   * @returns {Promise<AzionQueryResponse | null>} A promise that resolves to the query response or null if the execution failed.
+   * @returns {Promise<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation failed.
    *
    * @example
    * const result = await database.query([
@@ -22,14 +30,14 @@ export interface AzionDatabase {
    *   'UPDATE users SET last_login = NOW() WHERE id = ?'
    * ], { debug: true });
    */
-  query?: (statements: string[], options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
+  query?: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>;
 
   /**
    * Executes one or more SQL statements on the database.
    *
    * @param {string[]} statements - An array of SQL statements to execute.
    * @param {AzionClientOptions} [options] - Additional options for the execution.
-   * @returns {Promise<AzionQueryResponse | null>} A promise that resolves to the execution response or null if the execution failed.
+   * @returns {Promise<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation failed.
    *
    * @example
    * const result = await database.execute([
@@ -37,24 +45,18 @@ export interface AzionDatabase {
    *   'DELETE FROM old_users WHERE last_login < ?'
    * ], { force: true });
    */
-  execute?: (statements: string[], options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
+  execute?: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>;
 
   /**
    * Retrieves a list of tables in the database.
    *
    * @param {AzionClientOptions} [options] - Additional options for listing tables.
-   * @returns {Promise<AzionQueryResponse | null>} A promise that resolves to the list of tables or null if the operation failed.
+   * @returns {Promise<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation failed.
    *
    * @example
    * const tables = await database.listTables({ debug: true });
    */
-  listTables?: (options?: AzionClientOptions) => Promise<AzionQueryResponse | null>;
-}
-
-export interface AzionDeletedDatabase {
-  id: number;
-  state: 'executed' | 'pending';
-  data: null;
+  listTables?: (options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>;
 }
 
 export type AzionQueryParams = string | number | boolean | null;
@@ -81,11 +83,17 @@ export type QueryResult = {
   info?: AzionQueryExecutionInfo;
 };
 
-export type AzionQueryResponse = {
-  state: 'executed' | 'pending' | 'executed-runtime';
-  data: QueryResult[] | NonSelectQueryResult;
+export type AzionDatabaseQueryResponse = {
+  state: 'executed' | 'pending' | 'executed-runtime' | 'failed';
+  data?: QueryResult[] | NonSelectQueryResult | undefined;
   toObject?: () => JsonObjectQueryExecutionResponse;
+  error?: {
+    message: string;
+    operation: string;
+  };
 };
+
+export type AzionDatabaseExecutionResponse = AzionDatabaseQueryResponse;
 
 export type AzionDatabaseCollectionOptions = {
   ordering?: string;
@@ -96,50 +104,50 @@ export type AzionDatabaseCollectionOptions = {
 
 export interface AzionSQLClient {
   /**
-   * Deletes a database by its ID.
+   * Creates a new database with the specified name.
    *
-   * @param {number} id - ID of the database to delete.
-   * @returns {Promise<AzionDeletedDatabase | null>} Object confirming deletion or null if deletion failed.
+   * @param {string} name - Name of the database to create.
+   * @returns {Promise<AzionDatabaseResponse>} Object confirming creation of the database or an error message.
    *
    * @example
-   * const result = await sqlClient.deleteDatabase(123);
-   * if (result) {
-   *   console.log(`Database ${result.id} deleted successfully`);
+   * const { data, error } = await sqlClient.createDatabase('my-db');
+   * if (data) {
+   *  console.log(`Database ${data.name} created successfully`);
    * } else {
-   *   console.error('Failed to delete database');
-   * }
+   * console.error(`Failed to create database: ${error.message}`);
+   *
    */
-  createDatabase: (name: string) => Promise<AzionDatabase | null>;
+  createDatabase: (name: string) => Promise<AzionDatabaseResponse>;
   /**
    * Deletes a database by its ID.
    *
    * @param {number} id - ID of the database to delete.
-   * @returns {Promise<AzionDeletedDatabase | null>} Object confirming deletion or null if deletion failed.
+   * @returns {Promise<AzionDatabaseResponse>} Object confirming deletion or error if the operation failed.
    *
    * @example
-   * const result = await sqlClient.deleteDatabase(123);
-   * if (result) {
-   *   console.log(`Database ${result.id} deleted successfully`);
+   * const { data, error } = await sqlClient.deleteDatabase(123);
+   * if (data) {
+   * console.log(`Database ${data.name} (ID: ${data.id}) deleted successfully`);
    * } else {
-   *   console.error('Failed to delete database');
-   * }
+   * console.error(`Failed to delete database: ${error.message}`);
+   *
    */
-  deleteDatabase: (id: number) => Promise<AzionDeletedDatabase | null>;
+  deleteDatabase: (id: number) => Promise<AzionDatabaseResponse>;
   /**
    * Retrieves a database by its Name.
    *
    * @param {string} name - Name of the database to retrieve.
-   * @returns {Promise<AzionDatabase | null>} The retrieved database object or null if not found.
+   * @returns {Promise<AzionDatabaseResponse>} The retrieved database object or null if not found.
    *
    * @example
-   * const database = await sqlClient.getDatabase('my-db');
-   * if (database) {
-   *   console.log(`Retrieved database: ${database.name}`);
+   * const { data, error } = await sqlClient.getDatabase('my-db');
+   * if (data) {
+   *  console.log(`Retrieved database ${data.name} (ID: ${data.id})`);
    * } else {
-   *   console.error('Database not found');
-   * }
+   * console.error(`Failed to retrieve database: ${error.message}`);
+   *
    */
-  getDatabase?: (name: string) => Promise<AzionDatabase | null>;
+  getDatabase?: (name: string) => Promise<AzionDatabaseResponse>;
 
   /**
    * Retrieves a list of databases with optional filtering and pagination.
@@ -149,23 +157,22 @@ export interface AzionSQLClient {
    * @param {number} [params.page] - Page number for pagination.
    * @param {number} [params.page_size] - Number of items per page.
    * @param {string} [params.search] - Search term to filter databases.
-   * @returns {Promise<AzionDatabase[] | null>} Array of database objects or null if retrieval failed.
+   * @returns {Promise<AzionDatabaseResponse>} Array of database objects or error message.
    *
    * @example
-   * const databases = await sqlClient.getDatabases({ page: 1, page_size: 10, search: 'test' });
-   * if (databases) {
-   *   console.log(`Retrieved ${databases.length} databases`);
-   *   databases.forEach(db => console.log(`- ${db.name} (ID: ${db.id})`));
+   * const { data, error } = await sqlClient.getDatabases({ page: 1, page_size: 10, search: 'test' });
+   * if (data) {
+   * console.log(`Retrieved ${data.length} databases`);
    * } else {
-   *   console.error('Failed to retrieve databases');
-   * }
+   * console.error(`Failed to retrieve databases: ${error.message}`);
+   *
    */
   getDatabases: (params?: {
     ordering?: string;
     page?: number;
     page_size?: number;
     search?: string;
-  }) => Promise<AzionDatabase[] | null>;
+  }) => Promise<AzionDatabaseResponse>;
 }
 
 /**

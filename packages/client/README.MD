@@ -118,19 +118,19 @@ import { createClient } from 'azion';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const newDatabase = await client.sql.createDatabase('my-new-db');
+const { data: newDatabase, error } = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
 const allDatabases = await client.sql.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+if (allDatabases?.data) {
+  console.log(`Retrieved ${allDatabases?.data?.length} databases`);
 }
 
 const queryResult = await client.sql.query('SELECT * FROM users');
-if (queryResult) {
-  console.log(`Query executed. Rows returned: ${queryResult.rows.length}`);
+if (queryResult.data) {
+  console.log(`Query executed. Rows returned: ${queryResult?.data?.rows.length}`);
 }
 ```
 
@@ -138,23 +138,24 @@ if (queryResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, AzionDatabase, QueryResponse } from 'azion/sql/types';
+import type { AzionClient } from 'azion/client';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sql';
 
 const client: AzionClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDatabase: AzionDatabase | null = await client.sql.createDatabase('my-new-db');
+const { data: newDatabase, error }: AzionDatabaseResponse = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: AzionDatabase[] | null = await client.sql.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+const allDatabases: AzionDatabaseResponse = await client.sql.getDatabases();
+if (allDatabases?.data) {
+  console.log(`Retrieved ${allDatabases?.data?.length} databases`);
 }
 
-const queryResult: QueryResponse | null = await client.sql.query(['SELECT * FROM users']);
-if (queryResult) {
-  console.log(`Query executed. Rows returned: ${queryResult.data.length}`);
+const queryResult: AzionDatabaseQueryResponse = await client.sql.query(['SELECT * FROM users']);
+if (queryResult?.data) {
+  console.log(`Query executed. Rows returned: ${queryResult?.data?.length}`);
 }
 ```
 
