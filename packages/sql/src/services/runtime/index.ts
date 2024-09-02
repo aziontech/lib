@@ -10,10 +10,17 @@ export class InternalAzionSql {
   private database: Azion.Sql.Database | null = null;
 
   constructor() {
-    this.database = getAzionSql().Database;
+    this.database = getAzionSql()?.Database || null;
   }
 
-  mapperQuery = async (resultRows: { statement: string; result: Azion.Sql.Rows }[]) => {
+  /**
+   * Maps query results to a structured format.
+   * @param {Array<{ statement: string; result: Azion.Sql.Rows }>} resultRows - The result rows from the query.
+   * @returns {Promise<Array<QueryResult | NonSelectQueryResult>>} The mapped query results.
+   */
+  mapperQuery = async (
+    resultRows: { statement: string; result: Azion.Sql.Rows }[],
+  ): Promise<(QueryResult | NonSelectQueryResult)[]> => {
     const resultStatements: QueryResult[] | NonSelectQueryResult[] = [];
     for (const row of resultRows) {
       const columns = row.result.columnCount();
@@ -43,6 +50,13 @@ export class InternalAzionSql {
     return Promise.resolve(resultStatements);
   };
 
+  /**
+   * Executes a series of SQL statements on the specified database.
+   * @param {string} name - The name of the database.
+   * @param {string[]} statements - The SQL statements to execute.
+   * @param {AzionClientOptions} [options] - Optional client options.
+   * @returns {Promise<Array<{ statement: string; result: Azion.Sql.Rows }>>} The results of the executed statements.
+   */
   query = async (
     name: string,
     statements: string[],

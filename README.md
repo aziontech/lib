@@ -14,6 +14,7 @@ These libraries are designed to be versatile and can be used both within and out
   - [Purge](#purge)
 - [Utilities](#utilities)
   - [Cookies](#cookies)
+  - [Jwt](#jwt)
   - [WASM Image Processor](#wasm-image-processor)
   - [Utils](#utils)
 - [Types](#types)
@@ -58,10 +59,10 @@ console.log(`Retrieved ${allBuckets.length} buckets`);
 
 // SQL
 const newDatabase = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.id}`);
+console.log(`Database created with ID: ${newDatabase.data.id}`);
 
 const allDatabases = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
+console.log(`Retrieved ${allDatabases.data.length} databases`);
 
 // Purge
 const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
@@ -72,7 +73,8 @@ console.log(`Purge successful: ${purgeResult.items}`);
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Bucket, AzionDatabase, Purge } from 'azion/types';
+import type { AzionClient, Bucket, Purge } from 'azion/client';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sql';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -84,11 +86,11 @@ const allBuckets: Bucket[] | null = await client.storage.getBuckets();
 console.log(`Retrieved ${allBuckets.length} buckets`);
 
 // SQL
-const newDatabase: AzionDatabase | null = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.id}`);
+const newDatabase: AzionDatabaseResponse = await client.sql.createDatabase('my-new-db');
+console.log(`Database created with ID: ${newDatabase.data.id}`);
 
-const allDatabases: AzionDatabase[] | null = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
+const allDatabases: AzionDatabaseResponse = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.data.length} databases`);
 
 // Purge
 const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
@@ -153,14 +155,14 @@ import { createClient } from 'azion/sql';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const newDatabase = await client.createDatabase('my-new-db');
+const { data: newDatabase, error } = await client.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`Database created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+const { data, error } = await client.getDatabases();
+if (data) {
+  console.log(`Retrieved ${data.length} databases`);
 }
 ```
 
@@ -168,18 +170,18 @@ if (allDatabases) {
 
 ```typescript
 import { createClient } from 'azion/sql';
-import { AzionSQLClient, AzionDatabase } from 'azion/sql/types';
+import type { AzionSQLClient, AzionDatabaseResponse } from 'azion/sql';
 
 const client: AzionSQLClient = createClient({ token: 'your-api-token', debug: true });
 
-const newDatabase: AzionDatabase | null = await client.createDatabase('my-new-db');
-if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
+const { data, error }: AzionDatabaseResponse = await client.createDatabase('my-new-db');
+if (data) {
+  console.log(`Database created with ID: ${data.id}`);
 }
 
-const allDatabases: AzionDatabase[] | null = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
+const allDatabases: AzionDatabaseResponse = await client.getDatabases();
+if (allDatabases.data) {
+  console.log(`Retrieved ${allDatabases.data.length} databases`);
 }
 ```
 
@@ -259,6 +261,63 @@ setCookie(response, 'my-cookie', 'cookie-value', options);
 ```
 
 Read more in the [Cookies README](./packages/cookies/README.md).
+
+### Jwt
+
+The Jwt library provides methods to sign, verify and decode tokens.
+
+#### Examples
+
+**JavaScript:**
+
+```javascript
+import { sign, verify, decode } from 'azion/jwt';
+
+const key = 'your-key';
+
+// sign
+const inputPayload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
+const token = await sign(inputPayload, key);
+console.log(`created token: ${token}`);
+
+// verify
+const verifyResult = await verify(token, key);
+console.log(`verify result: ${JSON.stringify(verifyResult)}`);
+
+// decode
+const { header, payload } = decode(token);
+console.log(`decode result: ${JSON.stringify({ header, payload })}`);
+```
+
+**TypeScript:**
+
+```typescript
+import { sign, verify, decode } from 'azion/jwt';
+import type { JWTPayload } from 'azion/jwt';
+
+const key: string = 'your-key';
+
+// sign
+const inputPayload: JWTPayload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
+const token: string = await sign(inputPayload, key);
+console.log(`created token: ${token}`);
+
+// verify
+const verifyResult: JWTPayload = await verify(token, key);
+console.log(`verify result: ${JSON.stringify(verifyResult)}`);
+
+// decode
+const {
+  header,
+  payload,
+}: {
+  header: any;
+  payload: JWTPayload;
+} = decode(token);
+console.log(`decode result: ${JSON.stringify({ header, payload })}`);
+```
+
+Read more in the [Jwt README](./packages/jwt/README.md).
 
 ### WASM Image Processor
 

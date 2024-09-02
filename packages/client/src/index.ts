@@ -1,16 +1,12 @@
 import { defineConfig } from 'azion/config';
-import createPurgeClient from 'azion/purge';
-import createSqlClient from 'azion/sql';
-import createStorageClient from 'azion/storage';
-
-import { AzionPurgeClient } from '../../purge/src/types';
-import { AzionSQLClient } from '../../sql/src/types';
-import { AzionStorageClient } from '../../storage/src/types';
+import createPurgeClient, { AzionPurgeClient } from 'azion/purge';
+import createSqlClient, { AzionSQLClient } from 'azion/sql';
+import createStorageClient, { AzionStorageClient } from 'azion/storage';
 
 import { AzionClient, AzionClientConfig } from './types';
 
 /**
- * Creates an Azion Client with methods to interact with Azion
+ * Creates an Azion Client with methods to interact with Azion services
  *
  * @param {AzionClientConfig} [config] - Client configuration options.
  * @param {string} [config.token] - Authentication token for Azion API.
@@ -24,71 +20,47 @@ import { AzionClient, AzionClientConfig } from './types';
  * @example
  * // Create a client using environment variables for token
  * const client = createClient({ debug: true });
- *
- * @example
- * // Use the SQL client
- * const databases = await client.sql.getDatabases();
- *
- * @example
- * // Use the Storage client
- * const buckets = await client.storage.getBuckets();
- *
- * @example
- * // Use the Purge client
- * const purgeResult = await client.purge.purgeURL('http://example.com/image.jpg');
  */
 function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
+  /**
+   * Storage client with methods to interact with Azion Edge Storage.
+   * @type {AzionStorageClient}
+   */
   const storageClient: AzionStorageClient = createStorageClient({ token, options });
+
+  /**
+   * SQL client with methods to interact with Azion Edge SQL databases.
+   * @type {AzionSQLClient}
+   */
   const sqlClient: AzionSQLClient = createSqlClient({ token, options });
+
+  /**
+   * Purge client with methods to interact with Azion Edge Purge.
+   * @type {AzionPurgeClient}
+   */
   const purgeClient: AzionPurgeClient = createPurgeClient({ token, options });
 
-  return {
-    /**
-     * Storage client with methods to interact with Azion Edge Storage.
-     *
-     * @example
-     * // Create a new bucket
-     * const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
-     *
-     * // Get all buckets
-     * const allBuckets = await client.storage.getBuckets();
-     *
-     * // Delete a bucket
-     * const deletedBucket = await client.storage.deleteBucket('my-bucket');
-     */
+  /**
+   * Azion Client object containing Storage, SQL, and Purge clients.
+   * Use this object to interact with various Azion services.
+   *
+   * @type {AzionClient}
+   *
+   * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
+   * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
+   * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
+   */
+  const client: AzionClient = {
     storage: storageClient,
-    /**
-     * SQL client with methods to interact with Azion Edge SQL databases.
-     *
-     * @example
-     * // Create a new database
-     * const newDatabase = await client.sql.createDatabase('my-new-db');
-     *
-     * // Get all databases
-     * const allDatabases = await client.sql.getDatabases();
-     *
-     * // Query a database
-     * const queryResult = await client.sql.query('SELECT * FROM users');
-     */
     sql: sqlClient,
-    /**
-     * Purge client with methods to interact with Azion Edge Purge.
-     *
-     * @example
-     * // Purge a URL
-     * const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
-     *
-     * // Purge a cache key
-     * const cacheKeyResult = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
-     *
-     * // Purge using a wildcard
-     * const wildcardResult = await client.purge.purgeWildCard(['http://example.com/*']);
-     */
     purge: purgeClient,
   };
+
+  return client;
 }
 
 export { createClient, defineConfig };
+
 export default createClient;
 
 export type * from './types';

@@ -3,6 +3,16 @@ import { ApiBucket } from '../services/api/types';
 import { AzionClientOptions } from '../types';
 
 /**
+ * Removes the leading slash from a key if it exists.
+ *
+ * @param {string} key The key that may contain a leading slash.
+ * @returns {string} The key without the leading slash.
+ */
+export function removeLeadingSlash(key: string): string {
+  return key.replace(/^\//, '');
+}
+
+/**
  * Retries a function with exponential backoff.
  *
  * This function attempts to execute the provided function multiple times with an increasing delay between attempts.
@@ -54,7 +64,7 @@ export const findBucketByName = async (
   name: string,
   options?: AzionClientOptions,
 ): Promise<ApiBucket | null> => {
-  const PAGE_SIZE_TEMP = 100000;
+  const PAGE_SIZE_TEMP = 1000000;
   const apiResponse = await getBuckets(token, { page_size: PAGE_SIZE_TEMP }, options?.debug ?? false);
   const buckets = apiResponse.results;
   if (!buckets) return null;

@@ -1,6 +1,6 @@
 import { Azion } from 'azion/types';
-import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject } from '../../types';
-import { retryWithBackoff } from '../../utils/index';
+import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject, AzionObjectCollectionParams } from '../../types';
+import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 
 export const isInternalStorageAvailable = (): boolean => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,10 +40,11 @@ export class InternalStorageClient implements AzionBucket {
   /**
    * Retrieves a bucket by name.
    *
-   * @param {string} name The name of the bucket.
+   * @param {Object} params - Parameters for retrieving a bucket.
+   * @param {string} params.name - The name of the bucket.
    * @returns {Promise<AzionBucket | null>} The bucket object or null if not found.
    */
-  async getBucket(name: string): Promise<AzionBucket | null> {
+  async getBucket({ name }: { name: string }): Promise<AzionBucket | null> {
     this.initializeStorage(name);
     if (this.storage) {
       this.name = name;
@@ -66,23 +67,20 @@ export class InternalStorageClient implements AzionBucket {
    *
    * Uses retry with exponential backoff to handle eventual consistency delays.
    *
+   * @param {Object} params - Parameters for object collection.
+   * @param {AzionObjectCollectionParams} [params.params] - Parameters for object collection.
    * @returns {Promise<AzionBucketObject[] | null>} The list of objects or null if an error occurs.
    */
-  async getObjects(): Promise<AzionBucketObject[] | null> {
+  async getObjects({ params }: { params?: AzionObjectCollectionParams }): Promise<AzionBucketObject[] | null> {
     this.initializeStorage(this.name);
     try {
       const objectList = await retryWithBackoff(() => this.storage!.list());
+      const max_object_count = params?.max_object_count ?? objectList.entries.length;
       const objects = await Promise.all(
-        objectList.entries.map(async (entry: { key: string; content_length?: number }) => {
-          const storageObject = await this.storage!.get(entry.key);
-          const arrayBuffer = await storageObject.arrayBuffer();
-          const decoder = new TextDecoder();
-          const content = decoder.decode(arrayBuffer);
+        objectList.entries.slice(0, max_object_count).map(async (entry: { key: string; content_length?: number }) => {
           return {
-            key: entry.key,
+            key: removeLeadingSlash(entry.key),
             size: entry.content_length,
-            content: content,
-            content_type: storageObject.metadata.get('content-type'),
             state: 'executed-runtime' as const,
           };
         }),
@@ -99,19 +97,20 @@ export class InternalStorageClient implements AzionBucket {
    *
    * Uses retry with exponential backoff to handle eventual consistency delays.
    *
-   * @param {string} objectKey The key of the object to retrieve.
+   * @param {Object} params - Parameters for retrieving an object.
+   * @param {string} params.key - The key of the object to retrieve.
    * @returns {Promise<AzionBucketObject | null>} The object or null if an error occurs.
    */
-  async getObjectByKey(objectKey: string): Promise<AzionBucketObject | null> {
+  async getObjectByKey({ key }: { key: string }): Promise<AzionBucketObject | null> {
     this.initializeStorage(this.name);
     try {
-      const storageObject = await retryWithBackoff(() => this.storage!.get(objectKey));
+      const storageObject = await retryWithBackoff(() => this.storage!.get(key));
       const arrayBuffer = await storageObject.arrayBuffer();
       const decoder = new TextDecoder();
       const content = decoder.decode(arrayBuffer);
       return {
         state: 'executed-runtime',
-        key: objectKey,
+        key: removeLeadingSlash(key),
         size: storageObject.contentLength,
         content: content,
         content_type: storageObject.metadata.get('content-type'),
@@ -127,27 +126,32 @@ export class InternalStorageClient implements AzionBucket {
    *
    * Uses retry with exponential backoff to handle eventual consistency delays.
    *
-   * @param {string} objectKey The key of the object to create.
-   * @param {string} content The content of the object.
-   * @param {{ content_type?: string }} [options] Optional metadata for the object.
+   * @param {Object} params - Parameters for creating an object.
+   * @param {string} params.key - The key of the object to create.
+   * @param {string} params.content - The content of the object.
+   * @param {{ content_type?: string }} [params.options] - Optional metadata for the object.
    * @returns {Promise<AzionBucketObject | null>} The created object or null if an error occurs.
    */
-  async createObject(
-    objectKey: string,
-    content: string,
-    options?: { content_type?: string },
-  ): Promise<AzionBucketObject | null> {
+  async createObject({
+    key,
+    content,
+    options,
+  }: {
+    key: string;
+    content: string;
+    options?: { content_type?: string };
+  }): Promise<AzionBucketObject | null> {
     this.initializeStorage(this.name);
     try {
       const contentBuffer = new TextEncoder().encode(content);
       await retryWithBackoff(() =>
-        this.storage!.put(objectKey, contentBuffer, {
+        this.storage!.put(key, contentBuffer, {
           'content-type': options?.content_type,
         }),
       );
       return {
         state: 'executed-runtime',
-        key: objectKey,
+        key: removeLeadingSlash(key),
         size: contentBuffer.byteLength,
         content_type: options?.content_type,
         content: content,
@@ -163,17 +167,22 @@ export class InternalStorageClient implements AzionBucket {
    *
    * Uses retry with exponential backoff to handle eventual consistency delays.
    *
-   * @param {string} objectKey The key of the object to update.
-   * @param {string} content The new content of the object.
-   * @param {{ content_type?: string }} [options] Optional metadata for the object.
+   * @param {Object} params - Parameters for updating an object.
+   * @param {string} params.key - The key of the object to update.
+   * @param {string} params.content - The new content of the object.
+   * @param {{ content_type?: string }} [params.options] - Optional metadata for the object.
    * @returns {Promise<AzionBucketObject | null>} The updated object or null if an error occurs.
    */
-  async updateObject(
-    objectKey: string,
-    content: string,
-    options?: { content_type?: string },
-  ): Promise<AzionBucketObject | null> {
-    return this.createObject(objectKey, content, options);
+  async updateObject({
+    key,
+    content,
+    options,
+  }: {
+    key: string;
+    content: string;
+    options?: { content_type?: string };
+  }): Promise<AzionBucketObject | null> {
+    return this.createObject({ key, content, options });
   }
 
   /**
@@ -181,14 +190,15 @@ export class InternalStorageClient implements AzionBucket {
    *
    * Uses retry with exponential backoff to handle eventual consistency delays.
    *
-   * @param {string} objectKey The key of the object to delete.
+   * @param {Object} params - Parameters for deleting an object.
+   * @param {string} params.key - The key of the object to delete.
    * @returns {Promise<AzionDeletedBucketObject | null>} Confirmation of deletion or null if an error occurs.
    */
-  async deleteObject(objectKey: string): Promise<AzionDeletedBucketObject | null> {
+  async deleteObject({ key }: { key: string }): Promise<AzionDeletedBucketObject | null> {
     this.initializeStorage(this.name);
     try {
-      await retryWithBackoff(() => this.storage!.delete(objectKey));
-      return { key: objectKey, state: 'executed-runtime' };
+      await retryWithBackoff(() => this.storage!.delete(key));
+      return { key: removeLeadingSlash(key), state: 'executed-runtime' };
     } catch (error) {
       if (this.debug) console.error('Error deleting object:', error);
       return null;

@@ -46,8 +46,7 @@ console.log(myCookie); // Outputs the value of 'my-cookie'
 **TypeScript:**
 
 ```typescript
-import { getCookie } from 'azion/cookies';
-import { CookiePrefix } from 'azion/cookies/types';
+import { getCookie, CookiePrefix } from 'azion/cookies';
 
 const myCookie: string | undefined = getCookie(request, 'my-cookie');
 const secureCookie: string | undefined = getCookie(request, 'my-cookie', 'secure');
@@ -62,7 +61,7 @@ console.log(secureCookie); // Outputs the value of '__Secure-my-cookie'
 ```javascript
 import { setCookie } from 'azion/cookies';
 
-setCookie(response, 'my-cookie', 'cookie-value', { maxAge: 3600 });
+const res = setCookie(response, 'my-cookie', 'cookie-value', { maxAge: 3600 });
 ```
 
 **TypeScript:**
@@ -72,7 +71,7 @@ import { setCookie } from 'azion/cookies';
 import { CookieOptions } from 'azion/cookies/types';
 
 const options: CookieOptions = { maxAge: 3600 };
-setCookie(response, 'my-cookie', 'cookie-value', options);
+const res = setCookie(response, 'my-cookie', 'cookie-value', options);
 ```
 
 ## API Reference

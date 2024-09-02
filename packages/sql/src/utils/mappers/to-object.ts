@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AzionQueryResponse } from '../../types';
+import { AzionDatabaseQueryResponse } from '../../types';
 
 export type JsonObjectQueryExecutionResponse = {
-  state: 'executed' | 'pending' | 'executed-runtime';
+  state: 'executed' | 'pending' | 'executed-runtime' | 'failed';
   data: {
     statement?: string;
     rows: { [key: string]: any }[];
@@ -14,7 +14,7 @@ export type JsonObjectQueryExecutionResponse = {
   };
 };
 
-export const toObjectQueryExecutionResponse = ({ state, data }: AzionQueryResponse) => {
+export const toObjectQueryExecutionResponse = ({ state, data }: AzionDatabaseQueryResponse) => {
   let transformedData: any = [];
   if (data instanceof Array) {
     if (data.length === 0) {
