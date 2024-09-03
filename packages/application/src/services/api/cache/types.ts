@@ -51,7 +51,7 @@ export interface ApiGetCacheSettingResponse {
   schema_version: number;
 }
 
-export interface ApiCreateCacheSettingRequest {
+export interface ApiCreateCacheSettingPayload {
   name: string;
   browser_cache_settings?: BrowserCacheSettings;
   browser_cache_settings_maximum_ttl?: number;
@@ -80,7 +80,7 @@ export interface ApiCreateCacheSettingResponse {
   schema_version: number;
 }
 
-export interface ApiUpdateCacheSettingRequest extends Partial<ApiCreateCacheSettingRequest> {}
+export interface ApiUpdateCacheSettingPayload extends Partial<ApiCreateCacheSettingPayload> {}
 
 export interface ApiUpdateCacheSettingResponse {
   results: CacheSetting;
@@ -114,4 +114,11 @@ export interface CacheSetting {
   enable_caching_for_options: boolean;
   enable_stale_cache: boolean;
   l2_region: string | null;
+}
+
+export interface ApiListCacheSettingsParams {
+  page?: number;
+  page_size?: number;
+  sort?: 'name' | 'id';
+  order?: 'asc' | 'desc';
 }

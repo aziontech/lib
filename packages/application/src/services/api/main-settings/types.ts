@@ -49,15 +49,15 @@ export interface ApiListApplicationsResponse {
     previous: string | null;
     next: string | null;
   };
-  results: EdgeApplication[];
+  results: EdgeApplicationSettings[];
 }
 
 export interface ApiGetApplicationResponse {
-  results: EdgeApplication;
+  results: EdgeApplicationSettings;
   schema_version: number;
 }
 
-export interface ApiCreateApplicationRequest {
+export interface ApiCreateApplicationPayload {
   name: string;
   delivery_protocol?: DeliveryProtocol;
   http3?: boolean;
@@ -82,14 +82,14 @@ export interface ApiCreateApplicationRequest {
 }
 
 export interface ApiCreateApplicationResponse {
-  results: EdgeApplication;
+  results: EdgeApplicationSettings;
   schema_version: number;
 }
 
-export interface ApiUpdateApplicationRequest extends ApiCreateApplicationRequest {}
+export interface ApiUpdateApplicationPayload extends ApiCreateApplicationPayload {}
 
 export interface ApiUpdateApplicationResponse {
-  results: EdgeApplication;
+  results: EdgeApplicationSettings;
   schema_version: number;
 }
 
@@ -97,7 +97,7 @@ export interface ApiDeleteApplicationResponse {
   schema_version: number;
 }
 
-export interface EdgeApplication {
+export interface EdgeApplicationSettings {
   id: number;
   name: string;
   delivery_protocol: DeliveryProtocol;

@@ -5,7 +5,11 @@ import {
   getCacheSettings,
   updateCacheSetting,
 } from './services/api/cache/index';
-import { ApiCreateCacheSettingRequest, ApiUpdateCacheSettingRequest } from './services/api/cache/types';
+import {
+  ApiCreateCacheSettingPayload,
+  ApiListCacheSettingsParams,
+  ApiUpdateCacheSettingPayload,
+} from './services/api/cache/types';
 import {
   createDeviceGroup,
   deleteDeviceGroup,
@@ -13,7 +17,11 @@ import {
   getDeviceGroups,
   updateDeviceGroup,
 } from './services/api/device-groups/intex';
-import { ApiCreateDeviceGroupRequest, ApiUpdateDeviceGroupRequest } from './services/api/device-groups/types';
+import {
+  ApiCreateDeviceGroupPayload,
+  ApiListDeviceGroupsParams,
+  ApiUpdateDeviceGroupPayload,
+} from './services/api/device-groups/types';
 import {
   createApplication,
   deleteApplication,
@@ -22,11 +30,11 @@ import {
   patchApplication,
   updateApplication,
 } from './services/api/main-settings/index';
-import { ApiCreateApplicationRequest, ApiUpdateApplicationRequest } from './services/api/main-settings/types';
+import { ApiCreateApplicationPayload, ApiUpdateApplicationPayload } from './services/api/main-settings/types';
 import { createOrigin, deleteOrigin, getOriginByKey, listOrigins, updateOrigin } from './services/api/origins/index';
-import { ApiCreateOriginRequest, ApiUpdateOriginRequest } from './services/api/origins/types';
+import { ApiCreateOriginPayload, ApiListOriginsParams, ApiUpdateOriginRequest } from './services/api/origins/types';
 import { createRule, deleteRule, getRuleById, listRules, updateRule } from './services/api/rules/index';
-import { ApiCreateRuleRequest, ApiUpdateRuleRequest } from './services/api/rules/types';
+import { ApiCreateRulePayload, ApiListRulesParams, ApiUpdateRulePayload } from './services/api/rules/types';
 import type {
   AzionClientOptions,
   AzionEdgeApplicationClient,
@@ -59,7 +67,7 @@ const resolveDebug = (debug?: boolean) => debug ?? !!envDebugFlag;
  */
 const createEdgeApplicationMethod = async (
   token: string,
-  applicationData: ApiCreateApplicationRequest,
+  applicationData: ApiCreateApplicationPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -69,16 +77,16 @@ const createEdgeApplicationMethod = async (
       data: {
         ...apiResponse.results,
         cache: {
-          create: (cacheSettingData: ApiCreateCacheSettingRequest) =>
+          create: (cacheSettingData: ApiCreateCacheSettingPayload) =>
             createCacheSettingMethod(token, appId, cacheSettingData, options),
           get: (cacheSettingId: number) => getCacheSettingMethod(token, appId, cacheSettingId, options),
           getAll: (params?: ApiListCacheSettingsParams) => getCacheSettingsMethod(token, appId, params, options),
-          update: (cacheSettingId: number, cacheSettingData: ApiUpdateCacheSettingRequest) =>
+          update: (cacheSettingId: number, cacheSettingData: ApiUpdateCacheSettingPayload) =>
             updateCacheSettingMethod(token, appId, cacheSettingId, cacheSettingData, options),
           delete: (cacheSettingId: number) => deleteCacheSettingMethod(token, appId, cacheSettingId, options),
         },
         origins: {
-          create: (originData: ApiCreateOriginRequest) => createOriginMethod(token, appId, originData, options),
+          create: (originData: ApiCreateOriginPayload) => createOriginMethod(token, appId, originData, options),
           get: (originKey: string) => getOriginMethod(token, appId, originKey, options),
           getAll: (params?: ApiListOriginsParams) => getOriginsMethod(token, appId, params, options),
           update: (originKey: string, originData: ApiUpdateOriginRequest) =>
@@ -87,28 +95,28 @@ const createEdgeApplicationMethod = async (
         },
         rules: {
           request: {
-            create: (ruleData: ApiCreateRuleRequest) => createRuleMethod(token, appId, 'request', ruleData, options),
+            create: (ruleData: ApiCreateRulePayload) => createRuleMethod(token, appId, 'request', ruleData, options),
             get: (ruleId: number) => getRuleMethod(token, appId, 'request', ruleId, options),
             getAll: (params?: ApiListRulesParams) => getRulesMethod(token, appId, 'request', params, options),
-            update: (ruleId: number, ruleData: ApiUpdateRuleRequest) =>
+            update: (ruleId: number, ruleData: ApiUpdateRulePayload) =>
               updateRuleMethod(token, appId, 'request', ruleId, ruleData, options),
             delete: (ruleId: number) => deleteRuleMethod(token, appId, 'request', ruleId, options),
           },
           response: {
-            create: (ruleData: ApiCreateRuleRequest) => createRuleMethod(token, appId, 'response', ruleData, options),
+            create: (ruleData: ApiCreateRulePayload) => createRuleMethod(token, appId, 'response', ruleData, options),
             get: (ruleId: number) => getRuleMethod(token, appId, 'response', ruleId, options),
             getAll: (params?: ApiListRulesParams) => getRulesMethod(token, appId, 'response', params, options),
-            update: (ruleId: number, ruleData: ApiUpdateRuleRequest) =>
+            update: (ruleId: number, ruleData: ApiUpdateRulePayload) =>
               updateRuleMethod(token, appId, 'response', ruleId, ruleData, options),
             delete: (ruleId: number) => deleteRuleMethod(token, appId, 'response', ruleId, options),
           },
         },
         devices: {
-          create: (deviceGroupData: ApiCreateDeviceGroupRequest) =>
+          create: (deviceGroupData: ApiCreateDeviceGroupPayload) =>
             createDeviceGroupMethod(token, appId, deviceGroupData, options),
           get: (deviceGroupId: number) => getDeviceGroupMethod(token, appId, deviceGroupId, options),
           getAll: (params?: ApiListDeviceGroupsParams) => getDeviceGroupsMethod(token, appId, params, options),
-          update: (deviceGroupId: number, deviceGroupData: ApiUpdateDeviceGroupRequest) =>
+          update: (deviceGroupId: number, deviceGroupData: ApiUpdateDeviceGroupPayload) =>
             updateDeviceGroupMethod(token, appId, deviceGroupId, deviceGroupData, options),
           delete: (deviceGroupId: number) => deleteDeviceGroupMethod(token, appId, deviceGroupId, options),
         },
@@ -203,7 +211,7 @@ const getEdgeApplicationsMethod = async (
 const updateEdgeApplicationMethod = async (
   token: string,
   id: number,
-  applicationData: ApiUpdateApplicationRequest,
+  applicationData: ApiUpdateApplicationPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -225,7 +233,7 @@ const updateEdgeApplicationMethod = async (
 const patchEdgeApplicationMethod = async (
   token: string,
   id: number,
-  applicationData: Partial<ApiUpdateApplicationRequest>,
+  applicationData: Partial<ApiUpdateApplicationPayload>,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -371,7 +379,7 @@ const deleteFunctionInstanceMethod = async (
 const createCacheSettingMethod = async (
   token: string,
   edgeApplicationId: number,
-  cacheSettingData: ApiCreateCacheSettingRequest,
+  cacheSettingData: ApiCreateCacheSettingPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -452,15 +460,11 @@ const getCacheSettingMethod = async (
 const getCacheSettingsMethod = async (
   token: string,
   edgeApplicationId: number,
+  params?: ApiListCacheSettingsParams,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
-    const data = await getCacheSettings(
-      resolveToken(token),
-      edgeApplicationId,
-      undefined,
-      resolveDebug(options?.debug),
-    );
+    const data = await getCacheSettings(resolveToken(token), edgeApplicationId, params, resolveDebug(options?.debug));
     return { data };
   } catch (error) {
     return {
@@ -479,7 +483,7 @@ const updateCacheSettingMethod = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
-  cacheSettingData: ApiUpdateCacheSettingRequest,
+  cacheSettingData: ApiUpdateCacheSettingPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -510,7 +514,7 @@ const createRuleMethod = async (
   token: string,
   edgeApplicationId: number,
   phase: 'request' | 'response',
-  ruleData: ApiCreateRuleRequest,
+  ruleData: ApiCreateRulePayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -585,16 +589,11 @@ const getRulesMethod = async (
   token: string,
   edgeApplicationId: number,
   phase: 'request' | 'response',
+  params?: ApiListRulesParams,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
-    const data = await listRules(
-      resolveToken(token),
-      edgeApplicationId,
-      phase,
-      undefined,
-      resolveDebug(options?.debug),
-    );
+    const data = await listRules(resolveToken(token), edgeApplicationId, phase, params, resolveDebug(options?.debug));
     return { data };
   } catch (error) {
     return {
@@ -614,7 +613,7 @@ const updateRuleMethod = async (
   edgeApplicationId: number,
   phase: 'request' | 'response',
   ruleId: number,
-  ruleData: ApiUpdateRuleRequest,
+  ruleData: ApiUpdateRulePayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -645,7 +644,7 @@ const updateRuleMethod = async (
 const createOriginMethod = async (
   token: string,
   edgeApplicationId: number,
-  originData: ApiCreateOriginRequest,
+  originData: ApiCreateOriginPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -711,10 +710,11 @@ const getOriginMethod = async (
 const getOriginsMethod = async (
   token: string,
   edgeApplicationId: number,
+  params?: ApiListOriginsParams,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
-    const data = await listOrigins(resolveToken(token), edgeApplicationId, undefined, resolveDebug(options?.debug));
+    const data = await listOrigins(resolveToken(token), edgeApplicationId, params, resolveDebug(options?.debug));
     return { data };
   } catch (error) {
     return {
@@ -757,7 +757,7 @@ const updateOriginMethod = async (
 const createDeviceGroupMethod = async (
   token: string,
   edgeApplicationId: number,
-  deviceGroupData: ApiCreateDeviceGroupRequest,
+  deviceGroupData: ApiCreateDeviceGroupPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -848,7 +848,7 @@ const updateDeviceGroupMethod = async (
   token: string,
   edgeApplicationId: number,
   deviceGroupId: number,
-  deviceGroupData: ApiUpdateDeviceGroupRequest,
+  deviceGroupData: ApiUpdateDeviceGroupPayload,
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse> => {
   try {
@@ -876,7 +876,7 @@ const createEdgeApplicationWrapper = ({
   applicationData,
   options,
 }: {
-  applicationData: ApiCreateApplicationRequest;
+  applicationData: ApiCreateApplicationPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> => createEdgeApplicationMethod(resolveToken(), applicationData, options);
 
@@ -910,7 +910,7 @@ const updateEdgeApplicationWrapper = ({
   options,
 }: {
   id: number;
-  applicationData: ApiUpdateApplicationRequest;
+  applicationData: ApiUpdateApplicationPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> => updateEdgeApplicationMethod(resolveToken(), id, applicationData, options);
 
@@ -920,7 +920,7 @@ const patchEdgeApplicationWrapper = ({
   options,
 }: {
   id: number;
-  applicationData: Partial<ApiUpdateApplicationRequest>;
+  applicationData: Partial<ApiUpdateApplicationPayload>;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> => patchEdgeApplicationMethod(resolveToken(), id, applicationData, options);
 
@@ -930,7 +930,7 @@ const createCacheSettingWrapper = ({
   options,
 }: {
   edgeApplicationId: number;
-  cacheSettingData: ApiCreateCacheSettingRequest;
+  cacheSettingData: ApiCreateCacheSettingPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> =>
   createCacheSettingMethod(resolveToken(), edgeApplicationId, cacheSettingData, options);
@@ -975,7 +975,7 @@ const updateCacheSettingWrapper = ({
 }: {
   edgeApplicationId: number;
   cacheSettingId: number;
-  cacheSettingData: ApiUpdateCacheSettingRequest;
+  cacheSettingData: ApiUpdateCacheSettingPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> =>
   updateCacheSettingMethod(resolveToken(), edgeApplicationId, cacheSettingId, cacheSettingData, options);
@@ -988,7 +988,7 @@ const createRuleWrapper = ({
 }: {
   edgeApplicationId: number;
   phase: 'request' | 'response';
-  ruleData: ApiCreateRuleRequest;
+  ruleData: ApiCreateRulePayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> =>
   createRuleMethod(resolveToken(), edgeApplicationId, phase, ruleData, options);
@@ -1040,7 +1040,7 @@ const updateRuleWrapper = ({
   edgeApplicationId: number;
   phase: 'request' | 'response';
   ruleId: number;
-  ruleData: ApiUpdateRuleRequest;
+  ruleData: ApiUpdateRulePayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> =>
   updateRuleMethod(resolveToken(), edgeApplicationId, phase, ruleId, ruleData, options);
@@ -1051,7 +1051,7 @@ const createOriginWrapper = ({
   options,
 }: {
   edgeApplicationId: number;
-  originData: ApiCreateOriginRequest;
+  originData: ApiCreateOriginPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> => createOriginMethod(resolveToken(), edgeApplicationId, originData, options);
 
@@ -1104,7 +1104,7 @@ const createDeviceGroupWrapper = ({
   options,
 }: {
   edgeApplicationId: number;
-  deviceGroupData: ApiCreateDeviceGroupRequest;
+  deviceGroupData: ApiCreateDeviceGroupPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> =>
   createDeviceGroupMethod(resolveToken(), edgeApplicationId, deviceGroupData, options);
@@ -1147,7 +1147,7 @@ const updateDeviceGroupWrapper = ({
 }: {
   edgeApplicationId: number;
   deviceGroupId: number;
-  deviceGroupData: ApiUpdateDeviceGroupRequest;
+  deviceGroupData: ApiUpdateDeviceGroupPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse> =>
   updateDeviceGroupMethod(resolveToken(), edgeApplicationId, deviceGroupId, deviceGroupData, options);
@@ -1217,7 +1217,7 @@ const client: CreateAzionEdgeApplicationClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionEdgeApplicationClient = {
-    createEdgeApplication: ({ applicationData }) =>
+    createEdgeApplication: ({ applicationData: createEdgeApplicationPayload }) =>
       createEdgeApplicationMethod(tokenValue, applicationData, { ...config?.options, debug: debugValue }),
     deleteEdgeApplication: ({ id }) =>
       deleteEdgeApplicationMethod(tokenValue, id, { ...config?.options, debug: debugValue }),

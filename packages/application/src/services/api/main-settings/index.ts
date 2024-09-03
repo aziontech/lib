@@ -1,11 +1,11 @@
 import {
-  ApiCreateApplicationRequest,
+  ApiCreateApplicationPayload,
   ApiCreateApplicationResponse,
   ApiDeleteApplicationResponse,
   ApiGetApplicationResponse,
   ApiListApplicationsParams,
   ApiListApplicationsResponse,
-  ApiUpdateApplicationRequest,
+  ApiUpdateApplicationPayload,
   ApiUpdateApplicationResponse,
 } from './types';
 
@@ -76,13 +76,13 @@ const getApplicationById = async (
  * Creates a new edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {ApiCreateApplicationRequest} applicationData - Data of the application to be created.
+ * @param {ApiCreateApplicationPayload} applicationData - Data of the application to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateApplicationResponse>} The created application or an error if creation failed.
  */
 const createApplication = async (
   token: string,
-  applicationData: ApiCreateApplicationRequest,
+  applicationData: ApiCreateApplicationPayload,
   debug?: boolean,
 ): Promise<ApiCreateApplicationResponse> => {
   try {
@@ -109,14 +109,14 @@ const createApplication = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application to update.
- * @param {ApiUpdateApplicationRequest} applicationData - New data for the application.
+ * @param {ApiUpdateApplicationPayload} applicationData - New data for the application.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateApplicationResponse>} The updated application or an error if update failed.
  */
 const updateApplication = async (
   token: string,
   edgeApplicationId: number,
-  applicationData: ApiUpdateApplicationRequest,
+  applicationData: ApiUpdateApplicationPayload,
   debug?: boolean,
 ): Promise<ApiUpdateApplicationResponse> => {
   try {
@@ -143,14 +143,14 @@ const updateApplication = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application to update.
- * @param {Partial<ApiUpdateApplicationRequest>} applicationData - Partial data for the application update.
+ * @param {Partial<ApiUpdateApplicationPayload>} applicationData - Partial data for the application update.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateApplicationResponse>} The updated application or an error if update failed.
  */
 const patchApplication = async (
   token: string,
   edgeApplicationId: number,
-  applicationData: Partial<ApiUpdateApplicationRequest>,
+  applicationData: Partial<ApiUpdateApplicationPayload>,
   debug?: boolean,
 ): Promise<ApiUpdateApplicationResponse> => {
   try {

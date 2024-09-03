@@ -1,11 +1,11 @@
 import {
-  ApiCreateCacheSettingRequest,
+  ApiCreateCacheSettingPayload,
   ApiCreateCacheSettingResponse,
   ApiDeleteCacheSettingResponse,
   ApiGetCacheSettingResponse,
   ApiListCacheSettingsParams,
   ApiListCacheSettingsResponse,
-  ApiUpdateCacheSettingRequest,
+  ApiUpdateCacheSettingPayload,
   ApiUpdateCacheSettingResponse,
 } from './types';
 
@@ -81,14 +81,14 @@ const getCacheSettingById = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
- * @param {ApiCreateCacheSettingRequest} cacheSettingData - Data of the cache setting to be created.
+ * @param {ApiCreateCacheSettingPayload} cacheSettingData - Data of the cache setting to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateCacheSettingResponse>} The created cache setting or an error if creation failed.
  */
 const createCacheSetting = async (
   token: string,
   edgeApplicationId: number,
-  cacheSettingData: ApiCreateCacheSettingRequest,
+  cacheSettingData: ApiCreateCacheSettingPayload,
   debug?: boolean,
 ): Promise<ApiCreateCacheSettingResponse> => {
   try {
@@ -116,7 +116,7 @@ const createCacheSetting = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
  * @param {number} cacheSettingId - ID of the cache setting to update.
- * @param {ApiUpdateCacheSettingRequest} cacheSettingData - New data for the cache setting.
+ * @param {ApiUpdateCacheSettingPayload} cacheSettingData - New data for the cache setting.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateCacheSettingResponse>} The updated cache setting or an error if update failed.
  */
@@ -124,7 +124,7 @@ const updateCacheSetting = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
-  cacheSettingData: ApiUpdateCacheSettingRequest,
+  cacheSettingData: ApiUpdateCacheSettingPayload,
   debug?: boolean,
 ): Promise<ApiUpdateCacheSettingResponse> => {
   try {

@@ -21,7 +21,7 @@ export interface ApiGetDeviceGroupResponse {
   schema_version: number;
 }
 
-export interface ApiCreateDeviceGroupRequest {
+export interface ApiCreateDeviceGroupPayload {
   name: string;
   user_agent: string;
 }
@@ -31,7 +31,7 @@ export interface ApiCreateDeviceGroupResponse {
   schema_version: number;
 }
 
-export interface ApiUpdateDeviceGroupRequest {
+export interface ApiUpdateDeviceGroupPayload {
   name?: string;
   user_agent?: string;
 }
@@ -49,4 +49,11 @@ export interface DeviceGroup {
   id: number;
   name: string;
   user_agent: string;
+}
+
+export interface ApiListDeviceGroupsParams {
+  page?: number;
+  page_size?: number;
+  sort?: 'name' | 'id';
+  order?: 'asc' | 'desc';
 }

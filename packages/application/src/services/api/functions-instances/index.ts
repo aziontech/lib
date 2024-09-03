@@ -1,11 +1,11 @@
 import {
-  ApiCreateFunctionInstanceRequest,
+  ApiCreateFunctionInstancePayload,
   ApiCreateFunctionInstanceResponse,
   ApiDeleteFunctionInstanceResponse,
   ApiGetFunctionInstanceResponse,
   ApiListFunctionInstancesParams,
   ApiListFunctionInstancesResponse,
-  ApiUpdateFunctionInstanceRequest,
+  ApiUpdateFunctionInstancePayload,
   ApiUpdateFunctionInstanceResponse,
 } from './types';
 
@@ -82,14 +82,14 @@ const getFunctionInstanceById = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
- * @param {ApiCreateFunctionInstanceRequest} functionInstanceData - Data of the function instance to be created.
+ * @param {ApiCreateFunctionInstancePayload} functionInstanceData - Data of the function instance to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateFunctionInstanceResponse>} The created function instance or an error if creation failed.
  */
 const createFunctionInstance = async (
   token: string,
   edgeApplicationId: number,
-  functionInstanceData: ApiCreateFunctionInstanceRequest,
+  functionInstanceData: ApiCreateFunctionInstancePayload,
   debug?: boolean,
 ): Promise<ApiCreateFunctionInstanceResponse> => {
   try {
@@ -117,7 +117,7 @@ const createFunctionInstance = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
  * @param {number} functionInstanceId - ID of the function instance to update.
- * @param {ApiUpdateFunctionInstanceRequest} functionInstanceData - New data for the function instance.
+ * @param {ApiUpdateFunctionInstancePayload} functionInstanceData - New data for the function instance.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateFunctionInstanceResponse>} The updated function instance or an error if update failed.
  */
@@ -125,7 +125,7 @@ const updateFunctionInstance = async (
   token: string,
   edgeApplicationId: number,
   functionInstanceId: number,
-  functionInstanceData: ApiUpdateFunctionInstanceRequest,
+  functionInstanceData: ApiUpdateFunctionInstancePayload,
   debug?: boolean,
 ): Promise<ApiUpdateFunctionInstanceResponse> => {
   try {

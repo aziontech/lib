@@ -46,7 +46,7 @@ export interface Criterion {
   input_value: string;
 }
 
-export interface ApiCreateRuleRequest {
+export interface ApiCreateRulePayload {
   name: string;
   phase: 'request' | 'response';
   behaviors: Behavior[];
@@ -56,7 +56,7 @@ export interface ApiCreateRuleRequest {
   description?: string;
 }
 
-export interface ApiUpdateRuleRequest extends Partial<ApiCreateRuleRequest> {}
+export interface ApiUpdateRulePayload extends Partial<ApiCreateRulePayload> {}
 
 export interface ApiRuleResponse {
   results: Rule;
@@ -110,7 +110,7 @@ export interface Criterion {
   input_value: string;
 }
 
-export interface ApiCreateRuleRequest {
+export interface ApiCreateRulePayload {
   name: string;
   phase: 'request' | 'response';
   behaviors: Behavior[];
@@ -120,9 +120,17 @@ export interface ApiCreateRuleRequest {
   description?: string;
 }
 
-export interface ApiUpdateRuleRequest extends Partial<ApiCreateRuleRequest> {}
+export interface ApiUpdateRulePayload extends Partial<ApiCreateRulePayload> {}
 
 export interface ApiRuleResponse {
   results: Rule;
   schema_version: number;
+}
+
+export interface ApiListRulesParams {
+  page?: number;
+  page_size?: number;
+  sort?: string;
+  order?: 'asc' | 'desc';
+  filter?: string;
 }

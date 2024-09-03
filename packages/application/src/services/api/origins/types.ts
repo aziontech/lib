@@ -50,7 +50,7 @@ export interface Address {
   is_active?: boolean;
 }
 
-export interface ApiCreateOriginRequest {
+export interface ApiCreateOriginPayload {
   name: string;
   origin_type: OriginType;
   addresses: Address[];
@@ -70,7 +70,7 @@ export interface ApiCreateOriginResponse {
   schema_version: number;
 }
 
-export interface ApiUpdateOriginRequest extends Partial<ApiCreateOriginRequest> {}
+export interface ApiUpdateOriginRequest extends Partial<ApiCreateOriginPayload> {}
 
 export interface ApiUpdateOriginResponse {
   results: Origin;

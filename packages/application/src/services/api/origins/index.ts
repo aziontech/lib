@@ -1,5 +1,5 @@
 import {
-  ApiCreateOriginRequest,
+  ApiCreateOriginPayload,
   ApiCreateOriginResponse,
   ApiDeleteOriginResponse,
   ApiGetOriginResponse,
@@ -82,14 +82,14 @@ const getOriginByKey = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
- * @param {ApiCreateOriginRequest} originData - Data of the origin to be created.
+ * @param {ApiCreateOriginPayload} originData - Data of the origin to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateOriginResponse>} The created origin or an error if creation failed.
  */
 const createOrigin = async (
   token: string,
   edgeApplicationId: number,
-  originData: ApiCreateOriginRequest,
+  originData: ApiCreateOriginPayload,
   debug?: boolean,
 ): Promise<ApiCreateOriginResponse> => {
   try {

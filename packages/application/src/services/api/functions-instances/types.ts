@@ -22,7 +22,7 @@ export interface ApiGetFunctionInstanceResponse {
   schema_version: number;
 }
 
-export interface ApiCreateFunctionInstanceRequest {
+export interface ApiCreateFunctionInstancePayload {
   name: string;
   edge_function_id: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,7 +34,7 @@ export interface ApiCreateFunctionInstanceResponse {
   schema_version: number;
 }
 
-export interface ApiUpdateFunctionInstanceRequest {
+export interface ApiUpdateFunctionInstancePayload {
   name?: string;
   edge_function_id?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

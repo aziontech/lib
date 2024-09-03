@@ -1,9 +1,9 @@
 import {
-  ApiCreateRuleRequest,
+  ApiCreateRulePayload,
   ApiListRulesParams,
   ApiListRulesResponse,
   ApiRuleResponse,
-  ApiUpdateRuleRequest,
+  ApiUpdateRulePayload,
 } from './types';
 
 const BASE_URL = 'https://api.azionapi.net/edge_applications';
@@ -86,7 +86,7 @@ export const getRuleById = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase for the new rule.
- * @param {ApiCreateRuleRequest} ruleData - Data of the rule to be created.
+ * @param {ApiCreateRulePayload} ruleData - Data of the rule to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiRuleResponse>} The created rule or an error if creation failed.
  */
@@ -94,7 +94,7 @@ export const createRule = async (
   token: string,
   edgeApplicationId: number,
   phase: 'request' | 'response',
-  ruleData: ApiCreateRuleRequest,
+  ruleData: ApiCreateRulePayload,
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
@@ -123,7 +123,7 @@ export const createRule = async (
  * @param {number} edgeApplicationId - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase of the rule to update.
  * @param {number} ruleId - ID of the rule to update.
- * @param {ApiUpdateRuleRequest} ruleData - New data for the rule.
+ * @param {ApiUpdateRulePayload} ruleData - New data for the rule.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiRuleResponse>} The updated rule or an error if update failed.
  */
@@ -132,7 +132,7 @@ export const updateRule = async (
   edgeApplicationId: number,
   phase: 'request' | 'response',
   ruleId: number,
-  ruleData: ApiUpdateRuleRequest,
+  ruleData: ApiUpdateRulePayload,
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {

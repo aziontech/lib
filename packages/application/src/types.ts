@@ -1,243 +1,141 @@
 import {
-  ApiCreateApplicationRequest,
-  ApiCreateApplicationResponse,
-  ApiDeleteApplicationResponse,
-  ApiGetApplicationResponse,
-  ApiListApplicationsResponse,
-  ApiUpdateApplicationRequest,
-  ApiUpdateApplicationResponse,
-} from './services/api/main-settings/types';
-
-import {
-  ApiCreateDeviceGroupRequest,
-  ApiListDeviceGroupsParams,
-  ApiUpdateDeviceGroupRequest,
-} from './services/api/device-groups/types';
-
-import { ApiCreateOriginRequest, ApiListOriginsParams, ApiUpdateOriginRequest } from './services/api/origins/types';
-
-import { ApiCreateRuleRequest, ApiListRulesParams, ApiUpdateRuleRequest } from './services/api/rules/types';
-
-import {
-  ApiCreateCacheSettingRequest,
+  ApiCreateCacheSettingPayload,
   ApiListCacheSettingsParams,
-  ApiUpdateCacheSettingRequest,
+  ApiUpdateCacheSettingPayload,
+  CacheSetting,
 } from './services/api/cache/types';
 import {
-  ApiCreateFunctionInstanceRequest,
+  ApiCreateDeviceGroupPayload,
+  ApiListDeviceGroupsParams,
+  ApiUpdateDeviceGroupPayload,
+  DeviceGroup,
+} from './services/api/device-groups/types';
+import {
+  ApiCreateFunctionInstancePayload,
   ApiListFunctionInstancesParams,
-  ApiUpdateFunctionInstanceRequest,
+  ApiUpdateFunctionInstancePayload,
+  FunctionInstance,
 } from './services/api/functions-instances/types';
-/**
- * Response type for Azion Edge Application operations
- */
-export type AzionEdgeApplicationResponse = {
-  data?:
-    | ApiCreateApplicationResponse
-    | ApiGetApplicationResponse
-    | ApiListApplicationsResponse
-    | ApiUpdateApplicationResponse
-    | ApiDeleteApplicationResponse
-    | AzionEdgeApplication;
-  error?: {
-    message: string;
-    operation: string;
-  };
-};
+import {
+  ApiCreateApplicationPayload,
+  ApiUpdateApplicationPayload,
+  EdgeApplicationSettings,
+} from './services/api/main-settings/types';
+import {
+  ApiCreateOriginPayload,
+  ApiListOriginsParams,
+  ApiUpdateOriginRequest,
+  Origin,
+} from './services/api/origins/types';
+import { ApiCreateRulePayload, ApiListRulesParams, ApiUpdateRulePayload, Rule } from './services/api/rules/types';
 
-/**
- * Options for collection-based operations on Azion Edge Applications
- */
-export type AzionEdgeApplicationCollectionOptions = {
+export interface AzionClientOptions {
+  debug?: boolean;
+  force?: boolean;
+}
+
+export interface AzionEdgeApplicationCollectionOptions {
   order_by?: string;
   sort?: 'asc' | 'desc';
   page?: number;
   page_size?: number;
-};
+}
 
-/**
- * Client options for Azion API operations
- */
-export type AzionClientOptions = {
-  debug?: boolean;
-  force?: boolean;
-};
+export interface AzionEdgeApplicationResponse<T> {
+  results: T;
+  schema_version: number;
+}
 
-/**
- * Interface for cache settings operations
- */
-export interface AzionEdgeApplicationCacheSettings {
-  create: (cacheSettingData: ApiCreateCacheSettingRequest) => Promise<AzionEdgeApplicationResponse>;
-  get: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse>;
-  getAll: (params?: ApiListCacheSettingsParams) => Promise<AzionEdgeApplicationResponse>;
+export interface AzionEdgeApplicationCollectionResponse<T> {
+  count: number;
+  total_pages: number;
+  schema_version: number;
+  links: {
+    previous: string | null;
+    next: string | null;
+  };
+  results: T[];
+}
+
+export interface CacheOperations {
+  create: (cacheSettingData: ApiCreateCacheSettingPayload) => Promise<AzionEdgeApplicationResponse<CacheSetting>>;
+  get: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<CacheSetting>>;
+  getAll: (params?: ApiListCacheSettingsParams) => Promise<AzionEdgeApplicationCollectionResponse<CacheSetting>>;
   update: (
     cacheSettingId: number,
-    cacheSettingData: ApiUpdateCacheSettingRequest,
-  ) => Promise<AzionEdgeApplicationResponse>;
-  delete: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse>;
+    cacheSettingData: ApiUpdateCacheSettingPayload,
+  ) => Promise<AzionEdgeApplicationResponse<CacheSetting>>;
+  delete: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
-/**
- * Interface for origins operations
- */
-export interface AzionEdgeApplicationOrigins {
-  create: (originData: ApiCreateOriginRequest) => Promise<AzionEdgeApplicationResponse>;
-  get: (originKey: string) => Promise<AzionEdgeApplicationResponse>;
-  getAll: (params?: ApiListOriginsParams) => Promise<AzionEdgeApplicationResponse>;
-  update: (originKey: string, originData: ApiUpdateOriginRequest) => Promise<AzionEdgeApplicationResponse>;
-  delete: (originKey: string) => Promise<AzionEdgeApplicationResponse>;
+export interface OriginOperations {
+  create: (originData: ApiCreateOriginPayload) => Promise<AzionEdgeApplicationResponse<Origin>>;
+  get: (originKey: string) => Promise<AzionEdgeApplicationResponse<Origin>>;
+  getAll: (params?: ApiListOriginsParams) => Promise<AzionEdgeApplicationCollectionResponse<Origin>>;
+  update: (originKey: string, originData: ApiUpdateOriginRequest) => Promise<AzionEdgeApplicationResponse<Origin>>;
+  delete: (originKey: string) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
-/**
- * Interface for rules operations
- */
-export interface AzionEdgeApplicationRules {
-  request: {
-    create: (ruleData: ApiCreateRuleRequest) => Promise<AzionEdgeApplicationResponse>;
-    get: (ruleId: number) => Promise<AzionEdgeApplicationResponse>;
-    getAll: (params?: ApiListRulesParams) => Promise<AzionEdgeApplicationResponse>;
-    update: (ruleId: number, ruleData: ApiUpdateRuleRequest) => Promise<AzionEdgeApplicationResponse>;
-    delete: (ruleId: number) => Promise<AzionEdgeApplicationResponse>;
-  };
-  response: {
-    create: (ruleData: ApiCreateRuleRequest) => Promise<AzionEdgeApplicationResponse>;
-    get: (ruleId: number) => Promise<AzionEdgeApplicationResponse>;
-    getAll: (params?: ApiListRulesParams) => Promise<AzionEdgeApplicationResponse>;
-    update: (ruleId: number, ruleData: ApiUpdateRuleRequest) => Promise<AzionEdgeApplicationResponse>;
-    delete: (ruleId: number) => Promise<AzionEdgeApplicationResponse>;
-  };
+export interface RuleOperations {
+  create: (ruleData: ApiCreateRulePayload) => Promise<AzionEdgeApplicationResponse<Rule>>;
+  get: (ruleId: number) => Promise<AzionEdgeApplicationResponse<Rule>>;
+  getAll: (params?: ApiListRulesParams) => Promise<AzionEdgeApplicationCollectionResponse<Rule>>;
+  update: (ruleId: number, ruleData: ApiUpdateRulePayload) => Promise<AzionEdgeApplicationResponse<Rule>>;
+  delete: (ruleId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
-/**
- * Interface for device groups operations
- */
-export interface AzionEdgeApplicationDevices {
-  create: (deviceGroupData: ApiCreateDeviceGroupRequest) => Promise<AzionEdgeApplicationResponse>;
-  get: (deviceGroupId: number) => Promise<AzionEdgeApplicationResponse>;
-  getAll: (params?: ApiListDeviceGroupsParams) => Promise<AzionEdgeApplicationResponse>;
+export interface DeviceGroupOperations {
+  create: (deviceGroupData: ApiCreateDeviceGroupPayload) => Promise<AzionEdgeApplicationResponse<DeviceGroup>>;
+  get: (deviceGroupId: number) => Promise<AzionEdgeApplicationResponse<DeviceGroup>>;
+  getAll: (params?: ApiListDeviceGroupsParams) => Promise<AzionEdgeApplicationCollectionResponse<DeviceGroup>>;
   update: (
     deviceGroupId: number,
-    deviceGroupData: ApiUpdateDeviceGroupRequest,
-  ) => Promise<AzionEdgeApplicationResponse>;
-  delete: (deviceGroupId: number) => Promise<AzionEdgeApplicationResponse>;
+    deviceGroupData: ApiUpdateDeviceGroupPayload,
+  ) => Promise<AzionEdgeApplicationResponse<DeviceGroup>>;
+  delete: (deviceGroupId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
-export interface AzionEdgeApplicationFunctionInstances {
-  create: (functionInstanceData: ApiCreateFunctionInstanceRequest) => Promise<AzionEdgeApplicationResponse>;
-  get: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse>;
-  getAll: (params?: ApiListFunctionInstancesParams) => Promise<AzionEdgeApplicationResponse>;
+export interface FunctionOperations {
+  create: (
+    functionInstanceData: ApiCreateFunctionInstancePayload,
+  ) => Promise<AzionEdgeApplicationResponse<FunctionInstance>>;
+  get: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse<FunctionInstance>>;
+  getAll: (
+    params?: ApiListFunctionInstancesParams,
+  ) => Promise<AzionEdgeApplicationCollectionResponse<FunctionInstance>>;
   update: (
     functionInstanceId: number,
-    functionInstanceData: ApiUpdateFunctionInstanceRequest,
-  ) => Promise<AzionEdgeApplicationResponse>;
-  delete: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse>;
+    functionInstanceData: ApiUpdateFunctionInstancePayload,
+  ) => Promise<AzionEdgeApplicationResponse<FunctionInstance>>;
+  delete: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
-/**
- * Extended interface for Edge Application details including sub-resources
- */
-export interface AzionEdgeApplication extends ApiGetApplicationResponse {
-  cache: AzionEdgeApplicationCacheSettings;
-  origins: AzionEdgeApplicationOrigins;
-  rules: AzionEdgeApplicationRules;
-  devices: AzionEdgeApplicationDevices;
-  functionInstances: AzionEdgeApplicationFunctionInstances;
+export interface AzionEdgeApplication extends EdgeApplicationSettings {
+  cache: CacheOperations;
+  origins: OriginOperations;
+  rules: {
+    request: RuleOperations;
+    response: RuleOperations;
+  };
+  devices: DeviceGroupOperations;
+  functions: FunctionOperations;
 }
-/**
- * Interface for Azion Edge Application Client
- */
+
 export interface AzionEdgeApplicationClient {
-  /**
-   * Creates a new edge application.
-   * @param {Object} params - Parameters for creating an edge application.
-   * @param {ApiCreateApplicationRequest} params.applicationData - Data for the new edge application.
-   * @returns {Promise<AzionEdgeApplicationResponse>} The created edge application or error response.
-   */
-  createEdgeApplication: (params: {
-    applicationData: ApiCreateApplicationRequest;
-  }) => Promise<AzionEdgeApplicationResponse>;
-
-  /**
-   * Deletes an edge application by its ID.
-   * @param {Object} params - Parameters for deleting an edge application.
-   * @param {number} params.id - ID of the edge application to delete.
-   * @returns {Promise<AzionEdgeApplicationResponse>} Confirmation of deletion or error response.
-   */
-  deleteEdgeApplication: (params: { id: number }) => Promise<AzionEdgeApplicationResponse>;
-
-  /**
-   * Retrieves an edge application by its ID.
-   * @param {Object} params - Parameters for retrieving an edge application.
-   * @param {number} params.id - ID of the edge application to retrieve.
-   * @returns {Promise<AzionEdgeApplicationResponse>} The retrieved edge application or error response.
-   */
-  getEdgeApplication: (params: { id: number }) => Promise<AzionEdgeApplicationResponse>;
-
-  /**
-   * Retrieves a list of edge applications with optional filtering and pagination.
-   * @param {Object} params - Parameters for retrieving edge applications.
-   * @param {AzionEdgeApplicationCollectionOptions} [params.params] - Optional parameters for filtering and pagination.
-   * @returns {Promise<AzionEdgeApplicationResponse>} Array of edge applications or error response.
-   */
-  getEdgeApplications: (params?: {
-    params?: AzionEdgeApplicationCollectionOptions;
-  }) => Promise<AzionEdgeApplicationResponse>;
-
-  /**
-   * Updates an existing edge application.
-   * @param {Object} params - Parameters for updating an edge application.
-   * @param {number} params.id - ID of the edge application to update.
-   * @param {ApiUpdateApplicationRequest} params.applicationData - Updated data for the edge application.
-   * @returns {Promise<AzionEdgeApplicationResponse>} The updated edge application or error response.
-   */
-  updateEdgeApplication: (params: {
-    id: number;
-    applicationData: ApiUpdateApplicationRequest;
-  }) => Promise<AzionEdgeApplicationResponse>;
-
-  /**
-   * Partially updates an existing edge application.
-   * @param {Object} params - Parameters for patching an edge application.
-   * @param {number} params.id - ID of the edge application to patch.
-   * @param {Partial<ApiUpdateApplicationRequest>} params.applicationData - Partial data for updating the edge application.
-   * @returns {Promise<AzionEdgeApplicationResponse>} The patched edge application or error response.
-   */
-  patchEdgeApplication: (params: {
-    id: number;
-    applicationData: Partial<ApiUpdateApplicationRequest>;
-  }) => Promise<AzionEdgeApplicationResponse>;
+  create: (applicationData: ApiCreateApplicationPayload) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  get: (applicationId: number) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  getAll: (
+    params?: AzionEdgeApplicationCollectionOptions,
+  ) => Promise<AzionEdgeApplicationCollectionResponse<AzionEdgeApplication>>;
+  update: (
+    applicationId: number,
+    applicationData: ApiUpdateApplicationPayload,
+  ) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  delete: (applicationId: number) => Promise<AzionEdgeApplicationResponse<void>>;
+  patch: (
+    applicationId: number,
+    applicationData: Partial<ApiUpdateApplicationPayload>,
+  ) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
 }
 
-/**
- * Function type for creating an Azion Edge Application Client.
- *
- * @param {Object} [config] - Configuration options for the Edge Application client.
- * @param {string} [config.token] - Authentication token for Azion API. If not provided,
- * the client will attempt to use the AZION_TOKEN environment variable.
- * @param {AzionClientOptions} [config.options] - Additional client options.
- *
- * @returns {AzionEdgeApplicationClient} An instance of the Azion Edge Application Client.
- *
- * @example
- * // Create an Edge Application client with a token and debug mode enabled
- * const edgeApplicationClient = createAzionEdgeApplicationClient({
- *   token: 'your-api-token',
- *   options: { debug: true }
- * });
- *
- * @example
- * // Create an Edge Application client using environment variables for token
- * const edgeApplicationClient = createAzionEdgeApplicationClient();
- *
- * @example
- * // Use the Edge Application client to create an application
- * const newApplication = await edgeApplicationClient.createEdgeApplication({
- *   applicationData: {
- *     name: 'My New Application',
- *     // ... other application data
- *   }
- * });
- */
-export type CreateAzionEdgeApplicationClient = (
-  config?: Partial<{ token?: string; options?: AzionClientOptions }>,
-) => AzionEdgeApplicationClient;
+export type CreateAzionEdgeApplicationClient = (options: AzionClientOptions) => AzionEdgeApplicationClient;

@@ -1,11 +1,11 @@
 import {
-  ApiCreateDeviceGroupRequest,
+  ApiCreateDeviceGroupPayload,
   ApiCreateDeviceGroupResponse,
   ApiDeleteDeviceGroupResponse,
   ApiGetDeviceGroupResponse,
   ApiListDeviceGroupsParams,
   ApiListDeviceGroupsResponse,
-  ApiUpdateDeviceGroupRequest,
+  ApiUpdateDeviceGroupPayload,
   ApiUpdateDeviceGroupResponse,
 } from './types';
 
@@ -81,14 +81,14 @@ const getDeviceGroupById = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
- * @param {ApiCreateDeviceGroupRequest} deviceGroupData - Data of the device group to be created.
+ * @param {ApiCreateDeviceGroupPayload} deviceGroupData - Data of the device group to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateDeviceGroupResponse>} The created device group or an error if creation failed.
  */
 const createDeviceGroup = async (
   token: string,
   edgeApplicationId: number,
-  deviceGroupData: ApiCreateDeviceGroupRequest,
+  deviceGroupData: ApiCreateDeviceGroupPayload,
   debug?: boolean,
 ): Promise<ApiCreateDeviceGroupResponse> => {
   try {
@@ -116,7 +116,7 @@ const createDeviceGroup = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {number} edgeApplicationId - ID of the edge application.
  * @param {number} deviceGroupId - ID of the device group to update.
- * @param {ApiUpdateDeviceGroupRequest} deviceGroupData - New data for the device group.
+ * @param {ApiUpdateDeviceGroupPayload} deviceGroupData - New data for the device group.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateDeviceGroupResponse>} The updated device group or an error if update failed.
  */
@@ -124,7 +124,7 @@ const updateDeviceGroup = async (
   token: string,
   edgeApplicationId: number,
   deviceGroupId: number,
-  deviceGroupData: ApiUpdateDeviceGroupRequest,
+  deviceGroupData: ApiUpdateDeviceGroupPayload,
   debug?: boolean,
 ): Promise<ApiUpdateDeviceGroupResponse> => {
   try {
