@@ -1,3 +1,10 @@
+## [1.7.0-stage.2](https://github.com/aziontech/lib/compare/v1.7.0-stage.1...v1.7.0-stage.2) (2024-09-03)
+
+
+### Features
+
+* azion cli binary  (#32) ([0670adb](https://github.com/aziontech/lib/commit/0670adb9b4f9086126a8f5387f95e001da3a748b))
+
 ## [1.7.0-stage.1](https://github.com/aziontech/lib/compare/v1.6.0...v1.7.0-stage.1) (2024-08-30)
 
 
