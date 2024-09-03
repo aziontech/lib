@@ -1,3 +1,11 @@
+## [1.7.0-stage.6](https://github.com/aziontech/lib/compare/v1.7.0-stage.5...v1.7.0-stage.6) (2024-09-03)
+
+
+### Bug Fixes
+
+* bin path (again) ([b43676a](https://github.com/aziontech/lib/commit/b43676a324df9f3d470dacabd395450be79144d9))
+* npm bin path ([3833208](https://github.com/aziontech/lib/commit/3833208bfd127509616f40aa1177f95a8ec7ff1b))
+
 ## [1.7.0-stage.5](https://github.com/aziontech/lib/compare/v1.7.0-stage.4...v1.7.0-stage.5) (2024-09-03)
 
 
