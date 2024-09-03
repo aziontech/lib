@@ -13,7 +13,7 @@
     "format": "npm run prettier --workspaces --if-present",
     "format:check": "npm run prettier:check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "download:cli": "node cli/scripts/download-cli.mjs",
+    "download:cli": "node ./cli/scripts/download-cli.mjs",
     "postinstall": "npm run download:cli",
     "build": "npm run download:cli && npm run compile"
   },
@@ -72,7 +72,8 @@
   "files": [
     "README.md",
     "package.json",
-    "packages/**/dist/**/*"
+    "packages/**/dist/**/*",
+    "cli/**/*" 
   ],
   "exports": {
     ".": {
