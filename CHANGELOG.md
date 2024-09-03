@@ -1,3 +1,39 @@
+## [1.7.0-stage.6](https://github.com/aziontech/lib/compare/v1.7.0-stage.5...v1.7.0-stage.6) (2024-09-03)
+
+
+### Bug Fixes
+
+* bin path (again) ([b43676a](https://github.com/aziontech/lib/commit/b43676a324df9f3d470dacabd395450be79144d9))
+* npm bin path ([3833208](https://github.com/aziontech/lib/commit/3833208bfd127509616f40aa1177f95a8ec7ff1b))
+
+## [1.7.0-stage.5](https://github.com/aziontech/lib/compare/v1.7.0-stage.4...v1.7.0-stage.5) (2024-09-03)
+
+
+### Bug Fixes
+
+* npm bin path (#35) ([ea5bb4f](https://github.com/aziontech/lib/commit/ea5bb4f8f6a1cd9d30945d06fdb5357183c3bbf2))
+
+## [1.7.0-stage.4](https://github.com/aziontech/lib/compare/v1.7.0-stage.3...v1.7.0-stage.4) (2024-09-03)
+
+
+### Bug Fixes
+
+* cli relative path (#34) ([c6b5fb4](https://github.com/aziontech/lib/commit/c6b5fb4214c012780ba8315acad78d5202eed1df))
+
+## [1.7.0-stage.3](https://github.com/aziontech/lib/compare/v1.7.0-stage.2...v1.7.0-stage.3) (2024-09-03)
+
+
+### Bug Fixes
+
+* cli bin path (#33) ([f1aee5e](https://github.com/aziontech/lib/commit/f1aee5e30f0eab8e9f5209c730439af81779309b))
+
+## [1.7.0-stage.2](https://github.com/aziontech/lib/compare/v1.7.0-stage.1...v1.7.0-stage.2) (2024-09-03)
+
+
+### Features
+
+* azion cli binary  (#32) ([0670adb](https://github.com/aziontech/lib/commit/0670adb9b4f9086126a8f5387f95e001da3a748b))
+
 ## [1.7.0-stage.1](https://github.com/aziontech/lib/compare/v1.6.0...v1.7.0-stage.1) (2024-08-30)
 
 

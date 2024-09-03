@@ -1,7 +1,10 @@
 {
   "name": "azion",
-  "version": "1.7.0-stage.1",
+  "version": "1.7.0-stage.6",
   "description": "Azion Packages for Edge Computing.",
+  "bin": {
+    "azion": "./bin/azion"
+  },
   "scripts": {
     "prepare": "husky",
     "compile": "npm run compile --workspaces",
@@ -10,7 +13,9 @@
     "format": "npm run prettier --workspaces --if-present",
     "format:check": "npm run prettier:check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "build": "tsup"
+    "download:cli": "node ./cli/scripts/download-cli.mjs",
+    "postinstall": "npm run download:cli",
+    "build": "npm run download:cli && npm run compile"
   },
   "keywords": [
     "azion",
@@ -67,7 +72,8 @@
   "files": [
     "README.md",
     "package.json",
-    "packages/**/dist/**/*"
+    "packages/**/dist/**/*",
+    "cli/**/*"
   ],
   "exports": {
     ".": {
@@ -167,5 +173,9 @@
         "./packages/utils/dist/index.d.ts"
       ]
     }
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "progress": "^2.0.3"
   }
 }
