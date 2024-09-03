@@ -1,7 +1,9 @@
 import { ApiPurgeResponse } from './types';
 
-const BASE_URL = 'https://api.azion.com/v4/edge/purge';
-
+const BASE_URL =
+  process.env.AZION_ENV === 'stage'
+    ? 'https://stage-api.azion.com/v4/edge/purge'
+    : 'https://api.azion.com/v4/edge/purge';
 /**
  * Purge URLs from the Azion Edge cache.
  *
