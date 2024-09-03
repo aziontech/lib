@@ -11,8 +11,20 @@ const defaultVersion = '1.37.0';
 const version = process.env.AZION_CLI_VERSION || defaultVersion;
 
 const baseUrl = `https://github.com/aziontech/azion/releases/download/${version}`;
-const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(currentDir, '..');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Navigate up the directory tree to find the root directory of the installed library
+let packageRoot = __dirname;
+while (!fs.existsSync(path.join(packageRoot, 'package.json'))) {
+  const parentDir = path.dirname(packageRoot);
+  if (parentDir === packageRoot) {
+    throw new Error('Could not find the root directory of the library');
+  }
+  packageRoot = parentDir;
+}
+
 const binDir = path.join(packageRoot, 'bin');
 
 const log = {
@@ -174,6 +186,7 @@ async function main() {
     log.info(`Detected platform: ${chalk.cyan(JSON.stringify(platform))}`);
     await downloadAndExtract(platform);
     log.highlight('Installation completed successfully!');
+    log.info(`Azion CLI has been installed in: ${chalk.cyan(binDir)}`);
     process.exit(0);
   } catch (error) {
     log.error(`Error during installation: ${error.message}`);
