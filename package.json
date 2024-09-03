@@ -3,7 +3,7 @@
   "version": "1.7.0-stage.4",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
-    "azion": "cli/bin/azion"
+    "azion": "./cli/bin/azion"
   },
   "scripts": {
     "prepare": "husky",
