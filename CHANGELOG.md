@@ -1,3 +1,10 @@
+## [1.7.0-stage.3](https://github.com/aziontech/lib/compare/v1.7.0-stage.2...v1.7.0-stage.3) (2024-09-03)
+
+
+### Bug Fixes
+
+* cli bin path (#33) ([f1aee5e](https://github.com/aziontech/lib/commit/f1aee5e30f0eab8e9f5209c730439af81779309b))
+
 ## [1.7.0-stage.2](https://github.com/aziontech/lib/compare/v1.7.0-stage.1...v1.7.0-stage.2) (2024-09-03)
 
 
