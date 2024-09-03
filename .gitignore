@@ -3,4 +3,4 @@ dist
 coverage
 .env
 .DS_Store
-cli/bin
+cli/bin/
