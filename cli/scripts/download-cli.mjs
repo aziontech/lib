@@ -7,7 +7,9 @@ import path from 'path';
 import ProgressBar from 'progress';
 import { fileURLToPath } from 'url';
 
-const version = '1.37.0';
+const defaultVersion = '1.37.0';
+const version = process.env.AZION_CLI_VERSION || defaultVersion;
+
 const baseUrl = `https://github.com/aziontech/azion/releases/download/${version}`;
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(currentDir, '..');
