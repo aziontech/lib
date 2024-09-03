@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.7.0-stage.6",
+  "version": "1.7.0-stage.7",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
     "azion": "./bin/azion"
