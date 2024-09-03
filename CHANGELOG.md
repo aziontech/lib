@@ -1,3 +1,10 @@
+## [1.7.0-stage.4](https://github.com/aziontech/lib/compare/v1.7.0-stage.3...v1.7.0-stage.4) (2024-09-03)
+
+
+### Bug Fixes
+
+* cli relative path (#34) ([c6b5fb4](https://github.com/aziontech/lib/commit/c6b5fb4214c012780ba8315acad78d5202eed1df))
+
 ## [1.7.0-stage.3](https://github.com/aziontech/lib/compare/v1.7.0-stage.2...v1.7.0-stage.3) (2024-09-03)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.7.0-stage.3",
+  "version": "1.7.0-stage.4",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
     "azion": "cli/bin/azion"
@@ -73,7 +73,7 @@
     "README.md",
     "package.json",
     "packages/**/dist/**/*",
-    "cli/**/*" 
+    "cli/**/*"
   ],
   "exports": {
     ".": {
