@@ -10,7 +10,10 @@ import {
   ApiListObjectsResponse,
 } from './types';
 
-const BASE_URL = 'https://api.azion.com/v4/storage/buckets';
+const BASE_URL =
+  process.env.AZION_ENV === 'stage'
+    ? 'https://stage-api.azion.com/v4/storage/buckets'
+    : 'https://api.azion.com/v4/storage/buckets';
 
 /**
  * Retrieves a list of buckets with optional filtering and pagination.

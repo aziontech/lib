@@ -446,7 +446,7 @@ const getBucketsWrapper = ({
 }: {
   params?: AzionBucketCollectionParams;
   options?: AzionClientOptions;
-}): Promise<AzionBucket[] | null> =>
+} = {}): Promise<AzionBucket[] | null> =>
   getBucketsMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -684,8 +684,10 @@ const client: CreateAzionStorageClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionStorageClient = {
-    getBuckets: (params?: { params?: AzionBucketCollectionParams }): Promise<AzionBucket[] | null> =>
-      getBucketsMethod(tokenValue, params?.params, { ...config, debug: debugValue }),
+    getBuckets: (
+      params: { params?: AzionBucketCollectionParams; options?: AzionClientOptions } = {},
+    ): Promise<AzionBucket[] | null> =>
+      getBucketsMethod(tokenValue, params.params, { ...config, ...params.options, debug: debugValue }),
     createBucket: ({ name, edge_access }: { name: string; edge_access: string }): Promise<AzionBucket | null> =>
       createBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue }),
     updateBucket: ({ name, edge_access }: { name: string; edge_access: string }): Promise<AzionBucket | null> =>
