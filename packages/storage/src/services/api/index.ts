@@ -4,6 +4,7 @@ import {
   ApiDeleteBucketResponse,
   ApiDeleteObjectResponse,
   ApiEditBucketResponse,
+  ApiError,
   ApiListBucketsParams,
   ApiListBucketsResponse,
   ApiListObjectsParams,
@@ -14,6 +15,21 @@ const BASE_URL =
   process.env.AZION_ENV === 'stage'
     ? 'https://stage-api.azion.com/v4/storage/buckets'
     : 'https://api.azion.com/v4/storage/buckets';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleApiError = (fields: string[], data: any, operation: string) => {
+  let error = { message: 'Error unknown', operation: operation };
+  fields.forEach((field: string) => {
+    if (data[field]) {
+      const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
+      error = {
+        message: message,
+        operation: operation,
+      };
+    }
+  });
+  return error;
+};
 
 /**
  * Retrieves a list of buckets with optional filtering and pagination.
@@ -36,6 +52,12 @@ const getBuckets = async (
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
     const data = await response.json();
+    if (!data.results) {
+      data.error = handleApiError(['detail'], data, 'get all buckets');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -66,6 +88,13 @@ const postBucket = async (
       body: JSON.stringify({ name, edge_access }),
     });
     const data = await response.json();
+
+    if (!data?.state) {
+      data.error = handleApiError(['name', 'edge_access', 'detail'], data, 'create bucket');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -96,6 +125,12 @@ const patchBucket = async (
       body: JSON.stringify({ edge_access }),
     });
     const data = await response.json();
+    if (!data?.state) {
+      data.error = handleApiError(['name', 'edge_access', 'detail'], data, 'update bucket');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -119,7 +154,13 @@ const deleteBucket = async (token: string, name: string, debug?: boolean): Promi
       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
     });
     const data = await response.json();
-    if (debug) console.log('Response:', data);
+    if (!data?.state) {
+      data.error = handleApiError(['detail'], data, 'delete bucket');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
+    if (debug) console.log('Response Delete Bucket:', data);
     return data;
   } catch (error) {
     if (debug) console.error('Error deleting bucket:', error);
@@ -150,6 +191,12 @@ const getObjects = async (
       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
     });
     const data = await response.json();
+    if (!data.results) {
+      data.error = handleApiError(['detail'], data, 'get all objects');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -186,6 +233,12 @@ const postObject = async (
       body: file,
     });
     const data = await response.json();
+    if (!data?.state) {
+      data.error = handleApiError(['detail'], data, 'create object');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -201,17 +254,31 @@ const postObject = async (
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to retrieve.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<string>} The content of the object or an error if retrieval failed.
+ * @returns {Promise<{ data?: string; error?: ApiError }>} The content of the object or an error if retrieval failed.
  */
-const getObjectByKey = async (token: string, bucketName: string, key: string, debug?: boolean): Promise<string> => {
+const getObjectByKey = async (
+  token: string,
+  bucketName: string,
+  key: string,
+  debug?: boolean,
+): Promise<{ data?: string; error?: ApiError }> => {
   try {
     const response = await fetch(`${BASE_URL}/${bucketName}/objects/${key}`, {
       method: 'GET',
       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
     });
+    if (response.headers.get('content-type') === 'application/json') {
+      const data = await response.json();
+      const error = handleApiError(['detail'], data, 'get all objects');
+      return {
+        error: error ?? JSON.stringify(data),
+      };
+    }
     const data = await response.text();
     if (debug) console.log('Response:', data);
-    return data;
+    return {
+      data,
+    };
   } catch (error) {
     if (debug) console.error('Error getting object by name:', error);
     throw error;
@@ -275,6 +342,12 @@ const deleteObject = async (
       headers: { Accept: 'application/json', Authorization: `Token ${token}` },
     });
     const data = await response.json();
+    if (!data?.state) {
+      data.error = handleApiError(['detail'], data, 'delete object');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {

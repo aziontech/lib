@@ -69,17 +69,17 @@ import { createClient } from 'azion';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket } = await client.storage.createBucket('my-new-bucket', 'public');
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
 
-const allBuckets = await client.storage.getBuckets();
+const { data: allBuckets } = await client.storage.getBuckets();
 if (allBuckets) {
-  console.log(`Retrieved ${allBuckets.length} buckets`);
+  console.log(`Retrieved ${allBuckets.count} buckets`);
 }
 
-const deletedBucket = await client.storage.deleteBucket('my-bucket');
+const { data: deletedBucket } = await client.storage.deleteBucket('my-bucket');
 if (deletedBucket) {
   console.log(`Bucket deleted with name: ${deletedBucket.name}`);
 }
@@ -89,21 +89,25 @@ if (deletedBucket) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Bucket } from 'azion/storage/types';
+import { AzionClient, AzionStorageResponse, AzionBucket, AzionDeletedBucket, AzionListBuckets } from 'azion/storage';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
-const newBucket: Bucket | null = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket }: AzionStorageResponse<AzionBucket> = await client.storage.createBucket(
+  'my-new-bucket',
+  'public',
+);
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
 
-const allBuckets: Bucket[] | null = await client.storage.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionListBuckets> = await client.storage.getBuckets();
 if (allBuckets) {
-  console.log(`Retrieved ${allBuckets.length} buckets`);
+  console.log(`Retrieved ${allBuckets.count} buckets`);
 }
 
-const deletedBucket: Bucket | null = await client.storage.deleteBucket('my-bucket');
+const { data: deletedBucket }: AzionStorageResponse<AzionDeletedBucket> =
+  await client.storage.deleteBucket('my-bucket');
 if (deletedBucket) {
   console.log(`Bucket deleted with name: ${deletedBucket.name}`);
 }
