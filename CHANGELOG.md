@@ -1,3 +1,18 @@
+## [1.7.0-stage.8](https://github.com/aziontech/lib/compare/v1.7.0-stage.7...v1.7.0-stage.8) (2024-09-03)
+
+
+### Bug Fixes
+
+* storage endpoint ([dd3e140](https://github.com/aziontech/lib/commit/dd3e14023735133b5ead3fba89d1f636233d736b))
+* storage params ([c995bbb](https://github.com/aziontech/lib/commit/c995bbbd8168cc9138370baf9849e20267e067a9))
+
+## [1.7.0-stage.7](https://github.com/aziontech/lib/compare/v1.7.0-stage.6...v1.7.0-stage.7) (2024-09-03)
+
+
+### Features
+
+* enable azion stage ([6588e63](https://github.com/aziontech/lib/commit/6588e63ba7fa9f60f0570316ae501a1d21e1fe40))
+
 ## [1.7.0-stage.6](https://github.com/aziontech/lib/compare/v1.7.0-stage.5...v1.7.0-stage.6) (2024-09-03)
 
 

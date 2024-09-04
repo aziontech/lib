@@ -419,7 +419,7 @@ Executes a query on a specific database.
 **Example:**
 
 ```javascript
-const { data, error } = await sqlClient.useQuery('my-db', ['SELECT * FROM users']);
+const { data, error } = await sqlClient.query('my-db', ['SELECT * FROM users']);
 if (data) {
   console.log(`Query executed. Rows returned: ${data.rows.length}`);
 } else {
@@ -444,7 +444,7 @@ Executes a set of SQL statements on a specific database.
 **Example:**
 
 ```javascript
-const { data, error } = await sqlClient.useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
+const { data, error } = await sqlClient.execute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
 if (data) {
   console.log('Executed with success');
 } else {

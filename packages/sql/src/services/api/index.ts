@@ -7,7 +7,10 @@ import type {
   ApiQueryExecutionResponse,
 } from './types';
 
-const BASE_URL = 'https://api.azion.com/v4/edge_sql/databases';
+const BASE_URL =
+  process.env.AZION_ENV === 'stage'
+    ? 'https://stage-api.azion.com/v4/edge_sql/databases'
+    : 'https://api.azion.com/v4/edge_sql/databases';
 
 /**
  * Creates a new Edge Database.
