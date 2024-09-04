@@ -1,3 +1,14 @@
+export interface ApiBaseDeviceGroupPayload {
+  name: string;
+  user_agent: string;
+}
+
+export interface ApiCreateDeviceGroupPayload extends ApiBaseDeviceGroupPayload {}
+
+export interface ApiDeviceGroup extends ApiBaseDeviceGroupPayload {
+  id: number;
+}
+
 export interface ApiListDeviceGroupsParams {
   page?: number;
   page_size?: number;
@@ -13,47 +24,26 @@ export interface ApiListDeviceGroupsResponse {
     previous: string | null;
     next: string | null;
   };
-  results: DeviceGroup[];
+  results: ApiDeviceGroup[];
 }
 
 export interface ApiGetDeviceGroupResponse {
-  results: DeviceGroup;
+  results: ApiDeviceGroup;
   schema_version: number;
-}
-
-export interface ApiCreateDeviceGroupPayload {
-  name: string;
-  user_agent: string;
 }
 
 export interface ApiCreateDeviceGroupResponse {
-  results: DeviceGroup;
+  results: ApiDeviceGroup;
   schema_version: number;
 }
 
-export interface ApiUpdateDeviceGroupPayload {
-  name?: string;
-  user_agent?: string;
-}
+export interface ApiUpdateDeviceGroupPayload extends Partial<ApiBaseDeviceGroupPayload> {}
 
 export interface ApiUpdateDeviceGroupResponse {
-  results: DeviceGroup;
+  results: ApiDeviceGroup;
   schema_version: number;
 }
 
 export interface ApiDeleteDeviceGroupResponse {
   schema_version: number;
-}
-
-export interface DeviceGroup {
-  id: number;
-  name: string;
-  user_agent: string;
-}
-
-export interface ApiListDeviceGroupsParams {
-  page?: number;
-  page_size?: number;
-  sort?: 'name' | 'id';
-  order?: 'asc' | 'desc';
 }

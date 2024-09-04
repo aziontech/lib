@@ -11,16 +11,7 @@ import {
 
 const BASE_URL = 'https://api.azionapi.net/edge_applications';
 
-/**
- * Lists all cache settings for an edge application.
- *
- * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
- * @param {ApiListCacheSettingsParams} [params] - Optional parameters for filtering and pagination.
- * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiListCacheSettingsResponse>} Array of cache settings or an error if retrieval failed.
- */
-const getCacheSettings = async (
+export const getCacheSettingsApi = async (
   token: string,
   edgeApplicationId: number,
   params?: ApiListCacheSettingsParams,
@@ -47,16 +38,7 @@ const getCacheSettings = async (
   }
 };
 
-/**
- * Retrieves a specific cache setting by ID.
- *
- * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
- * @param {number} cacheSettingId - ID of the cache setting.
- * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiGetCacheSettingResponse>} Cache setting data or an error if retrieval failed.
- */
-const getCacheSettingById = async (
+export const getCacheSettingByIdApi = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
@@ -76,16 +58,7 @@ const getCacheSettingById = async (
   }
 };
 
-/**
- * Creates a new cache setting for an edge application.
- *
- * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
- * @param {ApiCreateCacheSettingPayload} cacheSettingData - Data of the cache setting to be created.
- * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiCreateCacheSettingResponse>} The created cache setting or an error if creation failed.
- */
-const createCacheSetting = async (
+export const createCacheSettingApi = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingData: ApiCreateCacheSettingPayload,
@@ -110,17 +83,7 @@ const createCacheSetting = async (
   }
 };
 
-/**
- * Updates an existing cache setting.
- *
- * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
- * @param {number} cacheSettingId - ID of the cache setting to update.
- * @param {ApiUpdateCacheSettingPayload} cacheSettingData - New data for the cache setting.
- * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiUpdateCacheSettingResponse>} The updated cache setting or an error if update failed.
- */
-const updateCacheSetting = async (
+export const updateCacheSettingApi = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
@@ -146,16 +109,7 @@ const updateCacheSetting = async (
   }
 };
 
-/**
- * Deletes a cache setting.
- *
- * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
- * @param {number} cacheSettingId - ID of the cache setting to delete.
- * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiDeleteCacheSettingResponse>} Confirmation of deletion or an error if deletion failed.
- */
-const deleteCacheSetting = async (
+export const deleteCacheSettingApi = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
@@ -174,5 +128,3 @@ const deleteCacheSetting = async (
     throw error;
   }
 };
-
-export { createCacheSetting, deleteCacheSetting, getCacheSettingById, getCacheSettings, updateCacheSetting };

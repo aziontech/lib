@@ -48,7 +48,6 @@ export const listRules = async (
     throw error;
   }
 };
-
 /**
  * Retrieves a specific rule by its ID for a given phase of an edge application.
  *
@@ -115,7 +114,6 @@ export const createRule = async (
     throw error;
   }
 };
-
 /**
  * Updates an existing rule for a specific phase of an edge application.
  *
@@ -153,7 +151,6 @@ export const updateRule = async (
     throw error;
   }
 };
-
 /**
  * Deletes a specific rule from an edge application.
  *

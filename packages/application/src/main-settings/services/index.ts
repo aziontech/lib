@@ -80,7 +80,7 @@ const getApplicationById = async (
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateApplicationResponse>} The created application or an error if creation failed.
  */
-const createApplication = async (
+const postApplication = async (
   token: string,
   applicationData: ApiCreateApplicationPayload,
   debug?: boolean,
@@ -113,7 +113,7 @@ const createApplication = async (
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateApplicationResponse>} The updated application or an error if update failed.
  */
-const updateApplication = async (
+const putApplication = async (
   token: string,
   edgeApplicationId: number,
   applicationData: ApiUpdateApplicationPayload,
@@ -199,11 +199,4 @@ const deleteApplication = async (
   }
 };
 
-export {
-  createApplication,
-  deleteApplication,
-  getApplicationById,
-  getApplications,
-  patchApplication,
-  updateApplication,
-};
+export { deleteApplication, getApplicationById, getApplications, patchApplication, postApplication, putApplication };

@@ -2,32 +2,37 @@ import {
   ApiCreateCacheSettingPayload,
   ApiListCacheSettingsParams,
   ApiUpdateCacheSettingPayload,
-  CacheSetting,
-} from './services/api/cache/types';
+} from './cache-settings/services/types';
 import {
   ApiCreateDeviceGroupPayload,
   ApiListDeviceGroupsParams,
   ApiUpdateDeviceGroupPayload,
-  DeviceGroup,
-} from './services/api/device-groups/types';
+} from './device-groups/services/types';
 import {
   ApiCreateFunctionInstancePayload,
   ApiListFunctionInstancesParams,
   ApiUpdateFunctionInstancePayload,
-  FunctionInstance,
-} from './services/api/functions-instances/types';
+} from './functions-instances/services/types';
 import {
+  ApiApplication,
   ApiCreateApplicationPayload,
   ApiUpdateApplicationPayload,
-  EdgeApplicationSettings,
-} from './services/api/main-settings/types';
+} from './main-settings/services/types';
 import {
   ApiCreateOriginPayload,
+  ApiCreateOriginResponse,
+  ApiGetOriginResponse,
   ApiListOriginsParams,
+  ApiListOriginsResponse,
   ApiUpdateOriginRequest,
-  Origin,
-} from './services/api/origins/types';
-import { ApiCreateRulePayload, ApiListRulesParams, ApiUpdateRulePayload, Rule } from './services/api/rules/types';
+  ApiUpdateOriginResponse,
+} from './origins/services/types';
+import {
+  ApiCreateRulePayload,
+  ApiListRulesParams,
+  ApiRuleResponse,
+  ApiUpdateRulePayload,
+} from './rules-engine/services/types';
 
 export interface AzionClientOptions {
   debug?: boolean;
@@ -42,45 +47,59 @@ export interface AzionEdgeApplicationCollectionOptions {
 }
 
 export interface AzionEdgeApplicationResponse<T> {
-  results: T;
-  schema_version: number;
+  data?: T;
+  error?: {
+    message: string;
+    operation: string;
+  };
 }
 
 export interface AzionEdgeApplicationCollectionResponse<T> {
-  count: number;
-  total_pages: number;
-  schema_version: number;
-  links: {
-    previous: string | null;
-    next: string | null;
+  data?: {
+    count: number;
+    total_pages: number;
+    schema_version: number;
+    links: {
+      previous: string | null;
+      next: string | null;
+    };
+    results: T[];
   };
-  results: T[];
+  error?: {
+    message: string;
+    operation: string;
+  };
 }
 
 export interface CacheOperations {
-  create: (cacheSettingData: ApiCreateCacheSettingPayload) => Promise<AzionEdgeApplicationResponse<CacheSetting>>;
-  get: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<CacheSetting>>;
-  getAll: (params?: ApiListCacheSettingsParams) => Promise<AzionEdgeApplicationCollectionResponse<CacheSetting>>;
+  create: (cacheSettingData: ApiCreateCacheSettingPayload) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
+  get: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
+  getAll: (
+    params?: ApiListCacheSettingsParams,
+  ) => Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSettingsCollection>>;
   update: (
     cacheSettingId: number,
     cacheSettingData: ApiUpdateCacheSettingPayload,
-  ) => Promise<AzionEdgeApplicationResponse<CacheSetting>>;
+  ) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
   delete: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface OriginOperations {
-  create: (originData: ApiCreateOriginPayload) => Promise<AzionEdgeApplicationResponse<Origin>>;
-  get: (originKey: string) => Promise<AzionEdgeApplicationResponse<Origin>>;
-  getAll: (params?: ApiListOriginsParams) => Promise<AzionEdgeApplicationCollectionResponse<Origin>>;
-  update: (originKey: string, originData: ApiUpdateOriginRequest) => Promise<AzionEdgeApplicationResponse<Origin>>;
+  create: (originData: ApiCreateOriginPayload) => Promise<AzionEdgeApplicationResponse<ApiCreateOriginResponse>>;
+  get: (originKey: string) => Promise<AzionEdgeApplicationResponse<ApiGetOriginResponse>>;
+  getAll: (params?: ApiListOriginsParams) => Promise<AzionEdgeApplicationCollectionResponse<ApiListOriginsResponse>>;
+  update: (
+    originKey: string,
+    originData: ApiUpdateOriginRequest,
+  ) => Promise<AzionEdgeApplicationResponse<ApiUpdateOriginResponse>>;
   delete: (originKey: string) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface RuleOperations {
-  create: (ruleData: ApiCreateRulePayload) => Promise<AzionEdgeApplicationResponse<Rule>>;
-  get: (ruleId: number) => Promise<AzionEdgeApplicationResponse<Rule>>;
-  getAll: (params?: ApiListRulesParams) => Promise<AzionEdgeApplicationCollectionResponse<Rule>>;
-  update: (ruleId: number, ruleData: ApiUpdateRulePayload) => Promise<AzionEdgeApplicationResponse<Rule>>;
+  create: (ruleData: ApiCreateRulePayload) => Promise<AzionEdgeApplicationResponse<ApiRuleResponse>>;
+  get: (ruleId: number) => Promise<AzionEdgeApplicationResponse<ApiRuleResponse>>;
+  getAll: (params?: ApiListRulesParams) => Promise<AzionEdgeApplicationCollectionResponse<ApiRuleResponse>>;
+  update: (ruleId: number, ruleData: ApiUpdateRulePayload) => Promise<AzionEdgeApplicationResponse<ApiRuleResponse>>;
   delete: (ruleId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
@@ -110,7 +129,7 @@ export interface FunctionOperations {
   delete: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
-export interface AzionEdgeApplication extends EdgeApplicationSettings {
+export interface AzionEdgeApplication extends ApiApplication {
   cache: CacheOperations;
   origins: OriginOperations;
   rules: {

@@ -14,11 +14,11 @@ export interface ApiListOriginsResponse {
     previous: string | null;
     next: string | null;
   };
-  results: Origin[];
+  results: ApiCreateOriginPayload[];
 }
 
 export interface ApiGetOriginResponse {
-  results: Origin;
+  results: ApiCreateOriginPayload;
   schema_version: number;
 }
 
@@ -66,14 +66,14 @@ export interface ApiCreateOriginPayload {
 }
 
 export interface ApiCreateOriginResponse {
-  results: Origin;
+  results: ApiCreateOriginPayload;
   schema_version: number;
 }
 
 export interface ApiUpdateOriginRequest extends Partial<ApiCreateOriginPayload> {}
 
 export interface ApiUpdateOriginResponse {
-  results: Origin;
+  results: ApiCreateOriginPayload;
   schema_version: number;
 }
 
@@ -81,7 +81,7 @@ export interface ApiDeleteOriginResponse {
   schema_version: number;
 }
 
-export interface Origin {
+export interface ApiOrigin {
   origin_id: number;
   origin_key: string;
   name: string;
