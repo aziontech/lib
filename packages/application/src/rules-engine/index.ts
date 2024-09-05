@@ -1,24 +1,223 @@
-import { AzionClientOptions, AzionEdgeApplicationCollectionResponse, AzionEdgeApplicationResponse } from '../types';
+import { AzionApplicationCollectionResponse, AzionApplicationResponse, AzionClientOptions } from '../types';
 import { resolveDebug, resolveToken } from '../utils';
 import { createRule, deleteRule, getRuleById, listRules, updateRule } from './services/index';
 import { ApiCreateRulePayload, ApiListRulesParams, ApiUpdateRulePayload } from './services/types';
 import { AzionRule } from './types';
 
+/**
+ * Creates a new rule for an Azion Edge Application.
+ *
+ * @async
+ * @function createRuleWrapper
+ * @param {Object} params - The parameters for creating a rule.
+ * @param {number} params.applicationId - The ID of the application to create the rule for.
+ * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
+ * @param {ApiCreateRulePayload} params.data - The data for the new rule.
+ * @param {AzionClientOptions} [params.options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
+ *
+ * @example
+ * const result = await createRuleWrapper({
+ *   applicationId: 123,
+ *   phase: 'request',
+ *   data: { name: 'My New Rule', behaviors: [...] },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log('Rule created:', result.data);
+ * } else {
+ *   console.error('Error:', result.error);
+ * }
+ */
+export const createRuleWrapper = ({
+  applicationId,
+  phase,
+  data,
+  options,
+}: {
+  applicationId: number;
+  phase: 'request' | 'response';
+  data: ApiCreateRulePayload;
+  options?: AzionClientOptions;
+}): Promise<AzionApplicationResponse<AzionRule>> =>
+  createRuleMethod(resolveToken(), applicationId, phase, data, options);
+
+/**
+ * Retrieves a specific rule from an Azion Edge Application.
+ *
+ * @async
+ * @function getRuleWrapper
+ * @param {Object} params - The parameters for retrieving a rule.
+ * @param {number} params.applicationId - The ID of the application containing the rule.
+ * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
+ * @param {number} params.ruleId - The ID of the rule to retrieve.
+ * @param {AzionClientOptions} [params.options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
+ *
+ * @example
+ * const result = await getRuleWrapper({
+ *   applicationId: 123,
+ *   phase: 'request',
+ *   ruleId: 456,
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log('Rule retrieved:', result.data);
+ * } else {
+ *   console.error('Error:', result.error);
+ * }
+ */
+export const getRuleWrapper = ({
+  applicationId,
+  phase,
+  ruleId,
+  options,
+}: {
+  applicationId: number;
+  phase: 'request' | 'response';
+  ruleId: number;
+  options?: AzionClientOptions;
+}): Promise<AzionApplicationResponse<AzionRule>> =>
+  getRuleMethod(resolveToken(), applicationId, phase, ruleId, options);
+
+/**
+ * Retrieves a list of rules for an Azion Edge Application.
+ *
+ * @async
+ * @function getRulesWrapper
+ * @param {Object} params - The parameters for retrieving rules.
+ * @param {number} params.applicationId - The ID of the application to retrieve rules from.
+ * @param {'request' | 'response'} params.phase - The phase of the rules to retrieve (request or response).
+ * @param {ApiListRulesParams} [params.params] - Optional parameters for filtering and pagination.
+ * @param {AzionClientOptions} [params.options] - Optional client options.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
+ *
+ * @example
+ * const result = await getRulesWrapper({
+ *   applicationId: 123,
+ *   phase: 'request',
+ *   params: { page: 1, page_size: 20 },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log('Rules retrieved:', result.data.results);
+ * } else {
+ *   console.error('Error:', result.error);
+ * }
+ */
+export const getRulesWrapper = ({
+  applicationId,
+  phase,
+  params,
+  options,
+}: {
+  applicationId: number;
+  phase: 'request' | 'response';
+  params?: ApiListRulesParams;
+  options?: AzionClientOptions;
+}): Promise<AzionApplicationCollectionResponse<AzionRule>> =>
+  getRulesMethod(resolveToken(), applicationId, phase, params, options);
+
+/**
+ * Updates an existing rule in an Azion Edge Application.
+ *
+ * @async
+ * @function updateRuleWrapper
+ * @param {Object} params - The parameters for updating a rule.
+ * @param {number} params.applicationId - The ID of the application containing the rule.
+ * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
+ * @param {number} params.ruleId - The ID of the rule to update.
+ * @param {ApiUpdateRulePayload} params.data - The updated data for the rule.
+ * @param {AzionClientOptions} [params.options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
+ *
+ * @example
+ * const result = await updateRuleWrapper({
+ *   applicationId: 123,
+ *   phase: 'request',
+ *   ruleId: 456,
+ *   data: { name: 'Updated Rule Name', behaviors: [...] },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log('Rule updated:', result.data);
+ * } else {
+ *   console.error('Error:', result.error);
+ * }
+ */
+export const updateRuleWrapper = ({
+  applicationId,
+  phase,
+  ruleId,
+  data,
+  options,
+}: {
+  applicationId: number;
+  phase: 'request' | 'response';
+  ruleId: number;
+  data: ApiUpdateRulePayload;
+  options?: AzionClientOptions;
+}): Promise<AzionApplicationResponse<AzionRule>> =>
+  updateRuleMethod(resolveToken(), applicationId, phase, ruleId, data, options);
+
+/**
+ * Deletes a rule from an Azion Edge Application.
+ *
+ * @async
+ * @function deleteRuleWrapper
+ * @param {Object} params - The parameters for deleting a rule.
+ * @param {number} params.applicationId - The ID of the application containing the rule.
+ * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
+ * @param {number} params.ruleId - The ID of the rule to delete.
+ * @param {AzionClientOptions} [params.options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
+ *
+ * @example
+ * const result = await deleteRuleWrapper({
+ *   applicationId: 123,
+ *   phase: 'request',
+ *   ruleId: 456,
+ *   options: { debug: true }
+ * });
+ * if (result.data !== undefined) {
+ *   console.log('Rule deleted successfully');
+ * } else {
+ *   console.error('Error:', result.error);
+ * }
+ */
+export const deleteRuleWrapper = ({
+  applicationId,
+  phase,
+  ruleId,
+  options,
+}: {
+  applicationId: number;
+  phase: 'request' | 'response';
+  ruleId: number;
+  options?: AzionClientOptions;
+}): Promise<AzionApplicationResponse<void>> => deleteRuleMethod(resolveToken(), applicationId, phase, ruleId, options);
+
+/**
+ * Internal method to create a new rule.
+ *
+ * @async
+ * @function createRuleMethod
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - The ID of the application.
+ * @param {'request' | 'response'} phase - The phase of the rule (request or response).
+ * @param {ApiCreateRulePayload} ruleData - The data for the new rule.
+ * @param {AzionClientOptions} [options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
+ */
 const createRuleMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleData: ApiCreateRulePayload,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionRule>> => {
+): Promise<AzionApplicationResponse<AzionRule>> => {
   try {
-    const { results } = await createRule(
-      resolveToken(token),
-      edgeApplicationId,
-      phase,
-      ruleData,
-      resolveDebug(options?.debug),
-    );
+    const { results } = await createRule(resolveToken(token), Id, phase, ruleData, resolveDebug(options?.debug));
     return { data: results };
   } catch (error) {
     return {
@@ -30,21 +229,27 @@ const createRuleMethod = async (
   }
 };
 
+/**
+ * Internal method to retrieve a specific rule.
+ *
+ * @async
+ * @function getRuleMethod
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - The ID of the application.
+ * @param {'request' | 'response'} phase - The phase of the rule (request or response).
+ * @param {number} ruleId - The ID of the rule to retrieve.
+ * @param {AzionClientOptions} [options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
+ */
 const getRuleMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleId: number,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionRule>> => {
+): Promise<AzionApplicationResponse<AzionRule>> => {
   try {
-    const { results } = await getRuleById(
-      resolveToken(token),
-      edgeApplicationId,
-      phase,
-      ruleId,
-      resolveDebug(options?.debug),
-    );
+    const { results } = await getRuleById(resolveToken(token), Id, phase, ruleId, resolveDebug(options?.debug));
     return { data: results };
   } catch (error) {
     return {
@@ -56,15 +261,27 @@ const getRuleMethod = async (
   }
 };
 
+/**
+ * Internal method to retrieve a list of rules.
+ *
+ * @async
+ * @function getRulesMethod
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - The ID of the application.
+ * @param {'request' | 'response'} phase - The phase of the rules to retrieve (request or response).
+ * @param {ApiListRulesParams} [params] - Optional parameters for filtering and pagination.
+ * @param {AzionClientOptions} [options] - Optional client options.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
+ */
 const getRulesMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   params?: ApiListRulesParams,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationCollectionResponse<AzionRule>> => {
+): Promise<AzionApplicationCollectionResponse<AzionRule>> => {
   try {
-    const data = await listRules(resolveToken(token), edgeApplicationId, phase, params, resolveDebug(options?.debug));
+    const data = await listRules(resolveToken(token), Id, phase, params, resolveDebug(options?.debug));
     return { data };
   } catch (error) {
     return {
@@ -76,18 +293,31 @@ const getRulesMethod = async (
   }
 };
 
+/**
+ * Internal method to update an existing rule.
+ *
+ * @async
+ * @function updateRuleMethod
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - The ID of the application.
+ * @param {'request' | 'response'} phase - The phase of the rule (request or response).
+ * @param {number} ruleId - The ID of the rule to update.
+ * @param {ApiUpdateRulePayload} ruleData - The updated data for the rule.
+ * @param {AzionClientOptions} [options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
+ */
 const updateRuleMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleId: number,
   ruleData: ApiUpdateRulePayload,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionRule>> => {
+): Promise<AzionApplicationResponse<AzionRule>> => {
   try {
     const { results } = await updateRule(
       resolveToken(token),
-      edgeApplicationId,
+      Id,
       phase,
       ruleId,
       ruleData,
@@ -104,15 +334,27 @@ const updateRuleMethod = async (
   }
 };
 
+/**
+ * Internal method to delete a rule.
+ *
+ * @async
+ * @function deleteRuleMethod
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - The ID of the application.
+ * @param {'request' | 'response'} phase - The phase of the rule (request or response).
+ * @param {number} ruleId - The ID of the rule to delete.
+ * @param {AzionClientOptions} [options] - Optional client options.
+ * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
+ */
 const deleteRuleMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleId: number,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<void>> => {
+): Promise<AzionApplicationResponse<void>> => {
   try {
-    await deleteRule(resolveToken(token), edgeApplicationId, phase, ruleId, resolveDebug(options?.debug));
+    await deleteRule(resolveToken(token), Id, phase, ruleId, resolveDebug(options?.debug));
     return { data: undefined };
   } catch (error) {
     return {
@@ -123,70 +365,3 @@ const deleteRuleMethod = async (
     };
   }
 };
-
-export const createRuleWrapper = ({
-  applicationId,
-  phase,
-  data,
-  options,
-}: {
-  applicationId: number;
-  phase: 'request' | 'response';
-  data: ApiCreateRulePayload;
-  options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionRule>> =>
-  createRuleMethod(resolveToken(), applicationId, phase, data, options);
-
-export const getRuleWrapper = ({
-  applicationId,
-  phase,
-  ruleId,
-  options,
-}: {
-  applicationId: number;
-  phase: 'request' | 'response';
-  ruleId: number;
-  options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionRule>> =>
-  getRuleMethod(resolveToken(), applicationId, phase, ruleId, options);
-
-export const getRulesWrapper = ({
-  applicationId,
-  phase,
-  params,
-  options,
-}: {
-  applicationId: number;
-  phase: 'request' | 'response';
-  params?: ApiListRulesParams;
-  options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationCollectionResponse<AzionRule>> =>
-  getRulesMethod(resolveToken(), applicationId, phase, params, options);
-
-export const updateRuleWrapper = ({
-  applicationId,
-  phase,
-  ruleId,
-  data,
-  options,
-}: {
-  applicationId: number;
-  phase: 'request' | 'response';
-  ruleId: number;
-  data: ApiUpdateRulePayload;
-  options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionRule>> =>
-  updateRuleMethod(resolveToken(), applicationId, phase, ruleId, data, options);
-
-export const deleteRuleWrapper = ({
-  applicationId,
-  phase,
-  ruleId,
-  options,
-}: {
-  applicationId: number;
-  phase: 'request' | 'response';
-  ruleId: number;
-  options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<void>> =>
-  deleteRuleMethod(resolveToken(), applicationId, phase, ruleId, options);

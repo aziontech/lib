@@ -15,14 +15,14 @@ const BASE_URL = 'https://api.azionapi.net/edge_applications';
  * Lists all device groups for an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {ApiListDeviceGroupsParams} [params] - Optional parameters for filtering and pagination.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiListDeviceGroupsResponse>} Array of device groups or an error if retrieval failed.
  */
 const getDeviceGroups = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   params?: ApiListDeviceGroupsParams,
   debug?: boolean,
 ): Promise<ApiListDeviceGroupsResponse> => {
@@ -34,7 +34,7 @@ const getDeviceGroups = async (
       sort,
       order,
     });
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/device_groups?${queryParams.toString()}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/device_groups?${queryParams.toString()}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -51,19 +51,19 @@ const getDeviceGroups = async (
  * Retrieves a specific device group by ID.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {number} deviceGroupId - ID of the device group.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiGetDeviceGroupResponse>} Device group data or an error if retrieval failed.
  */
 const getDeviceGroupById = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupId: number,
   debug?: boolean,
 ): Promise<ApiGetDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/device_groups/${deviceGroupId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/device_groups/${deviceGroupId}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -80,19 +80,19 @@ const getDeviceGroupById = async (
  * Creates a new device group for an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {ApiCreateDeviceGroupPayload} deviceGroupData - Data of the device group to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateDeviceGroupResponse>} The created device group or an error if creation failed.
  */
 const createDeviceGroup = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupData: ApiCreateDeviceGroupPayload,
   debug?: boolean,
 ): Promise<ApiCreateDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/device_groups`, {
+    const response = await fetch(`${BASE_URL}/${Id}/device_groups`, {
       method: 'POST',
       headers: {
         Accept: 'application/json; version=3',
@@ -114,7 +114,7 @@ const createDeviceGroup = async (
  * Updates an existing device group.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {number} deviceGroupId - ID of the device group to update.
  * @param {ApiUpdateDeviceGroupPayload} deviceGroupData - New data for the device group.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
@@ -122,13 +122,13 @@ const createDeviceGroup = async (
  */
 const updateDeviceGroup = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupId: number,
   deviceGroupData: ApiUpdateDeviceGroupPayload,
   debug?: boolean,
 ): Promise<ApiUpdateDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/device_groups/${deviceGroupId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/device_groups/${deviceGroupId}`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json; version=3',
@@ -150,19 +150,19 @@ const updateDeviceGroup = async (
  * Deletes a device group.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {number} deviceGroupId - ID of the device group to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiDeleteDeviceGroupResponse>} Confirmation of deletion or an error if deletion failed.
  */
 const deleteDeviceGroup = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupId: number,
   debug?: boolean,
 ): Promise<ApiDeleteDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/device_groups/${deviceGroupId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/device_groups/${deviceGroupId}`, {
       method: 'DELETE',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });

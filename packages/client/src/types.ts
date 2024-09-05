@@ -1,9 +1,20 @@
 /* eslint-disable no-unused-vars */
 
+import { AzionApplicationClient } from '../../application/src/types';
 import { AzionPurgeClient } from '../../purge/src/types';
 import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
 import { AzionStorageClient } from '../../storage/src/types';
 
+/**
+ * Azion Client interface containing all available service clients.
+ *
+ * @interface AzionClient
+ *
+ * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
+ * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
+ * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
+ * @property {AzionApplicationClient}  - Client for Azion Edge Application operations.
+ */
 export interface AzionClient {
   /**
    * Storage client with methods to interact with Azion Edge Storage.
@@ -13,34 +24,6 @@ export interface AzionClient {
    * @example
    * // Create a new bucket
    * const newBucket = await client.storage.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
-   *
-   * @example
-   * // Get all buckets
-   * const allBuckets = await client.storage.getBuckets({ params: { page: 1, page_size: 10 } });
-   *
-   * @example
-   * // Get a specific bucket and perform operations
-   * const bucket = await client.storage.getBucket({ name: 'my-bucket' });
-   * if (bucket) {
-   *   // Upload a new object
-   *   const newObject = await bucket.createObject({ key: 'example.txt', content: 'Hello, World!' });
-   *
-   *   // Get all objects in the bucket
-   *   const objects = await bucket.getObjects({ params: { page: 1, page_size: 10 } });
-   *
-   *   // Get a specific object
-   *   const object = await bucket.getObjectByKey({ key: 'example.txt' });
-   *
-   *   // Update an object
-   *   const updatedObject = await bucket.updateObject({ key: 'example.txt', content: 'Updated content' });
-   *
-   *   // Delete an object
-   *   const deletedObject = await bucket.deleteObject({ key: 'example.txt' });
-   * }
-   *
-   * @example
-   * // Delete a bucket
-   * const deletedBucket = await client.storage.deleteBucket({ name: 'my-bucket' });
    */
   storage: AzionStorageClient;
 
@@ -52,31 +35,6 @@ export interface AzionClient {
    * @example
    * // Create a new database
    * const newDatabase = await client.sql.createDatabase('my-new-db');
-   *
-   * @example
-   * // Get all databases
-   * const { data, error } = await client.sql.getDatabases();
-   *
-   * @example
-   * // Get a specific database and perform operations
-   * const { data:db, error } = await client.sql.getDatabase('my-db');
-   * if (db) {
-   *   // Execute a query
-   *   const queryResult = await db.query(['SELECT * FROM users WHERE id = ?', 1]);
-   *
-   *   // Execute multiple statements
-   *   const executeResult = await db.execute([
-   *     'INSERT INTO users (name, email) VALUES (?, ?)',
-   *     'UPDATE users SET last_login = NOW() WHERE id = ?'
-   *   ], ['John Doe', 'john@example.com', 1]);
-   *
-   *   // List tables in the database
-   *   const tables = await db.listTables();
-   * }
-   *
-   * @example
-   * // Delete a database
-   * const { data, error } = await client.sql.deleteDatabase(123); // Using database ID
    */
   sql: AzionSQLClient;
 
@@ -88,16 +46,19 @@ export interface AzionClient {
    * @example
    * // Purge a URL
    * const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
-   *
-   * @example
-   * // Purge a cache key
-   * const cacheKeyResult = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
-   *
-   * @example
-   * // Purge using a wildcard
-   * const wildcardResult = await client.purge.purgeWildCard(['http://example.com/*']);
    */
   purge: AzionPurgeClient;
+
+  /**
+   * Edge Application client with methods to interact with Azion Edge Applications.
+   *
+   * @type {AzionApplicationClient}
+   *
+   * @example
+   * // Create a new Edge Application
+   * const newApp = await client..create({ data: { name: 'My New App' } });
+   */
+  application: AzionApplicationClient;
 }
 
 /**

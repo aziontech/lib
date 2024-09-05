@@ -13,7 +13,7 @@ const BASE_URL = 'https://api.azionapi.net/edge_applications';
 
 export const getCacheSettings = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   params?: ApiListCacheSettingsParams,
   debug?: boolean,
 ): Promise<ApiListCacheSettingsResponse> => {
@@ -25,7 +25,7 @@ export const getCacheSettings = async (
       sort,
       order,
     });
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/cache_settings?${queryParams.toString()}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/cache_settings?${queryParams.toString()}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -40,12 +40,12 @@ export const getCacheSettings = async (
 
 export const getCacheSetting = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingId: number,
   debug?: boolean,
 ): Promise<ApiGetCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/cache_settings/${cacheSettingId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -60,12 +60,12 @@ export const getCacheSetting = async (
 
 export const postCacheSetting = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingData: ApiCreateCacheSettingPayload,
   debug?: boolean,
 ): Promise<ApiCreateCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/cache_settings`, {
+    const response = await fetch(`${BASE_URL}/${Id}/cache_settings`, {
       method: 'POST',
       headers: {
         Accept: 'application/json; version=3',
@@ -85,13 +85,13 @@ export const postCacheSetting = async (
 
 export const patchCacheSetting = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingId: number,
   cacheSettingData: ApiUpdateCacheSettingPayload,
   debug?: boolean,
 ): Promise<ApiUpdateCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/cache_settings/${cacheSettingId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json; version=3',
@@ -111,12 +111,12 @@ export const patchCacheSetting = async (
 
 export const deleteCacheSetting = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingId: number,
   debug?: boolean,
 ): Promise<ApiDeleteCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/cache_settings/${cacheSettingId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`, {
       method: 'DELETE',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });

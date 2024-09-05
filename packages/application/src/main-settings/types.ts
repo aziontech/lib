@@ -10,7 +10,7 @@ import {
   TlsVersion,
 } from './services/types';
 
-export type AzionApplication = ApiApplication;
+export type AzionApplicationSettings = ApiApplication;
 
 export {
   ApiBaseApplicationPayload,

@@ -1,4 +1,4 @@
-import { AzionClientOptions, AzionEdgeApplicationCollectionResponse, AzionEdgeApplicationResponse } from '../types';
+import { AzionApplicationCollectionResponse, AzionApplicationResponse, AzionClientOptions } from '../types';
 import { resolveDebug, resolveToken } from '../utils';
 import {
   deleteCacheSetting,
@@ -10,19 +10,23 @@ import {
 import { ApiBaseCacheSettingPayload, ApiListCacheSettingsParams, ApiUpdateCacheSettingPayload } from './services/types';
 import { AzionCacheSetting } from './types';
 
+/**
+ * Creates a new cache setting for a specific application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {ApiBaseCacheSettingPayload} cacheSettingData - Data for the cache setting to be created.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The created cache setting or an error.
+ */
 const createCacheSettingMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingData: ApiBaseCacheSettingPayload,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> => {
+): Promise<AzionApplicationResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await postCacheSetting(
-      resolveToken(token),
-      edgeApplicationId,
-      cacheSettingData,
-      resolveDebug(options?.debug),
-    );
+    const apiResponse = await postCacheSetting(resolveToken(token), Id, cacheSettingData, resolveDebug(options?.debug));
     return { data: apiResponse.results };
   } catch (error) {
     return {
@@ -34,19 +38,23 @@ const createCacheSettingMethod = async (
   }
 };
 
+/**
+ * Retrieves a specific cache setting from an application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {number} cacheSettingId - Cache setting ID.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The retrieved cache setting or an error.
+ */
 const getCacheSettingMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingId: number,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> => {
+): Promise<AzionApplicationResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await getCacheSetting(
-      resolveToken(token),
-      edgeApplicationId,
-      cacheSettingId,
-      resolveDebug(options?.debug),
-    );
+    const apiResponse = await getCacheSetting(resolveToken(token), Id, cacheSettingId, resolveDebug(options?.debug));
     return { data: apiResponse.results };
   } catch (error) {
     return {
@@ -58,19 +66,23 @@ const getCacheSettingMethod = async (
   }
 };
 
+/**
+ * Retrieves a list of cache settings for a specific application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {ApiListCacheSettingsParams} [params] - Parameters for listing cache settings.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>} A collection of cache settings or an error.
+ */
 const getCacheSettingsMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   params?: ApiListCacheSettingsParams,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSetting>> => {
+): Promise<AzionApplicationCollectionResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await getCacheSettings(
-      resolveToken(token),
-      edgeApplicationId,
-      params,
-      resolveDebug(options?.debug),
-    );
+    const apiResponse = await getCacheSettings(resolveToken(token), Id, params, resolveDebug(options?.debug));
 
     const results: AzionCacheSetting[] = apiResponse.results.map((setting) => ({
       ...setting,
@@ -95,17 +107,27 @@ const getCacheSettingsMethod = async (
   }
 };
 
+/**
+ * Updates an existing cache setting for a specific application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {number} cacheSettingId - Cache setting ID to update.
+ * @param {ApiUpdateCacheSettingPayload} cacheSettingData - Updated data for the cache setting.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The updated cache setting or an error.
+ */
 const updateCacheSettingMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingId: number,
   cacheSettingData: ApiUpdateCacheSettingPayload,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> => {
+): Promise<AzionApplicationResponse<AzionCacheSetting>> => {
   try {
     const apiResponse = await patchCacheSetting(
       resolveToken(token),
-      edgeApplicationId,
+      Id,
       cacheSettingId,
       cacheSettingData,
       resolveDebug(options?.debug),
@@ -121,14 +143,23 @@ const updateCacheSettingMethod = async (
   }
 };
 
+/**
+ * Deletes a specific cache setting from an application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {number} cacheSettingId - Cache setting ID to delete.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
+ */
 const deleteCacheSettingMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   cacheSettingId: number,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<void>> => {
+): Promise<AzionApplicationResponse<void>> => {
   try {
-    await deleteCacheSetting(resolveToken(token), edgeApplicationId, cacheSettingId, resolveDebug(options?.debug));
+    await deleteCacheSetting(resolveToken(token), Id, cacheSettingId, resolveDebug(options?.debug));
     return { data: undefined };
   } catch (error) {
     return {
@@ -140,6 +171,27 @@ const deleteCacheSettingMethod = async (
   }
 };
 
+/**
+ * Wrapper function to create a new cache setting for a specific application.
+ *
+ * @param {Object} params - Parameters for creating a cache setting.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiBaseCacheSettingPayload} params.data - Data for the cache setting to be created.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The created cache setting or an error.
+ *
+ * @example
+ * const result = await createCacheSetting({
+ *   applicationId: 1234,
+ *   data: { name: 'My Cache Setting', browser_cache_settings: 'override' },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Cache setting created: ${result.data.name}`);
+ * } else {
+ *   console.error('Failed to create cache setting:', result.error);
+ * }
+ */
 export const createCacheSettingWrapper = ({
   applicationId,
   data,
@@ -148,9 +200,30 @@ export const createCacheSettingWrapper = ({
   applicationId: number;
   data: ApiBaseCacheSettingPayload;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
+}): Promise<AzionApplicationResponse<AzionCacheSetting>> =>
   createCacheSettingMethod(resolveToken(), applicationId, data, options);
 
+/**
+ * Wrapper function to retrieve a specific cache setting from an application.
+ *
+ * @param {Object} params - Parameters for retrieving a cache setting.
+ * @param {number} params.applicationId - Application ID.
+ * @param {number} params.cacheSettingId - Cache setting ID.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The retrieved cache setting or an error.
+ *
+ * @example
+ * const result = await getCacheSetting({
+ *   applicationId: 1234,
+ *   cacheSettingId: 5678,
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Retrieved cache setting: ${result.data.name}`);
+ * } else {
+ *   console.error('Failed to get cache setting:', result.error);
+ * }
+ */
 export const getCacheSettingWrapper = ({
   applicationId,
   cacheSettingId,
@@ -159,9 +232,30 @@ export const getCacheSettingWrapper = ({
   applicationId: number;
   cacheSettingId: number;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
+}): Promise<AzionApplicationResponse<AzionCacheSetting>> =>
   getCacheSettingMethod(resolveToken(), applicationId, cacheSettingId, options);
 
+/**
+ * Wrapper function to retrieve a list of cache settings for a specific application.
+ *
+ * @param {Object} params - Parameters for listing cache settings.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiListCacheSettingsParams} [params.params] - Parameters for filtering and pagination.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>} A collection of cache settings or an error.
+ *
+ * @example
+ * const result = await getCacheSettings({
+ *   applicationId: 1234,
+ *   params: { page: 1, page_size: 20 },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Retrieved ${result.data.results.length} cache settings`);
+ * } else {
+ *   console.error('Failed to get cache settings:', result.error);
+ * }
+ */
 export const getCacheSettingsWrapper = ({
   applicationId,
   params,
@@ -170,9 +264,32 @@ export const getCacheSettingsWrapper = ({
   applicationId: number;
   params?: ApiListCacheSettingsParams;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSetting>> =>
+}): Promise<AzionApplicationCollectionResponse<AzionCacheSetting>> =>
   getCacheSettingsMethod(resolveToken(), applicationId, params, options);
 
+/**
+ * Wrapper function to update an existing cache setting for a specific application.
+ *
+ * @param {Object} params - Parameters for updating a cache setting.
+ * @param {number} params.applicationId - Application ID.
+ * @param {number} params.cacheSettingId - Cache setting ID to update.
+ * @param {ApiUpdateCacheSettingPayload} params.data - Updated data for the cache setting.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The updated cache setting or an error.
+ *
+ * @example
+ * const result = await updateCacheSetting({
+ *   applicationId: 1234,
+ *   cacheSettingId: 5678,
+ *   data: { name: 'Updated Cache Setting' },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Updated cache setting: ${result.data.name}`);
+ * } else {
+ *   console.error('Failed to update cache setting:', result.error);
+ * }
+ */
 export const updateCacheSettingWrapper = ({
   applicationId,
   cacheSettingId,
@@ -183,9 +300,30 @@ export const updateCacheSettingWrapper = ({
   cacheSettingId: number;
   data: ApiUpdateCacheSettingPayload;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
+}): Promise<AzionApplicationResponse<AzionCacheSetting>> =>
   updateCacheSettingMethod(resolveToken(), applicationId, cacheSettingId, data, options);
 
+/**
+ * Wrapper function to delete a specific cache setting from an application.
+ *
+ * @param {Object} params - Parameters for deleting a cache setting.
+ * @param {number} params.applicationId - Application ID.
+ * @param {number} params.cacheSettingId - Cache setting ID to delete.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
+ *
+ * @example
+ * const result = await deleteCacheSetting({
+ *   applicationId: 1234,
+ *   cacheSettingId: 5678,
+ *   options: { debug: true }
+ * });
+ * if (result.data !== undefined) {
+ *   console.log('Cache setting deleted successfully');
+ * } else {
+ *   console.error('Failed to delete cache setting:', result.error);
+ * }
+ */
 export const deleteCacheSettingWrapper = ({
   applicationId,
   cacheSettingId,
@@ -194,5 +332,5 @@ export const deleteCacheSettingWrapper = ({
   applicationId: number;
   cacheSettingId: number;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<void>> =>
+}): Promise<AzionApplicationResponse<void>> =>
   deleteCacheSettingMethod(resolveToken(), applicationId, cacheSettingId, options);

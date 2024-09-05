@@ -12,7 +12,7 @@ const BASE_URL = 'https://api.azionapi.net/edge_applications';
  * Lists all rules for a specific phase (request or response) of an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase of the rules.
  * @param {ApiListRulesParams} [params] - Optional parameters for filtering and pagination.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
@@ -20,7 +20,7 @@ const BASE_URL = 'https://api.azionapi.net/edge_applications';
  */
 export const listRules = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   params?: ApiListRulesParams,
   debug?: boolean,
@@ -33,13 +33,10 @@ export const listRules = async (
       sort,
       order,
     });
-    const response = await fetch(
-      `${BASE_URL}/${edgeApplicationId}/rules_engine/${phase}/rules?${queryParams.toString()}`,
-      {
-        method: 'GET',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-      },
-    );
+    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+    });
     const data = await response.json();
     if (debug) console.log('Response:', data);
     return data;
@@ -52,7 +49,7 @@ export const listRules = async (
  * Retrieves a specific rule by its ID for a given phase of an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase of the rule.
  * @param {number} ruleId - ID of the rule to retrieve.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
@@ -60,13 +57,13 @@ export const listRules = async (
  */
 export const getRuleById = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleId: number,
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/rules_engine/${phase}/rules/${ruleId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -83,7 +80,7 @@ export const getRuleById = async (
  * Creates a new rule for a specific phase of an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase for the new rule.
  * @param {ApiCreateRulePayload} ruleData - Data of the rule to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
@@ -91,13 +88,13 @@ export const getRuleById = async (
  */
 export const createRule = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleData: ApiCreateRulePayload,
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/rules_engine/${phase}/rules`, {
+    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules`, {
       method: 'POST',
       headers: {
         Accept: 'application/json; version=3',
@@ -118,7 +115,7 @@ export const createRule = async (
  * Updates an existing rule for a specific phase of an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase of the rule to update.
  * @param {number} ruleId - ID of the rule to update.
  * @param {ApiUpdateRulePayload} ruleData - New data for the rule.
@@ -127,14 +124,14 @@ export const createRule = async (
  */
 export const updateRule = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleId: number,
   ruleData: ApiUpdateRulePayload,
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/rules_engine/${phase}/rules/${ruleId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json; version=3',
@@ -155,7 +152,7 @@ export const updateRule = async (
  * Deletes a specific rule from an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {'request' | 'response'} phase - The phase of the rule to delete.
  * @param {number} ruleId - ID of the rule to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
@@ -163,13 +160,13 @@ export const updateRule = async (
  */
 export const deleteRule = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   phase: 'request' | 'response',
   ruleId: number,
   debug?: boolean,
 ): Promise<void> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/rules_engine/${phase}/rules/${ruleId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`, {
       method: 'DELETE',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });

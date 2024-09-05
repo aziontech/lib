@@ -15,14 +15,14 @@ const BASE_URL = 'https://api.azionapi.net/edge_applications';
  * Lists all function instances for an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {ApiListFunctionInstancesParams} [params] - Optional parameters for filtering and pagination.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiListFunctionInstancesResponse>} Array of function instances or an error if retrieval failed.
  */
 const listFunctionInstances = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   params?: ApiListFunctionInstancesParams,
   debug?: boolean,
 ): Promise<ApiListFunctionInstancesResponse> => {
@@ -35,7 +35,7 @@ const listFunctionInstances = async (
       order_by,
       filter,
     });
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances?${queryParams.toString()}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/functions_instances?${queryParams.toString()}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -52,19 +52,19 @@ const listFunctionInstances = async (
  * Retrieves a specific function instance by ID.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {number} functionInstanceId - ID of the function instance.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiGetFunctionInstanceResponse>} Function instance data or an error if retrieval failed.
  */
 const getFunctionInstanceById = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   functionInstanceId: number,
   debug?: boolean,
 ): Promise<ApiGetFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances/${functionInstanceId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -81,19 +81,19 @@ const getFunctionInstanceById = async (
  * Creates a new function instance for an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {ApiCreateFunctionInstancePayload} functionInstanceData - Data of the function instance to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateFunctionInstanceResponse>} The created function instance or an error if creation failed.
  */
 const createFunctionInstance = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   functionInstanceData: ApiCreateFunctionInstancePayload,
   debug?: boolean,
 ): Promise<ApiCreateFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances`, {
+    const response = await fetch(`${BASE_URL}/${Id}/functions_instances`, {
       method: 'POST',
       headers: {
         Accept: 'application/json; version=3',
@@ -115,7 +115,7 @@ const createFunctionInstance = async (
  * Updates an existing function instance.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {number} functionInstanceId - ID of the function instance to update.
  * @param {ApiUpdateFunctionInstancePayload} functionInstanceData - New data for the function instance.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
@@ -123,13 +123,13 @@ const createFunctionInstance = async (
  */
 const updateFunctionInstance = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   functionInstanceId: number,
   functionInstanceData: ApiUpdateFunctionInstancePayload,
   debug?: boolean,
 ): Promise<ApiUpdateFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances/${functionInstanceId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json; version=3',
@@ -151,19 +151,19 @@ const updateFunctionInstance = async (
  * Deletes a function instance.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {number} functionInstanceId - ID of the function instance to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiDeleteFunctionInstanceResponse>} Confirmation of deletion or an error if deletion failed.
  */
 const deleteFunctionInstance = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   functionInstanceId: number,
   debug?: boolean,
 ): Promise<ApiDeleteFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances/${functionInstanceId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`, {
       method: 'DELETE',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });

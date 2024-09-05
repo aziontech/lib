@@ -49,17 +49,13 @@ const getApplications = async (
  * Retrieves edge application settings by ID.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} Id - ID of the edge application.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiGetApplicationResponse>} Application data or an error if retrieval failed.
  */
-const getApplicationById = async (
-  token: string,
-  edgeApplicationId: number,
-  debug?: boolean,
-): Promise<ApiGetApplicationResponse> => {
+const getApplicationById = async (token: string, Id: number, debug?: boolean): Promise<ApiGetApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}`, {
       method: 'GET',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });
@@ -108,19 +104,19 @@ const postApplication = async (
  * Overwrites edge application settings.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application to update.
+ * @param {number} Id - ID of the edge application to update.
  * @param {ApiUpdateApplicationPayload} applicationData - New data for the application.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateApplicationResponse>} The updated application or an error if update failed.
  */
 const putApplication = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   applicationData: ApiUpdateApplicationPayload,
   debug?: boolean,
 ): Promise<ApiUpdateApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}`, {
       method: 'PUT',
       headers: {
         Accept: 'application/json; version=3',
@@ -142,19 +138,19 @@ const putApplication = async (
  * Partially updates edge application settings.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application to update.
+ * @param {number} Id - ID of the edge application to update.
  * @param {Partial<ApiUpdateApplicationPayload>} applicationData - Partial data for the application update.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiUpdateApplicationResponse>} The updated application or an error if update failed.
  */
 const patchApplication = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   applicationData: Partial<ApiUpdateApplicationPayload>,
   debug?: boolean,
 ): Promise<ApiUpdateApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json; version=3',
@@ -176,17 +172,13 @@ const patchApplication = async (
  * Deletes an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} edgeApplicationId - ID of the edge application to delete.
+ * @param {number} Id - ID of the edge application to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiDeleteApplicationResponse>} Confirmation of deletion or an error if deletion failed.
  */
-const deleteApplication = async (
-  token: string,
-  edgeApplicationId: number,
-  debug?: boolean,
-): Promise<ApiDeleteApplicationResponse> => {
+const deleteApplication = async (token: string, Id: number, debug?: boolean): Promise<ApiDeleteApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}`, {
+    const response = await fetch(`${BASE_URL}/${Id}`, {
       method: 'DELETE',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });

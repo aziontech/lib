@@ -1,4 +1,4 @@
-import { AzionClientOptions, AzionEdgeApplicationCollectionResponse, AzionEdgeApplicationResponse } from '../types';
+import { AzionApplicationCollectionResponse, AzionApplicationResponse, AzionClientOptions } from '../types';
 import { resolveDebug, resolveToken } from '../utils';
 import {
   createDeviceGroup,
@@ -10,19 +10,23 @@ import {
 import { ApiCreateDeviceGroupPayload, ApiListDeviceGroupsParams, ApiUpdateDeviceGroupPayload } from './services/types';
 import { AzionDeviceGroup } from './types';
 
+/**
+ * Creates a new device group for a specific application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {ApiCreateDeviceGroupPayload} deviceGroupData - Data for the device group to be created.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The created device group or an error.
+ */
 const createDeviceGroupMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupData: ApiCreateDeviceGroupPayload,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> => {
+): Promise<AzionApplicationResponse<AzionDeviceGroup>> => {
   try {
-    const { results } = await createDeviceGroup(
-      resolveToken(token),
-      edgeApplicationId,
-      deviceGroupData,
-      resolveDebug(options?.debug),
-    );
+    const { results } = await createDeviceGroup(resolveToken(token), Id, deviceGroupData, resolveDebug(options?.debug));
     return { data: results };
   } catch (error) {
     return {
@@ -34,14 +38,23 @@ const createDeviceGroupMethod = async (
   }
 };
 
+/**
+ * Deletes a specific device group from an application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {number} deviceGroupId - Device group ID to delete.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
+ */
 const deleteDeviceGroupMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupId: number,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<void>> => {
+): Promise<AzionApplicationResponse<void>> => {
   try {
-    await deleteDeviceGroup(resolveToken(token), edgeApplicationId, deviceGroupId, resolveDebug(options?.debug));
+    await deleteDeviceGroup(resolveToken(token), Id, deviceGroupId, resolveDebug(options?.debug));
     return { data: undefined };
   } catch (error) {
     return {
@@ -53,19 +66,23 @@ const deleteDeviceGroupMethod = async (
   }
 };
 
+/**
+ * Retrieves a specific device group from an application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {number} deviceGroupId - Device group ID.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The retrieved device group or an error.
+ */
 const getDeviceGroupMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupId: number,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> => {
+): Promise<AzionApplicationResponse<AzionDeviceGroup>> => {
   try {
-    const { results } = await getDeviceGroupById(
-      resolveToken(token),
-      edgeApplicationId,
-      deviceGroupId,
-      resolveDebug(options?.debug),
-    );
+    const { results } = await getDeviceGroupById(resolveToken(token), Id, deviceGroupId, resolveDebug(options?.debug));
     return { data: results };
   } catch (error) {
     return {
@@ -77,14 +94,23 @@ const getDeviceGroupMethod = async (
   }
 };
 
+/**
+ * Retrieves a list of device groups for a specific application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {ApiListDeviceGroupsParams} [params] - Parameters for listing device groups.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>>} A collection of device groups or an error.
+ */
 const getDeviceGroupsMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   params?: ApiListDeviceGroupsParams,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationCollectionResponse<AzionDeviceGroup>> => {
+): Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>> => {
   try {
-    const data = await getDeviceGroups(resolveToken(token), edgeApplicationId, params, resolveDebug(options?.debug));
+    const data = await getDeviceGroups(resolveToken(token), Id, params, resolveDebug(options?.debug));
     return { data };
   } catch (error) {
     return {
@@ -96,17 +122,27 @@ const getDeviceGroupsMethod = async (
   }
 };
 
+/**
+ * Updates an existing device group for a specific application.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {number} Id - Application ID.
+ * @param {number} deviceGroupId - Device group ID to update.
+ * @param {ApiUpdateDeviceGroupPayload} deviceGroupData - Updated data for the device group.
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The updated device group or an error.
+ */
 const updateDeviceGroupMethod = async (
   token: string,
-  edgeApplicationId: number,
+  Id: number,
   deviceGroupId: number,
   deviceGroupData: ApiUpdateDeviceGroupPayload,
   options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> => {
+): Promise<AzionApplicationResponse<AzionDeviceGroup>> => {
   try {
     const { results } = await updateDeviceGroup(
       resolveToken(token),
-      edgeApplicationId,
+      Id,
       deviceGroupId,
       deviceGroupData,
       resolveDebug(options?.debug),
@@ -122,6 +158,27 @@ const updateDeviceGroupMethod = async (
   }
 };
 
+/**
+ * Wrapper function to create a new device group for a specific application.
+ *
+ * @param {Object} params - Parameters for creating a device group.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiCreateDeviceGroupPayload} params.data - Data for the device group to be created.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The created device group or an error.
+ *
+ * @example
+ * const result = await createDeviceGroup({
+ *   applicationId: 1234,
+ *   data: { name: 'My Device Group', user_agent: 'Mozilla/5.0' },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Device group created: ${result.data.name}`);
+ * } else {
+ *   console.error('Failed to create device group:', result.error);
+ * }
+ */
 export const createDeviceGroupWrapper = ({
   applicationId,
   data,
@@ -130,9 +187,30 @@ export const createDeviceGroupWrapper = ({
   applicationId: number;
   data: ApiCreateDeviceGroupPayload;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> =>
+}): Promise<AzionApplicationResponse<AzionDeviceGroup>> =>
   createDeviceGroupMethod(resolveToken(), applicationId, data, options);
 
+/**
+ * Wrapper function to delete a specific device group from an application.
+ *
+ * @param {Object} params - Parameters for deleting a device group.
+ * @param {number} params.applicationId - Application ID.
+ * @param {number} params.deviceGroupId - Device group ID to delete.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
+ *
+ * @example
+ * const result = await deleteDeviceGroup({
+ *   applicationId: 1234,
+ *   deviceGroupId: 5678,
+ *   options: { debug: true }
+ * });
+ * if (result.data !== undefined) {
+ *   console.log('Device group deleted successfully');
+ * } else {
+ *   console.error('Failed to delete device group:', result.error);
+ * }
+ */
 export const deleteDeviceGroupWrapper = ({
   applicationId,
   deviceGroupId,
@@ -141,9 +219,30 @@ export const deleteDeviceGroupWrapper = ({
   applicationId: number;
   deviceGroupId: number;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<void>> =>
+}): Promise<AzionApplicationResponse<void>> =>
   deleteDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, options);
 
+/**
+ * Wrapper function to retrieve a specific device group from an application.
+ *
+ * @param {Object} params - Parameters for retrieving a device group.
+ * @param {number} params.applicationId - Application ID.
+ * @param {number} params.deviceGroupId - Device group ID.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The retrieved device group or an error.
+ *
+ * @example
+ * const result = await getDeviceGroup({
+ *   applicationId: 1234,
+ *   deviceGroupId: 5678,
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Retrieved device group: ${result.data.name}`);
+ * } else {
+ *   console.error('Failed to get device group:', result.error);
+ * }
+ */
 export const getDeviceGroupWrapper = ({
   applicationId,
   deviceGroupId,
@@ -152,9 +251,30 @@ export const getDeviceGroupWrapper = ({
   applicationId: number;
   deviceGroupId: number;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> =>
+}): Promise<AzionApplicationResponse<AzionDeviceGroup>> =>
   getDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, options);
 
+/**
+ * Wrapper function to retrieve a list of device groups for a specific application.
+ *
+ * @param {Object} params - Parameters for listing device groups.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiListDeviceGroupsParams} [params.params] - Parameters for filtering and pagination.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>>} A collection of device groups or an error.
+ *
+ * @example
+ * const result = await getDeviceGroups({
+ *   applicationId: 1234,
+ *   params: { page: 1, page_size: 20 },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Retrieved ${result.data.results.length} device groups`);
+ * } else {
+ *   console.error('Failed to get device groups:', result.error);
+ * }
+ */
 export const getDeviceGroupsWrapper = ({
   applicationId,
   params,
@@ -163,9 +283,32 @@ export const getDeviceGroupsWrapper = ({
   applicationId: number;
   params?: ApiListDeviceGroupsParams;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationCollectionResponse<AzionDeviceGroup>> =>
+}): Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>> =>
   getDeviceGroupsMethod(resolveToken(), applicationId, params, options);
 
+/**
+ * Wrapper function to update an existing device group for a specific application.
+ *
+ * @param {Object} params - Parameters for updating a device group.
+ * @param {number} params.applicationId - Application ID.
+ * @param {number} params.deviceGroupId - Device group ID to update.
+ * @param {ApiUpdateDeviceGroupPayload} params.data - Updated data for the device group.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The updated device group or an error.
+ *
+ * @example
+ * const result = await updateDeviceGroup({
+ *   applicationId: 1234,
+ *   deviceGroupId: 5678,
+ *   data: { name: 'Updated Device Group' },
+ *   options: { debug: true }
+ * });
+ * if (result.data) {
+ *   console.log(`Updated device group: ${result.data.name}`);
+ * } else {
+ *   console.error('Failed to update device group:', result.error);
+ * }
+ */
 export const updateDeviceGroupWrapper = ({
   applicationId,
   deviceGroupId,
@@ -176,5 +319,5 @@ export const updateDeviceGroupWrapper = ({
   deviceGroupId: number;
   data: ApiUpdateDeviceGroupPayload;
   options?: AzionClientOptions;
-}): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> =>
+}): Promise<AzionApplicationResponse<AzionDeviceGroup>> =>
   updateDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, data, options);

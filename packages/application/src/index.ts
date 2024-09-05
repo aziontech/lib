@@ -39,13 +39,13 @@ import {
 } from './rules-engine/index';
 
 import type {
+  AzionApplication,
+  AzionApplicationClient,
+  AzionApplicationCollectionOptions,
+  AzionApplicationCollectionResponse,
+  AzionApplicationResponse,
   AzionClientOptions,
-  AzionEdgeApplication,
-  AzionEdgeApplicationClient,
-  AzionEdgeApplicationCollectionOptions,
-  AzionEdgeApplicationCollectionResponse,
-  AzionEdgeApplicationResponse,
-  CreateAzionEdgeApplicationClient,
+  CreateAzionApplicationClient,
 } from './types';
 
 import {
@@ -54,201 +54,234 @@ import {
   getApplicationWrapper,
   getApplicationsWrapper,
   patchApplicationWrapper,
-  updateApplicationWrapper,
+  putApplicationWrapper,
 } from './main-settings/index';
 import { ApiCreateApplicationPayload, ApiUpdateApplicationPayload } from './main-settings/services/types';
 
-const createAzionEdgeApplicationClient: CreateAzionEdgeApplicationClient = (
+/**
+ * Creates an Azion Application client with methods to interact with various application resources.
+ *
+ * @param {Partial<{ token: string; options?: AzionClientOptions }>} [config] - Configuration options for the Application client.
+ * @returns {AzionApplicationClient} An object with methods to interact with Azion Application resources.
+ *
+ * @example
+ * const applicationClient = createClient({ token: 'your-api-token', options: { debug: true } });
+ *
+ * // Create a new function instance
+ * const newFunctionInstance = await applicationClient.createFunctionInstance({
+ *   applicationId: 1234,
+ *   data: { name: 'My Function Instance', function_id: 5678 }
+ * });
+ *
+ * // Get all function instances for an application
+ * const allFunctionInstances = await applicationClient.getFunctionInstances({
+ *   applicationId: 1234,
+ *   params: { page: 1, page_size: 20 }
+ * });
+ *
+ * // Delete a function instance
+ * const deletedFunctionInstance = await applicationClient.deleteFunctionInstance({
+ *   applicationId: 1234,
+ *   functionInstanceId: 5678
+ * });
+ */
+const createAzionApplicationClient: CreateAzionApplicationClient = (
   config?: Partial<{ token: string; options?: AzionClientOptions }>,
-): AzionEdgeApplicationClient => {
-  const client: AzionEdgeApplicationClient = {
-    create: async ({ data, options }: { data: ApiCreateApplicationPayload; options?: AzionClientOptions }) => {
+): AzionApplicationClient => {
+  const client: AzionApplicationClient = {
+    createApplication: async ({
+      data,
+      options,
+    }: {
+      data: ApiCreateApplicationPayload;
+      options?: AzionClientOptions;
+    }) => {
       try {
         const apiResponse = await createApplicationWrapper({ data, options: { ...config?.options, ...options } });
         if (apiResponse.error || !apiResponse.data) {
-          return apiResponse as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+          return apiResponse as AzionApplicationResponse<AzionApplication>;
         }
         const appId = apiResponse.data.id;
 
-        const edgeApplication: AzionEdgeApplication = {
+        const application: AzionApplication = {
           ...apiResponse.data,
           cache: {
-            create: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            get: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
+            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
+            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
           },
           origins: {
-            create: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            get: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
+            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
+            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
+            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
+            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
           },
           rules: {
             request: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
             },
             response: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
             },
           },
           devices: {
-            create: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            get: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
+            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
+            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
           },
           functions: {
-            create: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            get: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
+            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
           },
         };
 
-        return { data: edgeApplication };
+        return { data: application };
       } catch (error) {
         return {
           error: {
-            message: error instanceof Error ? error.message : 'Falha ao criar aplicação de borda',
-            operation: 'criar aplicação de borda',
+            message: error instanceof Error ? error.message : 'Failed to create edge application',
+            operation: 'create edge application',
           },
         };
       }
     },
-    delete: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) =>
+    deleteApplication: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) =>
       deleteApplicationWrapper({ applicationId, options: { ...config?.options, ...options } }),
-    get: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) => {
+    getApplication: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) => {
       const response = await getApplicationWrapper({ applicationId, options: { ...config?.options, ...options } });
       if (response.data) {
         const appId = response.data.id;
-        const edgeApplication: AzionEdgeApplication = {
+        const application: AzionApplication = {
           ...response.data,
           cache: {
-            create: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            get: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
+            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
+            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
           },
           origins: {
-            create: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            get: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
+            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
+            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
+            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
+            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
           },
           rules: {
             request: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
             },
             response: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
             },
           },
           devices: {
-            create: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            get: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
+            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
+            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
           },
           functions: {
-            create: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            get: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
+            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
           },
         };
-        return { data: edgeApplication } as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+        return { data: application } as AzionApplicationResponse<AzionApplication>;
       }
-      return response as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+      return response as AzionApplicationResponse<AzionApplication>;
     },
-    getAll: async ({
+    getApplications: async ({
       params,
       options,
     }: {
-      params?: AzionEdgeApplicationCollectionOptions;
+      params?: AzionApplicationCollectionOptions;
       options?: AzionClientOptions;
     }) => {
       const response = await getApplicationsWrapper({ params, options: { ...config?.options, ...options } });
       if (response.data) {
-        const edgeApplications: AzionEdgeApplication[] = response.data.results.map((app) => ({
+        const applications: AzionApplication[] = response.data.results.map((app) => ({
           ...app,
           cache: {
-            create: (params) => createCacheSettingWrapper({ applicationId: app.id, ...params }),
-            get: (params) => getCacheSettingWrapper({ applicationId: app.id, ...params }),
-            getAll: (params) => getCacheSettingsWrapper({ applicationId: app.id, ...params }),
-            update: (params) => updateCacheSettingWrapper({ applicationId: app.id, ...params }),
-            delete: (params) => deleteCacheSettingWrapper({ applicationId: app.id, ...params }),
+            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: app.id, ...params }),
+            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: app.id, ...params }),
+            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: app.id, ...params }),
+            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: app.id, ...params }),
+            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: app.id, ...params }),
           },
           origins: {
-            create: (params) => createOriginWrapper({ applicationId: app.id, ...params }),
-            get: (params) => getOriginWrapper({ applicationId: app.id, ...params }),
-            getAll: (params) => getOriginsWrapper({ applicationId: app.id, ...params }),
-            update: (params) => updateOriginWrapper({ applicationId: app.id, ...params }),
-            delete: (params) => deleteOriginWrapper({ applicationId: app.id, ...params }),
+            createOrigin: (params) => createOriginWrapper({ applicationId: app.id, ...params }),
+            getOrigin: (params) => getOriginWrapper({ applicationId: app.id, ...params }),
+            getOrigins: (params) => getOriginsWrapper({ applicationId: app.id, ...params }),
+            updateOrigin: (params) => updateOriginWrapper({ applicationId: app.id, ...params }),
+            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: app.id, ...params }),
           },
           rules: {
             request: {
-              create: (params) => createRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: app.id, phase: 'request', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
             },
             response: {
-              create: (params) => createRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: app.id, phase: 'response', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
             },
           },
           devices: {
-            create: (params) => createDeviceGroupWrapper({ applicationId: app.id, ...params }),
-            get: (params) => getDeviceGroupWrapper({ applicationId: app.id, ...params }),
-            getAll: (params) => getDeviceGroupsWrapper({ applicationId: app.id, ...params }),
-            update: (params) => updateDeviceGroupWrapper({ applicationId: app.id, ...params }),
-            delete: (params) => deleteDeviceGroupWrapper({ applicationId: app.id, ...params }),
+            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: app.id, ...params }),
+            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: app.id, ...params }),
+            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: app.id, ...params }),
+            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: app.id, ...params }),
+            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: app.id, ...params }),
           },
           functions: {
-            create: (params) => createFunctionInstanceWrapper({ applicationId: app.id, ...params }),
-            get: (params) => getFunctionInstanceWrapper({ applicationId: app.id, ...params }),
-            getAll: (params) => getFunctionInstancesWrapper({ applicationId: app.id, ...params }),
-            update: (params) => updateFunctionInstanceWrapper({ applicationId: app.id, ...params }),
-            delete: (params) => deleteFunctionInstanceWrapper({ applicationId: app.id, ...params }),
+            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: app.id, ...params }),
+            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: app.id, ...params }),
+            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: app.id, ...params }),
+            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: app.id, ...params }),
+            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: app.id, ...params }),
           },
         }));
         return {
           ...response,
-          data: { ...response.data, results: edgeApplications },
-        } as AzionEdgeApplicationCollectionResponse<AzionEdgeApplication>;
+          data: { ...response.data, results: applications },
+        } as AzionApplicationCollectionResponse<AzionApplication>;
       }
-      return response as AzionEdgeApplicationCollectionResponse<AzionEdgeApplication>;
+      return response as AzionApplicationCollectionResponse<AzionApplication>;
     },
-    update: async ({
+    updateApplication: async ({
       applicationId,
       data,
       options,
@@ -257,65 +290,65 @@ const createAzionEdgeApplicationClient: CreateAzionEdgeApplicationClient = (
       data: ApiUpdateApplicationPayload;
       options?: AzionClientOptions;
     }) => {
-      const response = await updateApplicationWrapper({
+      const response = await patchApplicationWrapper({
         applicationId,
         data,
         options: { ...config?.options, ...options },
       });
       if (response.data) {
         const appId = response.data.id;
-        const edgeApplication: AzionEdgeApplication = {
+        const application: AzionApplication = {
           ...response.data,
           cache: {
-            create: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            get: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
+            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
+            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
           },
           origins: {
-            create: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            get: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
+            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
+            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
+            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
+            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
           },
           rules: {
             request: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
             },
             response: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
             },
           },
           devices: {
-            create: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            get: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
+            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
+            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
           },
           functions: {
-            create: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            get: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
+            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
           },
         };
-        return { data: edgeApplication } as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+        return { data: application } as AzionApplicationResponse<AzionApplication>;
       }
-      return response as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+      return response as AzionApplicationResponse<AzionApplication>;
     },
-    patch: async ({
+    patchApplication: async ({
       applicationId,
       data,
       options,
@@ -331,63 +364,63 @@ const createAzionEdgeApplicationClient: CreateAzionEdgeApplicationClient = (
       });
       if (response.data) {
         const appId = response.data.id;
-        const edgeApplication: AzionEdgeApplication = {
+        const application: AzionApplication = {
           ...response.data,
           cache: {
-            create: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            get: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
+            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
+            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
+            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
           },
           origins: {
-            create: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            get: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
+            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
+            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
+            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
+            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
           },
           rules: {
             request: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
             },
             response: {
-              create: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              get: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getAll: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              update: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              delete: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
+              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
             },
           },
           devices: {
-            create: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            get: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
+            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
+            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
+            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
           },
           functions: {
-            create: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            get: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getAll: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            update: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            delete: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
+            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
           },
         };
-        return { data: edgeApplication } as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+        return { data: application } as AzionApplicationResponse<AzionApplication>;
       }
-      return response as AzionEdgeApplicationResponse<AzionEdgeApplication>;
+      return response as AzionApplicationResponse<AzionApplication>;
     },
   };
 
   return client;
 };
 
-export default createAzionEdgeApplicationClient;
+export default createAzionApplicationClient;
 
 export * from './cache-settings/types';
 export * from './device-groups/types';
@@ -396,6 +429,7 @@ export * from './main-settings/types';
 export * from './origins/types';
 export * from './rules-engine/types';
 export * from './types';
+
 export {
   createApplicationWrapper as createApplication,
   createCacheSettingWrapper as createCacheSetting,
@@ -422,7 +456,7 @@ export {
   getRuleWrapper as getRule,
   getRulesWrapper as getRules,
   patchApplicationWrapper as patchApplication,
-  updateApplicationWrapper as updateApplication,
+  putApplicationWrapper as putApplication,
   updateCacheSettingWrapper as updateCacheSetting,
   updateDeviceGroupWrapper as updateDeviceGroup,
   updateFunctionInstanceWrapper as updateFunctionInstance,

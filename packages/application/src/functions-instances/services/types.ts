@@ -1,7 +1,10 @@
 export interface ApiBaseFunctionInstancePayload {
   name: string;
-  function_id: number;
-  args: Record<string, unknown>;
+  code: string;
+  language: 'JavaScript';
+  initiator_type: 'edge_application' | 'edge_firewall';
+  active: boolean;
+  json_args: Record<string, unknown>;
 }
 
 export interface ApiCreateFunctionInstancePayload extends ApiBaseFunctionInstancePayload {}
