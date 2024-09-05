@@ -96,6 +96,7 @@ const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): P
       };
     }
     return {
+      state: result.state,
       data: {
         id,
       },
