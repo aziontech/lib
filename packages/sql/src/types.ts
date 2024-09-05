@@ -79,6 +79,7 @@ export type QueryResult = {
 };
 
 export type AzionDatabaseQueryResponse = {
+  state?: 'pending' | 'failed' | 'executed' | 'executed-runtime';
   results?: QueryResult[];
   toObject: () => JsonObjectQueryExecutionResponse | null;
 };
@@ -95,6 +96,11 @@ export type AzionDatabaseCollectionOptions = {
 export type AzionDatabaseCollections = {
   databases?: AzionDatabase[];
   count?: number;
+};
+
+export type AzionDatabaseDeleteResponse = {
+  state: 'pending' | 'failed' | 'executed';
+  id: number;
 };
 
 export interface AzionSQLClient {
@@ -117,7 +123,7 @@ export interface AzionSQLClient {
    * Deletes a database by its ID.
    *
    * @param {number} id - ID of the database to delete.
-   * @returns {Promise<AzionDatabaseResponse<{ id: number }>>} Object confirming deletion or error if the operation failed.
+   * @returns {Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>>} Object confirming deletion or error if the operation failed.
    *
    * @example
    * const { data, error } = await sqlClient.deleteDatabase(123);
@@ -127,7 +133,7 @@ export interface AzionSQLClient {
    * console.error(`Failed to delete database: ${error.message}`);
    *
    */
-  deleteDatabase: (id: number) => Promise<AzionDatabaseResponse<{ id: number }>>;
+  deleteDatabase: (id: number) => Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>>;
   /**
    * Retrieves a database by its Name.
    *

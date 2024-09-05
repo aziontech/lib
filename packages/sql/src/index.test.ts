@@ -73,9 +73,9 @@ describe('SQL Module', () => {
       jest.spyOn(console, 'log').mockImplementation();
     });
     it('should successfully delete a database', async () => {
-      (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue({ data: { id: 1 } });
+      (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue({ state: 'pending', data: { id: 1 } });
       const result = await deleteDatabase(1, { debug: mockDebug });
-      expect(result).toEqual({ data: { id: 1 } });
+      expect(result).toEqual({ data: { id: 1, state: 'pending' } });
       expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, true);
     });
 

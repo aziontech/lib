@@ -7,6 +7,7 @@ import type {
   AzionDatabase,
   AzionDatabaseCollectionOptions,
   AzionDatabaseCollections,
+  AzionDatabaseDeleteResponse,
   AzionDatabaseQueryResponse,
   AzionDatabaseResponse,
   AzionSQLClient,
@@ -33,6 +34,7 @@ const createDatabaseMethod = async (
   if (apiResponse.data) {
     return {
       data: {
+        state: apiResponse.state,
         ...apiResponse.data,
         query: (statements: string[]) =>
           queryDatabaseMethod(resolveToken(token), name, statements, {
@@ -68,11 +70,12 @@ const deleteDatabaseMethod = async (
   token: string,
   id: number,
   options?: AzionClientOptions,
-): Promise<AzionDatabaseResponse<{ id: number }>> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> => {
   const apiResponse = await deleteEdgeDatabase(resolveToken(token), id, resolveDebug(options?.debug));
   if (apiResponse?.data) {
     return {
       data: {
+        state: apiResponse.state ?? 'executed',
         id: apiResponse.data.id,
       },
     };
@@ -325,7 +328,7 @@ const createDatabaseWrapper = async (
  *
  * @param {number} id - ID of the database to delete.
  * @param {AzionClientOptions} [options] - Optional parameters for the deletion.
- * @returns {Promise<AzionDatabaseResponse<{ id: number }>>} Object confirming deletion or error if deletion failed.
+ * @returns {Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>>} Object confirming deletion or error if deletion failed.
  *
  * @example
  * const { data, error } = await deleteDatabase(123, { debug: true });
@@ -338,7 +341,7 @@ const createDatabaseWrapper = async (
 const deleteDatabaseWrapper = (
   id: number,
   options?: AzionClientOptions,
-): Promise<AzionDatabaseResponse<{ id: number }>> =>
+): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> =>
   deleteDatabaseMethod(resolveToken(), id, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -474,7 +477,7 @@ const client: CreateAzionSQLClient = (
   const client: AzionSQLClient = {
     createDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
       createDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
-    deleteDatabase: (id: number): Promise<AzionDatabaseResponse<{ id: number }>> =>
+    deleteDatabase: (id: number): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> =>
       deleteDatabaseMethod(tokenValue, id, { ...config, debug: debugValue }),
     getDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
       getDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),

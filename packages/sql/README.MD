@@ -140,9 +140,9 @@ if (data) {
 
 ```typescript
 import { deleteDatabase } from 'azion/sql';
-import type { AzionDatabaseResponse } from 'azion/sql';
+import type { AzionDatabaseResponse, AzionDatabaseDeleteResponse } from 'azion/sql';
 
-const { data, error }: AzionDatabaseResponse<{ id: number }> = await deleteDatabase(123, { debug: true });
+const { data, error }: AzionDatabaseResponse<AzionDatabaseDeleteResponse> = await deleteDatabase(123, { debug: true });
 if (data) {
   console.log(`Database ${data.id} deleted successfully`);
 } else {
@@ -348,7 +348,7 @@ Deletes a database by its ID.
 
 **Returns:**
 
-- `Promise<AzionDatabaseResponse<{ id: number }>>` - Object confirming deletion or error.
+- `Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>>` - Object confirming deletion or error.
 
 **Example:**
 
@@ -488,7 +488,7 @@ Configuration options for the SQL client.
 An object with methods to interact with SQL databases.
 
 - `createDatabase: (name: string) => Promise<AzionDatabaseResponse<AzionDatabase>>`
-- `deleteDatabase: (id: number) => Promise<AzionDatabaseResponse<{ id: number }>>`
+- `deleteDatabase: (id: number) => Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>>`
 - `getDatabase: (name: string) => Promise<AzionDatabaseResponse<AzionDatabase>>`
 - `getDatabases: (params?: AzionDatabaseCollectionOptions) => Promise<AzionDatabaseResponse<AzionDatabaseCollections>>`
 - `useQuery: (name: string, statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
@@ -509,11 +509,11 @@ The database object.
 - `execute: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseExecutionResponse>>`
 - `getTables: (options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
 
-### `AzionDatabaseResponse`
+### `AzionDatabaseResponse<T>`
 
 The response object from a database operation.
 
-- `data?: AzionDatabase | Pick<AzionDatabase, 'id'>`
+- `data?: T`
 - `error?: { message: string, operation: string }`
 
 ### `QueryResult`
@@ -544,8 +544,7 @@ Optional parameters for filtering and pagination.
 The response object from a query execution.
 
 - `state: 'executed' | 'pending' | 'executed-runtime' | 'failed'`
-- `data: QueryResult[] | NonSelectQueryResult`
-- `error?: { message: string, operation: string }`
+- `data: QueryResult[]`
 - `toObject?: () => JsonObjectQueryExecutionResponse`
 
 ### `AzionDatabaseExecutionResponse`
@@ -553,23 +552,8 @@ The response object from a query execution.
 The response object from a query execution.
 
 - `state: 'executed' | 'pending' | 'executed-runtime' | 'failed'`
-- `data: QueryResult[] | NonSelectQueryResult`
-- `error?: { message: string, operation: string }`
+- `data: QueryResult[]`
 - `toObject?: () => JsonObjectQueryExecutionResponse`
-
-### `NonSelectQueryResult`
-
-The result object for non-select queries.
-
-- `info?: AzionQueryExecutionInfo`
-
-### `AzionQueryExecutionInfo`
-
-Information about the query execution.
-
-- `rowsRead?: number`
-- `rowsWritten?: number`
-- `durationMs?: number`
 
 ### `AzionQueryExecutionParams`
 

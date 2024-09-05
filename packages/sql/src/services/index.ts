@@ -39,10 +39,11 @@ export const apiQuery = async (
     };
   }
 
-  const { data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
+  const { state, data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
 
   if (data && data.length > 0) {
     const resultStatements: AzionDatabaseQueryResponse = {
+      state,
       results: data.map((result, index) => {
         return {
           statement: statements[index]?.split(' ')[0],
@@ -80,6 +81,7 @@ export const runtimeQuery = async (
     };
     const data = await internalSql.mapperQuery(internalResult);
     if (data && data.length > 0) {
+      resultStatements.state = 'executed-runtime';
       resultStatements.results = data;
     }
     if (options?.debug) {
