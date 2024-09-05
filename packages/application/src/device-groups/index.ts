@@ -123,66 +123,58 @@ const updateDeviceGroupMethod = async (
 };
 
 export const createDeviceGroupWrapper = ({
-  edgeApplicationId,
-  deviceGroupData,
+  applicationId,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
-  deviceGroupData: ApiCreateDeviceGroupPayload;
+  applicationId: number;
+  data: ApiCreateDeviceGroupPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> =>
-  createDeviceGroupMethod(resolveToken(), edgeApplicationId, deviceGroupData, options);
+  createDeviceGroupMethod(resolveToken(), applicationId, data, options);
 
 export const deleteDeviceGroupWrapper = ({
-  edgeApplicationId,
+  applicationId,
   deviceGroupId,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   deviceGroupId: number;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<void>> =>
-  deleteDeviceGroupMethod(resolveToken(), edgeApplicationId, deviceGroupId, options);
+  deleteDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, options);
 
 export const getDeviceGroupWrapper = ({
-  edgeApplicationId,
+  applicationId,
   deviceGroupId,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   deviceGroupId: number;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> =>
-  getDeviceGroupMethod(resolveToken(), edgeApplicationId, deviceGroupId, options);
+  getDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, options);
 
 export const getDeviceGroupsWrapper = ({
-  edgeApplicationId,
+  applicationId,
   params,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   params?: ApiListDeviceGroupsParams;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationCollectionResponse<AzionDeviceGroup>> =>
-  getDeviceGroupsMethod(resolveToken(), edgeApplicationId, params, options);
+  getDeviceGroupsMethod(resolveToken(), applicationId, params, options);
 
 export const updateDeviceGroupWrapper = ({
-  edgeApplicationId,
+  applicationId,
   deviceGroupId,
-  deviceGroupData,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   deviceGroupId: number;
-  deviceGroupData: ApiUpdateDeviceGroupPayload;
+  data: ApiUpdateDeviceGroupPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>> =>
-  updateDeviceGroupMethod(resolveToken(), edgeApplicationId, deviceGroupId, deviceGroupData, options);
-
-export {
-  createDeviceGroupWrapper as createDeviceGroup,
-  deleteDeviceGroupWrapper as deleteDeviceGroup,
-  getDeviceGroupWrapper as getDeviceGroup,
-  getDeviceGroupsWrapper as getDeviceGroups,
-  updateDeviceGroupWrapper as updateDeviceGroup,
-};
+  updateDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, data, options);

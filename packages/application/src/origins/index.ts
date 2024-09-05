@@ -107,66 +107,58 @@ const updateOriginMethod = async (
 };
 
 export const createOriginWrapper = ({
-  edgeApplicationId,
-  originData,
+  applicationId,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
-  originData: ApiCreateOriginPayload;
+  applicationId: number;
+  data: ApiCreateOriginPayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionOrigin>> =>
-  createOriginMethod(resolveToken(), edgeApplicationId, originData, options);
+  createOriginMethod(resolveToken(), applicationId, data, options);
 
 export const deleteOriginWrapper = ({
-  edgeApplicationId,
+  applicationId,
   originKey,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   originKey: string;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<void>> =>
-  deleteOriginMethod(resolveToken(), edgeApplicationId, originKey, options);
+  deleteOriginMethod(resolveToken(), applicationId, originKey, options);
 
 export const getOriginWrapper = ({
-  edgeApplicationId,
+  applicationId,
   originKey,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   originKey: string;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionOrigin>> =>
-  getOriginMethod(resolveToken(), edgeApplicationId, originKey, options);
+  getOriginMethod(resolveToken(), applicationId, originKey, options);
 
 export const getOriginsWrapper = ({
-  edgeApplicationId,
+  applicationId,
   params,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   params?: ApiListOriginsParams;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationCollectionResponse<AzionOrigin>> =>
-  getOriginsMethod(resolveToken(), edgeApplicationId, params, options);
+  getOriginsMethod(resolveToken(), applicationId, params, options);
 
 export const updateOriginWrapper = ({
-  edgeApplicationId,
+  applicationId,
   originKey,
-  originData,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   originKey: string;
-  originData: ApiUpdateOriginRequest;
+  data: ApiUpdateOriginRequest;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionOrigin>> =>
-  updateOriginMethod(resolveToken(), edgeApplicationId, originKey, originData, options);
-
-export {
-  createOriginWrapper as createOrigin,
-  deleteOriginWrapper as deleteOrigin,
-  getOriginWrapper as getOrigin,
-  getOriginsWrapper as getOrigins,
-  updateOriginWrapper as updateOrigin,
-};
+  updateOriginMethod(resolveToken(), applicationId, originKey, data, options);

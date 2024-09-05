@@ -125,76 +125,68 @@ const deleteRuleMethod = async (
 };
 
 export const createRuleWrapper = ({
-  edgeApplicationId,
+  applicationId,
   phase,
-  ruleData,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   phase: 'request' | 'response';
-  ruleData: ApiCreateRulePayload;
+  data: ApiCreateRulePayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionRule>> =>
-  createRuleMethod(resolveToken(), edgeApplicationId, phase, ruleData, options);
+  createRuleMethod(resolveToken(), applicationId, phase, data, options);
 
 export const getRuleWrapper = ({
-  edgeApplicationId,
+  applicationId,
   phase,
   ruleId,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   phase: 'request' | 'response';
   ruleId: number;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionRule>> =>
-  getRuleMethod(resolveToken(), edgeApplicationId, phase, ruleId, options);
+  getRuleMethod(resolveToken(), applicationId, phase, ruleId, options);
 
 export const getRulesWrapper = ({
-  edgeApplicationId,
+  applicationId,
   phase,
   params,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   phase: 'request' | 'response';
   params?: ApiListRulesParams;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationCollectionResponse<AzionRule>> =>
-  getRulesMethod(resolveToken(), edgeApplicationId, phase, params, options);
+  getRulesMethod(resolveToken(), applicationId, phase, params, options);
 
 export const updateRuleWrapper = ({
-  edgeApplicationId,
+  applicationId,
   phase,
   ruleId,
-  ruleData,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   phase: 'request' | 'response';
   ruleId: number;
-  ruleData: ApiUpdateRulePayload;
+  data: ApiUpdateRulePayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionRule>> =>
-  updateRuleMethod(resolveToken(), edgeApplicationId, phase, ruleId, ruleData, options);
+  updateRuleMethod(resolveToken(), applicationId, phase, ruleId, data, options);
 
 export const deleteRuleWrapper = ({
-  edgeApplicationId,
+  applicationId,
   phase,
   ruleId,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   phase: 'request' | 'response';
   ruleId: number;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<void>> =>
-  deleteRuleMethod(resolveToken(), edgeApplicationId, phase, ruleId, options);
-
-export {
-  createRuleWrapper as createRule,
-  deleteRuleWrapper as deleteRule,
-  getRuleWrapper as getRule,
-  getRulesWrapper as getRules,
-  updateRuleWrapper as updateRule,
-};
+  deleteRuleMethod(resolveToken(), applicationId, phase, ruleId, options);

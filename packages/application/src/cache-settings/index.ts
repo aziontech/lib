@@ -1,11 +1,11 @@
 import { AzionClientOptions, AzionEdgeApplicationCollectionResponse, AzionEdgeApplicationResponse } from '../types';
 import { resolveDebug, resolveToken } from '../utils';
 import {
-  createCacheSettingApi,
-  deleteCacheSettingApi,
-  getCacheSettingByIdApi,
-  getCacheSettingsApi,
-  updateCacheSettingApi,
+  deleteCacheSetting,
+  getCacheSetting,
+  getCacheSettings,
+  patchCacheSetting,
+  postCacheSetting,
 } from './services/index';
 import { ApiBaseCacheSettingPayload, ApiListCacheSettingsParams, ApiUpdateCacheSettingPayload } from './services/types';
 import { AzionCacheSetting } from './types';
@@ -17,7 +17,7 @@ const createCacheSettingMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await createCacheSettingApi(
+    const apiResponse = await postCacheSetting(
       resolveToken(token),
       edgeApplicationId,
       cacheSettingData,
@@ -41,7 +41,7 @@ const getCacheSettingMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await getCacheSettingByIdApi(
+    const apiResponse = await getCacheSetting(
       resolveToken(token),
       edgeApplicationId,
       cacheSettingId,
@@ -65,7 +65,7 @@ const getCacheSettingsMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await getCacheSettingsApi(
+    const apiResponse = await getCacheSettings(
       resolveToken(token),
       edgeApplicationId,
       params,
@@ -103,7 +103,7 @@ const updateCacheSettingMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> => {
   try {
-    const apiResponse = await updateCacheSettingApi(
+    const apiResponse = await patchCacheSetting(
       resolveToken(token),
       edgeApplicationId,
       cacheSettingId,
@@ -128,7 +128,7 @@ const deleteCacheSettingMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionEdgeApplicationResponse<void>> => {
   try {
-    await deleteCacheSettingApi(resolveToken(token), edgeApplicationId, cacheSettingId, resolveDebug(options?.debug));
+    await deleteCacheSetting(resolveToken(token), edgeApplicationId, cacheSettingId, resolveDebug(options?.debug));
     return { data: undefined };
   } catch (error) {
     return {
@@ -140,38 +140,59 @@ const deleteCacheSettingMethod = async (
   }
 };
 
-export const createCacheSetting = (
-  edgeApplicationId: number,
-  cacheSettingData: ApiBaseCacheSettingPayload,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
-  createCacheSettingMethod(resolveToken(), edgeApplicationId, cacheSettingData, options);
+export const createCacheSettingWrapper = ({
+  applicationId,
+  data,
+  options,
+}: {
+  applicationId: number;
+  data: ApiBaseCacheSettingPayload;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
+  createCacheSettingMethod(resolveToken(), applicationId, data, options);
 
-export const getCacheSetting = (
-  edgeApplicationId: number,
-  cacheSettingId: number,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
-  getCacheSettingMethod(resolveToken(), edgeApplicationId, cacheSettingId, options);
+export const getCacheSettingWrapper = ({
+  applicationId,
+  cacheSettingId,
+  options,
+}: {
+  applicationId: number;
+  cacheSettingId: number;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
+  getCacheSettingMethod(resolveToken(), applicationId, cacheSettingId, options);
 
-export const getCacheSettings = (
-  edgeApplicationId: number,
-  params?: ApiListCacheSettingsParams,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSetting>> =>
-  getCacheSettingsMethod(resolveToken(), edgeApplicationId, params, options);
+export const getCacheSettingsWrapper = ({
+  applicationId,
+  params,
+  options,
+}: {
+  applicationId: number;
+  params?: ApiListCacheSettingsParams;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSetting>> =>
+  getCacheSettingsMethod(resolveToken(), applicationId, params, options);
 
-export const updateCacheSetting = (
-  edgeApplicationId: number,
-  cacheSettingId: number,
-  cacheSettingData: ApiUpdateCacheSettingPayload,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
-  updateCacheSettingMethod(resolveToken(), edgeApplicationId, cacheSettingId, cacheSettingData, options);
+export const updateCacheSettingWrapper = ({
+  applicationId,
+  cacheSettingId,
+  data,
+  options,
+}: {
+  applicationId: number;
+  cacheSettingId: number;
+  data: ApiUpdateCacheSettingPayload;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionCacheSetting>> =>
+  updateCacheSettingMethod(resolveToken(), applicationId, cacheSettingId, data, options);
 
-export const deleteCacheSetting = (
-  edgeApplicationId: number,
-  cacheSettingId: number,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<void>> =>
-  deleteCacheSettingMethod(resolveToken(), edgeApplicationId, cacheSettingId, options);
+export const deleteCacheSettingWrapper = ({
+  applicationId,
+  cacheSettingId,
+  options,
+}: {
+  applicationId: number;
+  cacheSettingId: number;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<void>> =>
+  deleteCacheSettingMethod(resolveToken(), applicationId, cacheSettingId, options);

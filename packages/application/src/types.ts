@@ -3,36 +3,28 @@ import {
   ApiListCacheSettingsParams,
   ApiUpdateCacheSettingPayload,
 } from './cache-settings/services/types';
+import { AzionCacheSetting } from './cache-settings/types';
 import {
   ApiCreateDeviceGroupPayload,
   ApiListDeviceGroupsParams,
   ApiUpdateDeviceGroupPayload,
 } from './device-groups/services/types';
+import { AzionDeviceGroup } from './device-groups/types';
 import {
   ApiCreateFunctionInstancePayload,
   ApiListFunctionInstancesParams,
   ApiUpdateFunctionInstancePayload,
 } from './functions-instances/services/types';
+import { AzionFunctionInstance } from './functions-instances/types';
 import {
   ApiApplication,
   ApiCreateApplicationPayload,
   ApiUpdateApplicationPayload,
 } from './main-settings/services/types';
-import {
-  ApiCreateOriginPayload,
-  ApiCreateOriginResponse,
-  ApiGetOriginResponse,
-  ApiListOriginsParams,
-  ApiListOriginsResponse,
-  ApiUpdateOriginRequest,
-  ApiUpdateOriginResponse,
-} from './origins/services/types';
-import {
-  ApiCreateRulePayload,
-  ApiListRulesParams,
-  ApiRuleResponse,
-  ApiUpdateRulePayload,
-} from './rules-engine/services/types';
+import { ApiCreateOriginPayload, ApiListOriginsParams, ApiUpdateOriginRequest } from './origins/services/types';
+import { AzionOrigin } from './origins/types';
+import { ApiCreateRulePayload, ApiListRulesParams, ApiUpdateRulePayload } from './rules-engine/services/types';
+import { AzionRule } from './rules-engine/types';
 
 export interface AzionClientOptions {
   debug?: boolean;
@@ -40,10 +32,10 @@ export interface AzionClientOptions {
 }
 
 export interface AzionEdgeApplicationCollectionOptions {
-  order_by?: string;
-  sort?: 'asc' | 'desc';
   page?: number;
   page_size?: number;
+  sort?: 'name' | 'id';
+  order_by?: string;
 }
 
 export interface AzionEdgeApplicationResponse<T> {
@@ -72,61 +64,114 @@ export interface AzionEdgeApplicationCollectionResponse<T> {
 }
 
 export interface CacheOperations {
-  create: (cacheSettingData: ApiCreateCacheSettingPayload) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
-  get: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
-  getAll: (
-    params?: ApiListCacheSettingsParams,
-  ) => Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSettingsCollection>>;
-  update: (
-    cacheSettingId: number,
-    cacheSettingData: ApiUpdateCacheSettingPayload,
-  ) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
-  delete: (cacheSettingId: number) => Promise<AzionEdgeApplicationResponse<void>>;
+  create: (params: {
+    data: ApiCreateCacheSettingPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
+  get: (params: {
+    cacheSettingId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
+  getAll: (params: {
+    params?: ApiListCacheSettingsParams;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationCollectionResponse<AzionCacheSetting>>;
+  update: (params: {
+    cacheSettingId: number;
+    data: ApiUpdateCacheSettingPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionCacheSetting>>;
+  delete: (params: {
+    cacheSettingId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface OriginOperations {
-  create: (originData: ApiCreateOriginPayload) => Promise<AzionEdgeApplicationResponse<ApiCreateOriginResponse>>;
-  get: (originKey: string) => Promise<AzionEdgeApplicationResponse<ApiGetOriginResponse>>;
-  getAll: (params?: ApiListOriginsParams) => Promise<AzionEdgeApplicationCollectionResponse<ApiListOriginsResponse>>;
-  update: (
-    originKey: string,
-    originData: ApiUpdateOriginRequest,
-  ) => Promise<AzionEdgeApplicationResponse<ApiUpdateOriginResponse>>;
-  delete: (originKey: string) => Promise<AzionEdgeApplicationResponse<void>>;
+  create: (params: {
+    data: ApiCreateOriginPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionOrigin>>;
+  get: (params: {
+    originKey: string;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionOrigin>>;
+  getAll: (params: {
+    params?: ApiListOriginsParams;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationCollectionResponse<AzionOrigin>>;
+  update: (params: {
+    originKey: string;
+    data: ApiUpdateOriginRequest;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionOrigin>>;
+  delete: (params: { originKey: string; options?: AzionClientOptions }) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface RuleOperations {
-  create: (ruleData: ApiCreateRulePayload) => Promise<AzionEdgeApplicationResponse<ApiRuleResponse>>;
-  get: (ruleId: number) => Promise<AzionEdgeApplicationResponse<ApiRuleResponse>>;
-  getAll: (params?: ApiListRulesParams) => Promise<AzionEdgeApplicationCollectionResponse<ApiRuleResponse>>;
-  update: (ruleId: number, ruleData: ApiUpdateRulePayload) => Promise<AzionEdgeApplicationResponse<ApiRuleResponse>>;
-  delete: (ruleId: number) => Promise<AzionEdgeApplicationResponse<void>>;
+  create: (params: {
+    data: ApiCreateRulePayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionRule>>;
+  get: (params: { ruleId: number; options?: AzionClientOptions }) => Promise<AzionEdgeApplicationResponse<AzionRule>>;
+  getAll: (params: {
+    params?: ApiListRulesParams;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationCollectionResponse<AzionRule>>;
+  update: (params: {
+    ruleId: number;
+    data: ApiUpdateRulePayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionRule>>;
+  delete: (params: { ruleId: number; options?: AzionClientOptions }) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface DeviceGroupOperations {
-  create: (deviceGroupData: ApiCreateDeviceGroupPayload) => Promise<AzionEdgeApplicationResponse<DeviceGroup>>;
-  get: (deviceGroupId: number) => Promise<AzionEdgeApplicationResponse<DeviceGroup>>;
-  getAll: (params?: ApiListDeviceGroupsParams) => Promise<AzionEdgeApplicationCollectionResponse<DeviceGroup>>;
-  update: (
-    deviceGroupId: number,
-    deviceGroupData: ApiUpdateDeviceGroupPayload,
-  ) => Promise<AzionEdgeApplicationResponse<DeviceGroup>>;
-  delete: (deviceGroupId: number) => Promise<AzionEdgeApplicationResponse<void>>;
+  create: (params: {
+    data: ApiCreateDeviceGroupPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>>;
+  get: (params: {
+    deviceGroupId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>>;
+  getAll: (params: {
+    params?: ApiListDeviceGroupsParams;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationCollectionResponse<AzionDeviceGroup>>;
+  update: (params: {
+    deviceGroupId: number;
+    data: ApiUpdateDeviceGroupPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionDeviceGroup>>;
+  delete: (params: {
+    deviceGroupId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface FunctionOperations {
-  create: (
-    functionInstanceData: ApiCreateFunctionInstancePayload,
-  ) => Promise<AzionEdgeApplicationResponse<FunctionInstance>>;
-  get: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse<FunctionInstance>>;
-  getAll: (
-    params?: ApiListFunctionInstancesParams,
-  ) => Promise<AzionEdgeApplicationCollectionResponse<FunctionInstance>>;
-  update: (
-    functionInstanceId: number,
-    functionInstanceData: ApiUpdateFunctionInstancePayload,
-  ) => Promise<AzionEdgeApplicationResponse<FunctionInstance>>;
-  delete: (functionInstanceId: number) => Promise<AzionEdgeApplicationResponse<void>>;
+  create: (params: {
+    data: ApiCreateFunctionInstancePayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionFunctionInstance>>;
+  get: (params: {
+    functionInstanceId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionFunctionInstance>>;
+  getAll: (params: {
+    params?: ApiListFunctionInstancesParams;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationCollectionResponse<AzionFunctionInstance>>;
+  update: (params: {
+    functionInstanceId: number;
+    data: ApiUpdateFunctionInstancePayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionFunctionInstance>>;
+  delete: (params: {
+    functionInstanceId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<void>>;
 }
 
 export interface AzionEdgeApplication extends ApiApplication {
@@ -141,20 +186,33 @@ export interface AzionEdgeApplication extends ApiApplication {
 }
 
 export interface AzionEdgeApplicationClient {
-  create: (applicationData: ApiCreateApplicationPayload) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
-  get: (applicationId: number) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
-  getAll: (
-    params?: AzionEdgeApplicationCollectionOptions,
-  ) => Promise<AzionEdgeApplicationCollectionResponse<AzionEdgeApplication>>;
-  update: (
-    applicationId: number,
-    applicationData: ApiUpdateApplicationPayload,
-  ) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
-  delete: (applicationId: number) => Promise<AzionEdgeApplicationResponse<void>>;
-  patch: (
-    applicationId: number,
-    applicationData: Partial<ApiUpdateApplicationPayload>,
-  ) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  create: (params: {
+    data: ApiCreateApplicationPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  get: (params: {
+    applicationId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  getAll: (params: {
+    params?: AzionEdgeApplicationCollectionOptions;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationCollectionResponse<AzionEdgeApplication>>;
+  update: (params: {
+    applicationId: number;
+    data: ApiUpdateApplicationPayload;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
+  delete: (params: {
+    applicationId: number;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<void>>;
+  patch: (params: {
+    applicationId: number;
+    data: Partial<ApiUpdateApplicationPayload>;
+    options?: AzionClientOptions;
+  }) => Promise<AzionEdgeApplicationResponse<AzionEdgeApplication>>;
 }
-
-export type CreateAzionEdgeApplicationClient = (options: AzionClientOptions) => AzionEdgeApplicationClient;
+export type CreateAzionEdgeApplicationClient = (
+  config?: Partial<{ token: string; options?: AzionClientOptions }>,
+) => AzionEdgeApplicationClient;

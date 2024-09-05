@@ -144,39 +144,58 @@ const deleteApplicationMethod = async (
   }
 };
 
-export const createApplication = (
-  applicationData: ApiCreateApplicationPayload,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
-  createApplicationMethod(resolveToken(), applicationData, options);
+export const createApplicationWrapper = ({
+  data,
+  options,
+}: {
+  data: ApiCreateApplicationPayload;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionApplication>> => createApplicationMethod(resolveToken(), data, options);
 
-export const getApplication = (
-  applicationId: number,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
+export const getApplicationWrapper = ({
+  applicationId,
+  options,
+}: {
+  applicationId: number;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
   getApplicationMethod(resolveToken(), applicationId, options);
 
-export const getApplications = (
-  params?: ApiListApplicationsParams,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationCollectionResponse<AzionApplication>> =>
+export const getApplicationsWrapper = ({
+  params,
+  options,
+}: {
+  params?: ApiListApplicationsParams;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationCollectionResponse<AzionApplication>> =>
   getApplicationsMethod(resolveToken(), params, options);
 
-export const updateApplication = (
-  applicationId: number,
-  applicationData: ApiUpdateApplicationPayload,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
-  updateApplicationMethod(resolveToken(), applicationId, applicationData, options);
+export const updateApplicationWrapper = ({
+  applicationId,
+  data,
+  options,
+}: {
+  applicationId: number;
+  data: ApiUpdateApplicationPayload;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
+  updateApplicationMethod(resolveToken(), applicationId, data, options);
 
-export const patchApplication = (
-  applicationId: number,
-  applicationData: Partial<ApiUpdateApplicationPayload>,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
-  patchApplicationMethod(resolveToken(), applicationId, applicationData, options);
+export const patchApplicationWrapper = ({
+  applicationId,
+  data,
+  options,
+}: {
+  applicationId: number;
+  data: Partial<ApiUpdateApplicationPayload>;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<AzionApplication>> =>
+  patchApplicationMethod(resolveToken(), applicationId, data, options);
 
-export const deleteApplication = (
-  applicationId: number,
-  options?: AzionClientOptions,
-): Promise<AzionEdgeApplicationResponse<void>> => deleteApplicationMethod(resolveToken(), applicationId, options);
+export const deleteApplicationWrapper = ({
+  applicationId,
+  options,
+}: {
+  applicationId: number;
+  options?: AzionClientOptions;
+}): Promise<AzionEdgeApplicationResponse<void>> => deleteApplicationMethod(resolveToken(), applicationId, options);

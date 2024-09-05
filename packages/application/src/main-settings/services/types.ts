@@ -66,7 +66,6 @@ export interface ApiListApplicationsParams {
   page?: number;
   page_size?: number;
   sort?: 'name' | 'id';
-  order?: 'asc' | 'desc';
   order_by?: string;
 }
 

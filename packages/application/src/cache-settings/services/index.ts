@@ -11,7 +11,7 @@ import {
 
 const BASE_URL = 'https://api.azionapi.net/edge_applications';
 
-export const getCacheSettingsApi = async (
+export const getCacheSettings = async (
   token: string,
   edgeApplicationId: number,
   params?: ApiListCacheSettingsParams,
@@ -38,7 +38,7 @@ export const getCacheSettingsApi = async (
   }
 };
 
-export const getCacheSettingByIdApi = async (
+export const getCacheSetting = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
@@ -58,7 +58,7 @@ export const getCacheSettingByIdApi = async (
   }
 };
 
-export const createCacheSettingApi = async (
+export const postCacheSetting = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingData: ApiCreateCacheSettingPayload,
@@ -83,7 +83,7 @@ export const createCacheSettingApi = async (
   }
 };
 
-export const updateCacheSettingApi = async (
+export const patchCacheSetting = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,
@@ -109,7 +109,7 @@ export const updateCacheSettingApi = async (
   }
 };
 
-export const deleteCacheSettingApi = async (
+export const deleteCacheSetting = async (
   token: string,
   edgeApplicationId: number,
   cacheSettingId: number,

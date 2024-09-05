@@ -137,66 +137,58 @@ const updateFunctionInstanceMethod = async (
 };
 
 export const createFunctionInstanceWrapper = ({
-  edgeApplicationId,
-  functionInstanceData,
+  applicationId,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
-  functionInstanceData: ApiCreateFunctionInstancePayload;
+  applicationId: number;
+  data: ApiCreateFunctionInstancePayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionFunctionInstance>> =>
-  createFunctionInstanceMethod(resolveToken(), edgeApplicationId, functionInstanceData, options);
+  createFunctionInstanceMethod(resolveToken(), applicationId, data, options);
 
 export const deleteFunctionInstanceWrapper = ({
-  edgeApplicationId,
+  applicationId,
   functionInstanceId,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   functionInstanceId: number;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<void>> =>
-  deleteFunctionInstanceMethod(resolveToken(), edgeApplicationId, functionInstanceId, options);
+  deleteFunctionInstanceMethod(resolveToken(), applicationId, functionInstanceId, options);
 
 export const getFunctionInstanceWrapper = ({
-  edgeApplicationId,
+  applicationId,
   functionInstanceId,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   functionInstanceId: number;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionFunctionInstance>> =>
-  getFunctionInstanceMethod(resolveToken(), edgeApplicationId, functionInstanceId, options);
+  getFunctionInstanceMethod(resolveToken(), applicationId, functionInstanceId, options);
 
 export const getFunctionInstancesWrapper = ({
-  edgeApplicationId,
+  applicationId,
   params,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   params?: ApiListFunctionInstancesParams;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationCollectionResponse<AzionFunctionInstance>> =>
-  getFunctionInstancesMethod(resolveToken(), edgeApplicationId, params, options);
+  getFunctionInstancesMethod(resolveToken(), applicationId, params, options);
 
 export const updateFunctionInstanceWrapper = ({
-  edgeApplicationId,
+  applicationId,
   functionInstanceId,
-  functionInstanceData,
+  data,
   options,
 }: {
-  edgeApplicationId: number;
+  applicationId: number;
   functionInstanceId: number;
-  functionInstanceData: ApiUpdateFunctionInstancePayload;
+  data: ApiUpdateFunctionInstancePayload;
   options?: AzionClientOptions;
 }): Promise<AzionEdgeApplicationResponse<AzionFunctionInstance>> =>
-  updateFunctionInstanceMethod(resolveToken(), edgeApplicationId, functionInstanceId, functionInstanceData, options);
-
-export {
-  createFunctionInstanceWrapper as createFunctionInstance,
-  deleteFunctionInstanceWrapper as deleteFunctionInstance,
-  getFunctionInstanceWrapper as getFunctionInstance,
-  getFunctionInstancesWrapper as getFunctionInstances,
-  updateFunctionInstanceWrapper as updateFunctionInstance,
-};
+  updateFunctionInstanceMethod(resolveToken(), applicationId, functionInstanceId, data, options);

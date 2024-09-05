@@ -14,11 +14,11 @@ export interface ApiListOriginsResponse {
     previous: string | null;
     next: string | null;
   };
-  results: ApiCreateOriginPayload[];
+  results: ApiOrigin[];
 }
 
 export interface ApiGetOriginResponse {
-  results: ApiCreateOriginPayload;
+  results: ApiOrigin;
   schema_version: number;
 }
 
@@ -50,39 +50,8 @@ export interface Address {
   is_active?: boolean;
 }
 
-export interface ApiCreateOriginPayload {
-  name: string;
-  origin_type: OriginType;
-  addresses: Address[];
-  origin_protocol_policy: OriginProtocolPolicy;
-  host_header: string;
-  origin_path?: string;
-  hmac_authentication?: boolean;
-  hmac_region_name?: string;
-  hmac_access_key?: string;
-  hmac_secret_key?: string;
-  connection_timeout?: number;
-  timeout_between_bytes?: number;
-}
-
-export interface ApiCreateOriginResponse {
-  results: ApiCreateOriginPayload;
-  schema_version: number;
-}
-
-export interface ApiUpdateOriginRequest extends Partial<ApiCreateOriginPayload> {}
-
-export interface ApiUpdateOriginResponse {
-  results: ApiCreateOriginPayload;
-  schema_version: number;
-}
-
-export interface ApiDeleteOriginResponse {
-  schema_version: number;
-}
-
 export interface ApiOrigin {
-  origin_id: number;
+  id: number;
   origin_key: string;
   name: string;
   origin_type: OriginType;
@@ -98,4 +67,30 @@ export interface ApiOrigin {
   hmac_region_name: string;
   hmac_access_key: string;
   hmac_secret_key: string;
+}
+
+export type ApiCreateOriginPayload = Omit<ApiOrigin, 'id' | 'method'> & {
+  origin_path?: string;
+  hmac_authentication?: boolean;
+  hmac_region_name?: string;
+  hmac_access_key?: string;
+  hmac_secret_key?: string;
+  connection_timeout?: number;
+  timeout_between_bytes?: number;
+};
+
+export type ApiUpdateOriginRequest = Partial<ApiCreateOriginPayload> & { id: number };
+
+export interface ApiCreateOriginResponse {
+  results: ApiOrigin;
+  schema_version: number;
+}
+
+export interface ApiUpdateOriginResponse {
+  results: ApiOrigin;
+  schema_version: number;
+}
+
+export interface ApiDeleteOriginResponse {
+  schema_version: number;
 }
