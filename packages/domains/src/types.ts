@@ -1,4 +1,15 @@
+export type AzionDomainsResponse<T> = {
+  data?: T;
+  error?: {
+    message: string;
+    operation: string;
+  };
+};
+
+export type ResponseState = 'pending' | 'executed' | 'failed';
+
 export type AzionDomain = {
+  state?: ResponseState;
   id?: number;
   url?: string;
   environment?: string;
@@ -20,18 +31,15 @@ export type AzionCreateDomain = Omit<AzionDomain, 'id' | 'environment' | 'active
 
 export type AzionUpdateDomain = Omit<AzionDomain, 'id' | 'environment' | 'url'>;
 
+export type AzionDeletedDomain = Pick<AzionDomain, 'id' | 'state'>;
+
 export type AzionClientOptions = {
   debug?: boolean | undefined;
   force?: boolean | undefined;
 };
 
-export type AzionDomainResponse = {
-  state: 'pending' | 'executed' | 'failed';
-  data: AzionDomain | unknown;
-};
-
-export type AzionListDomainsResponse = {
-  state: 'executed';
+export type AzionDomains = {
+  state: ResponseState;
   count: number;
   pages: number;
   data: AzionDomain[];
@@ -42,16 +50,16 @@ export type AzionDomainsClient = (
 ) => AzionCreateClientDomains;
 
 export interface AzionCreateClientDomains {
-  createDomain: (domain: AzionCreateDomain, options?: AzionClientOptions) => Promise<AzionDomainResponse>;
+  createDomain: (domain: AzionCreateDomain, options?: AzionClientOptions) => Promise<AzionDomainsResponse<AzionDomain>>;
   listDomains: (
     options?: AzionClientOptions,
     queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
-  ) => Promise<AzionListDomainsResponse>;
-  getDomain: (domainId: number, options?: AzionClientOptions) => Promise<AzionDomainResponse>;
+  ) => Promise<AzionDomainsResponse<AzionDomains>>;
+  getDomain: (domainId: number, options?: AzionClientOptions) => Promise<AzionDomainsResponse<AzionDomain>>;
   updateDomain: (
     domainId: number,
     domain: AzionUpdateDomain,
     options?: AzionClientOptions,
-  ) => Promise<AzionDomainResponse>;
-  deleteDomain: (domainId: number, options?: AzionClientOptions) => Promise<AzionDomainResponse>;
+  ) => Promise<AzionDomainsResponse<AzionDomain>>;
+  deleteDomain: (domainId: number, options?: AzionClientOptions) => Promise<AzionDomainsResponse<AzionDeletedDomain>>;
 }

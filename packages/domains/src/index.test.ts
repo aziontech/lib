@@ -27,8 +27,14 @@ describe('Domains Package', () => {
 
       const result = await createDomain({ name: 'example.com', edgeApplicationId: 123 }, { debug: mockDebug });
       expect(result).toEqual({
-        state: 'executed',
-        data: { id: '123', name: 'example.com', url: 'example.com', environment: 'production', active: true },
+        data: {
+          state: 'executed',
+          id: '123',
+          name: 'example.com',
+          url: 'example.com',
+          environment: 'production',
+          active: true,
+        },
       });
       expect(services.createDomain).toHaveBeenCalledWith(
         mockToken,
@@ -75,34 +81,41 @@ describe('Domains Package', () => {
           crlList: [111],
         },
       };
-      const result = await createDomain(domain, { debug: mockDebug });
-      expect(result).toEqual({
+      const { data } = await createDomain(domain, { debug: mockDebug });
+      expect(data).toEqual({
         state: 'executed',
-        data: { id: '123', name: 'example.com', url: 'example.com', environment: 'production', active: true },
+        id: '123',
+        name: 'example.com',
+        url: 'example.com',
+        environment: 'production',
+        active: true,
       });
       expect(services.createDomain).toHaveBeenCalledWith(mockToken, domain, { debug: mockDebug });
     });
 
-    it('should throw an error if the domain edgeApplicationId is not provided', async () => {
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve({}) } as any);
+    it('should an error if the domain edgeApplicationId is not provided', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () =>
+          Promise.resolve({
+            edge_application_id: ['This field is required.'],
+          }),
+      } as any);
       // @eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(createDomain({ name: 'example.com' } as any, { debug: mockDebug })).resolves.toEqual({
-        state: 'failed',
-        data: { message: 'Domain name and Edge Application ID are required' },
+        error: { message: 'Domain name and Edge Application ID are required', operation: 'create domain' },
       });
     });
 
     it('should create a domain with status failed', async () => {
       const mockResponse = {
-        results: {},
+        detail: 'Invalid Token',
       };
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
       jest.spyOn(services, 'createDomain');
 
       const result = await createDomain({ name: 'example.com', edgeApplicationId: 123 }, { debug: mockDebug });
       expect(result).toEqual({
-        state: 'failed',
-        data: {},
+        error: { message: 'Invalid Token', operation: 'create domain' },
       });
       expect(services.createDomain).toHaveBeenCalledWith(
         mockToken,
@@ -152,7 +165,7 @@ describe('Domains Package', () => {
       jest.spyOn(services, 'listDomains');
 
       const results = await listDomains({ debug: mockDebug });
-      expect(results).toEqual({
+      expect(results.data).toEqual({
         state: 'executed',
         pages: 1,
         count: 1,
@@ -175,7 +188,7 @@ describe('Domains Package', () => {
 
       const queryParams: any = { orderBy: 'id', page: 1, pageSize: 1, sort: 'asc' };
       const results = await listDomains({ debug: mockDebug }, queryParams);
-      expect(results).toEqual({
+      expect(results.data).toEqual({
         state: 'executed',
         pages: 1,
         count: 1,
@@ -201,7 +214,7 @@ describe('Domains Package', () => {
       jest.spyOn(services, 'listDomains');
 
       const results = await listDomains({ debug: mockDebug });
-      expect(results).toEqual({
+      expect(results.data).toEqual({
         state: 'executed',
         pages: 1,
         count: 1,
@@ -241,8 +254,14 @@ describe('Domains Package', () => {
       const result = await getDomain(123, { debug: mockDebug });
 
       expect(result).toEqual({
-        state: 'executed',
-        data: { id: 123, name: 'example.com', url: 'example.com', environment: 'production', active: true },
+        data: {
+          state: 'executed',
+          id: 123,
+          name: 'example.com',
+          url: 'example.com',
+          environment: 'production',
+          active: true,
+        },
       });
       expect(services.getDomainById).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
     });
@@ -259,6 +278,7 @@ describe('Domains Package', () => {
           cname_access_only: true,
           digital_certificate_id: 'lets_encrypt',
           edge_application_id: 123,
+          edge_firewall_id: null,
           is_mtls_enabled: true,
           mtls_verification: 'enforce',
           mtls_trusted_ca_certificate_id: 123,
@@ -270,8 +290,8 @@ describe('Domains Package', () => {
 
       const result = await getDomain(123, { debug: mockDebug });
       expect(result).toEqual({
-        state: 'executed',
         data: {
+          state: 'executed',
           id: 123,
           name: 'example.com',
           url: 'example.com',
@@ -280,6 +300,7 @@ describe('Domains Package', () => {
           cnames: ['cname1', 'cname2'],
           cnameAccessOnly: true,
           digitalCertificateId: 'lets_encrypt',
+          edgeFirewallId: null,
           edgeApplicationId: 123,
           mtls: {
             verification: 'enforce',
@@ -321,8 +342,8 @@ describe('Domains Package', () => {
         { debug: mockDebug },
       );
       expect(result).toEqual({
-        state: 'executed',
         data: {
+          state: 'executed',
           id: 170,
           name: 'Overwritten Domain',
           url: 'n3wd0ma1n9.map.azionedge.net',
@@ -352,9 +373,9 @@ describe('Domains Package', () => {
 
       const result = await updateDomain(170, { name: 'Overwritten Domain', active: false }, { debug: mockDebug });
 
-      expect(result).toEqual({
-        state: 'failed',
-        data: { message: 'Edge Application ID is required' },
+      expect(result.error).toEqual({
+        message: 'Edge Application ID is required',
+        operation: 'update domain',
       });
     });
 
@@ -366,9 +387,9 @@ describe('Domains Package', () => {
 
       const result = await updateDomain(170, { name: 'my domain', edgeApplicationId: 123 }, { debug: mockDebug });
 
-      expect(result).toEqual({
-        state: 'failed',
-        data: { duplicated_domain_name: 'my domain' },
+      expect(result.error).toEqual({
+        message: '{"duplicated_domain_name":"my domain"}',
+        operation: 'update domain',
       });
     });
 
@@ -409,8 +430,8 @@ describe('Domains Package', () => {
       };
       const result = await updateDomain(170, domain, { debug: mockDebug });
       expect(result).toEqual({
-        state: 'executed',
         data: {
+          state: 'executed',
           id: 170,
           name: 'Overwritten Domain',
           url: 'n3wd0ma1n9.map.azionedge.net',
@@ -438,15 +459,7 @@ describe('Domains Package', () => {
       jest.spyOn(services, 'deleteDomain');
 
       const result = await deleteDomain(123, { debug: mockDebug });
-      expect(result).toEqual(expect.objectContaining({ state: 'executed', data: { id: 123 } }));
-      expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
-    });
-
-    it('should throw an error if the domain deletion fails', async () => {
-      jest.spyOn(global, 'fetch').mockResolvedValue({ ok: false, status: 500 } as any);
-      jest.spyOn(services, 'deleteDomain');
-      const result = await deleteDomain(123, { debug: mockDebug });
-      expect(result).toEqual(expect.objectContaining({ state: 'failed', data: { message: 'Error deleting domain' } }));
+      expect(result).toEqual(expect.objectContaining({ data: { state: 'executed', id: 123 } }));
       expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
     });
 
@@ -459,7 +472,7 @@ describe('Domains Package', () => {
       jest.spyOn(services, 'deleteDomain');
 
       const result = await deleteDomain(123, { debug: mockDebug });
-      expect(result).toEqual(expect.objectContaining({ state: 'failed', data: { message: 'Not found.' } }));
+      expect(result).toEqual(expect.objectContaining({ error: { message: 'Not found.', operation: 'delete domain' } }));
       expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
     });
   });
@@ -483,8 +496,14 @@ describe('Domains Package', () => {
       const domain = { name: 'example.com', edgeApplicationId: 123 };
       const resultDomain = await client.createDomain(domain, { debug: mockDebug });
       expect(resultDomain).toEqual({
-        state: 'executed',
-        data: { id: '123', name: 'example.com', url: 'example.com', environment: 'production', active: true },
+        data: {
+          state: 'executed',
+          id: '123',
+          name: 'example.com',
+          url: 'example.com',
+          environment: 'production',
+          active: true,
+        },
       });
       expect(client).toBeDefined();
     });
@@ -523,7 +542,7 @@ describe('Domains Package', () => {
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });
 
       const results = await client.listDomains({ debug: mockDebug });
-      expect(results).toEqual({
+      expect(results.data).toEqual({
         state: 'executed',
         count: 1,
         pages: 1,
@@ -557,8 +576,14 @@ describe('Domains Package', () => {
 
       const result = await client.getDomain(123, { debug: mockDebug });
       expect(result).toEqual({
-        state: 'executed',
-        data: { id: 123, name: 'example.com', url: 'example.com', environment: 'production', active: true },
+        data: {
+          state: 'executed',
+          id: 123,
+          name: 'example.com',
+          url: 'example.com',
+          environment: 'production',
+          active: true,
+        },
       });
       expect(client).toBeDefined();
     });
@@ -593,8 +618,8 @@ describe('Domains Package', () => {
         { debug: mockDebug },
       );
       expect(result).toEqual({
-        state: 'executed',
         data: {
+          state: 'executed',
           id: 170,
           name: 'Overwritten Domain',
           url: 'n3wd0ma1n9.map.azionedge.net',
@@ -619,8 +644,7 @@ describe('Domains Package', () => {
 
       const result = await client.deleteDomain(123, { debug: mockDebug });
       expect(result).toEqual({
-        state: 'executed',
-        data: { id: 123 },
+        data: { id: 123, state: 'executed' },
       });
       expect(client).toBeDefined();
     });

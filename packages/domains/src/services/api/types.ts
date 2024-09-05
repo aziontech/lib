@@ -15,19 +15,25 @@ export type ApiAzionDomainResponse = {
   crl_list?: number[];
 };
 
+export type ApiError = {
+  message: string;
+  operation: string;
+};
+
 export type ApiAzionDomainResult = {
-  results: ApiAzionDomainResponse;
+  results?: ApiAzionDomainResponse;
+  error?: ApiError;
 };
 
 export type ApiAzionListDomainsResponse = {
-  count: number;
-  total_pages: number;
-  schema_version: 3;
-  links: {
+  count?: number;
+  total_pages?: number;
+  links?: {
     previous: string | null;
     next: string | null;
   };
-  results: ApiAzionDomainResponse[];
+  results?: ApiAzionDomainResponse[];
+  error?: ApiError;
 };
 
 export type ApiAzionQueryListDomainsResponse = {

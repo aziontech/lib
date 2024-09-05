@@ -1,12 +1,13 @@
 import { createDomain, deleteDomain, getDomainById, listDomains, updateDomain } from './services/api';
-import { ApiAzionDomainResponse, ApiAzionListDomainsResponse } from './services/api/types';
 import {
   AzionClientOptions,
   AzionCreateClientDomains,
   AzionCreateDomain,
-  AzionDomainResponse,
+  AzionDeletedDomain,
+  AzionDomain,
+  AzionDomains,
   AzionDomainsClient,
-  AzionListDomainsResponse,
+  AzionDomainsResponse,
   AzionUpdateDomain,
 } from './types';
 import { resolveDebug, resolveToken } from './utils';
@@ -23,28 +24,33 @@ const createDomainMethod = async (
   token: string,
   domain: AzionCreateDomain,
   options?: AzionClientOptions,
-): Promise<AzionDomainResponse> => {
+): Promise<AzionDomainsResponse<AzionDomain>> => {
   if (domain.name === undefined || domain.edgeApplicationId === undefined) {
     return {
-      state: 'failed',
-      data: {
+      error: {
         message: 'Domain name and Edge Application ID are required',
+        operation: 'create domain',
       },
     };
   }
-  const { results: apiResponse } = await createDomain(resolveToken(token), domain, {
+  const { results: apiResponse, error } = await createDomain(resolveToken(token), domain, {
     ...options,
     debug: resolveDebug(options?.debug),
   });
+  if (apiResponse && apiResponse.id) {
+    return {
+      data: {
+        state: 'executed',
+        id: apiResponse.id,
+        name: apiResponse?.name,
+        url: apiResponse?.domain_name,
+        environment: apiResponse?.environment,
+        active: apiResponse?.is_active,
+      },
+    };
+  }
   return {
-    state: apiResponse?.id ? 'executed' : 'failed',
-    data: {
-      id: apiResponse.id,
-      name: apiResponse?.name,
-      url: apiResponse?.domain_name,
-      environment: apiResponse?.environment,
-      active: apiResponse?.is_active,
-    },
+    error: error,
   };
 };
 
@@ -59,35 +65,20 @@ const listDomainsMethod = async (
   token: string,
   queryParams?: { order_by?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
   options?: AzionClientOptions,
-): Promise<AzionListDomainsResponse> => {
-  const { results, count, total_pages }: ApiAzionListDomainsResponse = await listDomains(
-    resolveToken(token),
-    options,
-    queryParams,
-  );
+): Promise<AzionDomainsResponse<AzionDomains>> => {
+  const apiResponse = await listDomains(resolveToken(token), options, queryParams);
+  if (apiResponse.results) {
+    return {
+      data: {
+        count: apiResponse.count ?? apiResponse.results.length,
+        state: 'executed',
+        data: apiResponse.results,
+        pages: apiResponse.total_pages ?? 1,
+      },
+    };
+  }
   return {
-    state: 'executed',
-    count,
-    pages: total_pages,
-    data: results.map((domain: ApiAzionDomainResponse) => ({
-      id: domain.id,
-      name: domain.name,
-      url: domain.domain_name,
-      environment: domain.environment,
-      active: domain.is_active,
-      edgeApplicationId: domain.edge_application_id,
-      cnameAccessOnly: domain.cname_access_only,
-      digitalCertificateId: domain.digital_certificate_id,
-      edgeFirewallId: domain?.edge_firewall_id,
-      cnames: domain.cnames,
-      mtls: domain.is_mtls_enabled
-        ? {
-            verification: domain.mtls_verification as 'enforce' | 'permissive',
-            trustedCaCertificateId: domain.mtls_trusted_ca_certificate_id as number,
-            crlList: domain.crl_list,
-          }
-        : undefined,
-    })),
+    error: apiResponse.error,
   };
 };
 
@@ -102,32 +93,37 @@ const getDomainMethod = async (
   token: string,
   domainId: number,
   options?: AzionClientOptions,
-): Promise<AzionDomainResponse> => {
-  const { results: apiResponse } = await getDomainById(resolveToken(token), domainId, {
+): Promise<AzionDomainsResponse<AzionDomain>> => {
+  const { results: apiResponse, error } = await getDomainById(resolveToken(token), domainId, {
     ...options,
     debug: resolveDebug(options?.debug),
   });
+  if (apiResponse && apiResponse.id) {
+    return {
+      data: {
+        state: 'executed',
+        id: apiResponse.id,
+        name: apiResponse?.name,
+        url: apiResponse?.domain_name,
+        environment: apiResponse?.environment,
+        active: apiResponse?.is_active,
+        cnameAccessOnly: apiResponse?.cname_access_only,
+        digitalCertificateId: apiResponse?.digital_certificate_id,
+        cnames: apiResponse?.cnames,
+        edgeApplicationId: apiResponse?.edge_application_id,
+        edgeFirewallId: apiResponse?.edge_firewall_id,
+        mtls: apiResponse?.is_mtls_enabled
+          ? {
+              verification: apiResponse.mtls_verification as 'enforce' | 'permissive',
+              trustedCaCertificateId: apiResponse.mtls_trusted_ca_certificate_id as number,
+              crlList: apiResponse.crl_list,
+            }
+          : undefined,
+      },
+    };
+  }
   return {
-    state: 'executed',
-    data: {
-      id: apiResponse.id,
-      name: apiResponse?.name,
-      url: apiResponse?.domain_name,
-      environment: apiResponse?.environment,
-      active: apiResponse?.is_active,
-      cnameAccessOnly: apiResponse?.cname_access_only,
-      digitalCertificateId: apiResponse?.digital_certificate_id,
-      cnames: apiResponse?.cnames,
-      edgeApplicationId: apiResponse?.edge_application_id,
-      edgeFirewallId: apiResponse?.edge_firewall_id,
-      mtls: apiResponse?.is_mtls_enabled
-        ? {
-            verification: apiResponse.mtls_verification as 'enforce' | 'permissive',
-            trustedCaCertificateId: apiResponse.mtls_trusted_ca_certificate_id as number,
-            crlList: apiResponse.crl_list,
-          }
-        : undefined,
-    },
+    error: error,
   };
 };
 
@@ -144,12 +140,12 @@ const updateDomainMethod = async (
   domainId: number,
   domain: AzionUpdateDomain,
   options?: AzionClientOptions,
-): Promise<AzionDomainResponse> => {
+): Promise<AzionDomainsResponse<AzionDomain>> => {
   if (domain?.edgeApplicationId === undefined) {
     return {
-      state: 'failed',
-      data: {
+      error: {
         message: 'Edge Application ID is required',
+        operation: 'update domain',
       },
     };
   }
@@ -161,22 +157,21 @@ const updateDomainMethod = async (
 
   if (!apiResponse?.results?.id) {
     return {
-      state: 'failed',
-      data: apiResponse,
+      error: apiResponse?.error,
     };
   }
 
   return {
-    state: 'executed',
     data: {
-      id: apiResponse?.results.id,
+      state: 'executed',
       name: apiResponse?.results?.name,
-      url: apiResponse?.results?.domain_name,
+      id: apiResponse?.results?.id,
       environment: apiResponse?.results?.environment,
+      cnames: apiResponse?.results?.cnames,
+      url: apiResponse?.results?.domain_name,
       active: apiResponse?.results?.is_active,
       cnameAccessOnly: apiResponse?.results?.cname_access_only,
       digitalCertificateId: apiResponse?.results?.digital_certificate_id,
-      cnames: apiResponse?.results?.cnames,
       edgeApplicationId: apiResponse?.results?.edge_application_id,
       edgeFirewallId: apiResponse?.results?.edge_firewall_id,
       mtls: apiResponse?.results?.is_mtls_enabled
@@ -201,26 +196,22 @@ const deleteDomainMethod = async (
   token: string,
   domainId: number,
   options?: AzionClientOptions,
-): Promise<AzionDomainResponse> => {
-  try {
-    await deleteDomain(resolveToken(token), domainId, {
-      ...options,
-      debug: resolveDebug(options?.debug),
-    });
+): Promise<AzionDomainsResponse<AzionDeletedDomain>> => {
+  const { error } = await deleteDomain(resolveToken(token), domainId, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+  });
+  if (error) {
     return {
-      state: 'executed',
-      data: {
-        id: domainId,
-      },
-    };
-  } catch (error) {
-    return {
-      state: 'failed',
-      data: {
-        message: (error as Error).message,
-      },
+      error: error,
     };
   }
+  return {
+    data: {
+      state: 'executed',
+      id: domainId,
+    },
+  };
 };
 
 /**
@@ -232,7 +223,7 @@ const deleteDomainMethod = async (
 const createDomainWrapper = async (
   domain: AzionCreateDomain,
   options?: AzionClientOptions,
-): Promise<AzionDomainResponse> => {
+): Promise<AzionDomainsResponse<AzionDomain>> => {
   return createDomainMethod(resolveToken(), domain, options);
 };
 
@@ -245,7 +236,7 @@ const createDomainWrapper = async (
 const listDomainsWrapper = async (
   options?: AzionClientOptions,
   queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
-): Promise<AzionListDomainsResponse> => {
+): Promise<AzionDomainsResponse<AzionDomains>> => {
   return listDomainsMethod(resolveToken(), queryParams, options);
 };
 
@@ -255,7 +246,10 @@ const listDomainsWrapper = async (
  * @param options Options to get the domain
  * @returns Domain
  */
-const getDomainWrapper = async (domainId: number, options?: AzionClientOptions): Promise<AzionDomainResponse> => {
+const getDomainWrapper = async (
+  domainId: number,
+  options?: AzionClientOptions,
+): Promise<AzionDomainsResponse<AzionDomain>> => {
   return getDomainMethod(resolveToken(), domainId, options);
 };
 
@@ -270,7 +264,7 @@ const updateDomainWrapper = async (
   domainId: number,
   domain: AzionUpdateDomain,
   options?: AzionClientOptions,
-): Promise<AzionDomainResponse> => {
+): Promise<AzionDomainsResponse<AzionDomain>> => {
   return updateDomainMethod(resolveToken(), domainId, domain, options);
 };
 
@@ -280,7 +274,10 @@ const updateDomainWrapper = async (
  * @param options Options to delete the domain
  * @returns Domain deleted
  */
-const deleteDomainWrapper = async (domainId: number, options?: AzionClientOptions): Promise<AzionDomainResponse> => {
+const deleteDomainWrapper = async (
+  domainId: number,
+  options?: AzionClientOptions,
+): Promise<AzionDomainsResponse<AzionDeletedDomain>> => {
   return deleteDomainMethod(resolveToken(), domainId, options);
 };
 

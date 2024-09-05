@@ -1,7 +1,25 @@
 import { AzionClientOptions, AzionDomain } from '../../types';
-import { ApiAzionDomainResult, ApiAzionListDomainsResponse, ApiAzionQueryListDomainsResponse } from './types';
+import {
+  ApiAzionDomainResponse,
+  ApiAzionDomainResult,
+  ApiAzionListDomainsResponse,
+  ApiAzionQueryListDomainsResponse,
+} from './types';
 
-const BASE_URL = 'https://api.azionapi.net/domains';
+const BASE_URL =
+  process.env.AZION_ENV === 'stage' ? 'https://stage-api.azion.net/domains' : 'https://api.azionapi.net/domains';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleApiError = (fields: string[], data: any) => {
+  let error = undefined;
+  fields.forEach((field: string) => {
+    if (data[field]) {
+      const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
+      error = message;
+    }
+  });
+  return error ?? JSON.stringify(data);
+};
 
 const makeHeaders = (token: string) => ({
   Authorization: `Token ${token}`,
@@ -46,6 +64,11 @@ const createDomain = async (
     });
     const data = await response.json();
     if (debug) console.log('Response Post Domains', data);
+    if (!data.results) {
+      return {
+        error: { message: handleApiError(['detail', 'edge_application_id'], data), operation: 'create domain' },
+      };
+    }
     return data;
   } catch (error) {
     if (debug) console.error('Error creating Domain:', error);
@@ -67,7 +90,33 @@ const listDomains = async (
     });
     const data = await response.json();
     if (options?.debug) console.log('Response List Domains', data);
-    return data;
+    if (!data.results) {
+      return {
+        error: { message: handleApiError(['detail', 'edge_application_id'], data), operation: 'list domains' },
+      };
+    }
+    return {
+      ...data,
+      results: data.results.map((domain: ApiAzionDomainResponse) => ({
+        id: domain.id,
+        name: domain.name,
+        url: domain.domain_name,
+        environment: domain.environment,
+        active: domain.is_active,
+        edgeApplicationId: domain.edge_application_id,
+        cnameAccessOnly: domain.cname_access_only,
+        digitalCertificateId: domain.digital_certificate_id,
+        edgeFirewallId: domain?.edge_firewall_id,
+        cnames: domain.cnames,
+        mtls: domain.is_mtls_enabled
+          ? {
+              verification: domain.mtls_verification as 'enforce' | 'permissive',
+              trustedCaCertificateId: domain.mtls_trusted_ca_certificate_id as number,
+              crlList: domain.crl_list,
+            }
+          : undefined,
+      })),
+    };
   } catch (error) {
     if (options?.debug) console.error('Error listing Domains:', error);
     throw error;
@@ -86,6 +135,11 @@ const getDomainById = async (
     });
     const data = await response.json();
     if (options?.debug) console.log('Response Get Domain', data);
+    if (!data.results) {
+      return {
+        error: { message: handleApiError(['detail', 'edge_application_id'], data), operation: 'get domain' },
+      };
+    }
     return data;
   } catch (error) {
     if (options?.debug) console.error('Error getting Domain:', error);
@@ -131,6 +185,11 @@ const updateDomain = async (
     });
     const data = await response.json();
     if (options?.debug) console.log('Response Put Domains', data);
+    if (!data.results) {
+      return {
+        error: { message: handleApiError(['detail', 'edge_application_id'], data), operation: 'update domain' },
+      };
+    }
     return data;
   } catch (error) {
     if (options?.debug) console.error('Error updating Domain:', error);
@@ -138,23 +197,26 @@ const updateDomain = async (
   }
 };
 
-const deleteDomain = async (token: string, domainId: number, options?: AzionClientOptions): Promise<void> => {
+const deleteDomain = async (
+  token: string,
+  domainId: number,
+  options?: AzionClientOptions,
+): Promise<ApiAzionDomainResult> => {
   try {
     const result = await fetch(`${BASE_URL}/${domainId}`, {
       method: 'DELETE',
       headers: makeHeaders(token),
     });
 
-    if (!result.ok) {
-      throw new Error('Error deleting domain');
-    }
-
     if (result.status !== 204) {
       const message = await result.json();
-      throw new Error(message?.detail ?? 'Error deleting domain');
+      return {
+        error: { message: handleApiError(['detail', 'edge_application_id'], message), operation: 'delete domain' },
+      };
     }
 
     if (options?.debug) console.log('Response Delete Domain');
+    return { results: undefined };
   } catch (error) {
     if (options?.debug) console.error('Error deleting Domain:', error);
     throw error;

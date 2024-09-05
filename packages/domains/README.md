@@ -95,9 +95,9 @@ if (domain) {
 
 ```typescript
 import { createDomain } from 'azion/domains';
-import type { AzionDomainResponse } from 'azion/domains';
+import type { AzionDomain } from 'azion/domains';
 
-const domain: AzionDomainResponse = await createDomain({ name: 'example domain', edgeApplicationId: 123 });
+const domain: AzionDomain = await createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (domain) {
   console.log(`Domain created with ID: ${domain.id}`);
 } else {
@@ -125,9 +125,9 @@ if (domains) {
 
 ```typescript
 import { listDomains } from 'azion/domains';
-import type { AzionListDomainsResponse } from 'azion/domains';
+import type { AzionDomains } from 'azion/domains';
 
-const domains: AzionListDomainsResponse = await listDomains();
+const domains: AzionDomains = await listDomains();
 
 if (domains) {
   console.log(`Found ${domains.data.length} domains`);
@@ -157,10 +157,10 @@ if (domain) {
 
 ```typescript
 import { getDomain } from 'azion/domains';
-import type { AzionDomainResponse } from 'azion/domains';
+import type { AzionDomain } from 'azion/domains';
 
 const domainId = 123;
-const domain: AzionDomainResponse = await getDomain(domainId);
+const domain: AzionDomain = await getDomain(domainId);
 
 if (domain) {
   console.log(`Found domain with name: ${domain.data.name}`);
@@ -190,10 +190,10 @@ if (domain) {
 
 ```typescript
 import { updateDomain } from 'azion/domains';
-import type { AzionDomainResponse } from 'azion/domains';
+import type { AzionDomain } from 'azion/domains';
 
 const domainId = 123;
-const domain: AzionDomainResponse = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
+const domain: AzionDomain = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
 
 if (domain) {
   console.log(`Updated domain with name: ${domain.data.name}`);
@@ -223,10 +223,10 @@ if (deletedDomain) {
 
 ```typescript
 import { deleteDomain } from 'azion/domains';
-import type { AzionDomainResponse } from 'azion/domains';
+import type { AzionDomain } from 'azion/domains';
 
 const domainId = 123;
-const deletedDomain: AzionDomainResponse = await deleteDomain(domainId);
+const deletedDomain: AzionDomain = await deleteDomain(domainId);
 
 if (deletedDomain) {
   console.log(`Deleted domain with ID: ${deletedDomain.data.id}`);
@@ -256,11 +256,11 @@ if (newDomain) {
 
 ```typescript
 import { createClient } from 'azion/domains';
-import type { AzionDomainResponse, AzionDomainsClient } from 'azion/domains';
+import type { AzionDomain, AzionDomainsClient } from 'azion/domains';
 
 const client: AzionDomainsClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDomain: AzionDomainResponse = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
+const newDomain: AzionDomain = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (newDomain) {
   console.log(`Domain created with ID: ${newDomain.id}`);
 }
@@ -295,9 +295,9 @@ Creates a new domain.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The created domain object or state failed.
+- `Promise<AzionDomain>` - The created domain object or state failed.
 
-> AzionDomainResponse
+> AzionDomain
 
 - `state: 'executed'| 'failed'` - State of the domain creation.
 - `data: AzionDomain` - Domain object.
@@ -313,9 +313,9 @@ Lists all domains.
 
 **Returns:**
 
-- `Promise<AzionListDomainsResponse>` - An array of domain objects.
+- `Promise<AzionDomains>` - An array of domain objects.
 
-> AzionListDomainsResponse
+> AzionDomains
 
 - `state: 'executed'| 'failed'` - State of the domain list.
 - `pages: number` - Number of pages.
@@ -333,7 +333,7 @@ Get a domain by ID.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The domain object or state failed.
+- `Promise<AzionDomain>` - The domain object or state failed.
 
 ### `updateDomain`
 
@@ -347,7 +347,7 @@ Update a domain.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The updated domain object or state failed.
+- `Promise<AzionDomain>` - The updated domain object or state failed.
 
 ### `deleteDomain`
 
@@ -360,7 +360,7 @@ Delete a domain.
 
 **Returns:**
 
-- `Promise<AzionDomainResponse>` - The deleted domain id or state failed.
+- `Promise<AzionDomain>` - The deleted domain id or state failed.
 
 ### `createClient`
 
