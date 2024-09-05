@@ -172,17 +172,17 @@ import { createClient } from 'azion';
 
 const client = createClient({ token: 'your-api-token', { debug: true } });
 
-const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const { data: purgeResult } = await client.purge.purgeURL(['http://example.com/image.jpg']);
 if (purgeResult) {
   console.log(`Purge successful: ${purgeResult.items}`);
 }
 
-const cacheKeyResult = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+const { data: cacheKeyResult } = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
 if (cacheKeyResult) {
   console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
 }
 
-const wildcardResult = await client.purge.purgeWildCard(['http://example.com/*']);
+const { data: wildcardResult } = await client.purge.purgeWildCard(['http://example.com/*']);
 if (wildcardResult) {
   console.log(`Wildcard purge successful: ${wildcardResult.items}`);
 }
@@ -192,21 +192,28 @@ if (wildcardResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Purge } from 'azion/purge/types';
+import { AzionClient, AzionPurgeResponse, AzionPurge } from 'azion/purge/types';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
-const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const { data: purgeResult }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeURL([
+  'http://example.com/image.jpg',
+]);
 if (purgeResult) {
   console.log(`Purge successful: ${purgeResult.items}`);
 }
 
-const cacheKeyResult: Purge | null = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+const { data: cacheKeyResult }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeCacheKey([
+  'my-cache-key-1',
+  'my-cache-key-2',
+]);
 if (cacheKeyResult) {
   console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
 }
 
-const wildcardResult: Purge | null = await client.purge.purgeWildCard(['http://example.com/*']);
+const { data: wildcardResult }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeWildCard([
+  'http://example.com/*',
+]);
 if (wildcardResult) {
   console.log(`Wildcard purge successful: ${wildcardResult.items}`);
 }
