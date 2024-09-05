@@ -2,6 +2,7 @@ import { Azion } from 'azion/types';
 import {
   AzionBucket,
   AzionBucketObject,
+  AzionBucketObjects,
   AzionDeletedBucketObject,
   AzionObjectCollectionParams,
   AzionStorageResponse,
@@ -75,13 +76,13 @@ export class InternalStorageClient implements AzionBucket {
    *
    * @param {Object} params - Parameters for object collection.
    * @param {AzionObjectCollectionParams} [params.params] - Parameters for object collection.
-   * @returns {Promise<AzionStorageResponse<AzionBucketObject[]>>} The list of objects or error message.
+   * @returns {Promise<AzionStorageResponse<AzionBucketObjects>>} The list of objects or error message.
    */
   async getObjects({
     params,
   }: {
     params?: AzionObjectCollectionParams;
-  }): Promise<AzionStorageResponse<AzionBucketObject[]>> {
+  }): Promise<AzionStorageResponse<AzionBucketObjects>> {
     this.initializeStorage(this.name);
     try {
       const objectList = await retryWithBackoff(() => this.storage!.list());
@@ -96,7 +97,10 @@ export class InternalStorageClient implements AzionBucket {
         }),
       );
       return {
-        data: objects,
+        data: {
+          objects,
+          count: objects.length,
+        },
       };
     } catch (error) {
       if (this.debug) console.error('Error getting objects:', error);

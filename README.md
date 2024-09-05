@@ -74,7 +74,7 @@ console.log(`Purge successful: ${purgeResult.items}`);
 ```typescript
 import { createClient } from 'azion';
 import type { AzionClient, Bucket, Purge } from 'azion/client';
-import type { AzionDatabaseResponse, AzionDatabaseQueryResponse, AzionListBuckets } from 'azion/sql';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse, AzionBuckets } from 'azion/sql';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -82,7 +82,7 @@ const client: AzionClient = createClient({ token: 'your-api-token', debug: true 
 const newBucket: Bucket | null = await client.storage.createBucket('my-new-bucket', 'public');
 console.log(`Bucket created with name: ${newBucket.name}`);
 
-const { data: allBuckets }: AzionStorageResponse<AzionListBuckets> = await client.storage.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionBuckets> = await client.storage.getBuckets();
 console.log(`Retrieved ${allBuckets.count} buckets`);
 
 // SQL
@@ -125,7 +125,7 @@ if (allBuckets) {
 
 ```typescript
 import { createClient } from 'azion/storage';
-import type { AzionStorageClient, AzionStorageResponse, AzionBucket, AzionListBuckets } from 'azion/storage';
+import type { AzionStorageClient, AzionStorageResponse, AzionBucket, AzionBuckets } from 'azion/storage';
 
 const client: AzionStorageClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -134,7 +134,7 @@ if (data) {
   console.log(`Bucket created with name: ${data.name}`);
 }
 
-const { data: allBuckets }: AzionStorageResponse<AzionListBuckets> = await client.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionBuckets> = await client.getBuckets();
 if (allBuckets) {
   console.log(`Retrieved ${allBuckets.count} buckets`);
 }

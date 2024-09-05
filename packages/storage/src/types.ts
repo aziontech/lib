@@ -27,12 +27,12 @@ export interface AzionBucket {
    *
    * @param {Object} params - Parameters for retrieving objects.
    * @param {AzionObjectCollectionParams} params.params - Options for filtering and pagination.
-   * @returns {Promise<AzionStorageResponse<AzionBucketObject[]>>} A promise that resolves to an array of bucket objects or error message.
+   * @returns {Promise<AzionStorageResponse<AzionBucketObjects>>} A promise that resolves to an array of bucket objects or error message.
    *
    * @example
    * const { data: objects, error } = await bucket.getObjects({ params: { max_object_count: 100 } });
    */
-  getObjects: (params: { params: AzionObjectCollectionParams }) => Promise<AzionStorageResponse<AzionBucketObject[]>>;
+  getObjects: (params: { params: AzionObjectCollectionParams }) => Promise<AzionStorageResponse<AzionBucketObjects>>;
 
   /**
    * Retrieves a specific object from the bucket by its key.
@@ -114,6 +114,11 @@ export interface AzionBucketObject {
   content?: string;
 }
 
+export interface AzionBucketObjects {
+  objects: AzionBucketObject[];
+  count: number;
+}
+
 export interface AzionDeletedBucketObject {
   key: string;
   state?: 'executed' | 'executed-runtime' | 'pending';
@@ -124,7 +129,7 @@ export interface AzionDeletedBucket {
   state?: 'executed' | 'executed-runtime' | 'pending';
 }
 
-export interface AzionListBuckets {
+export interface AzionBuckets {
   buckets: AzionBucket[];
   count: number;
 }
@@ -134,9 +139,9 @@ export interface AzionStorageClient {
    * Retrieves a list of buckets with optional filtering and pagination.
    * @param {Object} params - Parameters for retrieving buckets.
    * @param {AzionBucketCollectionParams} [params.params] - Optional parameters for filtering and pagination.
-   * @returns {Promise<AzionStorageResponse<AzionListBuckets>>} Array of buckets or error message.
+   * @returns {Promise<AzionStorageResponse<AzionBuckets>>} Array of buckets or error message.
    */
-  getBuckets: (params?: { params?: AzionBucketCollectionParams }) => Promise<AzionStorageResponse<AzionListBuckets>>;
+  getBuckets: (params?: { params?: AzionBucketCollectionParams }) => Promise<AzionStorageResponse<AzionBuckets>>;
   /**
    * Creates a new bucket.
    * @param {Object} params - Parameters for creating a bucket.

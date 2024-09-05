@@ -13,10 +13,11 @@ import {
   AzionBucket,
   AzionBucketCollectionParams,
   AzionBucketObject,
+  AzionBucketObjects,
+  AzionBuckets,
   AzionClientOptions,
   AzionDeletedBucket,
   AzionDeletedBucketObject,
-  AzionListBuckets,
   AzionObjectCollectionParams,
   AzionStorageClient,
   AzionStorageResponse,
@@ -74,7 +75,7 @@ export const createBucketMethod = async (
           params,
         }: {
           params: AzionObjectCollectionParams;
-        }): Promise<AzionStorageResponse<AzionBucketObject[]>> => getObjectsMethod(token, name, params),
+        }): Promise<AzionStorageResponse<AzionBucketObjects>> => getObjectsMethod(token, name, params),
         getObjectByKey: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           getObjectByKeyMethod(token, name, key),
         createObject: ({
@@ -129,13 +130,13 @@ export const deleteBucketMethod = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {AzionBucketCollectionParams} [params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
- * @returns {Promise<AzionStorageResponse<AzionListBuckets>>} Array of bucket objects or error message.
+ * @returns {Promise<AzionStorageResponse<AzionBuckets>>} Array of bucket objects or error message.
  */
 export const getBucketsMethod = async (
   token: string,
   params?: AzionBucketCollectionParams,
   options?: AzionClientOptions,
-): Promise<AzionStorageResponse<AzionListBuckets>> => {
+): Promise<AzionStorageResponse<AzionBuckets>> => {
   const apiResponse = await getBuckets(resolveToken(token), params, resolveDebug(options?.debug));
   if (apiResponse?.results && apiResponse.results.length > 0) {
     const buckets = apiResponse.results?.map((bucket) => ({
@@ -144,7 +145,7 @@ export const getBucketsMethod = async (
         params,
       }: {
         params: AzionObjectCollectionParams;
-      }): Promise<AzionStorageResponse<AzionBucketObject[]>> => getObjectsMethod(token, bucket.name, params),
+      }): Promise<AzionStorageResponse<AzionBucketObjects>> => getObjectsMethod(token, bucket.name, params),
       getObjectByKey: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionBucketObject>> =>
         getObjectByKeyMethod(token, bucket.name, key),
       createObject: ({
@@ -235,7 +236,7 @@ const getBucketMethod = createInternalOrExternalMethod(
           params,
         }: {
           params: AzionObjectCollectionParams;
-        }): Promise<AzionStorageResponse<AzionBucketObject[]>> => getObjectsMethod(token, name, params),
+        }): Promise<AzionStorageResponse<AzionBucketObjects>> => getObjectsMethod(token, name, params),
         getObjectByKey: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           getObjectByKeyMethod(token, name, key),
         createObject: ({
@@ -283,7 +284,7 @@ export const updateBucketMethod = async (
           params,
         }: {
           params: AzionObjectCollectionParams;
-        }): Promise<AzionStorageResponse<AzionBucketObject[]>> => getObjectsMethod(token, name, params),
+        }): Promise<AzionStorageResponse<AzionBucketObjects>> => getObjectsMethod(token, name, params),
         getObjectByKey: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           getObjectByKeyMethod(token, name, key),
         createObject: ({
@@ -317,7 +318,7 @@ export const updateBucketMethod = async (
  * @param {string} bucket - Name of the bucket to retrieve objects from.
  * @param {AzionObjectCollectionParams} [params] - Optional parameters for object collection.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
- * @returns {Promise<AzionStorageResponse<AzionBucketObject[]>>} Array of bucket objects or null if retrieval failed.
+ * @returns {Promise<AzionStorageResponse<AzionBucketObjects>>} Array of bucket objects or null if retrieval failed.
  */
 const getObjectsMethod = createInternalOrExternalMethod(
   async (
@@ -325,7 +326,7 @@ const getObjectsMethod = createInternalOrExternalMethod(
     bucket: string,
     params?: AzionObjectCollectionParams,
     options?: AzionClientOptions,
-  ): Promise<AzionStorageResponse<AzionBucketObject[]>> => {
+  ): Promise<AzionStorageResponse<AzionBucketObjects>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
     internalClient.name = bucket;
     const internalResult = await internalClient.getObjects({ params });
@@ -346,11 +347,14 @@ const getObjectsMethod = createInternalOrExternalMethod(
     bucket: string,
     params?: AzionObjectCollectionParams,
     options?: AzionClientOptions,
-  ): Promise<AzionStorageResponse<AzionBucketObject[]>> => {
+  ): Promise<AzionStorageResponse<AzionBucketObjects>> => {
     const apiResponse = await getObjects(resolveToken(token), bucket, params, options?.debug);
     if (apiResponse.results) {
       return {
-        data: apiResponse.results,
+        data: {
+          objects: apiResponse.results,
+          count: apiResponse.results.length,
+        },
       };
     }
     return {
@@ -644,7 +648,7 @@ const getBucketsWrapper = ({
 }: {
   params?: AzionBucketCollectionParams;
   options?: AzionClientOptions;
-}): Promise<AzionStorageResponse<AzionListBuckets>> =>
+}): Promise<AzionStorageResponse<AzionBuckets>> =>
   getBucketsMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -726,7 +730,7 @@ const getObjectsWrapper = ({
   bucket: string;
   params?: AzionObjectCollectionParams;
   options?: AzionClientOptions;
-}): Promise<AzionStorageResponse<AzionBucketObject[]>> => getObjectsMethod(resolveToken(), bucket, params, options);
+}): Promise<AzionStorageResponse<AzionBucketObjects>> => getObjectsMethod(resolveToken(), bucket, params, options);
 
 /**
  * Creates a new object in a specific bucket.
@@ -882,7 +886,7 @@ const client: CreateAzionStorageClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionStorageClient = {
-    getBuckets: (params?: { params?: AzionBucketCollectionParams }): Promise<AzionStorageResponse<AzionListBuckets>> =>
+    getBuckets: (params?: { params?: AzionBucketCollectionParams }): Promise<AzionStorageResponse<AzionBuckets>> =>
       getBucketsMethod(tokenValue, params?.params, { ...config, debug: debugValue }),
     createBucket: ({
       name,

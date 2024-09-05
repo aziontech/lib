@@ -230,8 +230,8 @@ describe('Storage Module', () => {
       (services.getObjects as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await getObjects({ bucket: 'test-bucket', params: { max_object_count: 50 }, options: { debug } });
-      expect(result.data).toHaveLength(2);
-      expect(result.data![0]).toEqual(expect.objectContaining({ key: 'object1' }));
+      expect(result.data?.objects).toHaveLength(2);
+      expect(result.data?.objects![0]).toEqual(expect.objectContaining({ key: 'object1' }));
       expect(services.getObjects).toHaveBeenCalledWith(mockToken, 'test-bucket', { max_object_count: 50 }, debug);
     });
 

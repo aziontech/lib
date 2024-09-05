@@ -169,9 +169,9 @@ if (buckets) {
 **TypeScript:**
 
 ```typescript
-import { getBuckets, AzionStorageResponse, AzionListBuckets } from 'azion/storage';
+import { getBuckets, AzionStorageResponse, AzionBuckets } from 'azion/storage';
 
-const { data: buckets, error }: AzionStorageResponse<AzionListBuckets> = await getBuckets({
+const { data: buckets, error }: AzionStorageResponse<AzionBuckets> = await getBuckets({
   params: { page: 1, page_size: 10 },
 });
 if (buckets) {
@@ -316,9 +316,9 @@ if (object) {
 ```javascript
 import { getObjects } from 'azion/storage';
 
-const { data: objects, error } = await getObjects({ bucketName: 'my-bucket' });
-if (objects) {
-  console.log(`Retrieved ${objects.length} objects from the bucket`);
+const { data: objectsResult, error } = await getObjects({ bucketName: 'my-bucket' });
+if (objectsResult) {
+  console.log(`Retrieved ${objectsResult.count} objects from the bucket`);
 } else {
   console.error('Failed to retrieve objects', error);
 }
@@ -329,11 +329,11 @@ if (objects) {
 ```typescript
 import { getObjects, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
 
-const { data: objects, error }: AzionStorageResponse<AzionBucketObject[]> = await getObjects({
+const { data: objectResult, error }: AzionStorageResponse<AzionBucketObjects> = await getObjects({
   bucketName: 'my-bucket',
 });
-if (objects) {
-  console.log(`Retrieved ${objects.length} objects from the bucket`);
+if (objectResult) {
+  console.log(`Retrieved ${objectResult.count} objects from the bucket`);
 } else {
   console.error('Failed to retrieve objects', error);
 }
@@ -451,7 +451,7 @@ import {
   AzionStorageResponse,
   AzionBucket,
   AzionBucketObject,
-  AzionListBuckets,
+  AzionBuckets,
 } from 'azion/storage';
 
 const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
@@ -464,7 +464,7 @@ if (data) {
   console.log(`Bucket created with name: ${data.name}`);
 }
 
-const { data: allBuckets }: AzionStorageResponse<AzionListBuckets> = await client.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionBuckets> = await client.getBuckets();
 if (allBuckets) {
   console.log(`Retrieved ${allBuckets.count} buckets`);
 }
@@ -530,7 +530,7 @@ Retrieves a list of buckets with optional filtering and pagination.
 
 **Returns:**
 
-- `Promise<AzionStorageResponse<AzionListBuckets>>` - Array of bucket objects or error.
+- `Promise<AzionStorageResponse<AzionBuckets>>` - Array of bucket objects or error.
 
 ### `getBucket`
 
@@ -599,7 +599,7 @@ Retrieves a list of objects in a specific bucket.
 
 **Returns:**
 
-- `Promise<AzionStorageResponse<AzionBucketObject[]>>` - Array of bucket objects or error.
+- `Promise<AzionStorageResponse<AzionBucketObjects>>` - Array of bucket objects or error.
 
 ### `updateObject`
 
@@ -655,7 +655,7 @@ Configuration options for the Storage client.
 
 An object with methods to interact with Storage.
 
-- `getBuckets: (options?: BucketCollectionOptions) => Promise<AzionStorageResponse<AzionListBuckets>>`
+- `getBuckets: (options?: BucketCollectionOptions) => Promise<AzionStorageResponse<AzionBuckets>>`
 - `createBucket: (name: string, edge_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
 - `updateBucket: (name: string, edge_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
 - `deleteBucket: (name: string) => Promise<AzionStorageResponse<AzionDeletedBucket>>`
@@ -675,7 +675,7 @@ The bucket object.
 - `name: string`
 - `edge_access?: string`
 - `state?: 'executed' | 'pending'`
-- `getObjects?: () => Promise<AzionStorageResponse<AzionBucketObject[]>>`
+- `getObjects?: () => Promise<AzionStorageResponse<AzionBucketObjects>>`
 - `getObjectByKey?: (objectKey: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
 - `createObject?: (objectKey: string, file: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
 - `updateObject?: (objectKey: string, file: string) => Promise<AzionStorageResponse<AzionBucketObject>>`

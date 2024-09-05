@@ -26,7 +26,7 @@ export interface AzionClient {
    *   const { data: newObject } = await bucket.createObject({ key: 'example.txt', content: 'Hello, World!' });
    *
    *   // Get all objects in the bucket
-   *   const { data: objects } = await bucket.getObjects({ params: { page: 1, page_size: 10 } });
+   *   const { data: objectsResult } = await bucket.getObjects({ params: { page: 1, page_size: 10 } });
    *
    *   // Get a specific object
    *   const { data: object, error } = await bucket.getObjectByKey({ key: 'example.txt' });
