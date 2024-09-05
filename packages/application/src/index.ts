@@ -388,3 +388,44 @@ const createAzionEdgeApplicationClient: CreateAzionEdgeApplicationClient = (
 };
 
 export default createAzionEdgeApplicationClient;
+
+export * from './cache-settings/types';
+export * from './device-groups/types';
+export * from './functions-instances/types';
+export * from './main-settings/types';
+export * from './origins/types';
+export * from './rules-engine/types';
+export * from './types';
+export {
+  createApplicationWrapper as createApplication,
+  createCacheSettingWrapper as createCacheSetting,
+  createDeviceGroupWrapper as createDeviceGroup,
+  createFunctionInstanceWrapper as createFunctionInstance,
+  createOriginWrapper as createOrigin,
+  createRuleWrapper as createRule,
+  deleteApplicationWrapper as deleteApplication,
+  deleteCacheSettingWrapper as deleteCacheSetting,
+  deleteDeviceGroupWrapper as deleteDeviceGroup,
+  deleteFunctionInstanceWrapper as deleteFunctionInstance,
+  deleteOriginWrapper as deleteOrigin,
+  deleteRuleWrapper as deleteRule,
+  getApplicationWrapper as getApplication,
+  getApplicationsWrapper as getApplications,
+  getCacheSettingWrapper as getCacheSetting,
+  getCacheSettingsWrapper as getCacheSettings,
+  getDeviceGroupWrapper as getDeviceGroup,
+  getDeviceGroupsWrapper as getDeviceGroups,
+  getFunctionInstanceWrapper as getFunctionInstance,
+  getFunctionInstancesWrapper as getFunctionInstances,
+  getOriginWrapper as getOrigin,
+  getOriginsWrapper as getOrigins,
+  getRuleWrapper as getRule,
+  getRulesWrapper as getRules,
+  patchApplicationWrapper as patchApplication,
+  updateApplicationWrapper as updateApplication,
+  updateCacheSettingWrapper as updateCacheSetting,
+  updateDeviceGroupWrapper as updateDeviceGroup,
+  updateFunctionInstanceWrapper as updateFunctionInstance,
+  updateOriginWrapper as updateOrigin,
+  updateRuleWrapper as updateRule,
+};
