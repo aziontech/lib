@@ -1,3 +1,9 @@
+export type ApiBucketObject = {
+  key: string;
+  last_modified: string;
+  size: number;
+};
+
 export interface ApiBucket {
   name: string;
   edge_access: string;
@@ -40,13 +46,13 @@ export interface ApiEditBucketResponse {
 
 export interface ApiDeleteBucketResponse {
   state?: 'executed' | 'pending';
-  data?: Bucket;
+  data?: ApiBucket;
   error?: ApiError;
 }
 
 export interface ApiListObjectsResponse {
   continuation_token?: string | null;
-  results?: BucketObject[];
+  results?: ApiBucketObject[];
   error?: ApiError;
 }
 
