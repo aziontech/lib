@@ -1,49 +1,75 @@
+export type ApiBucketObject = {
+  key: string;
+  last_modified: string;
+  size: number;
+};
+
 export interface ApiBucket {
   name: string;
   edge_access: string;
 }
 
+export type ApiError = {
+  message: string;
+  operation: string;
+};
+
+export interface ApiGetBucket {
+  data?: {
+    name: string;
+    edge_access: string;
+  };
+  error?: ApiError;
+}
+
 export interface ApiListBucketsResponse {
-  links: {
+  links?: {
     next: string | null;
     previous: string | null;
   };
-  count: number;
-  results: ApiBucket[];
+  count?: number;
+  results?: ApiBucket[];
+  error?: ApiError;
 }
 
 export interface ApiCreateBucketResponse {
-  state: 'executed' | 'pending';
-  data: ApiBucket;
+  state?: 'executed' | 'pending';
+  data?: ApiBucket;
+  error?: ApiError;
 }
 
 export interface ApiEditBucketResponse {
-  state: 'executed' | 'pending';
-  data: ApiBucket;
+  state?: 'executed' | 'pending';
+  data?: ApiBucket;
+  error?: ApiError;
 }
 
 export interface ApiDeleteBucketResponse {
-  state: 'executed' | 'pending';
-  data: Bucket;
+  state?: 'executed' | 'pending';
+  data?: ApiBucket;
+  error?: ApiError;
 }
 
 export interface ApiListObjectsResponse {
-  continuation_token: string | null;
-  results: BucketObject[];
+  continuation_token?: string | null;
+  results?: ApiBucketObject[];
+  error?: ApiError;
 }
 
 export interface ApiCreateObjectResponse {
-  state: 'executed' | 'pending';
-  data: {
+  state?: 'executed' | 'pending';
+  data?: {
     object_key: string;
   };
+  error?: ApiError;
 }
 
 export interface ApiDeleteObjectResponse {
-  state: 'executed' | 'pending';
-  data: {
+  state?: 'executed' | 'pending';
+  data?: {
     object_key: string;
   };
+  error?: ApiError;
 }
 
 export interface ApiUpdateObjectResponse {

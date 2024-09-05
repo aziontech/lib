@@ -1,5 +1,5 @@
 import { getBuckets } from '../services/api/index';
-import { ApiBucket } from '../services/api/types';
+import { ApiGetBucket } from '../services/api/types';
 import { AzionClientOptions } from '../types';
 
 /**
@@ -57,18 +57,30 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 
  * @param {string} token The authentication token.
  * @param {string} name The name of the bucket to find.
  * @param {AzionClientOptions} [options] Optional client options.
- * @returns {Promise<ApiBucket | null>} The bucket if found, or null if not found.
+ * @returns {Promise<ApiGetBucket>} The bucket if found, or error message.
  */
 export const findBucketByName = async (
   token: string,
   name: string,
   options?: AzionClientOptions,
-): Promise<ApiBucket | null> => {
+): Promise<ApiGetBucket> => {
   const PAGE_SIZE_TEMP = 1000000;
   const apiResponse = await getBuckets(token, { page_size: PAGE_SIZE_TEMP }, options?.debug ?? false);
   const buckets = apiResponse.results;
-  if (!buckets) return null;
-
+  if (apiResponse.error)
+    return {
+      error: apiResponse.error,
+    };
+  if (!buckets) {
+    return {
+      error: {
+        message: 'Failed to retrieve buckets.',
+        operation: 'getBuckets',
+      },
+    };
+  }
   const bucket = buckets.find((b) => b.name === name);
-  return bucket ?? null;
+  return {
+    data: bucket,
+  };
 };

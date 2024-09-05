@@ -1,9 +1,9 @@
 import { createClient, purgeCacheKey, purgeURL, purgeWildCard } from '../src/index';
 import { AzionPurgeClient } from '../src/types';
 
-import * as services from '../src/services';
+import * as services from '../src/services/api/index';
 
-jest.mock('../src/services');
+jest.mock('../src/services/api/index');
 
 describe('Purge Module', () => {
   const mockToken = 'mock-token';
@@ -37,15 +37,17 @@ describe('Purge Module', () => {
       (services.postPurgeURL as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await purgeURL(['http://example.com'], { debug: mockDebug });
-      expect(result).toEqual({ state: 'executed', items: ['http://example.com'] });
+      expect(result.data).toEqual({ state: 'executed', items: ['http://example.com'] });
       expect(services.postPurgeURL).toHaveBeenCalledWith(mockToken, ['http://example.com'], mockDebug);
     });
 
-    it('should return null on failure', async () => {
-      (services.postPurgeURL as jest.Mock).mockResolvedValue(null);
+    it('should return error on failure', async () => {
+      (services.postPurgeURL as jest.Mock).mockResolvedValue({
+        error: { message: 'Invalid Tokne', operation: 'purgeURL' },
+      });
 
       const result = await purgeURL(['http://example.com'], { debug: mockDebug });
-      expect(result).toBeNull();
+      expect(result).toEqual({ error: { message: 'Invalid Tokne', operation: 'purgeURL' } });
     });
   });
 
@@ -55,15 +57,17 @@ describe('Purge Module', () => {
       (services.postPurgeCacheKey as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await purgeCacheKey(['cache-key-1'], { debug: true });
-      expect(result).toEqual({ state: 'executed', items: ['cache-key-1'] });
+      expect(result.data).toEqual({ state: 'executed', items: ['cache-key-1'] });
       expect(services.postPurgeCacheKey).toHaveBeenCalledWith(mockToken, ['cache-key-1'], mockDebug);
     });
 
-    it('should return null on failure', async () => {
-      (services.postPurgeCacheKey as jest.Mock).mockResolvedValue(null);
+    it('should return error on failure', async () => {
+      (services.postPurgeCacheKey as jest.Mock).mockResolvedValue({
+        error: { message: 'Invalid Token', operation: 'purge cache key' },
+      });
 
       const result = await purgeCacheKey(['cache-key-1'], { debug: mockDebug });
-      expect(result).toBeNull();
+      expect(result).toEqual({ error: { message: 'Invalid Token', operation: 'purge cache key' } });
     });
   });
 
@@ -73,15 +77,17 @@ describe('Purge Module', () => {
       (services.postPurgeWildcard as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await purgeWildCard(['http://example.com/*'], { debug: mockDebug });
-      expect(result).toEqual({ state: 'executed', items: ['http://example.com/*'] });
+      expect(result.data).toEqual({ state: 'executed', items: ['http://example.com/*'] });
       expect(services.postPurgeWildcard).toHaveBeenCalledWith(mockToken, ['http://example.com/*'], mockDebug);
     });
 
-    it('should return null on failure', async () => {
-      (services.postPurgeWildcard as jest.Mock).mockResolvedValue(null);
+    it('should return error on failure', async () => {
+      (services.postPurgeWildcard as jest.Mock).mockResolvedValue({
+        error: { message: 'Invalid Token', operation: 'purge wildcard' },
+      });
 
       const result = await purgeWildCard(['http://example.com/*'], { debug: mockDebug });
-      expect(result).toBeNull();
+      expect(result).toEqual({ error: { message: 'Invalid Token', operation: 'purge wildcard' } });
     });
   });
 

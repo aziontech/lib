@@ -1,5 +1,12 @@
 import { Azion } from 'azion/types';
-import { AzionBucket, AzionBucketObject, AzionDeletedBucketObject, AzionObjectCollectionParams } from '../../types';
+import {
+  AzionBucket,
+  AzionBucketObject,
+  AzionBucketObjects,
+  AzionDeletedBucketObject,
+  AzionObjectCollectionParams,
+  AzionStorageResponse,
+} from '../../types';
 import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 
 export const isInternalStorageAvailable = (): boolean => {
@@ -69,9 +76,13 @@ export class InternalStorageClient implements AzionBucket {
    *
    * @param {Object} params - Parameters for object collection.
    * @param {AzionObjectCollectionParams} [params.params] - Parameters for object collection.
-   * @returns {Promise<AzionBucketObject[] | null>} The list of objects or null if an error occurs.
+   * @returns {Promise<AzionStorageResponse<AzionBucketObjects>>} The list of objects or error message.
    */
-  async getObjects({ params }: { params?: AzionObjectCollectionParams }): Promise<AzionBucketObject[] | null> {
+  async getObjects({
+    params,
+  }: {
+    params?: AzionObjectCollectionParams;
+  }): Promise<AzionStorageResponse<AzionBucketObjects>> {
     this.initializeStorage(this.name);
     try {
       const objectList = await retryWithBackoff(() => this.storage!.list());
@@ -85,10 +96,20 @@ export class InternalStorageClient implements AzionBucket {
           };
         }),
       );
-      return objects;
+      return {
+        data: {
+          objects,
+          count: objects.length,
+        },
+      };
     } catch (error) {
       if (this.debug) console.error('Error getting objects:', error);
-      return null;
+      return {
+        error: {
+          message: (error as Error)?.message ?? 'Error getting objects',
+          operation: 'getObjects',
+        },
+      };
     }
   }
 
@@ -99,9 +120,9 @@ export class InternalStorageClient implements AzionBucket {
    *
    * @param {Object} params - Parameters for retrieving an object.
    * @param {string} params.key - The key of the object to retrieve.
-   * @returns {Promise<AzionBucketObject | null>} The object or null if an error occurs.
+   * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The object or null if an error occurs.
    */
-  async getObjectByKey({ key }: { key: string }): Promise<AzionBucketObject | null> {
+  async getObjectByKey({ key }: { key: string }): Promise<AzionStorageResponse<AzionBucketObject>> {
     this.initializeStorage(this.name);
     try {
       const storageObject = await retryWithBackoff(() => this.storage!.get(key));
@@ -109,15 +130,22 @@ export class InternalStorageClient implements AzionBucket {
       const decoder = new TextDecoder();
       const content = decoder.decode(arrayBuffer);
       return {
-        state: 'executed-runtime',
-        key: removeLeadingSlash(key),
-        size: storageObject.contentLength,
-        content: content,
-        content_type: storageObject.metadata.get('content-type'),
+        data: {
+          state: 'executed-runtime',
+          key: removeLeadingSlash(key),
+          size: storageObject.contentLength,
+          content: content,
+          content_type: storageObject.metadata.get('content-type'),
+        },
       };
     } catch (error) {
       if (this.debug) console.error('Error getting object by key:', error);
-      return null;
+      return {
+        error: {
+          message: (error as Error)?.message ?? 'Error getting object by key',
+          operation: 'getObjectByKey',
+        },
+      };
     }
   }
 
@@ -130,7 +158,7 @@ export class InternalStorageClient implements AzionBucket {
    * @param {string} params.key - The key of the object to create.
    * @param {string} params.content - The content of the object.
    * @param {{ content_type?: string }} [params.options] - Optional metadata for the object.
-   * @returns {Promise<AzionBucketObject | null>} The created object or null if an error occurs.
+   * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The created object or error message.
    */
   async createObject({
     key,
@@ -140,7 +168,7 @@ export class InternalStorageClient implements AzionBucket {
     key: string;
     content: string;
     options?: { content_type?: string };
-  }): Promise<AzionBucketObject | null> {
+  }): Promise<AzionStorageResponse<AzionBucketObject>> {
     this.initializeStorage(this.name);
     try {
       const contentBuffer = new TextEncoder().encode(content);
@@ -150,15 +178,22 @@ export class InternalStorageClient implements AzionBucket {
         }),
       );
       return {
-        state: 'executed-runtime',
-        key: removeLeadingSlash(key),
-        size: contentBuffer.byteLength,
-        content_type: options?.content_type,
-        content: content,
+        data: {
+          state: 'executed-runtime',
+          key: removeLeadingSlash(key),
+          size: contentBuffer.byteLength,
+          content_type: options?.content_type,
+          content: content,
+        },
       };
     } catch (error) {
       if (this.debug) console.error('Error creating object:', error);
-      return null;
+      return {
+        error: {
+          message: (error as Error)?.message ?? 'Error creating object',
+          operation: 'createObject',
+        },
+      };
     }
   }
 
@@ -171,7 +206,7 @@ export class InternalStorageClient implements AzionBucket {
    * @param {string} params.key - The key of the object to update.
    * @param {string} params.content - The new content of the object.
    * @param {{ content_type?: string }} [params.options] - Optional metadata for the object.
-   * @returns {Promise<AzionBucketObject | null>} The updated object or null if an error occurs.
+   * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The updated object or error message.
    */
   async updateObject({
     key,
@@ -181,7 +216,7 @@ export class InternalStorageClient implements AzionBucket {
     key: string;
     content: string;
     options?: { content_type?: string };
-  }): Promise<AzionBucketObject | null> {
+  }): Promise<AzionStorageResponse<AzionBucketObject>> {
     return this.createObject({ key, content, options });
   }
 
@@ -192,16 +227,21 @@ export class InternalStorageClient implements AzionBucket {
    *
    * @param {Object} params - Parameters for deleting an object.
    * @param {string} params.key - The key of the object to delete.
-   * @returns {Promise<AzionDeletedBucketObject | null>} Confirmation of deletion or null if an error occurs.
+   * @returns {Promise<AzionStorageResponse<AzionDeletedBucketObject>>} Confirmation of deletion or error if an error occurs.
    */
-  async deleteObject({ key }: { key: string }): Promise<AzionDeletedBucketObject | null> {
+  async deleteObject({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> {
     this.initializeStorage(this.name);
     try {
       await retryWithBackoff(() => this.storage!.delete(key));
-      return { key: removeLeadingSlash(key), state: 'executed-runtime' };
+      return { data: { key: removeLeadingSlash(key), state: 'executed-runtime' } };
     } catch (error) {
       if (this.debug) console.error('Error deleting object:', error);
-      return null;
+      return {
+        error: {
+          message: (error as Error)?.message ?? 'Error deleting object',
+          operation: 'deleteObject',
+        },
+      };
     }
   }
 }
