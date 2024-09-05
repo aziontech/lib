@@ -79,7 +79,8 @@ const postPurge = async (url: string, token: string, urls: string[], debug?: boo
     });
     const result = await response.json();
     if (!result.data) {
-      result.error = handleApiError(['detail', 'error'], result, 'post purge');
+      if (debug) console.log('Response Error:', result);
+      result.error = handleApiError(['detail', 'error', 'items'], result, 'post purge');
       return {
         error: result.error ?? JSON.stringify(result),
       };
