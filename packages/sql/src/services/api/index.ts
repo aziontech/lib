@@ -12,6 +12,21 @@ const BASE_URL =
     ? 'https://stage-api.azion.com/v4/edge_sql/databases'
     : 'https://api.azion.com/v4/edge_sql/databases';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleApiError = (fields: string[], data: any, operation: string) => {
+  let error = { message: 'Error unknown', operation: operation };
+  fields.forEach((field: string) => {
+    if (data[field]) {
+      const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
+      error = {
+        message: message,
+        operation: operation,
+      };
+    }
+  });
+  return error;
+};
+
 /**
  * Creates a new Edge Database.
  * @param {string} token - The authorization token.
@@ -30,16 +45,15 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
       body: JSON.stringify({ name }),
     });
     const result = await response.json();
-    if (debug) console.log('Response Post Database', JSON.stringify(result));
-    if (result?.detail) {
-      return Promise.resolve({
-        state: 'failed',
-        error: {
-          detail: result.detail,
-        },
-      });
+    if (!result.state) {
+      result.error = handleApiError(['detail'], result, 'post database');
+      return {
+        error: result.error ?? JSON.stringify(result),
+      };
     }
-    return Promise.resolve({
+
+    if (debug) console.log('Response Post Database', JSON.stringify(result));
+    return {
       state: result.state,
       data: {
         clientId: result.data.client_id,
@@ -51,7 +65,7 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
         status: result.data.status,
         updatedAt: result.data.updated_at,
       },
-    });
+    };
   } catch (error) {
     if (debug) console.error('Error creating EdgeDB:', error);
     throw error;
@@ -63,7 +77,7 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
  * @param {string} token - The authorization token.
  * @param {number} id - The ID of the database to delete.
  * @param {boolean} [debug] - Optional debug flag.
- * @returns {Promise<ApiDeleteDatabaseResponse | null>} The response from the API or null if an error occurs.
+ * @returns {Promise<ApiDeleteDatabaseResponse>} The response from the API or error if an error occurs.
  */
 const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): Promise<ApiDeleteDatabaseResponse> => {
   try {
@@ -74,7 +88,18 @@ const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): P
       },
     });
     if (debug) console.log('Response Delete Database:', response);
-    return response.json();
+    const result = await response.json();
+    if (!result.state) {
+      result.error = handleApiError(['detail'], result, 'delete database');
+      return {
+        error: result.error ?? JSON.stringify(result),
+      };
+    }
+    return {
+      data: {
+        id,
+      },
+    };
   } catch (error) {
     if (debug) console.error('Error deleting EdgeDB:', error);
     throw error;
@@ -105,33 +130,27 @@ const postQueryEdgeDatabase = async (
       body: JSON.stringify({ statements }),
     });
 
-    if (!response.ok) {
-      if (debug) console.error('Error querying EdgeDB:', response.statusText);
+    const result = await response.json();
+    if (!result.data || !Array.isArray(result.data)) {
+      result.error = handleApiError(['detail'], result, 'post query');
       return {
-        state: 'failed',
-        error: {
-          detail: response.statusText,
-        },
+        error: result.error ?? JSON.stringify(result),
       };
     }
-
-    const json = await response.json();
-
-    if (json.error) {
-      if (debug) console.error('Error querying EdgeDB:', json.error);
-      return Promise.resolve({
-        state: 'failed',
+    if (result.data[0].error) {
+      return {
         error: {
-          detail: json.error,
+          message: result.data[0].error,
+          operation: 'post query',
         },
-      });
+      };
     }
 
     if (debug) {
       // limit the size of the array to 10
       const limitedData: ApiQueryExecutionResponse = {
-        ...json,
-        data: (json as ApiQueryExecutionResponse)?.data?.map((data) => {
+        ...result,
+        data: (result as ApiQueryExecutionResponse)?.data?.map((data) => {
           return {
             ...data,
             results: {
@@ -143,10 +162,10 @@ const postQueryEdgeDatabase = async (
       };
       console.log('Response Query:', JSON.stringify(limitedData));
     }
-    return Promise.resolve({
-      state: json.state,
-      data: json.data,
-    });
+    return {
+      state: result.state,
+      data: result.data,
+    };
   } catch (error) {
     if (debug) console.error('Error querying EdgeDB:', error);
     throw new Error((error as Error)?.message);
@@ -158,13 +177,9 @@ const postQueryEdgeDatabase = async (
  * @param {string} token - The authorization token.
  * @param {number} id - The ID of the database to retrieve.
  * @param {boolean} [debug] - Optional debug flag.
- * @returns {Promise<ApiCreateDatabaseResponse | null>} The response from the API or null if an error occurs.
+ * @returns {Promise<ApiCreateDatabaseResponse>} The response from the API or error.
  */
-const getEdgeDatabaseById = async (
-  token: string,
-  id: number,
-  debug?: boolean,
-): Promise<ApiCreateDatabaseResponse | null> => {
+const getEdgeDatabaseById = async (token: string, id: number, debug?: boolean): Promise<ApiCreateDatabaseResponse> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'GET',
@@ -172,12 +187,18 @@ const getEdgeDatabaseById = async (
         Authorization: `Token ${token}`,
       },
     });
-    const database = await response.json();
-    if (debug) console.log('Response:', database);
-    return database;
+    const result = await response.json();
+    if (!result.data) {
+      result.error = handleApiError(['detail'], result, 'get databases');
+      return {
+        error: result.error ?? JSON.stringify(result),
+      };
+    }
+    if (debug) console.log('Response:', result);
+    return result;
   } catch (error) {
     if (debug) console.error('Error getting EdgeDB:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -192,7 +213,7 @@ const getEdgeDatabases = async (
   token: string,
   params?: Partial<AzionDatabaseCollectionOptions>,
   debug?: boolean,
-): Promise<ApiListDatabasesResponse & { detail?: string }> => {
+): Promise<ApiListDatabasesResponse> => {
   try {
     const url = new URL(BASE_URL);
     if (params) {
@@ -209,6 +230,12 @@ const getEdgeDatabases = async (
       },
     });
     const data = await response.json();
+    if (!data.results) {
+      data.error = handleApiError(['detail'], data, 'get databases');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) {
       // limit the size of the array to 10
       const limitedData = {
@@ -216,13 +243,6 @@ const getEdgeDatabases = async (
         results: limitArraySize(data.results, 10),
       };
       console.log('Response Databases:', JSON.stringify(limitedData));
-    }
-    if (data?.detail) {
-      return {
-        results: [],
-        detail: data.detail,
-        count: 0,
-      };
     }
     return {
       links: data?.links,

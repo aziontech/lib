@@ -127,9 +127,9 @@ if (newDatabase) {
   console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases = await client.sql.getDatabases();
-if (allDatabases?.data) {
-  console.log(`Retrieved ${allDatabases?.data?.length} databases`);
+const { data: allDatabases } = await client.sql.getDatabases();
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases?.count} databases`);
 }
 
 const queryResult = await client.sql.query('SELECT * FROM users');
@@ -147,19 +147,19 @@ import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sq
 
 const client: AzionClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const { data: newDatabase, error }: AzionDatabaseResponse = await client.sql.createDatabase('my-new-db');
+const { data: newDatabase, error }: AzionDatabaseResponse<AzionDatabase> = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: AzionDatabaseResponse = await client.sql.getDatabases();
-if (allDatabases?.data) {
-  console.log(`Retrieved ${allDatabases?.data?.length} databases`);
+const { data: allDatabases }: AzionDatabaseResponse<AzionDatabaseCollections> = await client.sql.getDatabases();
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases?.count} databases`);
 }
 
-const queryResult: AzionDatabaseQueryResponse = await client.sql.query(['SELECT * FROM users']);
+const queryResult: AzionDatabaseResponse<AzionDatabaseQueryResponse> = await client.sql.query(['SELECT * FROM users']);
 if (queryResult?.data) {
-  console.log(`Query executed. Rows returned: ${queryResult?.data?.length}`);
+  console.log(`Query executed. Rows returned: ${queryResult?.data?.results.length}`);
 }
 ```
 

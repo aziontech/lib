@@ -1,7 +1,7 @@
 import { JsonObjectQueryExecutionResponse } from './utils/mappers/to-object';
 
-export type AzionDatabaseResponse = {
-  data?: AzionDatabase | AzionDatabase[] | Pick<AzionDatabase, 'id'>;
+export type AzionDatabaseResponse<T> = {
+  data?: T;
   error?: {
     message: string;
     operation: string;
@@ -22,7 +22,7 @@ export interface AzionDatabase {
    *
    * @param {string[]} statements - An array of SQL statements to execute.
    * @param {AzionClientOptions} [options] - Additional options for the query execution.
-   * @returns {Promise<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation failed.
+   * @returns {Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation faile>d.
    *
    * @example
    * const result = await database.query([
@@ -30,14 +30,17 @@ export interface AzionDatabase {
    *   'UPDATE users SET last_login = NOW() WHERE id = ?'
    * ], { debug: true });
    */
-  query?: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>;
+  query: (
+    statements: string[],
+    options?: AzionClientOptions,
+  ) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>;
 
   /**
    * Executes one or more SQL statements on the database.
    *
    * @param {string[]} statements - An array of SQL statements to execute.
    * @param {AzionClientOptions} [options] - Additional options for the execution.
-   * @returns {Promise<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation failed.
+   * @returns {Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation faile>d.
    *
    * @example
    * const result = await database.execute([
@@ -45,18 +48,21 @@ export interface AzionDatabase {
    *   'DELETE FROM old_users WHERE last_login < ?'
    * ], { force: true });
    */
-  execute?: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>;
+  execute: (
+    statements: string[],
+    options?: AzionClientOptions,
+  ) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>;
 
   /**
    * Retrieves a list of tables in the database.
    *
    * @param {AzionClientOptions} [options] - Additional options for listing tables.
-   * @returns {Promise<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation failed.
+   * @returns {Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>} A promise that resolves to the query response or error if the operation faile>d.
    *
    * @example
-   * const tables = await database.listTables({ debug: true });
+   * const { data: tables, error } = await database.getTables({ debug: true });
    */
-  listTables?: (options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>;
+  getTables: (options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>;
 }
 
 export type AzionQueryParams = string | number | boolean | null;
@@ -66,31 +72,15 @@ export type AzionQueryExecutionParams = {
   params?: (AzionQueryParams | Record<string, AzionQueryParams>)[];
 };
 
-export type AzionQueryExecutionInfo = {
-  rowsRead?: number;
-  rowsWritten?: number;
-  durationMs?: number;
-};
-
-export type NonSelectQueryResult = {
-  info?: AzionQueryExecutionInfo;
-};
-
 export type QueryResult = {
   columns?: string[];
   rows?: (number | string)[][];
   statement?: string;
-  info?: AzionQueryExecutionInfo;
 };
 
 export type AzionDatabaseQueryResponse = {
-  state: 'executed' | 'pending' | 'executed-runtime' | 'failed';
-  data?: QueryResult[] | NonSelectQueryResult | undefined;
-  toObject?: () => JsonObjectQueryExecutionResponse;
-  error?: {
-    message: string;
-    operation: string;
-  };
+  results?: QueryResult[];
+  toObject: () => JsonObjectQueryExecutionResponse | null;
 };
 
 export type AzionDatabaseExecutionResponse = AzionDatabaseQueryResponse;
@@ -100,6 +90,11 @@ export type AzionDatabaseCollectionOptions = {
   page?: number;
   page_size?: number;
   search?: string;
+};
+
+export type AzionDatabaseCollections = {
+  databases?: AzionDatabase[];
+  count?: number;
 };
 
 export interface AzionSQLClient {
@@ -117,12 +112,12 @@ export interface AzionSQLClient {
    * console.error(`Failed to create database: ${error.message}`);
    *
    */
-  createDatabase: (name: string) => Promise<AzionDatabaseResponse>;
+  createDatabase: (name: string) => Promise<AzionDatabaseResponse<AzionDatabase>>;
   /**
    * Deletes a database by its ID.
    *
    * @param {number} id - ID of the database to delete.
-   * @returns {Promise<AzionDatabaseResponse>} Object confirming deletion or error if the operation failed.
+   * @returns {Promise<AzionDatabaseResponse<{ id: number }>>} Object confirming deletion or error if the operation failed.
    *
    * @example
    * const { data, error } = await sqlClient.deleteDatabase(123);
@@ -132,12 +127,12 @@ export interface AzionSQLClient {
    * console.error(`Failed to delete database: ${error.message}`);
    *
    */
-  deleteDatabase: (id: number) => Promise<AzionDatabaseResponse>;
+  deleteDatabase: (id: number) => Promise<AzionDatabaseResponse<{ id: number }>>;
   /**
    * Retrieves a database by its Name.
    *
    * @param {string} name - Name of the database to retrieve.
-   * @returns {Promise<AzionDatabaseResponse>} The retrieved database object or null if not found.
+   * @returns {Promise<AzionDatabaseResponse<AzionDatabase>>} The retrieved database object or null if not found.
    *
    * @example
    * const { data, error } = await sqlClient.getDatabase('my-db');
@@ -147,7 +142,7 @@ export interface AzionSQLClient {
    * console.error(`Failed to retrieve database: ${error.message}`);
    *
    */
-  getDatabase?: (name: string) => Promise<AzionDatabaseResponse>;
+  getDatabase: (name: string) => Promise<AzionDatabaseResponse<AzionDatabase>>;
 
   /**
    * Retrieves a list of databases with optional filtering and pagination.
@@ -172,7 +167,7 @@ export interface AzionSQLClient {
     page?: number;
     page_size?: number;
     search?: string;
-  }) => Promise<AzionDatabaseResponse>;
+  }) => Promise<AzionDatabaseResponse<AzionDatabaseCollections>>;
 }
 
 /**

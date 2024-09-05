@@ -4,13 +4,13 @@ import {
   deleteDatabase,
   getDatabase,
   getDatabases,
-  listTables,
+  getTables,
   useExecute,
   useQuery,
 } from '../src/index';
 import * as servicesApi from '../src/services/api/index';
 import * as services from '../src/services/index';
-import { AzionDatabase, AzionDatabaseResponse, AzionSQLClient } from './types';
+import { AzionSQLClient } from './types';
 
 jest.mock('../src/services/api/index');
 
@@ -49,15 +49,17 @@ describe('SQL Module', () => {
     it('should successfully create a database', async () => {
       const mockResponse = { data: { id: 1, name: 'test-db' } };
       (servicesApi.postEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
-      const result: AzionDatabaseResponse = await createDatabase('test-db', { debug: mockDebug });
+      const result = await createDatabase('test-db', { debug: mockDebug });
       expect(result.data).toEqual(expect.objectContaining({ id: 1, name: 'test-db' }));
       expect(servicesApi.postEdgeDatabase).toHaveBeenCalledWith(mockToken, 'test-db', true);
     });
 
     it('should return error on failure', async () => {
       (servicesApi.postEdgeDatabase as jest.Mock).mockResolvedValue({
-        state: 'failed',
-        error: { detail: 'Database already exists' },
+        error: {
+          message: 'Database already exists',
+          operation: 'create database',
+        },
       });
       const result = await createDatabase('test-db', { debug: mockDebug });
       expect(result).toEqual({
@@ -71,7 +73,7 @@ describe('SQL Module', () => {
       jest.spyOn(console, 'log').mockImplementation();
     });
     it('should successfully delete a database', async () => {
-      (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue({ state: 'success' });
+      (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue({ data: { id: 1 } });
       const result = await deleteDatabase(1, { debug: mockDebug });
       expect(result).toEqual({ data: { id: 1 } });
       expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, true);
@@ -79,7 +81,7 @@ describe('SQL Module', () => {
 
     it('should return error on failure', async () => {
       (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue({
-        error: { detail: 'Database not found' },
+        error: { message: 'Failed to delete database', operation: 'delete database' },
       });
       const result = await deleteDatabase(1, { debug: mockDebug });
       expect(result).toEqual({
@@ -96,7 +98,7 @@ describe('SQL Module', () => {
       const mockResponse = { results: [{ id: 1, name: 'test-db' }] };
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = (await getDatabase('test-db', { debug: mockDebug })) as AzionDatabaseResponse;
+      const result = await getDatabase('test-db', { debug: mockDebug });
       expect(result.data).toEqual(expect.objectContaining({ id: 1, name: 'test-db' }));
       expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { search: 'test-db' }, true);
     });
@@ -124,15 +126,17 @@ describe('SQL Module', () => {
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponse);
 
       const { data } = await getDatabases({ page: 1, page_size: 10 }, { debug: mockDebug });
-      expect(data).toHaveLength(2);
-      expect((data as AzionDatabase[])[0]).toEqual(expect.objectContaining({ id: 1, name: 'test-db-1' }));
+      expect(data?.databases).toHaveLength(2);
+      expect(data!.databases![0]).toEqual(expect.objectContaining({ id: 1, name: 'test-db-1' }));
       expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { page: 1, page_size: 10 }, true);
     });
 
     it('should return error if retrieval fails', async () => {
-      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue({ state: 'failed' });
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue({
+        error: { message: 'Failed to retrieve databases', operation: 'get databases' },
+      });
 
-      const result = (await getDatabases({ page: 1, page_size: 10 }, { debug: mockDebug })) as AzionDatabaseResponse;
+      const result = await getDatabases({ page: 1, page_size: 10 }, { debug: mockDebug });
       expect(result).toEqual({ error: { message: 'Failed to retrieve databases', operation: 'get databases' } });
     });
   });
@@ -161,10 +165,9 @@ describe('SQL Module', () => {
       (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
-      expect(result).toEqual(
+      expect(result.data).toEqual(
         expect.objectContaining({
-          state: 'executed',
-          data: [{ columns: ['id', 'name'], rows: [[1, 'test']], info: undefined, statement: 'SELECT' }],
+          results: [{ columns: ['id', 'name'], rows: [[1, 'test']], statement: 'SELECT' }],
         }),
       );
       expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['SELECT * FROM test'], true);
@@ -193,14 +196,19 @@ describe('SQL Module', () => {
       };
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
       const mockResponse = {
-        state: 'executed',
         data: [{ results: { columns: [], rows: [] } }],
       };
       (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      const result = await useExecute('test-db', ["INSERT INTO users (id, name) VALUES (1, 'John Doe')"], {
+        debug: mockDebug,
+      });
 
-      expect(
-        await useExecute('test-db', ["INSERT INTO users (id, name) VALUES (1, 'John Doe')"], { debug: mockDebug }),
-      ).toEqual(expect.objectContaining({ state: 'executed' }));
+      expect(result.data).toEqual(
+        expect.objectContaining({
+          results: [{ statement: 'INSERT' }],
+        }),
+      );
+
       expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(
         mockToken,
         1,
@@ -219,25 +227,23 @@ describe('SQL Module', () => {
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
 
       await expect(useExecute('test-db', ['SELECT * FROM test'], { debug: mockDebug })).resolves.toEqual({
-        state: 'failed',
         error: { message: 'Only write statements are allowed', operation: 'execute database' },
       });
     });
 
     it('should return error if query execution fails', async () => {
       (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue({
-        state: 'failed',
+        error: { message: 'Error executing query', operation: 'executing query' },
       });
 
       const result = await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
       expect(result).toEqual({
-        state: 'failed',
         error: { message: 'Error executing query', operation: 'executing query' },
       });
     });
 
     it('should successfully execute useQuery with apiQuery called', async () => {
-      const spyApiQuery = jest.spyOn(services, 'apiQuery').mockResolvedValue({ state: 'executed', data: [] });
+      const spyApiQuery = jest.spyOn(services, 'apiQuery').mockResolvedValue({ data: { toObject: () => null } });
 
       await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
 
@@ -252,7 +258,9 @@ describe('SQL Module', () => {
     it('should successfully execute useQuery with runtimeQuery called', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (globalThis as any).Azion = { Sql: {} };
-      const spyRuntimeQuery = jest.spyOn(services, 'runtimeQuery').mockResolvedValue({ state: 'executed', data: [] });
+      const spyRuntimeQuery = jest
+        .spyOn(services, 'runtimeQuery')
+        .mockResolvedValue({ data: { toObject: () => null } });
 
       await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
 
@@ -265,7 +273,7 @@ describe('SQL Module', () => {
     });
   });
 
-  describe('listTables', () => {
+  describe('getTables', () => {
     it('should successfully list tables', async () => {
       const mockResponseDatabases = {
         results: [
@@ -275,7 +283,6 @@ describe('SQL Module', () => {
       };
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
       const mockResponse = {
-        state: 'executed',
         data: [
           {
             results: {
@@ -287,11 +294,10 @@ describe('SQL Module', () => {
       };
       (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await listTables('test-db', { debug: mockDebug });
-      expect(result).toEqual(
+      const result = await getTables('test-db', { debug: mockDebug });
+      expect(result.data).toEqual(
         expect.objectContaining({
-          state: 'executed',
-          data: [
+          results: [
             {
               statement: 'PRAGMA',
               columns: ['schema', 'name', 'type', 'ncol', 'wr', 'strict'],

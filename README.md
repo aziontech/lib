@@ -58,11 +58,11 @@ const { data: allBuckets } = await client.storage.getBuckets();
 console.log(`Retrieved ${allBuckets.count} buckets`);
 
 // SQL
-const newDatabase = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.data.id}`);
+const { data: newDatabase } = await client.sql.createDatabase('my-new-db');
+console.log(`Database created with ID: ${newDatabase.id}`);
 
-const allDatabases = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.data.length} databases`);
+const { data: allDatabases } = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.count} databases`);
 
 // Purge
 const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
@@ -86,11 +86,11 @@ const { data: allBuckets }: AzionStorageResponse<AzionListBuckets> = await clien
 console.log(`Retrieved ${allBuckets.count} buckets`);
 
 // SQL
-const newDatabase: AzionDatabaseResponse = await client.sql.createDatabase('my-new-db');
-console.log(`Database created with ID: ${newDatabase.data.id}`);
+const { data: newDatabase }: AzionDatabaseResponse<AzionDatabase> = await client.sql.createDatabase('my-new-db');
+console.log(`Database created with ID: ${newDatabase.id}`);
 
-const allDatabases: AzionDatabaseResponse = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.data.length} databases`);
+const { data: allDatabases }: AzionDatabaseResponse<AzionDatabaseCollections> = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.count} databases`);
 
 // Purge
 const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
@@ -179,9 +179,9 @@ if (data) {
   console.log(`Database created with ID: ${data.id}`);
 }
 
-const allDatabases: AzionDatabaseResponse = await client.getDatabases();
-if (allDatabases.data) {
-  console.log(`Retrieved ${allDatabases.data.length} databases`);
+const { data: allDatabases }: AzionDatabaseResponse = await client.getDatabases();
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases.count} databases`);
 }
 ```
 

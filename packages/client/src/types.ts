@@ -51,7 +51,7 @@ export interface AzionClient {
    *
    * @example
    * // Create a new database
-   * const newDatabase = await client.sql.createDatabase('my-new-db');
+   * const { data: newDatabase } = await client.sql.createDatabase('my-new-db');
    *
    * @example
    * // Get all databases
@@ -59,7 +59,7 @@ export interface AzionClient {
    *
    * @example
    * // Get a specific database and perform operations
-   * const { data:db, error } = await client.sql.getDatabase('my-db');
+   * const { data: db, error } = await client.sql.getDatabase('my-db');
    * if (db) {
    *   // Execute a query
    *   const queryResult = await db.query(['SELECT * FROM users WHERE id = ?', 1]);
@@ -71,7 +71,7 @@ export interface AzionClient {
    *   ], ['John Doe', 'john@example.com', 1]);
    *
    *   // List tables in the database
-   *   const tables = await db.listTables();
+   *   const tables = await db.getTables();
    * }
    *
    * @example

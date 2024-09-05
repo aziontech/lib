@@ -1,4 +1,4 @@
-import { AzionClientOptions, AzionDatabaseQueryResponse, QueryResult } from '../types';
+import { AzionClientOptions, AzionDatabaseQueryResponse, AzionDatabaseResponse, QueryResult } from '../types';
 import { limitArraySize } from '../utils';
 import { toObjectQueryExecutionResponse } from '../utils/mappers/to-object';
 import { getEdgeDatabases, postQueryEdgeDatabase } from './api/index';
@@ -10,23 +10,18 @@ export const apiQuery = async (
   name: string,
   statements: string[],
   options?: AzionClientOptions,
-): Promise<AzionDatabaseQueryResponse> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   const databaseResponse = await getEdgeDatabases(token, { search: name }, options?.debug);
 
-  if (databaseResponse?.detail) {
+  if (databaseResponse?.error) {
     return {
-      state: 'failed',
-      error: {
-        message: databaseResponse.detail,
-        operation: 'apiQuery',
-      },
+      error: databaseResponse?.error,
     };
   }
 
   const databases = databaseResponse?.results;
   if (!databases || databases.length === 0) {
     return {
-      state: 'failed',
       error: {
         message: `Database ${name} not found`,
         operation: 'apiQuery',
@@ -37,7 +32,6 @@ export const apiQuery = async (
   const database = databases[0];
   if (!database?.id) {
     return {
-      state: 'failed',
       error: {
         message: `Database ${name} not found`,
         operation: 'apiQuery',
@@ -45,37 +39,26 @@ export const apiQuery = async (
     };
   }
 
-  const { state, data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
-  if (data) {
-    const resultStatements: AzionDatabaseQueryResponse = {
-      state,
-      data: data.map((result, index) => {
-        const info = result?.results?.query_duration_ms
-          ? {
-              durationMs: result.results.query_duration_ms,
-              rowsRead: result.results.rows_read,
-              rowsWritten: result.results.rows_written,
-            }
-          : undefined;
+  const { data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
 
+  if (data && data.length > 0) {
+    const resultStatements: AzionDatabaseQueryResponse = {
+      results: data.map((result, index) => {
         return {
           statement: statements[index]?.split(' ')[0],
-          columns: result?.results?.columns,
-          rows: result?.results?.rows,
-          info,
+          columns:
+            result?.results?.columns && result?.results?.columns.length > 0 ? result?.results?.columns : undefined,
+          rows: result?.results?.rows && result?.results?.rows.length > 0 ? result?.results?.rows : undefined,
         };
       }),
       toObject: () => toObjectQueryExecutionResponse(resultStatements),
     };
-    return resultStatements;
+    return {
+      data: resultStatements,
+    };
   }
-
   return {
-    state,
-    error: {
-      message: error?.detail || 'Error executing query',
-      operation: 'executing query',
-    },
+    error: error,
   };
 };
 
@@ -87,24 +70,23 @@ export const runtimeQuery = async (
   statements: string[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options?: AzionClientOptions,
-): Promise<AzionDatabaseQueryResponse> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   try {
     const internalSql = new InternalAzionSql();
     const internalResult = await internalSql.query(name, statements, options);
     const resultStatements: AzionDatabaseQueryResponse = {
-      state: 'executed-runtime',
-      data: [],
+      results: [],
+      toObject: () => null,
     };
     const data = await internalSql.mapperQuery(internalResult);
     if (data && data.length > 0) {
-      resultStatements.state = 'executed-runtime';
-      resultStatements.data = data;
+      resultStatements.results = data;
     }
     if (options?.debug) {
       // limit the size of the array to 10
       const limitedData: AzionDatabaseQueryResponse = {
         ...resultStatements,
-        data: (resultStatements.data as QueryResult[]).map((data) => {
+        results: (resultStatements.results as QueryResult[]).map((data) => {
           return {
             ...data,
             rows: limitArraySize(data?.rows || [], 10),
@@ -114,12 +96,13 @@ export const runtimeQuery = async (
       console.log('Response Query:', JSON.stringify(limitedData));
     }
     return {
-      ...resultStatements,
-      toObject: () => toObjectQueryExecutionResponse(resultStatements),
+      data: {
+        ...resultStatements,
+        toObject: () => toObjectQueryExecutionResponse(resultStatements),
+      },
     };
   } catch (error) {
     return {
-      state: 'failed',
       error: {
         message: (error as Error)?.message || 'Error executing query',
         operation: 'executing query',

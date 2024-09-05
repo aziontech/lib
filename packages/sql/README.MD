@@ -112,7 +112,7 @@ if (data) {
 import { createDatabase, AzionDatabase } from 'azion/sql';
 import type { AzionDatabaseResponse, AzionDatabase } from 'azion/sql';
 
-const { data, error }: AzionDatabaseResponse = await createDatabase('my-new-database', { debug: true });
+const { data, error }: AzionDatabaseResponse<AzionDatabase> = await createDatabase('my-new-database', { debug: true });
 if (data) {
   const database: AzionDatabase = data;
   console.log(`Database created with ID: ${database.id}`);
@@ -142,7 +142,7 @@ if (data) {
 import { deleteDatabase } from 'azion/sql';
 import type { AzionDatabaseResponse } from 'azion/sql';
 
-const { data, error }: AzionDatabaseResponse = await deleteDatabase(123, { debug: true });
+const { data, error }: AzionDatabaseResponse<{ id: number }> = await deleteDatabase(123, { debug: true });
 if (data) {
   console.log(`Database ${data.id} deleted successfully`);
 } else {
@@ -171,7 +171,7 @@ if (data) {
 import { getDatabase } from 'azion/sql';
 import type { AzionDatabaseResponse, AzionDatabase } from 'azion/sql';
 
-const { data, error }: AzionDatabaseResponse = await getDatabase('my-db', { debug: true });
+const { data, error }: AzionDatabaseResponse<AzionDatabase> = await getDatabase('my-db', { debug: true });
 if (data) {
   const database: AzionDatabase = data;
   console.log(`Retrieved database: ${database.id}`);
@@ -199,12 +199,14 @@ if (data) {
 
 ```typescript
 import { getDatabases } from 'azion/sql';
-import type { AzionDatabaseResponse, AzionDatabase } from 'azion/sql';
+import type { AzionDatabaseResponse, AzionDatabaseCollections } from 'azion/sql';
 
-const { data, error }: AzionDatabaseResponse = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
-if (data) {
-  const databases: AzionDatabase[] = data;
-  console.log(`Retrieved ${databases.length} databases`);
+const { data: allDatabases, error }: AzionDatabaseResponse<AzionDatabaseCollections> = await getDatabases(
+  { page: 1, page_size: 10 },
+  { debug: true },
+);
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases.count} databases`);
 } else {
   console.error('Failed to retrieve databases', error);
 }
@@ -228,13 +230,19 @@ if (result) {
 **TypeScript:**
 
 ```typescript
-import { useQuery, AzionDatabaseQueryResponse } from 'azion/sql';
+import { useQuery, AzionDatabaseQueryResponse, AzionDatabaseResponse } from 'azion/sql';
 
-const result: AzionDatabaseQueryResponse | null = await useQuery('my-db', ['SELECT * FROM users'], { debug: true });
+const { data: result, error }: AzionDatabaseResponse<AzionDatabaseQueryResponse> = await useQuery(
+  'my-db',
+  ['SELECT * FROM users'],
+  {
+    debug: true,
+  },
+);
 if (result) {
   console.log(`Query executed. Rows returned: ${result.rows.length}`);
 } else {
-  console.error('Query execution failed');
+  console.error('Query execution failed', error);
 }
 ```
 
@@ -277,9 +285,9 @@ if (result?.state === 'executed') {
 **JavaScript:**
 
 ```javascript
-import { listTables } from 'azion/sql';
+import { getTables } from 'azion/sql';
 
-const { data, error } = await listTables('my-db', { debug: true });
+const { data, error } = await getTables('my-db', { debug: true });
 
 if (data) {
   console.log(data);
@@ -291,10 +299,10 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { listTables } from 'azion/sql';
-import type { AzionDatabaseQueryResponse } from 'azion/sql';
+import { getTables } from 'azion/sql';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sql';
 
-const { data, error }: AzionDatabaseQueryResponse = await listTables('my-db', { debug: true });
+const { data, error }: AzionDatabaseResponse<AzionDatabaseQueryResponse> = await getTables('my-db', { debug: true });
 
 if (data) {
   console.log(data);
@@ -316,7 +324,7 @@ Creates a new database.
 
 **Returns:**
 
-- `Promise<AzionDatabaseResponse>` - The created database object or error.
+- `Promise<AzionDatabaseResponse<AzionDatabase>>` - The created database object or error.
 
 **Example:**
 
@@ -340,7 +348,7 @@ Deletes a database by its ID.
 
 **Returns:**
 
-- `Promise<AzionDatabaseResponse>` - Object confirming deletion or error.
+- `Promise<AzionDatabaseResponse<{ id: number }>>` - Object confirming deletion or error.
 
 **Example:**
 
@@ -364,7 +372,7 @@ Retrieves a database by its Name.
 
 **Returns:**
 
-- `Promise<AzionDatabaseResponse>` - The retrieved database object or error.
+- `Promise<AzionDatabaseResponse<AzionDatabase>>` - The retrieved database object or error.
 
 **Example:**
 
@@ -388,15 +396,15 @@ Retrieves a list of databases with optional filtering and pagination.
 
 **Returns:**
 
-- `Promise<AzionDatabaseResponse>` - Array of database objects or error.
+- `Promise<AzionDatabaseResponse<AzionDatabaseCollections>>` - Array of database objects or error.
 
 **Example:**
 
 ```javascript
-const { data, error } = await sqlClient.getDatabases({ page: 1, page_size: 10, search: 'test' });
-if (data) {
-  console.log(`Retrieved ${data.length} databases`);
-  data.forEach((db) => console.log(`- ${db.name} (ID: ${db.id})`));
+const { data: allDatabases, error } = await sqlClient.getDatabases({ page: 1, page_size: 10, search: 'test' });
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases.count} databases`);
+  allDatabases.results.forEach((db) => console.log(`- ${db.name} (ID: ${db.id})`));
 } else {
   console.error('Failed to retrieve databases', error);
 }
@@ -414,7 +422,7 @@ Executes a query on a specific database.
 
 **Returns:**
 
-- `Promise<AzionDatabaseQueryResponse>` - Query result object or error.
+- `Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>` - Query result object or error.
 
 **Example:**
 
@@ -439,7 +447,7 @@ Executes a set of SQL statements on a specific database.
 
 **Returns:**
 
-- `Promise<AzionDatabaseQueryResponse>` - Execution result object or error.
+- `Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>` - Execution result object or error.
 
 **Example:**
 
@@ -479,12 +487,12 @@ Configuration options for the SQL client.
 
 An object with methods to interact with SQL databases.
 
-- `createDatabase: (name: string) => Promise<AzionDatabaseResponse>`
-- `deleteDatabase: (id: number) => Promise<AzionDatabaseResponse>`
-- `getDatabase: (name: string) => Promise<AzionDatabase | null>`
-- `getDatabases: (params?: AzionDatabaseCollectionOptions) => Promise<AzionDatabaseResponse>`
-- `useQuery: (name: string, statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>`
-- `useExecute: (name: string, statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseExecutionResponse>`
+- `createDatabase: (name: string) => Promise<AzionDatabaseResponse<AzionDatabase>>`
+- `deleteDatabase: (id: number) => Promise<AzionDatabaseResponse<{ id: number }>>`
+- `getDatabase: (name: string) => Promise<AzionDatabaseResponse<AzionDatabase>>`
+- `getDatabases: (params?: AzionDatabaseCollectionOptions) => Promise<AzionDatabaseResponse<AzionDatabaseCollections>>`
+- `useQuery: (name: string, statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
+- `useExecute: (name: string, statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseExecutionResponse>>`
 
 ### `AzionDatabase`
 
@@ -497,9 +505,9 @@ The database object.
 - `createdAt: string`
 - `updatedAt: string`
 - `deletedAt: string | null`
-- `query: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>`
-- `execute: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseExecutionResponse>`
-- `listTables: (options?: AzionClientOptions) => Promise<AzionDatabaseQueryResponse>`
+- `query: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
+- `execute: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseExecutionResponse>>`
+- `getTables: (options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
 
 ### `AzionDatabaseResponse`
 
