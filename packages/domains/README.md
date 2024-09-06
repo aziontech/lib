@@ -26,6 +26,10 @@ Azion Edge Domains provides a simple interface to interact with the Azion Edge D
   - [`deleteDomain`](#deletedomain)
 - [Types](#types)
   - [`ClientConfig`](#clientconfig)
+  - [`AzionDomainsResponse<T>`](#aziondomainsresponset)
+  - [`AzionDomain`](#aziondomain)
+  - [`AzionDomains`](#aziondomains)
+  - [`AzionDeleteDomain`](#aziondeletedomain)
 - [Contributing](#contributing)
 
 ## Installation
@@ -83,11 +87,11 @@ You can create a client instance with specific configurations.
 ```javascript
 import { createDomain } from 'azion/domains';
 
-const domain = await createDomain({ name: 'example domain', edgeApplicationId: 123 });
+const { data: domain, error } = await createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (domain) {
   console.log(`Domain created with URL: ${domain.url}`);
 } else {
-  console.error('Failed to create domain');
+  console.error('Failed to create domain', error);
 }
 ```
 
@@ -95,13 +99,16 @@ if (domain) {
 
 ```typescript
 import { createDomain } from 'azion/domains';
-import type { AzionDomain } from 'azion/domains';
+import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
 
-const domain: AzionDomain = await createDomain({ name: 'example domain', edgeApplicationId: 123 });
+const { data: domain, error }: AzionDomainsResponse<AzionDomain> = await createDomain({
+  name: 'example domain',
+  edgeApplicationId: 123,
+});
 if (domain) {
   console.log(`Domain created with ID: ${domain.id}`);
 } else {
-  console.error('Failed to create domain');
+  console.error('Failed to create domain', error);
 }
 ```
 
@@ -112,12 +119,12 @@ if (domain) {
 ```javascript
 import { listDomains } from 'azion/domains';
 
-const domains = await listDomains();
+const { data: domains, error } = await listDomains();
 
 if (domains) {
-  console.log(`Found ${domains.length} domains`);
+  console.log(`Found ${domains.count} domains`);
 } else {
-  console.error('Failed to list domains');
+  console.error('Failed to list domains', error);
 }
 ```
 
@@ -125,14 +132,14 @@ if (domains) {
 
 ```typescript
 import { listDomains } from 'azion/domains';
-import type { AzionDomains } from 'azion/domains';
+import type { AzionDomains, AzionDomainsResponse } from 'azion/domains';
 
-const domains: AzionDomains = await listDomains();
+const { data: domains, error }: AzionDomainsResponse<AzionDomains> = await listDomains();
 
 if (domains) {
-  console.log(`Found ${domains.data.length} domains`);
+  console.log(`Found ${domains.count} domains`);
 } else {
-  console.error('Failed to list domains');
+  console.error('Failed to list domains', error);
 }
 ```
 
@@ -144,12 +151,12 @@ if (domains) {
 import { getDomain } from 'azion/domains';
 
 const domainId = 123;
-const domain = await getDomain(domainId);
+const { data: domain, error } = await getDomain(domainId);
 
 if (domain) {
   console.log(`Found domain with name: ${domain.name}`);
 } else {
-  console.error('Failed to get domain');
+  console.error('Failed to get domain', error);
 }
 ```
 
@@ -157,15 +164,15 @@ if (domain) {
 
 ```typescript
 import { getDomain } from 'azion/domains';
-import type { AzionDomain } from 'azion/domains';
+import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
 
 const domainId = 123;
-const domain: AzionDomain = await getDomain(domainId);
+const { data: domain, error }: AzionDomainsResponse<AzionDomain> = await getDomain(domainId);
 
 if (domain) {
-  console.log(`Found domain with name: ${domain.data.name}`);
+  console.log(`Found domain with name: ${domain.name}`);
 } else {
-  console.error('Failed to get domain');
+  console.error('Failed to get domain', error);
 }
 ```
 
@@ -177,12 +184,12 @@ if (domain) {
 import { updateDomain } from 'azion/domains';
 
 const domainId = 123;
-const domain = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
+const { data: domain, error } = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
 
 if (domain) {
   console.log(`Updated domain with name: ${domain.name}`);
 } else {
-  console.error('Failed to update domain');
+  console.error('Failed to update domain', error);
 }
 ```
 
@@ -190,15 +197,18 @@ if (domain) {
 
 ```typescript
 import { updateDomain } from 'azion/domains';
-import type { AzionDomain } from 'azion/domains';
+import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
 
 const domainId = 123;
-const domain: AzionDomain = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
+const { data: domain, error }: AzionDomainsResponse<AzionDomain> = await updateDomain(domainId, {
+  name: 'new domain name',
+  edgeApplicationId: 456,
+});
 
 if (domain) {
-  console.log(`Updated domain with name: ${domain.data.name}`);
+  console.log(`Updated domain with name: ${domain.name}`);
 } else {
-  console.error('Failed to update domain');
+  console.error('Failed to update domain', error);
 }
 ```
 
@@ -210,12 +220,12 @@ if (domain) {
 import { deleteDomain } from 'azion/domains';
 
 const domainId = 123;
-const deletedDomain = await deleteDomain(domainId);
+const { data: deletedDomain, error } = await deleteDomain(domainId);
 
 if (deletedDomain) {
-  console.log(`Deleted domain with ID: ${deletedDomain}`);
+  console.log(`Deleted domain with ID: ${deletedDomain.id}`);
 } else {
-  console.error('Failed to delete domain');
+  console.error('Failed to delete domain', error);
 }
 ```
 
@@ -223,15 +233,15 @@ if (deletedDomain) {
 
 ```typescript
 import { deleteDomain } from 'azion/domains';
-import type { AzionDomain } from 'azion/domains';
+import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
 
 const domainId = 123;
-const deletedDomain: AzionDomain = await deleteDomain(domainId);
+const { data: deletedDomain, error }: AzionDomainsResponse<AzionDomain> = await deleteDomain(domainId);
 
 if (deletedDomain) {
-  console.log(`Deleted domain with ID: ${deletedDomain.data.id}`);
+  console.log(`Deleted domain with ID: ${deletedDomain.id}`);
 } else {
-  console.error('Failed to delete domain');
+  console.error('Failed to delete domain', error);
 }
 ```
 
@@ -244,7 +254,7 @@ import { createClient } from 'azion/domains';
 
 const client = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDomain = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
+const { data: newDomain, error } = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (newDomain) {
   console.log(`Domain created with ID: ${newDomain.id}`);
 }
@@ -260,7 +270,7 @@ import type { AzionDomain, AzionDomainsClient } from 'azion/domains';
 
 const client: AzionDomainsClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const newDomain: AzionDomain = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
+const { data: newDomain, error }: AzionDomainsResponse<AzionDomain> = await client.createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (newDomain) {
   console.log(`Domain created with ID: ${newDomain.id}`);
 }
@@ -269,38 +279,18 @@ if (newDomain) {
 
 ## API Reference
 
-> AzionDomain
-
-- `id: number` - Domain ID.
-- `name: string` - Domain name.
-- `edgeApplicationId: number` - Edge application ID.
-- `active: boolean` - Domain status.
-- `cnameAccessOnly: boolean` - CNAME access only.
-- `cnames: string[]` - List of CNAMEs.
-- `edgeFirewallId: number` - Edge firewall ID.
-- `digitalCertificateId: number | string | null` - Digital certificate ID.
-- `mtls: object | null` - Mutual TLS configuration.
-- `mtls.verication: string` - Verification method. Enforce or permissive.
-- `mtls.trustedCaCertificateId: number` - Trusted CA certificate ID.
-- `mtls.crlList: number[]` - List of CRL IDs.
-
 ### `createDomain`
 
 Creates a new domain.
 
 **Parameters:**
 
-- `domain: AzionCreateDomain` - Domain object.
+- `{ data: domain, error }: AzionCreateDomain` - Domain object.
 - `options?: { debug?: boolean }` - Object options params.
 
 **Returns:**
 
-- `Promise<AzionDomain>` - The created domain object or state failed.
-
-> AzionDomain
-
-- `state: 'executed'| 'failed'` - State of the domain creation.
-- `data: AzionDomain` - Domain object.
+- `Promise<AzionDomainsResponse<AzionDomain>>` - The created domain object or error failed.
 
 ### `listDomains`
 
@@ -313,14 +303,7 @@ Lists all domains.
 
 **Returns:**
 
-- `Promise<AzionDomains>` - An array of domain objects.
-
-> AzionDomains
-
-- `state: 'executed'| 'failed'` - State of the domain list.
-- `pages: number` - Number of pages.
-- `count: number` - Number of domains.
-- `data: AzionDomain[]` - Array of domain objects.
+- `Promise<AzionDomainsResponse<AzionDomains>>` - An array of domain objects or error failed.
 
 ### `getDomain`
 
@@ -333,7 +316,7 @@ Get a domain by ID.
 
 **Returns:**
 
-- `Promise<AzionDomain>` - The domain object or state failed.
+- `Promise<AzionDomainsResponse<AzionDomain>>` - The domain object or state failed.
 
 ### `updateDomain`
 
@@ -342,12 +325,12 @@ Update a domain.
 **Parameters:**
 
 - `domainId: number` - Domain ID.
-- `domain: AzionUpdateDomain` - Domain object.
+- `{ data: domain, error }: AzionUpdateDomain` - Domain object.
 - `options?: { debug?: boolean }` - Object options params.
 
 **Returns:**
 
-- `Promise<AzionDomain>` - The updated domain object or state failed.
+- `Promise<AzionDomainsResponse<AzionDomain>>` - The updated domain object or state failed.
 
 ### `deleteDomain`
 
@@ -360,7 +343,7 @@ Delete a domain.
 
 **Returns:**
 
-- `Promise<AzionDomain>` - The deleted domain id or state failed.
+- `Promise<AzionDomainsResponse<AzionDeletedDomain>>` - The deleted domain id or state failed.
 
 ### `createClient`
 
@@ -383,6 +366,41 @@ Configuration options for the Azion Domains client.
 - `token?: string` - Your Azion API token.
 - `options?: OptionsParams` - Object options params.
   - `debug?: boolean` - Enable debug mode for detailed logging.
+
+### `AzionDomainsResponse<T>`
+
+- `data?: T` - The response data.
+- `error?: { message: string; operation: string;}` - The error object.
+
+### `AzionDomain`
+
+- `state: 'pending' | 'executed' | 'failed'` - State of the domain.
+- `id?: number` - Domain ID.
+- `name: string` - Domain name.
+- `url?: string` - Domain URL.
+- `environment?: string` - Domain environment.
+- `edgeApplicationId: number` - Edge application ID.
+- `active: boolean` - Domain status.
+- `cnameAccessOnly?: boolean` - CNAME access only.
+- `cnames: string[]` - List of CNAMEs.
+- `edgeFirewallId?: number` - Edge firewall ID.
+- `digitalCertificateId: number | string | null` - Digital certificate ID.
+- `mtls?: object | null` - Mutual TLS configuration.
+- `mtls.verication: string` - Verification method. Enforce or permissive.
+- `mtls.trustedCaCertificateId: number` - Trusted CA certificate ID.
+- `mtls.crlList: number[]` - List of CRL IDs.
+
+### `AzionDomains`
+
+- `state: 'pending' | 'executed' | 'failed'` - State of the domain list.
+- `pages: number` - Number of pages.
+- `count: number` - Number of domains.
+- `data: AzionDomain[]` - Array of domain objects.
+
+### `AzionDeleteDomain`
+
+- `id: number` - Domain ID.
+- `state: 'pending' | 'executed' | 'failed'` - State of the domain deletion.
 
 ## Contributing
 
