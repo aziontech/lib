@@ -51,7 +51,7 @@ export type AzionDomainsClient = (
 
 export interface AzionCreateClientDomains {
   createDomain: (domain: AzionCreateDomain, options?: AzionClientOptions) => Promise<AzionDomainsResponse<AzionDomain>>;
-  listDomains: (
+  getDomains: (
     options?: AzionClientOptions,
     queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
   ) => Promise<AzionDomainsResponse<AzionDomains>>;

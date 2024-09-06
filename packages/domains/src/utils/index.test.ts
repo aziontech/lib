@@ -1,4 +1,4 @@
-import { limitArraySize, resolveDebug, resolveToken, retryWithBackoff } from '.';
+import { limitArraySize, resolveDebug, resolveToken } from '.';
 
 describe('Utils', () => {
   describe('resolveToken', () => {
@@ -98,21 +98,6 @@ describe('Utils', () => {
       const mockArray: number[] = [];
       const result = limitArraySize(mockArray, 2);
       expect(result).toEqual([]);
-    });
-  });
-
-  describe('retryWithBackoff', () => {
-    it('should throw an error if the function fails after startTime >= maxTime', async () => {
-      jest.spyOn(console, 'warn').mockImplementation();
-      jest.spyOn(console, 'log').mockImplementation();
-      const mockFn = jest.fn().mockRejectedValue(new Error('error'));
-      await expect(retryWithBackoff(mockFn, true, 100, 500)).rejects.toThrow('Max retry time reached!');
-    });
-
-    it('should return the result of the function if it succeeds within the allowed attempts', async () => {
-      const mockFn = jest.fn().mockResolvedValue('success');
-      const result = await retryWithBackoff(mockFn, true, 100, 100);
-      expect(result).toEqual('success');
     });
   });
 });

@@ -1,4 +1,4 @@
-import { createDomain, deleteDomain, getDomainById, listDomains, updateDomain } from './services/api';
+import { createDomain, deleteDomain, getDomainById, getDomains, updateDomain } from './services/api';
 import {
   AzionClientOptions,
   AzionCreateClientDomains,
@@ -55,18 +55,18 @@ const createDomainMethod = async (
 };
 
 /**
- * List domains
+ * Get domains
  * @param token Token to authenticate
  * @param queryParams Query parameters to list the domains
  * @param options Options to list the domains
  * @returns List of domains
  */
-const listDomainsMethod = async (
+const getDomainsMethod = async (
   token: string,
   queryParams?: { order_by?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
   options?: AzionClientOptions,
 ): Promise<AzionDomainsResponse<AzionDomains>> => {
-  const apiResponse = await listDomains(resolveToken(token), options, queryParams);
+  const apiResponse = await getDomains(resolveToken(token), options, queryParams);
   if (apiResponse.results) {
     return {
       data: {
@@ -233,11 +233,11 @@ const createDomainWrapper = async (
  * @param queryParams Query parameters to list the domains
  * @returns List of domains
  */
-const listDomainsWrapper = async (
+const getDomainsWrapper = async (
   options?: AzionClientOptions,
   queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
 ): Promise<AzionDomainsResponse<AzionDomains>> => {
-  return listDomainsMethod(resolveToken(), queryParams, options);
+  return getDomainsMethod(resolveToken(), queryParams, options);
 };
 
 /**
@@ -321,13 +321,13 @@ const createClient: AzionDomainsClient = (
      * @returns List of domains
      *
      * @example
-     * const results = await client.listDomains();
+     * const results = await client.getDomains();
      * console.log(results);
      */
-    listDomains: (
+    getDomains: (
       options?: AzionClientOptions,
       queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
-    ) => listDomainsMethod(tokenValue, queryParams, { ...options, debug: debugValue }),
+    ) => getDomainsMethod(tokenValue, queryParams, { ...options, debug: debugValue }),
 
     /**
      * Get a domain by ID
@@ -377,7 +377,7 @@ export {
   createDomainWrapper as createDomain,
   deleteDomainWrapper as deleteDomain,
   getDomainWrapper as getDomain,
-  listDomainsWrapper as listDomains,
+  getDomainsWrapper as getDomains,
   updateDomainWrapper as updateDomain,
 };
 

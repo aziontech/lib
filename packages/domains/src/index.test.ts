@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import createClient, { createDomain, deleteDomain, getDomain, listDomains, updateDomain } from '.';
+import createClient, { createDomain, deleteDomain, getDomain, getDomains, updateDomain } from '.';
 import * as services from './services/api';
 
 describe('Domains Package', () => {
@@ -125,7 +125,7 @@ describe('Domains Package', () => {
     });
   });
 
-  describe('listDomains', () => {
+  describe('getDomains', () => {
     let mockResponseListDomains: any;
     beforeEach(() => {
       jest.clearAllMocks();
@@ -162,9 +162,9 @@ describe('Domains Package', () => {
 
     it('should list domains', async () => {
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
-      jest.spyOn(services, 'listDomains');
+      jest.spyOn(services, 'getDomains');
 
-      const results = await listDomains({ debug: mockDebug });
+      const results = await getDomains({ debug: mockDebug });
       expect(results.data).toEqual({
         state: 'executed',
         pages: 1,
@@ -179,15 +179,15 @@ describe('Domains Package', () => {
           }),
         ]),
       });
-      expect(services.listDomains).toHaveBeenCalledWith(mockToken, { debug: mockDebug }, undefined);
+      expect(services.getDomains).toHaveBeenCalledWith(mockToken, { debug: mockDebug }, undefined);
     });
 
     it('should list domains with all fields', async () => {
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
-      jest.spyOn(services, 'listDomains');
+      jest.spyOn(services, 'getDomains');
 
       const queryParams: any = { orderBy: 'id', page: 1, pageSize: 1, sort: 'asc' };
-      const results = await listDomains({ debug: mockDebug }, queryParams);
+      const results = await getDomains({ debug: mockDebug }, queryParams);
       expect(results.data).toEqual({
         state: 'executed',
         pages: 1,
@@ -202,7 +202,7 @@ describe('Domains Package', () => {
           }),
         ]),
       });
-      expect(services.listDomains).toHaveBeenCalledWith(mockToken, { debug: mockDebug }, queryParams);
+      expect(services.getDomains).toHaveBeenCalledWith(mockToken, { debug: mockDebug }, queryParams);
     });
 
     it('should list domains with mtls', async () => {
@@ -211,9 +211,9 @@ describe('Domains Package', () => {
       mockResponseListDomains.results[0].mtls_trusted_ca_certificate_id = 123;
       mockResponseListDomains.results[0].crl_list = [111];
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
-      jest.spyOn(services, 'listDomains');
+      jest.spyOn(services, 'getDomains');
 
-      const results = await listDomains({ debug: mockDebug });
+      const results = await getDomains({ debug: mockDebug });
       expect(results.data).toEqual({
         state: 'executed',
         pages: 1,
@@ -233,7 +233,7 @@ describe('Domains Package', () => {
           }),
         ]),
       });
-      expect(services.listDomains).toHaveBeenCalledWith(mockToken, { debug: mockDebug }, undefined);
+      expect(services.getDomains).toHaveBeenCalledWith(mockToken, { debug: mockDebug }, undefined);
     });
   });
 
@@ -508,7 +508,7 @@ describe('Domains Package', () => {
       expect(client).toBeDefined();
     });
 
-    it('should create a client with listDomains', async () => {
+    it('should create a client with getDomains', async () => {
       const mockResponseListDomains = {
         count: 1,
         total_pages: 1,
@@ -537,11 +537,11 @@ describe('Domains Package', () => {
         ],
       };
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
-      jest.spyOn(services, 'listDomains');
+      jest.spyOn(services, 'getDomains');
 
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });
 
-      const results = await client.listDomains({ debug: mockDebug });
+      const results = await client.getDomains({ debug: mockDebug });
       expect(results.data).toEqual({
         state: 'executed',
         count: 1,

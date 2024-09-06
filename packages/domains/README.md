@@ -20,7 +20,7 @@ Azion Edge Domains provides a simple interface to interact with the Azion Edge D
     - [Using Client](#using-client)
 - [API Reference](#api-reference)
   - [`createDomain`](#createdomain)
-  - [`listDomains`](#listdomains)
+  - [`getDomains`](#getdomains)
   - [`getDomain`](#getdomain)
   - [`updateDomain`](#updatedomain)
   - [`deleteDomain`](#deletedomain)
@@ -117,9 +117,9 @@ if (domain) {
 **JavaScript:**
 
 ```javascript
-import { listDomains } from 'azion/domains';
+import { getDomains } from 'azion/domains';
 
-const { data: domains, error } = await listDomains();
+const { data: domains, error } = await getDomains();
 
 if (domains) {
   console.log(`Found ${domains.count} domains`);
@@ -131,10 +131,10 @@ if (domains) {
 **TypeScript:**
 
 ```typescript
-import { listDomains } from 'azion/domains';
+import { getDomains } from 'azion/domains';
 import type { AzionDomains, AzionDomainsResponse } from 'azion/domains';
 
-const { data: domains, error }: AzionDomainsResponse<AzionDomains> = await listDomains();
+const { data: domains, error }: AzionDomainsResponse<AzionDomains> = await getDomains();
 
 if (domains) {
   console.log(`Found ${domains.count} domains`);
@@ -292,7 +292,7 @@ Creates a new domain.
 
 - `Promise<AzionDomainsResponse<AzionDomain>>` - The created domain object or error failed.
 
-### `listDomains`
+### `getDomains`
 
 Lists all domains.
 

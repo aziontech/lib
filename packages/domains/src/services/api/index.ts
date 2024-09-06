@@ -76,7 +76,7 @@ const createDomain = async (
   }
 };
 
-const listDomains = async (
+const getDomains = async (
   token: string,
   options?: AzionClientOptions,
   queryParams?: ApiAzionQueryListDomainsResponse,
@@ -223,4 +223,4 @@ const deleteDomain = async (
   }
 };
 
-export { createDomain, deleteDomain, getDomainById, listDomains, updateDomain };
+export { createDomain, deleteDomain, getDomainById, getDomains, updateDomain };
