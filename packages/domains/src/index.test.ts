@@ -169,7 +169,7 @@ describe('Domains Package', () => {
         state: 'executed',
         pages: 1,
         count: 1,
-        data: expect.arrayContaining([
+        results: expect.arrayContaining([
           expect.objectContaining({
             id: 1700496622,
             name: 'My domain',
@@ -192,7 +192,7 @@ describe('Domains Package', () => {
         state: 'executed',
         pages: 1,
         count: 1,
-        data: expect.arrayContaining([
+        results: expect.arrayContaining([
           expect.objectContaining({
             id: 1700496622,
             name: 'My domain',
@@ -218,7 +218,7 @@ describe('Domains Package', () => {
         state: 'executed',
         pages: 1,
         count: 1,
-        data: expect.arrayContaining([
+        results: expect.arrayContaining([
           expect.objectContaining({
             id: 1700496622,
             name: 'My domain',
@@ -546,7 +546,7 @@ describe('Domains Package', () => {
         state: 'executed',
         count: 1,
         pages: 1,
-        data: expect.arrayContaining([
+        results: expect.arrayContaining([
           expect.objectContaining({
             id: 1700496622,
             name: 'My domain',

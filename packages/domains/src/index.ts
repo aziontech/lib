@@ -72,7 +72,7 @@ const getDomainsMethod = async (
       data: {
         count: apiResponse.count ?? apiResponse.results.length,
         state: 'executed',
-        data: apiResponse.results,
+        results: apiResponse.results,
         pages: apiResponse.total_pages ?? 1,
       },
     };

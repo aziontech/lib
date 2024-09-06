@@ -42,7 +42,7 @@ export type AzionDomains = {
   state: ResponseState;
   count: number;
   pages: number;
-  data: AzionDomain[];
+  results: AzionDomain[];
 };
 
 export type AzionDomainsCreateClient = (

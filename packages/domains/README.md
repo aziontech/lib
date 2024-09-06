@@ -395,7 +395,7 @@ Configuration options for the Azion Domains client.
 - `state: 'pending' | 'executed' | 'failed'` - State of the domain list.
 - `pages: number` - Number of pages.
 - `count: number` - Number of domains.
-- `data: AzionDomain[]` - Array of domain objects.
+- `results: AzionDomain[]` - Array of domain objects.
 
 ### `AzionDeleteDomain`
 
