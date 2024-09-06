@@ -21,7 +21,7 @@ import { AzionApplicationSettings } from './types';
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the created application data or an error.
  */
-const createApplicationMethod = async (
+export const createApplicationMethod = async (
   token: string,
   applicationData: ApiCreateApplicationPayload,
   options?: AzionClientOptions,
@@ -49,7 +49,7 @@ const createApplicationMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the application data or an error.
  */
-const getApplicationMethod = async (
+export const getApplicationMethod = async (
   token: string,
   applicationId: number,
   options?: AzionClientOptions,
@@ -77,7 +77,7 @@ const getApplicationMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionApplicationSettings>>} A promise that resolves with a collection of applications or an error.
  */
-const getApplicationsMethod = async (
+export const getApplicationsMethod = async (
   token: string,
   params?: ApiListApplicationsParams,
   options?: AzionClientOptions,
@@ -119,7 +119,7 @@ const getApplicationsMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the updated application data or an error.
  */
-const putApplicationMethod = async (
+export const putApplicationMethod = async (
   token: string,
   applicationId: number,
   applicationData: ApiUpdateApplicationPayload,
@@ -154,7 +154,7 @@ const putApplicationMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the patched application data or an error.
  */
-const patchApplicationMethod = async (
+export const patchApplicationMethod = async (
   token: string,
   applicationId: number,
   applicationData: Partial<ApiUpdateApplicationPayload>,
@@ -188,7 +188,7 @@ const patchApplicationMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the application is deleted or rejects with an error.
  */
-const deleteApplicationMethod = async (
+export const deleteApplicationMethod = async (
   token: string,
   applicationId: number,
   options?: AzionClientOptions,

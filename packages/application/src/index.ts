@@ -1,4 +1,61 @@
 import {
+  createCacheSettingMethod,
+  deleteCacheSettingMethod,
+  getCacheSettingMethod,
+  getCacheSettingsMethod,
+  updateCacheSettingMethod,
+} from './cache-settings/index';
+
+import {
+  createDeviceGroupMethod,
+  deleteDeviceGroupMethod,
+  getDeviceGroupMethod,
+  getDeviceGroupsMethod,
+  updateDeviceGroupMethod,
+} from './device-groups/index';
+
+import {
+  createFunctionInstanceMethod,
+  deleteFunctionInstanceMethod,
+  getFunctionInstanceMethod,
+  getFunctionInstancesMethod,
+  updateFunctionInstanceMethod,
+} from './functions-instances/index';
+
+import {
+  createOriginMethod,
+  deleteOriginMethod,
+  getOriginMethod,
+  getOriginsMethod,
+  updateOriginMethod,
+} from './origins/index';
+
+import {
+  createRuleMethod,
+  deleteRuleMethod,
+  getRuleMethod,
+  getRulesMethod,
+  updateRuleMethod,
+} from './rules-engine/index';
+
+import {
+  createApplicationMethod,
+  deleteApplicationMethod,
+  getApplicationMethod,
+  getApplicationsMethod,
+  patchApplicationMethod,
+} from './main-settings/index';
+
+import {
+  createApplicationWrapper,
+  deleteApplicationWrapper,
+  getApplicationWrapper,
+  getApplicationsWrapper,
+  patchApplicationWrapper,
+  putApplicationWrapper,
+} from './main-settings/index';
+
+import {
   createCacheSettingWrapper,
   deleteCacheSettingWrapper,
   getCacheSettingWrapper,
@@ -48,121 +105,120 @@ import type {
   CreateAzionApplicationClient,
 } from './types';
 
-import {
-  createApplicationWrapper,
-  deleteApplicationWrapper,
-  getApplicationWrapper,
-  getApplicationsWrapper,
-  patchApplicationWrapper,
-  putApplicationWrapper,
-} from './main-settings/index';
 import { ApiCreateApplicationPayload, ApiUpdateApplicationPayload } from './main-settings/services/types';
 
-/**
- * Creates an Azion Application client with methods to interact with various application resources.
- *
- * @param {Partial<{ token: string; options?: AzionClientOptions }>} [config] - Configuration options for the Application client.
- * @returns {AzionApplicationClient} An object with methods to interact with Azion Application resources.
- *
- * @example
- * const applicationClient = createClient({ token: 'your-api-token', options: { debug: true } });
- *
- * // Create a new edge application
- * const newApplication = await applicationClient.createApplication({
- *   data: {
- *     name: 'My Edge Application',
- *     delivery_protocol: 'http',
- *     origin_type: 'single_origin',
- *     address: 'example.com'
- *   }
- * });
- *
- * // Get an existing edge application
- * const application = await applicationClient.getApplication({
- *   applicationId: 1234
- * });
- *
- * // Update an edge application
- * const updatedApplication = await applicationClient.updateApplication({
- *   applicationId: 1234,
- *   data: {
- *     name: 'Updated Edge Application Name'
- *   }
- * });
- *
- * // Delete an edge application
- * const deletedApplication = await applicationClient.deleteApplication({
- *   applicationId: 1234
- * });
- *
- * // List all edge applications
- * const applications = await applicationClient.getApplications({
- *   params: { page: 1, page_size: 20 }
- * });
- */
+import { mapApiError, resolveDebug, resolveToken } from './utils';
+
 const createAzionApplicationClient: CreateAzionApplicationClient = (
   config?: Partial<{ token: string; options?: AzionClientOptions }>,
 ): AzionApplicationClient => {
+  const tokenValue = resolveToken(config?.token);
+  const debugValue = resolveDebug(config?.options?.debug);
+
   const client: AzionApplicationClient = {
-    createApplication: async ({
-      data,
-      options,
-    }: {
-      data: ApiCreateApplicationPayload;
-      options?: AzionClientOptions;
-    }) => {
+    createApplication: async ({ data }: { data: ApiCreateApplicationPayload; options?: AzionClientOptions }) => {
       try {
-        const apiResponse = await createApplicationWrapper({ data, options: { ...config?.options, ...options } });
+        const apiResponse = await createApplicationMethod(tokenValue, data, { ...config, debug: debugValue });
+
         if (apiResponse.error || !apiResponse.data) {
-          return apiResponse as AzionApplicationResponse<AzionApplication>;
+          return mapApiError(apiResponse, 'create application', 'Failed to create application');
         }
+
         const appId = apiResponse.data.id;
 
         const application: AzionApplication = {
           ...apiResponse.data,
           cache: {
-            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) =>
+              createCacheSettingMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getCacheSetting: (params) =>
+              getCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
+            getCacheSettings: (params) =>
+              getCacheSettingsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateCacheSetting: (params) =>
+              updateCacheSettingMethod(tokenValue, appId, params.cacheSettingId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteCacheSetting: (params) =>
+              deleteCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
           },
           origins: {
-            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) =>
+              createOriginMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getOrigin: (params) =>
+              getOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
+            getOrigins: (params) =>
+              getOriginsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateOrigin: (params) =>
+              updateOriginMethod(tokenValue, appId, params.originKey, params.data, { ...config, debug: debugValue }),
+            deleteOrigin: (params) =>
+              deleteOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
           },
           rules: {
             request: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'request', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'request', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'request', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
             },
             response: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'response', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'response', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'response', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
             },
           },
           devices: {
-            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) =>
+              createDeviceGroupMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getDeviceGroup: (params) =>
+              getDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
+            getDeviceGroups: (params) =>
+              getDeviceGroupsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateDeviceGroup: (params) =>
+              updateDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteDeviceGroup: (params) =>
+              deleteDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
           },
           functions: {
-            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) =>
+              createFunctionInstanceMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getFunctionInstance: (params) =>
+              getFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, { ...config, debug: debugValue }),
+            getFunctionInstances: (params) =>
+              getFunctionInstancesMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateFunctionInstance: (params) =>
+              updateFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteFunctionInstance: (params) =>
+              deleteFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, {
+                ...config,
+                debug: debugValue,
+              }),
           },
         };
 
@@ -177,56 +233,112 @@ const createAzionApplicationClient: CreateAzionApplicationClient = (
       }
     },
     deleteApplication: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) =>
-      deleteApplicationWrapper({ applicationId, options: { ...config?.options, ...options } }),
+      deleteApplicationMethod(tokenValue, applicationId, {
+        ...config?.options,
+        ...options,
+        debug: resolveDebug(config?.options?.debug ?? options?.debug),
+      }),
     getApplication: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) => {
-      const response = await getApplicationWrapper({ applicationId, options: { ...config?.options, ...options } });
+      const response = await getApplicationMethod(tokenValue, applicationId, {
+        ...config?.options,
+        ...options,
+        debug: resolveDebug(config?.options?.debug ?? options?.debug),
+      });
       if (response.data) {
         const appId = response.data.id;
         const application: AzionApplication = {
           ...response.data,
           cache: {
-            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) =>
+              createCacheSettingMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getCacheSetting: (params) =>
+              getCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
+            getCacheSettings: (params) =>
+              getCacheSettingsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateCacheSetting: (params) =>
+              updateCacheSettingMethod(tokenValue, appId, params.cacheSettingId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteCacheSetting: (params) =>
+              deleteCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
           },
           origins: {
-            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) =>
+              createOriginMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getOrigin: (params) =>
+              getOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
+            getOrigins: (params) =>
+              getOriginsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateOrigin: (params) =>
+              updateOriginMethod(tokenValue, appId, params.originKey, params.data, { ...config, debug: debugValue }),
+            deleteOrigin: (params) =>
+              deleteOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
           },
           rules: {
             request: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'request', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'request', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'request', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
             },
             response: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'response', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'response', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'response', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
             },
           },
           devices: {
-            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) =>
+              createDeviceGroupMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getDeviceGroup: (params) =>
+              getDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
+            getDeviceGroups: (params) =>
+              getDeviceGroupsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateDeviceGroup: (params) =>
+              updateDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteDeviceGroup: (params) =>
+              deleteDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
           },
           functions: {
-            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) =>
+              createFunctionInstanceMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getFunctionInstance: (params) =>
+              getFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, { ...config, debug: debugValue }),
+            getFunctionInstances: (params) =>
+              getFunctionInstancesMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateFunctionInstance: (params) =>
+              updateFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteFunctionInstance: (params) =>
+              deleteFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, {
+                ...config,
+                debug: debugValue,
+              }),
           },
         };
         return { data: application } as AzionApplicationResponse<AzionApplication>;
@@ -240,53 +352,108 @@ const createAzionApplicationClient: CreateAzionApplicationClient = (
       params?: AzionApplicationCollectionOptions;
       options?: AzionClientOptions;
     }) => {
-      const response = await getApplicationsWrapper({ params, options: { ...config?.options, ...options } });
+      const response = await getApplicationsMethod(tokenValue, params, {
+        ...config?.options,
+        ...options,
+        debug: resolveDebug(options?.debug),
+      });
       if (response.data) {
         const applications: AzionApplication[] = response.data.results.map((app) => ({
           ...app,
           cache: {
-            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: app.id, ...params }),
-            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: app.id, ...params }),
-            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: app.id, ...params }),
-            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: app.id, ...params }),
-            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: app.id, ...params }),
+            createCacheSetting: (params) =>
+              createCacheSettingMethod(tokenValue, app.id, params.data, { ...config, debug: debugValue }),
+            getCacheSetting: (params) =>
+              getCacheSettingMethod(tokenValue, app.id, params.cacheSettingId, { ...config, debug: debugValue }),
+            getCacheSettings: (params) =>
+              getCacheSettingsMethod(tokenValue, app.id, params.params, { ...config, debug: debugValue }),
+            updateCacheSetting: (params) =>
+              updateCacheSettingMethod(tokenValue, app.id, params.cacheSettingId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteCacheSetting: (params) =>
+              deleteCacheSettingMethod(tokenValue, app.id, params.cacheSettingId, { ...config, debug: debugValue }),
           },
           origins: {
-            createOrigin: (params) => createOriginWrapper({ applicationId: app.id, ...params }),
-            getOrigin: (params) => getOriginWrapper({ applicationId: app.id, ...params }),
-            getOrigins: (params) => getOriginsWrapper({ applicationId: app.id, ...params }),
-            updateOrigin: (params) => updateOriginWrapper({ applicationId: app.id, ...params }),
-            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: app.id, ...params }),
+            createOrigin: (params) =>
+              createOriginMethod(tokenValue, app.id, params.data, { ...config, debug: debugValue }),
+            getOrigin: (params) =>
+              getOriginMethod(tokenValue, app.id, params.originKey, { ...config, debug: debugValue }),
+            getOrigins: (params) =>
+              getOriginsMethod(tokenValue, app.id, params.params, { ...config, debug: debugValue }),
+            updateOrigin: (params) =>
+              updateOriginMethod(tokenValue, app.id, params.originKey, params.data, { ...config, debug: debugValue }),
+            deleteOrigin: (params) =>
+              deleteOriginMethod(tokenValue, app.id, params.originKey, { ...config, debug: debugValue }),
           },
           rules: {
             request: {
-              createRule: (params) => createRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: app.id, phase: 'request', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, app.id, 'request', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, app.id, 'request', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, app.id, 'request', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, app.id, 'request', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, app.id, 'request', params.ruleId, { ...config, debug: debugValue }),
             },
             response: {
-              createRule: (params) => createRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: app.id, phase: 'response', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, app.id, 'response', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, app.id, 'response', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, app.id, 'response', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, app.id, 'response', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, app.id, 'response', params.ruleId, { ...config, debug: debugValue }),
             },
           },
           devices: {
-            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: app.id, ...params }),
-            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: app.id, ...params }),
-            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: app.id, ...params }),
-            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: app.id, ...params }),
-            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: app.id, ...params }),
+            createDeviceGroup: (params) =>
+              createDeviceGroupMethod(tokenValue, app.id, params.data, { ...config, debug: debugValue }),
+            getDeviceGroup: (params) =>
+              getDeviceGroupMethod(tokenValue, app.id, params.deviceGroupId, { ...config, debug: debugValue }),
+            getDeviceGroups: (params) =>
+              getDeviceGroupsMethod(tokenValue, app.id, params.params, { ...config, debug: debugValue }),
+            updateDeviceGroup: (params) =>
+              updateDeviceGroupMethod(tokenValue, app.id, params.deviceGroupId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteDeviceGroup: (params) =>
+              deleteDeviceGroupMethod(tokenValue, app.id, params.deviceGroupId, { ...config, debug: debugValue }),
           },
           functions: {
-            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: app.id, ...params }),
-            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: app.id, ...params }),
-            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: app.id, ...params }),
-            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: app.id, ...params }),
-            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: app.id, ...params }),
+            createFunctionInstance: (params) =>
+              createFunctionInstanceMethod(tokenValue, app.id, params.data, { ...config, debug: debugValue }),
+            getFunctionInstance: (params) =>
+              getFunctionInstanceMethod(tokenValue, app.id, params.functionInstanceId, {
+                ...config,
+                debug: debugValue,
+              }),
+            getFunctionInstances: (params) =>
+              getFunctionInstancesMethod(tokenValue, app.id, params.params, { ...config, debug: debugValue }),
+            updateFunctionInstance: (params) =>
+              updateFunctionInstanceMethod(tokenValue, app.id, params.functionInstanceId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteFunctionInstance: (params) =>
+              deleteFunctionInstanceMethod(tokenValue, app.id, params.functionInstanceId, {
+                ...config,
+                debug: debugValue,
+              }),
           },
         }));
         return {
@@ -305,58 +472,106 @@ const createAzionApplicationClient: CreateAzionApplicationClient = (
       data: ApiUpdateApplicationPayload;
       options?: AzionClientOptions;
     }) => {
-      const response = await patchApplicationWrapper({
-        applicationId,
-        data,
-        options: { ...config?.options, ...options },
+      const response = await patchApplicationMethod(tokenValue, applicationId, data, {
+        ...config?.options,
+        ...options,
+        debug: resolveDebug(options?.debug),
       });
       if (response.data) {
         const appId = response.data.id;
         const application: AzionApplication = {
           ...response.data,
           cache: {
-            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) =>
+              createCacheSettingMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getCacheSetting: (params) =>
+              getCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
+            getCacheSettings: (params) =>
+              getCacheSettingsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateCacheSetting: (params) =>
+              updateCacheSettingMethod(tokenValue, appId, params.cacheSettingId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteCacheSetting: (params) =>
+              deleteCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
           },
           origins: {
-            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) =>
+              createOriginMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getOrigin: (params) =>
+              getOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
+            getOrigins: (params) =>
+              getOriginsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateOrigin: (params) =>
+              updateOriginMethod(tokenValue, appId, params.originKey, params.data, { ...config, debug: debugValue }),
+            deleteOrigin: (params) =>
+              deleteOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
           },
           rules: {
             request: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'request', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'request', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'request', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
             },
             response: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'response', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'response', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'response', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
             },
           },
           devices: {
-            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) =>
+              createDeviceGroupMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getDeviceGroup: (params) =>
+              getDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
+            getDeviceGroups: (params) =>
+              getDeviceGroupsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateDeviceGroup: (params) =>
+              updateDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteDeviceGroup: (params) =>
+              deleteDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
           },
           functions: {
-            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) =>
+              createFunctionInstanceMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getFunctionInstance: (params) =>
+              getFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, { ...config, debug: debugValue }),
+            getFunctionInstances: (params) =>
+              getFunctionInstancesMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateFunctionInstance: (params) =>
+              updateFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteFunctionInstance: (params) =>
+              deleteFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, {
+                ...config,
+                debug: debugValue,
+              }),
           },
         };
         return { data: application } as AzionApplicationResponse<AzionApplication>;
@@ -372,58 +587,106 @@ const createAzionApplicationClient: CreateAzionApplicationClient = (
       data: Partial<ApiUpdateApplicationPayload>;
       options?: AzionClientOptions;
     }) => {
-      const response = await patchApplicationWrapper({
-        applicationId,
-        data,
-        options: { ...config?.options, ...options },
+      const response = await patchApplicationMethod(tokenValue, applicationId, data, {
+        ...config?.options,
+        ...options,
+        debug: resolveDebug(options?.debug),
       });
       if (response.data) {
         const appId = response.data.id;
         const application: AzionApplication = {
           ...response.data,
           cache: {
-            createCacheSetting: (params) => createCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSetting: (params) => getCacheSettingWrapper({ applicationId: appId, ...params }),
-            getCacheSettings: (params) => getCacheSettingsWrapper({ applicationId: appId, ...params }),
-            updateCacheSetting: (params) => updateCacheSettingWrapper({ applicationId: appId, ...params }),
-            deleteCacheSetting: (params) => deleteCacheSettingWrapper({ applicationId: appId, ...params }),
+            createCacheSetting: (params) =>
+              createCacheSettingMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getCacheSetting: (params) =>
+              getCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
+            getCacheSettings: (params) =>
+              getCacheSettingsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateCacheSetting: (params) =>
+              updateCacheSettingMethod(tokenValue, appId, params.cacheSettingId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteCacheSetting: (params) =>
+              deleteCacheSettingMethod(tokenValue, appId, params.cacheSettingId, { ...config, debug: debugValue }),
           },
           origins: {
-            createOrigin: (params) => createOriginWrapper({ applicationId: appId, ...params }),
-            getOrigin: (params) => getOriginWrapper({ applicationId: appId, ...params }),
-            getOrigins: (params) => getOriginsWrapper({ applicationId: appId, ...params }),
-            updateOrigin: (params) => updateOriginWrapper({ applicationId: appId, ...params }),
-            deleteOrigin: (params) => deleteOriginWrapper({ applicationId: appId, ...params }),
+            createOrigin: (params) =>
+              createOriginMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getOrigin: (params) =>
+              getOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
+            getOrigins: (params) =>
+              getOriginsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateOrigin: (params) =>
+              updateOriginMethod(tokenValue, appId, params.originKey, params.data, { ...config, debug: debugValue }),
+            deleteOrigin: (params) =>
+              deleteOriginMethod(tokenValue, appId, params.originKey, { ...config, debug: debugValue }),
           },
           rules: {
             request: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'request', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'request', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'request', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'request', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'request', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'request', params.ruleId, { ...config, debug: debugValue }),
             },
             response: {
-              createRule: (params) => createRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRule: (params) => getRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              getRules: (params) => getRulesWrapper({ applicationId: appId, phase: 'response', ...params }),
-              updateRule: (params) => updateRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
-              deleteRule: (params) => deleteRuleWrapper({ applicationId: appId, phase: 'response', ...params }),
+              createRule: (params) =>
+                createRuleMethod(tokenValue, appId, 'response', params.data, { ...config, debug: debugValue }),
+              getRule: (params) =>
+                getRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
+              getRules: (params) =>
+                getRulesMethod(tokenValue, appId, 'response', params.params, { ...config, debug: debugValue }),
+              updateRule: (params) =>
+                updateRuleMethod(tokenValue, appId, 'response', params.ruleId, params.data, {
+                  ...config,
+                  debug: debugValue,
+                }),
+              deleteRule: (params) =>
+                deleteRuleMethod(tokenValue, appId, 'response', params.ruleId, { ...config, debug: debugValue }),
             },
           },
           devices: {
-            createDeviceGroup: (params) => createDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroup: (params) => getDeviceGroupWrapper({ applicationId: appId, ...params }),
-            getDeviceGroups: (params) => getDeviceGroupsWrapper({ applicationId: appId, ...params }),
-            updateDeviceGroup: (params) => updateDeviceGroupWrapper({ applicationId: appId, ...params }),
-            deleteDeviceGroup: (params) => deleteDeviceGroupWrapper({ applicationId: appId, ...params }),
+            createDeviceGroup: (params) =>
+              createDeviceGroupMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getDeviceGroup: (params) =>
+              getDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
+            getDeviceGroups: (params) =>
+              getDeviceGroupsMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateDeviceGroup: (params) =>
+              updateDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteDeviceGroup: (params) =>
+              deleteDeviceGroupMethod(tokenValue, appId, params.deviceGroupId, { ...config, debug: debugValue }),
           },
           functions: {
-            createFunctionInstance: (params) => createFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstance: (params) => getFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            getFunctionInstances: (params) => getFunctionInstancesWrapper({ applicationId: appId, ...params }),
-            updateFunctionInstance: (params) => updateFunctionInstanceWrapper({ applicationId: appId, ...params }),
-            deleteFunctionInstance: (params) => deleteFunctionInstanceWrapper({ applicationId: appId, ...params }),
+            createFunctionInstance: (params) =>
+              createFunctionInstanceMethod(tokenValue, appId, params.data, { ...config, debug: debugValue }),
+            getFunctionInstance: (params) =>
+              getFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, { ...config, debug: debugValue }),
+            getFunctionInstances: (params) =>
+              getFunctionInstancesMethod(tokenValue, appId, params.params, { ...config, debug: debugValue }),
+            updateFunctionInstance: (params) =>
+              updateFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, params.data, {
+                ...config,
+                debug: debugValue,
+              }),
+            deleteFunctionInstance: (params) =>
+              deleteFunctionInstanceMethod(tokenValue, appId, params.functionInstanceId, {
+                ...config,
+                debug: debugValue,
+              }),
           },
         };
         return { data: application } as AzionApplicationResponse<AzionApplication>;
@@ -477,5 +740,4 @@ export {
   updateOriginWrapper as updateOrigin,
   updateRuleWrapper as updateRule,
 };
-
 export default createAzionApplicationClient;

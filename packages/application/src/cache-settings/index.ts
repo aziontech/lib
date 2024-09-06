@@ -19,7 +19,7 @@ import { AzionCacheSetting } from './types';
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The created cache setting or an error.
  */
-const createCacheSettingMethod = async (
+export const createCacheSettingMethod = async (
   token: string,
   Id: number,
   cacheSettingData: ApiBaseCacheSettingPayload,
@@ -47,7 +47,7 @@ const createCacheSettingMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The retrieved cache setting or an error.
  */
-const getCacheSettingMethod = async (
+export const getCacheSettingMethod = async (
   token: string,
   Id: number,
   cacheSettingId: number,
@@ -75,7 +75,7 @@ const getCacheSettingMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>} A collection of cache settings or an error.
  */
-const getCacheSettingsMethod = async (
+export const getCacheSettingsMethod = async (
   token: string,
   Id: number,
   params?: ApiListCacheSettingsParams,
@@ -117,7 +117,7 @@ const getCacheSettingsMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The updated cache setting or an error.
  */
-const updateCacheSettingMethod = async (
+export const updateCacheSettingMethod = async (
   token: string,
   Id: number,
   cacheSettingId: number,
@@ -152,7 +152,7 @@ const updateCacheSettingMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
  */
-const deleteCacheSettingMethod = async (
+export const deleteCacheSettingMethod = async (
   token: string,
   Id: number,
   cacheSettingId: number,

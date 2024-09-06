@@ -209,7 +209,7 @@ export const deleteRuleWrapper = ({
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
  */
-const createRuleMethod = async (
+export const createRuleMethod = async (
   token: string,
   Id: number,
   phase: 'request' | 'response',
@@ -241,7 +241,7 @@ const createRuleMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
  */
-const getRuleMethod = async (
+export const getRuleMethod = async (
   token: string,
   Id: number,
   phase: 'request' | 'response',
@@ -273,7 +273,7 @@ const getRuleMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
  */
-const getRulesMethod = async (
+export const getRulesMethod = async (
   token: string,
   Id: number,
   phase: 'request' | 'response',
@@ -306,7 +306,7 @@ const getRulesMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
  */
-const updateRuleMethod = async (
+export const updateRuleMethod = async (
   token: string,
   Id: number,
   phase: 'request' | 'response',
@@ -346,7 +346,7 @@ const updateRuleMethod = async (
  * @param {AzionClientOptions} [options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
  */
-const deleteRuleMethod = async (
+export const deleteRuleMethod = async (
   token: string,
   Id: number,
   phase: 'request' | 'response',

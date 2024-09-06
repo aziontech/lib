@@ -23,7 +23,7 @@ import { AzionFunctionInstance } from './types';
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} The created function instance or an error.
  */
-const createFunctionInstanceMethod = async (
+export const createFunctionInstanceMethod = async (
   token: string,
   Id: number,
   functionInstanceData: ApiCreateFunctionInstancePayload,
@@ -56,7 +56,7 @@ const createFunctionInstanceMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<void>>} Confirmation of deletion or an error.
  */
-const deleteFunctionInstanceMethod = async (
+export const deleteFunctionInstanceMethod = async (
   token: string,
   Id: number,
   functionInstanceId: number,
@@ -84,7 +84,7 @@ const deleteFunctionInstanceMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} The retrieved function instance or an error.
  */
-const getFunctionInstanceMethod = async (
+export const getFunctionInstanceMethod = async (
   token: string,
   Id: number,
   functionInstanceId: number,
@@ -117,7 +117,7 @@ const getFunctionInstanceMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionFunctionInstance>>} A collection of function instances or an error.
  */
-const getFunctionInstancesMethod = async (
+export const getFunctionInstancesMethod = async (
   token: string,
   Id: number,
   params?: ApiListFunctionInstancesParams,
@@ -146,7 +146,7 @@ const getFunctionInstancesMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} The updated function instance or an error.
  */
-const updateFunctionInstanceMethod = async (
+export const updateFunctionInstanceMethod = async (
   token: string,
   Id: number,
   functionInstanceId: number,

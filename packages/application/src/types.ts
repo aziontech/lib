@@ -115,7 +115,6 @@ export interface CacheOperations {
    * @name CacheOperations.createCacheSetting
    * @param {Object} params - The parameters for creating a cache setting.
    * @param {ApiCreateCacheSettingPayload} params.data - The data for the new cache setting.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
    * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} A promise that resolves with the created cache setting data or an error.
    *
    * @example
@@ -148,7 +147,7 @@ export interface CacheOperations {
    * @name CacheOperations.getCacheSetting
    * @param {Object} params - The parameters for retrieving a cache setting.
    * @param {number} params.cacheSettingId - The ID of the cache setting to retrieve.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} A promise that resolves with the cache setting data or an error.
    *
    * @example
@@ -174,7 +173,7 @@ export interface CacheOperations {
    * @name CacheOperations.getCacheSettings
    * @param {Object} params - The parameters for retrieving cache settings.
    * @param {ApiListCacheSettingsParams} [params.params] - Optional parameters for filtering and pagination.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>} A promise that resolves with a collection of cache settings or an error.
    *
    * @example
@@ -201,7 +200,7 @@ export interface CacheOperations {
    * @param {Object} params - The parameters for updating a cache setting.
    * @param {number} params.cacheSettingId - The ID of the cache setting to update.
    * @param {ApiUpdateCacheSettingPayload} params.data - The updated data for the cache setting.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} A promise that resolves with the updated cache setting data or an error.
    *
    * @example
@@ -233,7 +232,7 @@ export interface CacheOperations {
    * @name CacheOperations.deleteCacheSetting
    * @param {Object} params - The parameters for deleting a cache setting.
    * @param {number} params.cacheSettingId - The ID of the cache setting to delete.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the cache setting is deleted or rejects with an error.
    *
    * @example
@@ -266,7 +265,7 @@ export interface OriginOperations {
    * @name OriginOperations.createOrigin
    * @param {Object} params - The parameters for creating an origin.
    * @param {ApiCreateOriginPayload} params.data - The data for the new origin.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the created origin data or an error.
    *
    * @example
@@ -297,7 +296,7 @@ export interface OriginOperations {
    * @name OriginOperations.getOrigin
    * @param {Object} params - The parameters for retrieving an origin.
    * @param {string} params.originKey - The key of the origin to retrieve.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the origin data or an error.
    *
    * @example
@@ -323,7 +322,7 @@ export interface OriginOperations {
    * @name OriginOperations.getOrigins
    * @param {Object} params - The parameters for retrieving origins.
    * @param {ApiListOriginsParams} [params.params] - Optional parameters for filtering and pagination.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationCollectionResponse<AzionOrigin>>} A promise that resolves with a collection of origins or an error.
    *
    * @example
@@ -350,7 +349,7 @@ export interface OriginOperations {
    * @param {Object} params - The parameters for updating an origin.
    * @param {string} params.originKey - The key of the origin to update.
    * @param {ApiUpdateOriginRequest} params.data - The updated data for the origin.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the updated origin data or an error.
    *
    * @example
@@ -381,7 +380,7 @@ export interface OriginOperations {
    * @name OriginOperations.deleteOrigin
    * @param {Object} params - The parameters for deleting an origin.
    * @param {string} params.originKey - The key of the origin to delete.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the origin is deleted or rejects with an error.
    *
    * @example
@@ -414,7 +413,7 @@ export interface RuleOperations {
    * @name RuleOperations.createRule
    * @param {Object} params - The parameters for creating a rule.
    * @param {ApiCreateRulePayload} params.data - The data for the new rule.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
    *
    * @example
@@ -445,7 +444,7 @@ export interface RuleOperations {
    * @name RuleOperations.getRule
    * @param {Object} params - The parameters for retrieving a rule.
    * @param {number} params.ruleId - The ID of the rule to retrieve.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
    *
    * @example
@@ -468,7 +467,7 @@ export interface RuleOperations {
    * @name RuleOperations.getRules
    * @param {Object} params - The parameters for retrieving rules.
    * @param {ApiListRulesParams} [params.params] - Optional parameters for filtering and pagination.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
    *
    * @example
@@ -495,7 +494,7 @@ export interface RuleOperations {
    * @param {Object} params - The parameters for updating a rule.
    * @param {number} params.ruleId - The ID of the rule to update.
    * @param {ApiUpdateRulePayload} params.data - The updated data for the rule.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
    *
    * @example
@@ -526,7 +525,7 @@ export interface RuleOperations {
    * @name RuleOperations.deleteRule
    * @param {Object} params - The parameters for deleting a rule.
    * @param {number} params.ruleId - The ID of the rule to delete.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
    *
    * @example
@@ -556,7 +555,7 @@ export interface DeviceGroupOperations {
    * @name DeviceGroupOperations.createDeviceGroup
    * @param {Object} params - The parameters for creating a device group.
    * @param {ApiCreateDeviceGroupPayload} params.data - The data for the new device group.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} A promise that resolves with the created device group data or an error.
    *
    * @example
@@ -585,7 +584,7 @@ export interface DeviceGroupOperations {
    * @name DeviceGroupOperations.getDeviceGroup
    * @param {Object} params - The parameters for retrieving a device group.
    * @param {number} params.deviceGroupId - The ID of the device group to retrieve.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} A promise that resolves with the device group data or an error.
    *
    * @example
@@ -611,7 +610,7 @@ export interface DeviceGroupOperations {
    * @name DeviceGroupOperations.getDeviceGroups
    * @param {Object} params - The parameters for retrieving device groups.
    * @param {ApiListDeviceGroupsParams} [params.params] - Optional parameters for filtering and pagination.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>>} A promise that resolves with a collection of device groups or an error.
    *
    * @example
@@ -638,7 +637,7 @@ export interface DeviceGroupOperations {
    * @param {Object} params - The parameters for updating a device group.
    * @param {number} params.deviceGroupId - The ID of the device group to update.
    * @param {ApiUpdateDeviceGroupPayload} params.data - The updated data for the device group.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} A promise that resolves with the updated device group data or an error.
    *
    * @example
@@ -669,7 +668,7 @@ export interface DeviceGroupOperations {
    * @name DeviceGroupOperations.deleteDeviceGroup
    * @param {Object} params - The parameters for deleting a device group.
    * @param {number} params.deviceGroupId - The ID of the device group to delete.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the device group is deleted or rejects with an error.
    *
    * @example
@@ -702,7 +701,7 @@ export interface FunctionOperations {
    * @name FunctionOperations.createFunctionInstance
    * @param {Object} params - The parameters for creating a function instance.
    * @param {ApiCreateFunctionInstancePayload} params.data - The data for the new function instance.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} A promise that resolves with the created function instance data or an error.
    *
    * @example
@@ -732,7 +731,7 @@ export interface FunctionOperations {
    * @name FunctionOperations.getFunctionInstance
    * @param {Object} params - The parameters for retrieving a function instance.
    * @param {number} params.functionInstanceId - The ID of the function instance to retrieve.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} A promise that resolves with the function instance data or an error.
    *
    * @example
@@ -758,7 +757,7 @@ export interface FunctionOperations {
    * @name FunctionOperations.getFunctionInstances
    * @param {Object} params - The parameters for retrieving function instances.
    * @param {ApiListFunctionInstancesParams} [params.params] - Optional parameters for filtering and pagination.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationCollectionResponse<AzionFunctionInstance>>} A promise that resolves with a collection of function instances or an error.
    *
    * @example
@@ -785,7 +784,7 @@ export interface FunctionOperations {
    * @param {Object} params - The parameters for updating a function instance.
    * @param {number} params.functionInstanceId - The ID of the function instance to update.
    * @param {ApiUpdateFunctionInstancePayload} params.data - The updated data for the function instance.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} A promise that resolves with the updated function instance data or an error.
    *
    * @example
@@ -816,7 +815,7 @@ export interface FunctionOperations {
    * @name FunctionOperations.deleteFunctionInstance
    * @param {Object} params - The parameters for deleting a function instance.
    * @param {number} params.functionInstanceId - The ID of the function instance to delete.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the function instance is deleted or rejects with an error.
    *
    * @example
@@ -962,7 +961,7 @@ export interface AzionApplicationClient {
    * @name AzionApplicationClient.createApplication
    * @param {Object} params - The parameters for creating an application.
    * @param {ApiCreateApplicationPayload} params.data - The data for the new application.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the created application data or an error.
    *
    * @example
@@ -993,7 +992,7 @@ export interface AzionApplicationClient {
    * @name AzionApplicationClient.getApplication
    * @param {Object} params - The parameters for retrieving an application.
    * @param {number} params.applicationId - The ID of the application to retrieve.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the application data or an error.
    *
    * @example
@@ -1019,7 +1018,7 @@ export interface AzionApplicationClient {
    * @name AzionApplicationClient.getApplications
    * @param {Object} params - The parameters for retrieving applications.
    * @param {AzionApplicationCollectionOptions} [params.params] - Optional parameters for filtering and pagination.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationCollectionResponse<AzionApplication>>} A promise that resolves with a collection of applications or an error.
    *
    * @example
@@ -1046,7 +1045,7 @@ export interface AzionApplicationClient {
    * @param {Object} params - The parameters for updating an application.
    * @param {number} params.applicationId - The ID of the application to update.
    * @param {ApiUpdateApplicationPayload} params.data - The updated data for the application.
-   * @param {AzionClientOptions} [params.options] - Optional client options.
+
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the updated application data or an error.
    *
    * @example
@@ -1079,6 +1078,28 @@ export interface AzionApplicationClient {
     options?: AzionClientOptions;
   }) => Promise<AzionApplicationResponse<AzionApplication>>;
 }
+
+/**
+ * Function type for creating an Azion Application Client.
+ *
+ * @param {Object} [config] - Configuration options for the application client.
+ * @param {string} [config.token] - Authentication token for Azion API. If not provided,
+ * the client will attempt to use the AZION_TOKEN environment variable.
+ * @param {AzionClientOptions} [config.options] - Additional client options.
+ *
+ * @returns {AzionApplicationClient} An instance of the Azion Application Client.
+ *
+ * @example
+ * // Create an application client with a token and debug mode enabled
+ * const appClient = createAzionApplicationClient({
+ *   token: 'your-api-token',
+ *   options: { debug: true }
+ * });
+ *
+ * @example
+ * // Create an application client using environment variables for token
+ * const appClient = createAzionApplicationClient();
+ */
 export type CreateAzionApplicationClient = (
   config?: Partial<{ token: string; options?: AzionClientOptions }>,
 ) => AzionApplicationClient;

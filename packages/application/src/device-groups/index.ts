@@ -19,7 +19,7 @@ import { AzionDeviceGroup } from './types';
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The created device group or an error.
  */
-const createDeviceGroupMethod = async (
+export const createDeviceGroupMethod = async (
   token: string,
   Id: number,
   deviceGroupData: ApiCreateDeviceGroupPayload,
@@ -47,7 +47,7 @@ const createDeviceGroupMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
  */
-const deleteDeviceGroupMethod = async (
+export const deleteDeviceGroupMethod = async (
   token: string,
   Id: number,
   deviceGroupId: number,
@@ -75,7 +75,7 @@ const deleteDeviceGroupMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The retrieved device group or an error.
  */
-const getDeviceGroupMethod = async (
+export const getDeviceGroupMethod = async (
   token: string,
   Id: number,
   deviceGroupId: number,
@@ -103,7 +103,7 @@ const getDeviceGroupMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>>} A collection of device groups or an error.
  */
-const getDeviceGroupsMethod = async (
+export const getDeviceGroupsMethod = async (
   token: string,
   Id: number,
   params?: ApiListDeviceGroupsParams,
@@ -132,7 +132,7 @@ const getDeviceGroupsMethod = async (
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The updated device group or an error.
  */
-const updateDeviceGroupMethod = async (
+export const updateDeviceGroupMethod = async (
   token: string,
   Id: number,
   deviceGroupId: number,

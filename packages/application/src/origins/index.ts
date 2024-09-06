@@ -4,7 +4,7 @@ import { createOrigin, deleteOrigin, getOriginByKey, listOrigins, updateOrigin }
 import { ApiCreateOriginPayload, ApiListOriginsParams, ApiUpdateOriginRequest } from './services/types';
 import { AzionOrigin } from './types';
 
-const createOriginMethod = async (
+export const createOriginMethod = async (
   token: string,
   Id: number,
   originData: ApiCreateOriginPayload,
@@ -23,7 +23,7 @@ const createOriginMethod = async (
   }
 };
 
-const deleteOriginMethod = async (
+export const deleteOriginMethod = async (
   token: string,
   Id: number,
   originKey: string,
@@ -42,7 +42,7 @@ const deleteOriginMethod = async (
   }
 };
 
-const getOriginMethod = async (
+export const getOriginMethod = async (
   token: string,
   Id: number,
   originKey: string,
@@ -61,7 +61,7 @@ const getOriginMethod = async (
   }
 };
 
-const getOriginsMethod = async (
+export const getOriginsMethod = async (
   token: string,
   Id: number,
   params?: ApiListOriginsParams,
@@ -80,7 +80,7 @@ const getOriginsMethod = async (
   }
 };
 
-const updateOriginMethod = async (
+export const updateOriginMethod = async (
   token: string,
   Id: number,
   originKey: string,
