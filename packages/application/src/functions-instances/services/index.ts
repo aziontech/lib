@@ -81,19 +81,19 @@ const getFunctionInstanceById = async (
  * Creates a new function instance for an edge application.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} Id - ID of the edge application.
+ * @param {number} edgeApplicationId - ID of the edge application.
  * @param {ApiCreateFunctionInstancePayload} functionInstanceData - Data of the function instance to be created.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiCreateFunctionInstanceResponse>} The created function instance or an error if creation failed.
  */
 const createFunctionInstance = async (
   token: string,
-  Id: number,
+  edgeApplicationId: number,
   functionInstanceData: ApiCreateFunctionInstancePayload,
   debug?: boolean,
 ): Promise<ApiCreateFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/functions_instances`, {
+    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances`, {
       method: 'POST',
       headers: {
         Accept: 'application/json; version=3',
@@ -151,19 +151,19 @@ const updateFunctionInstance = async (
  * Deletes a function instance.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {number} Id - ID of the edge application.
- * @param {number} functionInstanceId - ID of the function instance to delete.
+ * @param {number} edgeApplicationId - ID of the edge application.
+ * @param {number} edgeFunctionInstanceId - ID of the function instance to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @returns {Promise<ApiDeleteFunctionInstanceResponse>} Confirmation of deletion or an error if deletion failed.
  */
 const deleteFunctionInstance = async (
   token: string,
-  Id: number,
-  functionInstanceId: number,
+  edgeApplicationId: number,
+  edgeFunctionInstanceId: number,
   debug?: boolean,
 ): Promise<ApiDeleteFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`, {
+    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances/${edgeFunctionInstanceId}`, {
       method: 'DELETE',
       headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
     });

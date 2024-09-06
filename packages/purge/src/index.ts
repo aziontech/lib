@@ -1,5 +1,5 @@
-import { postPurgeCacheKey, postPurgeURL, postPurgeWildcard } from './services';
-import { AzionClientOptions, AzionPurge, AzionPurgeClient, CreateAzionPurgeClient } from './types';
+import { postPurgeCacheKey, postPurgeURL, postPurgeWildcard } from './services/api/index';
+import { AzionClientOptions, AzionPurge, AzionPurgeClient, AzionPurgeResponse, CreateAzionPurgeClient } from './types';
 
 const envDebugFlag = process.env.AZION_DEBUG && process.env.AZION_DEBUG === 'true';
 const resolveToken = (token?: string) => token ?? process.env.AZION_TOKEN ?? '';
@@ -9,36 +9,47 @@ const purgeURLMethod = async (
   token: string,
   url: string[],
   options?: AzionClientOptions,
-): Promise<AzionPurge | null> => {
+): Promise<AzionPurgeResponse<AzionPurge>> => {
   const apiResponse = await postPurgeURL(resolveToken(token), url, resolveDebug(options?.debug));
-  if (apiResponse) {
-    return { items: apiResponse.data.items, state: apiResponse.state };
+  if (apiResponse?.data && apiResponse.state) {
+    return { data: { items: apiResponse.data.items, state: apiResponse.state } };
   }
-  return null;
+  return {
+    error: apiResponse.error,
+  };
 };
 
 const purgeCacheKeyMethod = async (
   token: string,
   cacheKey: string[],
   options?: AzionClientOptions,
-): Promise<AzionPurge | null> => {
+): Promise<AzionPurgeResponse<AzionPurge>> => {
   const apiResponse = await postPurgeCacheKey(resolveToken(token), cacheKey, resolveDebug(options?.debug));
-  if (apiResponse) {
-    return { items: apiResponse.data.items, state: apiResponse.state };
+  if (apiResponse?.data && apiResponse.state) {
+    return {
+      data: {
+        items: apiResponse.data.items,
+        state: apiResponse.state,
+      },
+    };
   }
-  return null;
+  return {
+    error: apiResponse.error,
+  };
 };
 
 const purgeWildCardMethod = async (
   token: string,
   wildcard: string[],
   options?: AzionClientOptions,
-): Promise<AzionPurge | null> => {
+): Promise<AzionPurgeResponse<AzionPurge>> => {
   const apiResponse = await postPurgeWildcard(resolveToken(token), wildcard, resolveDebug(options?.debug));
-  if (apiResponse) {
-    return { items: apiResponse.data.items, state: apiResponse.state };
+  if (apiResponse?.data && apiResponse.state) {
+    return { data: { items: apiResponse.data.items, state: apiResponse.state } };
   }
-  return null;
+  return {
+    error: apiResponse.error,
+  };
 };
 
 /**
@@ -46,7 +57,7 @@ const purgeWildCardMethod = async (
  *
  * @param {string[]} url - URLs to purge.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
- * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
+ * @returns {Promise<AzionPurgeResponse<AzionPurge>>} The purge response or null if the purge failed.
  *
  * @example
  * const response = await purgeURL(['http://www.domain.com/path/image.jpg'], { debug: true });
@@ -56,7 +67,7 @@ const purgeWildCardMethod = async (
  *   console.error('Purge failed');
  * }
  */
-const purgeURLWrapper = (url: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
+const purgeURLWrapper = (url: string[], options?: AzionClientOptions): Promise<AzionPurgeResponse<AzionPurge>> =>
   purgeURLMethod(resolveToken(), url, options);
 
 /**
@@ -64,7 +75,7 @@ const purgeURLWrapper = (url: string[], options?: AzionClientOptions): Promise<A
  *
  * @param {string[]} cacheKey - Cache Keys to purge.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
- * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
+ * @returns {Promise<AzionPurgeResponse<AzionPurge>>} The purge response or null if the purge failed.
  *
  * @example
  * const response = await purgeCacheKey(['http://www.domain.com/path/image.jpg'], { debug: true });
@@ -74,15 +85,17 @@ const purgeURLWrapper = (url: string[], options?: AzionClientOptions): Promise<A
  *   console.error('Purge failed');
  * }
  */
-const purgeCacheKeyWrapper = (cacheKey: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
-  purgeCacheKeyMethod(resolveToken(), cacheKey, options);
+const purgeCacheKeyWrapper = (
+  cacheKey: string[],
+  options?: AzionClientOptions,
+): Promise<AzionPurgeResponse<AzionPurge>> => purgeCacheKeyMethod(resolveToken(), cacheKey, options);
 
 /**
  * Purge using a wildcard expression from the Azion Edge cache.
  *
  * @param {string[]} wildcard - Wildcard expressions to purge.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
- * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
+ * @returns {Promise<AzionPurgeResponse<AzionPurge>>} The purge response or null if the purge failed.
  *
  * @example
  * const response = await purgeWildCard(['http://www.domain.com/path/image.jpg*'], { debug: true });
@@ -92,8 +105,10 @@ const purgeCacheKeyWrapper = (cacheKey: string[], options?: AzionClientOptions):
  *   console.error('Purge failed');
  * }
  */
-const purgeWildCardWrapper = (wildcard: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
-  purgeWildCardMethod(resolveToken(), wildcard, options);
+const purgeWildCardWrapper = (
+  wildcard: string[],
+  options?: AzionClientOptions,
+): Promise<AzionPurgeResponse<AzionPurge>> => purgeWildCardMethod(resolveToken(), wildcard, options);
 
 /**
  * Creates a Purge client with methods to interact with Azion Edge Purge.
@@ -119,11 +134,11 @@ const client: CreateAzionPurgeClient = (
   const tokenValue = resolveToken(config?.token);
 
   const client: AzionPurgeClient = {
-    purgeURL: (url: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
+    purgeURL: (url: string[], options?: AzionClientOptions): Promise<AzionPurgeResponse<AzionPurge>> =>
       purgeURLMethod(tokenValue, url, options),
-    purgeCacheKey: (cacheKey: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
+    purgeCacheKey: (cacheKey: string[], options?: AzionClientOptions): Promise<AzionPurgeResponse<AzionPurge>> =>
       purgeCacheKeyMethod(tokenValue, cacheKey, options),
-    purgeWildCard: (wildcard: string[], options?: AzionClientOptions): Promise<AzionPurge | null> =>
+    purgeWildCard: (wildcard: string[], options?: AzionClientOptions): Promise<AzionPurgeResponse<AzionPurge>> =>
       purgeWildCardMethod(tokenValue, wildcard, options),
   };
 

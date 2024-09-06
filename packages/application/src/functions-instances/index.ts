@@ -173,7 +173,7 @@ const updateFunctionInstanceMethod = async (
 };
 
 /**
- * Ccreate a new function instance for a specific application.
+ * Create a new function instance for a specific application.
  *
  * @param {Object} params - Parameters for creating a function instance.
  * @param {number} params.applicationId - Application ID.
@@ -186,11 +186,8 @@ const updateFunctionInstanceMethod = async (
  *   applicationId: 1234,
  *   data: {
  *     name: 'My Function Instance',
- *     code: 'async function handleRequest(request) { return new Response("Hello World"); }',
- *     language: 'JavaScript',
- *     initiator_type: 'edge_application',
- *     active: true,
- *     json_args: {}
+ *     edge_function_id: 5678,
+ *     args: {}
  *   },
  *   options: { debug: true }
  * });

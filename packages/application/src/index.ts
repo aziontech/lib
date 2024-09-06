@@ -67,22 +67,37 @@ import { ApiCreateApplicationPayload, ApiUpdateApplicationPayload } from './main
  * @example
  * const applicationClient = createClient({ token: 'your-api-token', options: { debug: true } });
  *
- * // Create a new function instance
- * const newFunctionInstance = await applicationClient.createFunctionInstance({
- *   applicationId: 1234,
- *   data: { name: 'My Function Instance', function_id: 5678 }
+ * // Create a new edge application
+ * const newApplication = await applicationClient.createApplication({
+ *   data: {
+ *     name: 'My Edge Application',
+ *     delivery_protocol: 'http',
+ *     origin_type: 'single_origin',
+ *     address: 'example.com'
+ *   }
  * });
  *
- * // Get all function instances for an application
- * const allFunctionInstances = await applicationClient.getFunctionInstances({
+ * // Get an existing edge application
+ * const application = await applicationClient.getApplication({
+ *   applicationId: 1234
+ * });
+ *
+ * // Update an edge application
+ * const updatedApplication = await applicationClient.updateApplication({
  *   applicationId: 1234,
+ *   data: {
+ *     name: 'Updated Edge Application Name'
+ *   }
+ * });
+ *
+ * // Delete an edge application
+ * const deletedApplication = await applicationClient.deleteApplication({
+ *   applicationId: 1234
+ * });
+ *
+ * // List all edge applications
+ * const applications = await applicationClient.getApplications({
  *   params: { page: 1, page_size: 20 }
- * });
- *
- * // Delete a function instance
- * const deletedFunctionInstance = await applicationClient.deleteFunctionInstance({
- *   applicationId: 1234,
- *   functionInstanceId: 5678
  * });
  */
 const createAzionApplicationClient: CreateAzionApplicationClient = (

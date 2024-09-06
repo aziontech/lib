@@ -69,17 +69,17 @@ import { createClient } from 'azion';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket } = await client.storage.createBucket('my-new-bucket', 'public');
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
 
-const allBuckets = await client.storage.getBuckets();
+const { data: allBuckets } = await client.storage.getBuckets();
 if (allBuckets) {
-  console.log(`Retrieved ${allBuckets.length} buckets`);
+  console.log(`Retrieved ${allBuckets.count} buckets`);
 }
 
-const deletedBucket = await client.storage.deleteBucket('my-bucket');
+const { data: deletedBucket } = await client.storage.deleteBucket('my-bucket');
 if (deletedBucket) {
   console.log(`Bucket deleted with name: ${deletedBucket.name}`);
 }
@@ -89,21 +89,25 @@ if (deletedBucket) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Bucket } from 'azion/storage/types';
+import { AzionClient, AzionStorageResponse, AzionBucket, AzionDeletedBucket, AzionBuckets } from 'azion/storage';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
-const newBucket: Bucket | null = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket }: AzionStorageResponse<AzionBucket> = await client.storage.createBucket(
+  'my-new-bucket',
+  'public',
+);
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
 
-const allBuckets: Bucket[] | null = await client.storage.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionBuckets> = await client.storage.getBuckets();
 if (allBuckets) {
-  console.log(`Retrieved ${allBuckets.length} buckets`);
+  console.log(`Retrieved ${allBuckets.count} buckets`);
 }
 
-const deletedBucket: Bucket | null = await client.storage.deleteBucket('my-bucket');
+const { data: deletedBucket }: AzionStorageResponse<AzionDeletedBucket> =
+  await client.storage.deleteBucket('my-bucket');
 if (deletedBucket) {
   console.log(`Bucket deleted with name: ${deletedBucket.name}`);
 }
@@ -123,9 +127,9 @@ if (newDatabase) {
   console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases = await client.sql.getDatabases();
-if (allDatabases?.data) {
-  console.log(`Retrieved ${allDatabases?.data?.length} databases`);
+const { data: allDatabases } = await client.sql.getDatabases();
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases?.count} databases`);
 }
 
 const queryResult = await client.sql.query('SELECT * FROM users');
@@ -143,19 +147,19 @@ import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sq
 
 const client: AzionClient = createClient({ token: 'your-api-token', { debug: true } });
 
-const { data: newDatabase, error }: AzionDatabaseResponse = await client.sql.createDatabase('my-new-db');
+const { data: newDatabase, error }: AzionDatabaseResponse<AzionDatabase> = await client.sql.createDatabase('my-new-db');
 if (newDatabase) {
   console.log(`AzionDatabase created with ID: ${newDatabase.id}`);
 }
 
-const allDatabases: AzionDatabaseResponse = await client.sql.getDatabases();
-if (allDatabases?.data) {
-  console.log(`Retrieved ${allDatabases?.data?.length} databases`);
+const { data: allDatabases }: AzionDatabaseResponse<AzionDatabaseCollections> = await client.sql.getDatabases();
+if (allDatabases) {
+  console.log(`Retrieved ${allDatabases?.count} databases`);
 }
 
-const queryResult: AzionDatabaseQueryResponse = await client.sql.query(['SELECT * FROM users']);
+const queryResult: AzionDatabaseResponse<AzionDatabaseQueryResponse> = await client.sql.query(['SELECT * FROM users']);
 if (queryResult?.data) {
-  console.log(`Query executed. Rows returned: ${queryResult?.data?.length}`);
+  console.log(`Query executed. Rows returned: ${queryResult?.data?.results.length}`);
 }
 ```
 
@@ -168,17 +172,17 @@ import { createClient } from 'azion';
 
 const client = createClient({ token: 'your-api-token', { debug: true } });
 
-const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const { data: purgeResult } = await client.purge.purgeURL(['http://example.com/image.jpg']);
 if (purgeResult) {
   console.log(`Purge successful: ${purgeResult.items}`);
 }
 
-const cacheKeyResult = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+const { data: cacheKeyResult } = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
 if (cacheKeyResult) {
   console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
 }
 
-const wildcardResult = await client.purge.purgeWildCard(['http://example.com/*']);
+const { data: wildcardResult } = await client.purge.purgeWildCard(['http://example.com/*']);
 if (wildcardResult) {
   console.log(`Wildcard purge successful: ${wildcardResult.items}`);
 }
@@ -188,21 +192,28 @@ if (wildcardResult) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Purge } from 'azion/purge/types';
+import { AzionClient, AzionPurgeResponse, AzionPurge } from 'azion/purge/types';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
-const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const { data: purgeResult }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeURL([
+  'http://example.com/image.jpg',
+]);
 if (purgeResult) {
   console.log(`Purge successful: ${purgeResult.items}`);
 }
 
-const cacheKeyResult: Purge | null = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
+const { data: cacheKeyResult }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeCacheKey([
+  'my-cache-key-1',
+  'my-cache-key-2',
+]);
 if (cacheKeyResult) {
   console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
 }
 
-const wildcardResult: Purge | null = await client.purge.purgeWildCard(['http://example.com/*']);
+const { data: wildcardResult }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeWildCard([
+  'http://example.com/*',
+]);
 if (wildcardResult) {
   console.log(`Wildcard purge successful: ${wildcardResult.items}`);
 }

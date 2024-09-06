@@ -843,13 +843,109 @@ export interface FunctionOperations {
  * @extends ApiApplication
  */
 export interface AzionApplication extends ApiApplication {
+  /**
+   * Operations related to cache settings for the application.
+   * @type {CacheOperations}
+   *
+   * @example
+   * // Creating a new cache setting
+   * const newCacheSetting = await application.cache.createCacheSetting({
+   *   data: {
+   *     name: 'My Cache Setting',
+   *     browser_cache_settings: 'override',
+   *     cdn_cache_settings: 'override',
+   *     cache_by_query_string: 'ignore'
+   *   }
+   * });
+   */
   cache: CacheOperations;
+
+  /**
+   * Operations related to origins for the application.
+   * @type {OriginOperations}
+   *
+   * @example
+   * // Creating a new origin
+   * const newOrigin = await application.origins.createOrigin({
+   *   data: {
+   *     name: 'My Origin',
+   *     addresses: [{ address: 'example.com' }],
+   *     origin_type: 'single_origin',
+   *     host_header: 'example.com'
+   *   }
+   * });
+   */
   origins: OriginOperations;
+
+  /**
+   * Operations related to rules for the application.
+   * @type {{ request: RuleOperations; response: RuleOperations }}
+   */
   rules: {
+    /**
+     * Operations for request rules.
+     * @type {RuleOperations}
+     *
+     * @example
+     * // Creating a new request rule
+     * const newRequestRule = await application.rules.request.createRule({
+     *   data: {
+     *     name: 'My Request Rule',
+     *     phase: 'request',
+     *     behaviors: [{ name: 'set_origin', target: 'origin1' }],
+     *     criteria: [[{ conditional: 'if', input: '${uri}', operator: 'starts_with', value: '/api' }]]
+     *   }
+     * });
+     */
     request: RuleOperations;
+
+    /**
+     * Operations for response rules.
+     * @type {RuleOperations}
+     *
+     * @example
+     * // Creating a new response rule
+     * const newResponseRule = await application.rules.response.createRule({
+     *   data: {
+     *     name: 'My Response Rule',
+     *     phase: 'response',
+     *     behaviors: [{ name: 'add_response_header', target: 'X-Custom-Header', value: 'CustomValue' }],
+     *     criteria: [[{ conditional: 'if', input: '${status}', operator: 'is_equal', value: '200' }]]
+     *   }
+     * });
+     */
     response: RuleOperations;
   };
+
+  /**
+   * Operations related to device groups for the application.
+   * @type {DeviceGroupOperations}
+   *
+   * @example
+   * // Creating a new device group
+   * const newDeviceGroup = await application.devices.createDeviceGroup({
+   *   data: {
+   *     name: 'Mobile Devices',
+   *     user_agent: 'Mobile|Android|iPhone|iPad|iPod'
+   *   }
+   * });
+   */
   devices: DeviceGroupOperations;
+
+  /**
+   * Operations related to functions for the application.
+   * @type {FunctionOperations}
+   *
+   * @example
+   * // Creating a new function instance
+   * const newFunction = await application.functions.createFunctionInstance({
+   *   data: {
+   *     name: 'My Function',
+   *     edge_function_id: 5678,
+   *     args: {}
+   *   }
+   * });
+   */
   functions: FunctionOperations;
 }
 
@@ -918,7 +1014,7 @@ export interface AzionApplicationClient {
 
   /**
    * Retrieves a list of Azion Edge Applications.
-   *
+   *GIT
    * @function
    * @name AzionApplicationClient.getApplications
    * @param {Object} params - The parameters for retrieving applications.

@@ -1,3 +1,10 @@
+## [1.7.0-stage.9](https://github.com/aziontech/lib/compare/v1.7.0-stage.8...v1.7.0-stage.9) (2024-09-05)
+
+
+### Features
+
+* updating function returns (#36) ([088bbd3](https://github.com/aziontech/lib/commit/088bbd359a9f33de73352a35db59601dee053285))
+
 ## [1.7.0-stage.8](https://github.com/aziontech/lib/compare/v1.7.0-stage.7...v1.7.0-stage.8) (2024-09-03)
 
 

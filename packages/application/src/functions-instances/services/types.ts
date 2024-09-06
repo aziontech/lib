@@ -7,7 +7,11 @@ export interface ApiBaseFunctionInstancePayload {
   json_args: Record<string, unknown>;
 }
 
-export interface ApiCreateFunctionInstancePayload extends ApiBaseFunctionInstancePayload {}
+export interface ApiCreateFunctionInstancePayload {
+  name: string;
+  edge_function_id: number;
+  args: Record<string, unknown>;
+}
 
 export interface ApiFunctionInstance extends ApiBaseFunctionInstancePayload {
   id: number;
