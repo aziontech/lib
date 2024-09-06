@@ -1041,7 +1041,7 @@ export interface AzionApplicationClient {
    * Updates an existing Azion Edge Application.
    *
    * @function
-   * @name AzionApplicationClient.updateApplication
+   * @name AzionApplicationClient.putApplication
    * @param {Object} params - The parameters for updating an application.
    * @param {number} params.applicationId - The ID of the application to update.
    * @param {ApiUpdateApplicationPayload} params.data - The updated data for the application.
@@ -1049,7 +1049,7 @@ export interface AzionApplicationClient {
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the updated application data or an error.
    *
    * @example
-   * const result = await applicationClient.updateApplication({
+   * const result = await applicationClient.putApplication({
    *   applicationId: 123,
    *   data: {
    *     name: 'Updated Application',
@@ -1063,7 +1063,7 @@ export interface AzionApplicationClient {
    *   console.error('Error:', result.error);
    * }
    */
-  updateApplication: (params: {
+  putApplication: (params: {
     applicationId: number;
     data: ApiUpdateApplicationPayload;
     options?: AzionClientOptions;

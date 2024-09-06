@@ -159,7 +159,7 @@ export interface AzionClient {
    *
    * @example
    * // Update an Edge Application
-   * const { data: updatedApp } = await client.application.updateApplication({
+   * const { data: updatedApp } = await client.application.putApplication({
    *   applicationId: 123,
    *   data: { name: 'Updated App Name', delivery_protocol: 'https' }
    * });

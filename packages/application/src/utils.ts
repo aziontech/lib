@@ -5,57 +5,52 @@ export const resolveDebug = (debug?: boolean) => debug ?? !!envDebugFlag;
 
 /**
  * Maps API error response to a standardized error object.
- * @param response - The full API response object.
+ * @param error - The full API error response object or string.
  * @param operation - The name of the operation that failed.
  * @param defaultMessage - The default error message to use if no specific message is found.
- * @returns A standardized error object.
+ * @returns A standardized error object with operation and message.
  */
 export const mapApiError = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  response: any,
+  error: unknown,
   operation: string,
   defaultMessage: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): { error: { message: string; operation: string; [key: string]: any } } => {
-  let errorMessage = defaultMessage;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let errorDetails: { [key: string]: any } = {};
+): { message: string; operation: string } => {
+  let errorMessage: string | undefined;
 
-  if (response) {
-    if (typeof response === 'object') {
-      // Check if the response is in the format { name_already_in_use: 'message' }
-      const errorKey = Object.keys(response)[0];
-      if (errorKey && typeof response[errorKey] === 'string') {
-        errorMessage = response[errorKey];
-        errorDetails = { [errorKey]: errorMessage };
-      } else if (response.error) {
-        // Check if there's an error object inside the response
-        if (typeof response.error === 'object') {
-          const innerErrorKey = Object.keys(response.error)[0];
-          if (innerErrorKey && typeof response.error[innerErrorKey] === 'string') {
-            errorMessage = response.error[innerErrorKey];
-            errorDetails = { [innerErrorKey]: errorMessage };
-          } else if (response.error.message) {
-            errorMessage = response.error.message;
-            errorDetails = response.error;
-          }
-        } else if (typeof response.error === 'string') {
-          errorMessage = response.error;
-        }
-      } else if (response.message) {
-        errorMessage = response.message;
-        errorDetails = response;
-      }
-    } else if (typeof response === 'string') {
-      errorMessage = response;
+  if (error && typeof error === 'object') {
+    // Caso 1: { name_already_in_use: 'message' }
+    const errorKey = Object.keys(error)[0];
+    if (errorKey && typeof error[errorKey as keyof typeof error] === 'string') {
+      errorMessage = error[errorKey as keyof typeof error] as string;
     }
+    // Caso 2: { detail: 'message' }
+    else if ('detail' in error && typeof error.detail === 'string') {
+      errorMessage = error.detail;
+    }
+    // Caso 3: { message: 'message' }
+    else if ('message' in error && typeof error.message === 'string') {
+      errorMessage = error.message;
+    }
+    // Caso 4: { error: 'message' } ou { error: { message: 'message' } }
+    else if ('error' in error) {
+      if (typeof error.error === 'string') {
+        errorMessage = error.error;
+      } else if (typeof error.error === 'object' && error.error !== null) {
+        const innerErrorKey = Object.keys(error.error)[0];
+        if (innerErrorKey && typeof (error.error as Record<string, unknown>)[innerErrorKey] === 'string') {
+          errorMessage = (error.error as Record<string, string>)[innerErrorKey];
+        } else if ('message' in error.error && typeof (error.error as { message: unknown }).message === 'string') {
+          errorMessage = (error.error as { message: string }).message;
+        }
+      }
+    }
+  } else if (typeof error === 'string') {
+    errorMessage = error;
   }
 
+  // Usa defaultMessage como fallback final se nenhuma mensagem de erro for encontrada
   return {
-    error: {
-      message: errorMessage,
-      operation,
-      ...errorDetails,
-    },
+    message: errorMessage || defaultMessage,
+    operation,
   };
 };

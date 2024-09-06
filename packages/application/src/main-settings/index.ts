@@ -1,5 +1,45 @@
-import { AzionApplicationCollectionResponse, AzionApplicationResponse, AzionClientOptions } from '../types';
-import { resolveDebug, resolveToken } from '../utils';
+import {
+  createCacheSettingMethod,
+  deleteCacheSettingMethod,
+  getCacheSettingMethod,
+  getCacheSettingsMethod,
+  updateCacheSettingMethod,
+} from '../cache-settings/index';
+import {
+  createDeviceGroupMethod,
+  deleteDeviceGroupMethod,
+  getDeviceGroupMethod,
+  getDeviceGroupsMethod,
+  updateDeviceGroupMethod,
+} from '../device-groups/index';
+import {
+  createFunctionInstanceMethod,
+  deleteFunctionInstanceMethod,
+  getFunctionInstanceMethod,
+  getFunctionInstancesMethod,
+  updateFunctionInstanceMethod,
+} from '../functions-instances/index';
+import {
+  createOriginMethod,
+  deleteOriginMethod,
+  getOriginMethod,
+  getOriginsMethod,
+  updateOriginMethod,
+} from '../origins/index';
+import {
+  createRuleMethod,
+  deleteRuleMethod,
+  getRuleMethod,
+  getRulesMethod,
+  updateRuleMethod,
+} from '../rules-engine/index';
+import {
+  AzionApplication,
+  AzionApplicationCollectionResponse,
+  AzionApplicationResponse,
+  AzionClientOptions,
+} from '../types';
+import { mapApiError, resolveDebug, resolveToken } from '../utils';
 import {
   deleteApplication as deleteApplicationApi,
   getApplicationById as getApplicationByIdApi,
@@ -19,22 +59,148 @@ import { AzionApplicationSettings } from './types';
  * @param {string} token - The authentication token.
  * @param {ApiCreateApplicationPayload} applicationData - The data for the new application.
  * @param {AzionClientOptions} [options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the created application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the created application data or an error.
  */
 export const createApplicationMethod = async (
   token: string,
   applicationData: ApiCreateApplicationPayload,
   options?: AzionClientOptions,
-): Promise<AzionApplicationResponse<AzionApplicationSettings>> => {
+): Promise<AzionApplicationResponse<AzionApplication>> => {
   try {
     const apiResponse = await postApplicationApi(resolveToken(token), applicationData, resolveDebug(options?.debug));
-    return { data: apiResponse.results };
+
+    if (!apiResponse || !apiResponse.results || typeof apiResponse.results.id === 'undefined') {
+      throw new Error('Invalid API response: missing application ID');
+    }
+    const appId = apiResponse.results?.id;
+
+    const application: AzionApplication = {
+      ...apiResponse.results,
+      cache: {
+        createCacheSetting: (params) =>
+          createCacheSettingMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getCacheSetting: (params) =>
+          getCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getCacheSettings: (params) =>
+          getCacheSettingsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateCacheSetting: (params) =>
+          updateCacheSettingMethod(token, appId, params.cacheSettingId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteCacheSetting: (params) =>
+          deleteCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      origins: {
+        createOrigin: (params) =>
+          createOriginMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigin: (params) =>
+          getOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigins: (params) =>
+          getOriginsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateOrigin: (params) =>
+          updateOriginMethod(token, appId, params.originKey, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteOrigin: (params) =>
+          deleteOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+      },
+      rules: {
+        request: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'request', params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'request', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'request', params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'request', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'request', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+        response: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'response', params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'response', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'response', params.params, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'response', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'response', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+      },
+      devices: {
+        createDeviceGroup: (params) =>
+          createDeviceGroupMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroup: (params) =>
+          getDeviceGroupMethod(token, appId, params.deviceGroupId, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroups: (params) =>
+          getDeviceGroupsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateDeviceGroup: (params) =>
+          updateDeviceGroupMethod(token, appId, params.deviceGroupId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteDeviceGroup: (params) =>
+          deleteDeviceGroupMethod(token, appId, params.deviceGroupId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      functions: {
+        createFunctionInstance: (params) =>
+          createFunctionInstanceMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getFunctionInstance: (params) =>
+          getFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getFunctionInstances: (params) =>
+          getFunctionInstancesMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateFunctionInstance: (params) =>
+          updateFunctionInstanceMethod(token, appId, params.functionInstanceId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteFunctionInstance: (params) =>
+          deleteFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+    };
+
+    return { data: application };
   } catch (error) {
     return {
-      error: {
-        message: error instanceof Error ? error.message : 'Failed to create edge application',
-        operation: 'create edge application',
-      },
+      error: mapApiError(error, 'create application', 'Failed to create application'),
     };
   }
 };
@@ -47,22 +213,144 @@ export const createApplicationMethod = async (
  * @param {string} token - The authentication token.
  * @param {number} applicationId - The ID of the application to retrieve.
  * @param {AzionClientOptions} [options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the application data or an error.
  */
 export const getApplicationMethod = async (
   token: string,
   applicationId: number,
   options?: AzionClientOptions,
-): Promise<AzionApplicationResponse<AzionApplicationSettings>> => {
+): Promise<AzionApplicationResponse<AzionApplication>> => {
   try {
     const apiResponse = await getApplicationByIdApi(resolveToken(token), applicationId, resolveDebug(options?.debug));
-    return { data: apiResponse.results };
+    const appId = apiResponse.results.id;
+
+    const application: AzionApplication = {
+      ...apiResponse.results,
+      cache: {
+        createCacheSetting: (params) =>
+          createCacheSettingMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getCacheSetting: (params) =>
+          getCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getCacheSettings: (params) =>
+          getCacheSettingsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateCacheSetting: (params) =>
+          updateCacheSettingMethod(token, appId, params.cacheSettingId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteCacheSetting: (params) =>
+          deleteCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      origins: {
+        createOrigin: (params) =>
+          createOriginMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigin: (params) =>
+          getOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigins: (params) =>
+          getOriginsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateOrigin: (params) =>
+          updateOriginMethod(token, appId, params.originKey, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteOrigin: (params) =>
+          deleteOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+      },
+      rules: {
+        request: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'request', params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'request', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'request', params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'request', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'request', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+        response: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'response', params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'response', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'response', params.params, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'response', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'response', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+      },
+      devices: {
+        createDeviceGroup: (params) =>
+          createDeviceGroupMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroup: (params) =>
+          getDeviceGroupMethod(token, appId, params.deviceGroupId, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroups: (params) =>
+          getDeviceGroupsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateDeviceGroup: (params) =>
+          updateDeviceGroupMethod(token, appId, params.deviceGroupId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteDeviceGroup: (params) =>
+          deleteDeviceGroupMethod(token, appId, params.deviceGroupId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      functions: {
+        createFunctionInstance: (params) =>
+          createFunctionInstanceMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getFunctionInstance: (params) =>
+          getFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getFunctionInstances: (params) =>
+          getFunctionInstancesMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateFunctionInstance: (params) =>
+          updateFunctionInstanceMethod(token, appId, params.functionInstanceId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteFunctionInstance: (params) =>
+          deleteFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+    };
+
+    return { data: application };
   } catch (error) {
     return {
-      error: {
-        message: error instanceof Error ? error.message : 'Failed to get application',
-        operation: 'get application',
-      },
+      error: mapApiError(error, 'get application', 'Failed to get application'),
     };
   }
 };
@@ -75,35 +363,172 @@ export const getApplicationMethod = async (
  * @param {string} token - The authentication token.
  * @param {ApiListApplicationsParams} [params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [options] - Optional client options.
- * @returns {Promise<AzionApplicationCollectionResponse<AzionApplicationSettings>>} A promise that resolves with a collection of applications or an error.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionApplication>>} A promise that resolves with a collection of applications or an error.
  */
 export const getApplicationsMethod = async (
   token: string,
   params?: ApiListApplicationsParams,
   options?: AzionClientOptions,
-): Promise<AzionApplicationCollectionResponse<AzionApplicationSettings>> => {
+): Promise<AzionApplicationCollectionResponse<AzionApplication>> => {
   try {
     const apiResponse = await getApplicationsApi(resolveToken(token), params, resolveDebug(options?.debug));
 
-    const results: AzionApplicationSettings[] = apiResponse.results.map((application) => ({
-      ...application,
-    }));
+    const results: AzionApplication[] = apiResponse.results.map((application) => {
+      const appId = application.id;
+      return {
+        ...application,
+        cache: {
+          createCacheSetting: (params) =>
+            createCacheSettingMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getCacheSetting: (params) =>
+            getCacheSettingMethod(token, appId, params.cacheSettingId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getCacheSettings: (params) =>
+            getCacheSettingsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateCacheSetting: (params) =>
+            updateCacheSettingMethod(token, appId, params.cacheSettingId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteCacheSetting: (params) =>
+            deleteCacheSettingMethod(token, appId, params.cacheSettingId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+        origins: {
+          createOrigin: (params) =>
+            createOriginMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getOrigin: (params) =>
+            getOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+          getOrigins: (params) =>
+            getOriginsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateOrigin: (params) =>
+            updateOriginMethod(token, appId, params.originKey, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteOrigin: (params) =>
+            deleteOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+        },
+        rules: {
+          request: {
+            createRule: (params) =>
+              createRuleMethod(token, appId, 'request', params.data, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            getRule: (params) =>
+              getRuleMethod(token, appId, 'request', params.ruleId, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            getRules: (params) =>
+              getRulesMethod(token, appId, 'request', params.params, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            updateRule: (params) =>
+              updateRuleMethod(token, appId, 'request', params.ruleId, params.data, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            deleteRule: (params) =>
+              deleteRuleMethod(token, appId, 'request', params.ruleId, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+          },
+          response: {
+            createRule: (params) =>
+              createRuleMethod(token, appId, 'response', params.data, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            getRule: (params) =>
+              getRuleMethod(token, appId, 'response', params.ruleId, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            getRules: (params) =>
+              getRulesMethod(token, appId, 'response', params.params, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            updateRule: (params) =>
+              updateRuleMethod(token, appId, 'response', params.ruleId, params.data, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+            deleteRule: (params) =>
+              deleteRuleMethod(token, appId, 'response', params.ruleId, {
+                ...options,
+                debug: resolveDebug(options?.debug),
+              }),
+          },
+        },
+        devices: {
+          createDeviceGroup: (params) =>
+            createDeviceGroupMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getDeviceGroup: (params) =>
+            getDeviceGroupMethod(token, appId, params.deviceGroupId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getDeviceGroups: (params) =>
+            getDeviceGroupsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateDeviceGroup: (params) =>
+            updateDeviceGroupMethod(token, appId, params.deviceGroupId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteDeviceGroup: (params) =>
+            deleteDeviceGroupMethod(token, appId, params.deviceGroupId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+        functions: {
+          createFunctionInstance: (params) =>
+            createFunctionInstanceMethod(token, appId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getFunctionInstance: (params) =>
+            getFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getFunctionInstances: (params) =>
+            getFunctionInstancesMethod(token, appId, params.params, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          updateFunctionInstance: (params) =>
+            updateFunctionInstanceMethod(token, appId, params.functionInstanceId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteFunctionInstance: (params) =>
+            deleteFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+      };
+    });
 
     return {
       data: {
-        count: apiResponse.count,
-        total_pages: apiResponse.total_pages,
-        schema_version: apiResponse.schema_version,
-        links: apiResponse.links,
+        ...apiResponse,
         results,
       },
     };
   } catch (error) {
     return {
-      error: {
-        message: error instanceof Error ? error.message : 'Failed to get applications',
-        operation: 'get applications',
-      },
+      error: mapApiError(error, 'get applications', 'Failed to get applications'),
     };
   }
 };
@@ -117,14 +542,14 @@ export const getApplicationsMethod = async (
  * @param {number} applicationId - The ID of the application to update.
  * @param {ApiUpdateApplicationPayload} applicationData - The updated data for the application.
  * @param {AzionClientOptions} [options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the updated application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the updated application data or an error.
  */
 export const putApplicationMethod = async (
   token: string,
   applicationId: number,
   applicationData: ApiUpdateApplicationPayload,
   options?: AzionClientOptions,
-): Promise<AzionApplicationResponse<AzionApplicationSettings>> => {
+): Promise<AzionApplicationResponse<AzionApplication>> => {
   try {
     const apiResponse = await putApplicationApi(
       resolveToken(token),
@@ -132,13 +557,135 @@ export const putApplicationMethod = async (
       applicationData,
       resolveDebug(options?.debug),
     );
-    return { data: apiResponse.results };
+    const appId = apiResponse.results.id;
+
+    const application: AzionApplication = {
+      ...apiResponse.results,
+      cache: {
+        createCacheSetting: (params) =>
+          createCacheSettingMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getCacheSetting: (params) =>
+          getCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getCacheSettings: (params) =>
+          getCacheSettingsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateCacheSetting: (params) =>
+          updateCacheSettingMethod(token, appId, params.cacheSettingId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteCacheSetting: (params) =>
+          deleteCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      origins: {
+        createOrigin: (params) =>
+          createOriginMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigin: (params) =>
+          getOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigins: (params) =>
+          getOriginsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateOrigin: (params) =>
+          updateOriginMethod(token, appId, params.originKey, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteOrigin: (params) =>
+          deleteOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+      },
+      rules: {
+        request: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'request', params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'request', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'request', params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'request', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'request', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+        response: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'response', params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'response', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'response', params.params, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'response', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'response', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+      },
+      devices: {
+        createDeviceGroup: (params) =>
+          createDeviceGroupMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroup: (params) =>
+          getDeviceGroupMethod(token, appId, params.deviceGroupId, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroups: (params) =>
+          getDeviceGroupsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateDeviceGroup: (params) =>
+          updateDeviceGroupMethod(token, appId, params.deviceGroupId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteDeviceGroup: (params) =>
+          deleteDeviceGroupMethod(token, appId, params.deviceGroupId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      functions: {
+        createFunctionInstance: (params) =>
+          createFunctionInstanceMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getFunctionInstance: (params) =>
+          getFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getFunctionInstances: (params) =>
+          getFunctionInstancesMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateFunctionInstance: (params) =>
+          updateFunctionInstanceMethod(token, appId, params.functionInstanceId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteFunctionInstance: (params) =>
+          deleteFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+    };
+
+    return { data: application };
   } catch (error) {
     return {
-      error: {
-        message: error instanceof Error ? error.message : 'Failed to update application',
-        operation: 'update application',
-      },
+      error: mapApiError(error, 'update application', 'Failed to update application'),
     };
   }
 };
@@ -152,14 +699,14 @@ export const putApplicationMethod = async (
  * @param {number} applicationId - The ID of the application to patch.
  * @param {Partial<ApiUpdateApplicationPayload>} applicationData - The partial data to update in the application.
  * @param {AzionClientOptions} [options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the patched application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the patched application data or an error.
  */
 export const patchApplicationMethod = async (
   token: string,
   applicationId: number,
   applicationData: Partial<ApiUpdateApplicationPayload>,
   options?: AzionClientOptions,
-): Promise<AzionApplicationResponse<AzionApplicationSettings>> => {
+): Promise<AzionApplicationResponse<AzionApplication>> => {
   try {
     const apiResponse = await patchApplicationApi(
       resolveToken(token),
@@ -167,13 +714,135 @@ export const patchApplicationMethod = async (
       applicationData,
       resolveDebug(options?.debug),
     );
-    return { data: apiResponse.results };
+    const appId = apiResponse.results.id;
+
+    const application: AzionApplication = {
+      ...apiResponse.results,
+      cache: {
+        createCacheSetting: (params) =>
+          createCacheSettingMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getCacheSetting: (params) =>
+          getCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getCacheSettings: (params) =>
+          getCacheSettingsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateCacheSetting: (params) =>
+          updateCacheSettingMethod(token, appId, params.cacheSettingId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteCacheSetting: (params) =>
+          deleteCacheSettingMethod(token, appId, params.cacheSettingId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      origins: {
+        createOrigin: (params) =>
+          createOriginMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigin: (params) =>
+          getOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+        getOrigins: (params) =>
+          getOriginsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateOrigin: (params) =>
+          updateOriginMethod(token, appId, params.originKey, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteOrigin: (params) =>
+          deleteOriginMethod(token, appId, params.originKey, { ...options, debug: resolveDebug(options?.debug) }),
+      },
+      rules: {
+        request: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'request', params.data, { ...options, debug: resolveDebug(options?.debug) }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'request', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'request', params.params, { ...options, debug: resolveDebug(options?.debug) }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'request', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'request', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+        response: {
+          createRule: (params) =>
+            createRuleMethod(token, appId, 'response', params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          getRule: (params) =>
+            getRuleMethod(token, appId, 'response', params.ruleId, { ...options, debug: resolveDebug(options?.debug) }),
+          getRules: (params) =>
+            getRulesMethod(token, appId, 'response', params.params, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          updateRule: (params) =>
+            updateRuleMethod(token, appId, 'response', params.ruleId, params.data, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+          deleteRule: (params) =>
+            deleteRuleMethod(token, appId, 'response', params.ruleId, {
+              ...options,
+              debug: resolveDebug(options?.debug),
+            }),
+        },
+      },
+      devices: {
+        createDeviceGroup: (params) =>
+          createDeviceGroupMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroup: (params) =>
+          getDeviceGroupMethod(token, appId, params.deviceGroupId, { ...options, debug: resolveDebug(options?.debug) }),
+        getDeviceGroups: (params) =>
+          getDeviceGroupsMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateDeviceGroup: (params) =>
+          updateDeviceGroupMethod(token, appId, params.deviceGroupId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteDeviceGroup: (params) =>
+          deleteDeviceGroupMethod(token, appId, params.deviceGroupId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+      functions: {
+        createFunctionInstance: (params) =>
+          createFunctionInstanceMethod(token, appId, params.data, { ...options, debug: resolveDebug(options?.debug) }),
+        getFunctionInstance: (params) =>
+          getFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getFunctionInstances: (params) =>
+          getFunctionInstancesMethod(token, appId, params.params, { ...options, debug: resolveDebug(options?.debug) }),
+        updateFunctionInstance: (params) =>
+          updateFunctionInstanceMethod(token, appId, params.functionInstanceId, params.data, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        deleteFunctionInstance: (params) =>
+          deleteFunctionInstanceMethod(token, appId, params.functionInstanceId, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+    };
+
+    return { data: application };
   } catch (error) {
     return {
-      error: {
-        message: error instanceof Error ? error.message : 'Failed to patch application',
-        operation: 'patch application',
-      },
+      error: mapApiError(error, 'patch application', 'Failed to patch application'),
     };
   }
 };
@@ -198,10 +867,7 @@ export const deleteApplicationMethod = async (
     return { data: undefined };
   } catch (error) {
     return {
-      error: {
-        message: error instanceof Error ? error.message : 'Failed to delete application',
-        operation: 'delete application',
-      },
+      error: mapApiError(error, 'delete application', 'Failed to delete application'),
     };
   }
 };
