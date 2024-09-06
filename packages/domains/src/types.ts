@@ -45,11 +45,11 @@ export type AzionDomains = {
   data: AzionDomain[];
 };
 
-export type AzionDomainsClient = (
+export type AzionDomainsCreateClient = (
   config?: Partial<{ token?: string; options?: AzionClientOptions }>,
-) => AzionCreateClientDomains;
+) => AzionDomainsClient;
 
-export interface AzionCreateClientDomains {
+export interface AzionDomainsClient {
   createDomain: (domain: AzionCreateDomain, options?: AzionClientOptions) => Promise<AzionDomainsResponse<AzionDomain>>;
   getDomains: (
     options?: AzionClientOptions,

@@ -1,12 +1,12 @@
 import { createDomain, deleteDomain, getDomainById, getDomains, updateDomain } from './services/api';
 import {
   AzionClientOptions,
-  AzionCreateClientDomains,
   AzionCreateDomain,
   AzionDeletedDomain,
   AzionDomain,
   AzionDomains,
   AzionDomainsClient,
+  AzionDomainsCreateClient,
   AzionDomainsResponse,
   AzionUpdateDomain,
 } from './types';
@@ -285,7 +285,7 @@ const deleteDomainWrapper = async (
  * Creates an Azion client to interact with the Domains.
  *
  * @param {Partial<{ token?: string; options?: AzionClientOptions; }>} [config] - Configuration options for the client.
- * @returns {AzionCreateClientDomains} An object with methods to interact with the Domains.
+ * @returns {AzionDomainsClient} An object with methods to interact with the Domains.
  *
  * @example
  * const client = createClient(); // Uses the token from the environment variable process.env.AZION_TOKEN
@@ -293,13 +293,13 @@ const deleteDomainWrapper = async (
  * const result = await client.createDomain(domain);
  * console.log(result);
  */
-const createClient: AzionDomainsClient = (
+const createClient: AzionDomainsCreateClient = (
   config?: Partial<{ token?: string; options?: AzionClientOptions }>,
-): AzionCreateClientDomains => {
+): AzionDomainsClient => {
   const tokenValue = resolveToken(config?.token);
   const debugValue = resolveDebug(config?.options?.debug);
 
-  const client: AzionCreateClientDomains = {
+  const client: AzionDomainsClient = {
     /**
      * Create a new domain
      * @param domain Domain to create
