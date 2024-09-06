@@ -27,9 +27,16 @@ export type AzionDomain = {
   };
 };
 
-export type AzionCreateDomain = Omit<AzionDomain, 'id' | 'environment' | 'active' | 'url'>;
+export type AzionCreateDomain = Omit<
+  AzionDomain,
+  'id' | 'environment' | 'active' | 'url' | 'state' | 'edgeApplicationId'
+> & {
+  edgeApplicationId: number;
+};
 
-export type AzionUpdateDomain = Omit<AzionDomain, 'id' | 'environment' | 'url'>;
+export type AzionUpdateDomain = Omit<AzionDomain, 'id' | 'environment' | 'url' | 'edgeApplicationId' | 'state'> & {
+  edgeApplicationId: number;
+};
 
 export type AzionDeletedDomain = Pick<AzionDomain, 'id' | 'state'>;
 
