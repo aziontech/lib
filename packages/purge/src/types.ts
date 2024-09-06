@@ -1,7 +1,8 @@
-export interface ApiPurgeResponse {
-  state: 'executed' | 'pending';
-  data: {
-    items: string[];
+export interface AzionPurgeResponse<T> {
+  data?: T;
+  error?: {
+    message: string;
+    operation: string;
   };
 }
 
@@ -16,49 +17,49 @@ export interface AzionPurgeClient {
    *
    * @param {string[]} url - URLs to purge.
    * @param {AzionClientOptions} [options] - Client options including debug mode.
-   * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
+   * @returns {Promise<AzionPurgeResponse<AzionPurge>>} The purge response or error if the purge failed.
    *
    * @example
-   * const response = await purgeClient.purgeURL(['http://www.domain.com/path/image.jpg'], { debug: true });
+   * const { data: response, error } = await purgeClient.purgeURL(['http://www.domain.com/path/image.jpg'], { debug: true });
    * if (response) {
    *   console.log('Purge successful:', response);
    * } else {
-   *   console.error('Purge failed');
+   *   console.error('Purge failed', error);
    * }
    */
-  purgeURL: (urls: string[]) => Promise<AzionPurge | null>;
+  purgeURL: (urls: string[]) => Promise<AzionPurgeResponse<AzionPurge>>;
   /**
    * Purge a Cache Key from the Azion Edge cache.
    *
    * @param {string[]} cacheKey - Cache Keys to purge.
    * @param {AzionClientOptions} [options] - Client options including debug mode.
-   * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
+   * @returns {Promise<AzionPurgeResponse<AzionPurge>>} The purge response or error if the purge failed.
    *
    * @example
-   * const response = await purgeClient.purgeCacheKey(['http://www.domain.com/path/image.jpg'], { debug: true });
+   * const { data: response, error } = await purgeClient.purgeCacheKey(['http://www.domain.com/path/image.jpg'], { debug: true });
    * if (response) {
    *   console.log('Purge successful:', response);
    * } else {
-   *   console.error('Purge failed');
+   *   console.error('Purge failed', error);
    * }
    */
-  purgeCacheKey: (cacheKeys: string[]) => Promise<AzionPurge | null>;
+  purgeCacheKey: (cacheKeys: string[]) => Promise<AzionPurgeResponse<AzionPurge>>;
   /**
    * Purge using a wildcard expression from the Azion Edge cache.
    *
    * @param {string[]} wildcard - Wildcard expressions to purge.
    * @param {AzionClientOptions} [options] - Client options including debug mode.
-   * @returns {Promise<AzionPurge | null>} The purge response or null if the purge failed.
+   * @returns {Promise<AzionPurgeResponse<AzionPurge>>} The purge response or error if the purge failed.
    *
    * @example
-   * const response = await purgeClient.purgeWildCard(['http://www.domain.com/path/image.jpg*'], { debug: true });
+   * const { data: response, error } = await purgeClient.purgeWildCard(['http://www.domain.com/path/image.jpg*'], { debug: true });
    * if (response) {
    *   console.log('Purge successful:', response);
    * } else {
-   *   console.error('Purge failed');
+   *   console.error('Purge failed', error);
    * }
    */
-  purgeWildCard: (wildcards: string[]) => Promise<AzionPurge | null>;
+  purgeWildCard: (wildcards: string[]) => Promise<AzionPurgeResponse<AzionPurge>>;
 }
 
 /**

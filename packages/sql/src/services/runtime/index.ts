@@ -1,5 +1,5 @@
 import { Azion } from 'azion/types';
-import { AzionClientOptions, NonSelectQueryResult, QueryResult } from '../../types';
+import { AzionClientOptions, QueryResult } from '../../types';
 
 export const getAzionSql = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,10 +18,8 @@ export class InternalAzionSql {
    * @param {Array<{ statement: string; result: Azion.Sql.Rows }>} resultRows - The result rows from the query.
    * @returns {Promise<Array<QueryResult | NonSelectQueryResult>>} The mapped query results.
    */
-  mapperQuery = async (
-    resultRows: { statement: string; result: Azion.Sql.Rows }[],
-  ): Promise<(QueryResult | NonSelectQueryResult)[]> => {
-    const resultStatements: QueryResult[] | NonSelectQueryResult[] = [];
+  mapperQuery = async (resultRows: { statement: string; result: Azion.Sql.Rows }[]): Promise<QueryResult[]> => {
+    const resultStatements: QueryResult[] = [];
     for (const row of resultRows) {
       const columns = row.result.columnCount();
       if (columns === 0) {

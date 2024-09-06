@@ -4,15 +4,31 @@ const BASE_URL =
   process.env.AZION_ENV === 'stage'
     ? 'https://stage-api.azion.com/v4/edge/purge'
     : 'https://api.azion.com/v4/edge/purge';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleApiError = (fields: string[], data: any, operation: string) => {
+  let error = { message: 'Error unknown', operation: operation };
+  fields.forEach((field: string) => {
+    if (data[field]) {
+      const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
+      error = {
+        message: message,
+        operation: operation,
+      };
+    }
+  });
+  return error;
+};
+
 /**
  * Purge URLs from the Azion Edge cache.
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - URLs to purge.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiPurgeResponse | null>} The purge response or null if the purge failed.
+ * @returns {Promise<ApiPurgeResponse>} The purge response or error message
  */
-const postPurgeURL = async (token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse | null> => {
+const postPurgeURL = async (token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse> => {
   return postPurge(`${BASE_URL}/url`, token, urls, debug);
 };
 
@@ -22,9 +38,9 @@ const postPurgeURL = async (token: string, urls: string[], debug?: boolean): Pro
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - Cache keys to purge.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiPurgeResponse | null>} The purge response or null if the purge failed.
+ * @returns {Promise<ApiPurgeResponse>} The purge response or error message
  */
-const postPurgeCacheKey = async (token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse | null> => {
+const postPurgeCacheKey = async (token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse> => {
   return postPurge(`${BASE_URL}/cachekey`, token, urls, debug);
 };
 
@@ -34,9 +50,9 @@ const postPurgeCacheKey = async (token: string, urls: string[], debug?: boolean)
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - Wildcard expressions to purge.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiPurgeResponse | null>} The purge response or null if the purge failed.
+ * @returns {Promise<ApiPurgeResponse>} The purge response or error message
  */
-const postPurgeWildcard = async (token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse | null> => {
+const postPurgeWildcard = async (token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse> => {
   return postPurge(`${BASE_URL}/wildcard`, token, urls, debug);
 };
 
@@ -47,14 +63,9 @@ const postPurgeWildcard = async (token: string, urls: string[], debug?: boolean)
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - Items to purge.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<ApiPurgeResponse | null>} The purge response or null if the purge failed.
+ * @returns {Promise<ApiPurgeResponse>} The purge response or error if the purge failed.
  */
-const postPurge = async (
-  url: string,
-  token: string,
-  urls: string[],
-  debug?: boolean,
-): Promise<ApiPurgeResponse | null> => {
+const postPurge = async (url: string, token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse> => {
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -66,12 +77,19 @@ const postPurge = async (
       credentials: 'include',
       body: JSON.stringify({ items: urls, layer: 'edge_cache' }),
     });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
-    return data;
+    const result = await response.json();
+    if (!result.data) {
+      if (debug) console.log('Response Error:', result);
+      result.error = handleApiError(['detail', 'error', 'items'], result, 'post purge');
+      return {
+        error: result.error ?? JSON.stringify(result),
+      };
+    }
+    if (debug) console.log('Response:', result);
+    return result;
   } catch (error) {
     if (debug) console.error('Error purging:', error);
-    return null;
+    throw error;
   }
 };
 
