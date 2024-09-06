@@ -12,7 +12,8 @@
       "azion/sql": ["../sql/src/index.ts"],
       "azion/storage": ["../storage/src/index.ts"],
       "azion/purge": ["../purge/src/index.ts"],
-      "azion/config": ["../config/src/index.ts"]
+      "azion/config": ["../config/src/index.ts"],
+      "azion/domains": ["../domains/src/index.ts"]
     }
   }
 }
