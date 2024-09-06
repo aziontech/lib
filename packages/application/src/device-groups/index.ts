@@ -159,7 +159,7 @@ const updateDeviceGroupMethod = async (
 };
 
 /**
- * Wrapper function to create a new device group for a specific application.
+ * Function to create a new device group for a specific application.
  *
  * @param {Object} params - Parameters for creating a device group.
  * @param {number} params.applicationId - Application ID.
@@ -191,7 +191,7 @@ export const createDeviceGroupWrapper = ({
   createDeviceGroupMethod(resolveToken(), applicationId, data, options);
 
 /**
- * Wrapper function to delete a specific device group from an application.
+ * Function to delete a specific device group from an application.
  *
  * @param {Object} params - Parameters for deleting a device group.
  * @param {number} params.applicationId - Application ID.
@@ -223,7 +223,7 @@ export const deleteDeviceGroupWrapper = ({
   deleteDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, options);
 
 /**
- * Wrapper function to retrieve a specific device group from an application.
+ * Function to retrieve a specific device group from an application.
  *
  * @param {Object} params - Parameters for retrieving a device group.
  * @param {number} params.applicationId - Application ID.
@@ -255,7 +255,7 @@ export const getDeviceGroupWrapper = ({
   getDeviceGroupMethod(resolveToken(), applicationId, deviceGroupId, options);
 
 /**
- * Wrapper function to retrieve a list of device groups for a specific application.
+ * Function to retrieve a list of device groups for a specific application.
  *
  * @param {Object} params - Parameters for listing device groups.
  * @param {number} params.applicationId - Application ID.
@@ -287,7 +287,7 @@ export const getDeviceGroupsWrapper = ({
   getDeviceGroupsMethod(resolveToken(), applicationId, params, options);
 
 /**
- * Wrapper function to update an existing device group for a specific application.
+ * Function to update an existing device group for a specific application.
  *
  * @param {Object} params - Parameters for updating a device group.
  * @param {number} params.applicationId - Application ID.

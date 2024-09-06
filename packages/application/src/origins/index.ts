@@ -104,7 +104,7 @@ const updateOriginMethod = async (
  * Creates a new origin for an Azion Edge Application.
  *
  * @async
- * @function createOriginWrapper
+ * @function
  * @param {Object} params - The parameters for creating an origin.
  * @param {number} params.applicationId - The ID of the application to create the origin for.
  * @param {ApiCreateOriginPayload} params.data - The data for the new origin.
@@ -112,7 +112,7 @@ const updateOriginMethod = async (
  * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the created origin data or an error.
  *
  * @example
- * const result = await createOriginWrapper({
+ * const result = await createOrigin({
  *   applicationId: 123,
  *   data: { name: 'My New Origin', addresses: [{ address: 'example.com' }] },
  *   options: { debug: true }
@@ -137,7 +137,7 @@ export const createOriginWrapper = ({
  * Deletes an origin from an Azion Edge Application.
  *
  * @async
- * @function deleteOriginWrapper
+ * @function
  * @param {Object} params - The parameters for deleting an origin.
  * @param {number} params.applicationId - The ID of the application containing the origin.
  * @param {string} params.originKey - The key of the origin to delete.
@@ -145,7 +145,7 @@ export const createOriginWrapper = ({
  * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the origin is deleted or rejects with an error.
  *
  * @example
- * const result = await deleteOriginWrapper({
+ * const result = await deleteOrigin({
  *   applicationId: 123,
  *   originKey: 'origin-key',
  *   options: { debug: true }
@@ -170,7 +170,7 @@ export const deleteOriginWrapper = ({
  * Retrieves a specific origin from an Azion Edge Application.
  *
  * @async
- * @function getOriginWrapper
+ * @function
  * @param {Object} params - The parameters for retrieving an origin.
  * @param {number} params.applicationId - The ID of the application containing the origin.
  * @param {string} params.originKey - The key of the origin to retrieve.
@@ -178,7 +178,7 @@ export const deleteOriginWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the origin data or an error.
  *
  * @example
- * const result = await getOriginWrapper({
+ * const result = await getOrigin({
  *   applicationId: 123,
  *   originKey: 'origin-key',
  *   options: { debug: true }
@@ -204,7 +204,7 @@ export const getOriginWrapper = ({
  * Retrieves a list of origins for an Azion Edge Application.
  *
  * @async
- * @function getOriginsWrapper
+ * @function
  * @param {Object} params - The parameters for retrieving origins.
  * @param {number} params.applicationId - The ID of the application to retrieve origins from.
  * @param {ApiListOriginsParams} [params.params] - Optional parameters for filtering and pagination.
@@ -212,7 +212,7 @@ export const getOriginWrapper = ({
  * @returns {Promise<AzionApplicationCollectionResponse<AzionOrigin>>} A promise that resolves with a collection of origins or an error.
  *
  * @example
- * const result = await getOriginsWrapper({
+ * const result = await getOrigins({
  *   applicationId: 123,
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
@@ -238,7 +238,7 @@ export const getOriginsWrapper = ({
  * Updates an existing origin in an Azion Edge Application.
  *
  * @async
- * @function updateOriginWrapper
+ * @function
  * @param {Object} params - The parameters for updating an origin.
  * @param {number} params.applicationId - The ID of the application containing the origin.
  * @param {string} params.originKey - The key of the origin to update.
@@ -247,7 +247,7 @@ export const getOriginsWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the updated origin data or an error.
  *
  * @example
- * const result = await updateOriginWrapper({
+ * const result = await updateOrigin({
  *   applicationId: 123,
  *   originKey: 'origin-key',
  *   data: { name: 'Updated Origin Name' },

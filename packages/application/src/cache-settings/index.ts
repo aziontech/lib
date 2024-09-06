@@ -204,7 +204,7 @@ export const createCacheSettingWrapper = ({
   createCacheSettingMethod(resolveToken(), applicationId, data, options);
 
 /**
- * Wrapper function to retrieve a specific cache setting from an application.
+ * Function to retrieve a specific cache setting from an application.
  *
  * @param {Object} params - Parameters for retrieving a cache setting.
  * @param {number} params.applicationId - Application ID.

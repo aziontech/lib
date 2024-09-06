@@ -210,14 +210,14 @@ const deleteApplicationMethod = async (
  * Creates a new Azion Edge Application.
  *
  * @async
- * @function createApplicationWrapper
+ * @function
  * @param {Object} params - The parameters for creating an application.
  * @param {ApiCreateApplicationPayload} params.data - The data for the new application.
  * @param {AzionClientOptions} [params.options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the created application data or an error.
  *
  * @example
- * const result = await createApplicationWrapper({
+ * const result = await createApplication({
  *   data: { name: 'My New App', delivery_protocol: 'http' },
  *   options: { debug: true }
  * });
@@ -240,14 +240,14 @@ export const createApplicationWrapper = ({
  * Retrieves a specific Azion Edge Application by ID.
  *
  * @async
- * @function getApplicationWrapper
+ * @function
  * @param {Object} params - The parameters for retrieving an application.
  * @param {number} params.applicationId - The ID of the application to retrieve.
  * @param {AzionClientOptions} [params.options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the application data or an error.
  *
  * @example
- * const result = await getApplicationWrapper({
+ * const result = await getApplication({
  *   applicationId: 123,
  *   options: { debug: true }
  * });
@@ -270,14 +270,14 @@ export const getApplicationWrapper = ({
  * Retrieves a list of Azion Edge Applications.
  *
  * @async
- * @function getApplicationsWrapper
+ * @function
  * @param {Object} params - The parameters for retrieving applications.
  * @param {ApiListApplicationsParams} [params.params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [params.options] - Optional client options.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionApplicationSettings>>} A promise that resolves with a collection of applications or an error.
  *
  * @example
- * const result = await getApplicationsWrapper({
+ * const result = await getApplications({
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
  * });
@@ -300,7 +300,7 @@ export const getApplicationsWrapper = ({
  * Updates an existing Azion Edge Application.
  *
  * @async
- * @function putApplicationWrapper
+ * @function
  * @param {Object} params - The parameters for updating an application.
  * @param {number} params.applicationId - The ID of the application to update.
  * @param {ApiUpdateApplicationPayload} params.data - The updated data for the application.
@@ -308,7 +308,7 @@ export const getApplicationsWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the updated application data or an error.
  *
  * @example
- * const result = await putApplicationWrapper({
+ * const result = await putApplication({
  *   applicationId: 123,
  *   data: { name: 'Updated App Name' },
  *   options: { debug: true }
@@ -334,7 +334,7 @@ export const putApplicationWrapper = ({
  * Partially updates an existing Azion Edge Application.
  *
  * @async
- * @function patchApplicationWrapper
+ * @function
  * @param {Object} params - The parameters for patching an application.
  * @param {number} params.applicationId - The ID of the application to patch.
  * @param {Partial<ApiUpdateApplicationPayload>} params.data - The partial data to update in the application.
@@ -342,7 +342,7 @@ export const putApplicationWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the patched application data or an error.
  *
  * @example
- * const result = await patchApplicationWrapper({
+ * const result = await patchApplication({
  *   applicationId: 123,
  *   data: { delivery_protocol: 'https' },
  *   options: { debug: true }
@@ -368,14 +368,14 @@ export const patchApplicationWrapper = ({
  * Deletes an Azion Edge Application.
  *
  * @async
- * @function deleteApplicationWrapper
+ * @function
  * @param {Object} params - The parameters for deleting an application.
  * @param {number} params.applicationId - The ID of the application to delete.
  * @param {AzionClientOptions} [params.options] - Optional client options.
  * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the application is deleted or rejects with an error.
  *
  * @example
- * const result = await deleteApplicationWrapper({
+ * const result = await deleteApplication({
  *   applicationId: 123,
  *   options: { debug: true }
  * });

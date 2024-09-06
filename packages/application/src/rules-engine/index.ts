@@ -8,7 +8,7 @@ import { AzionRule } from './types';
  * Creates a new rule for an Azion Edge Application.
  *
  * @async
- * @function createRuleWrapper
+ * @function
  * @param {Object} params - The parameters for creating a rule.
  * @param {number} params.applicationId - The ID of the application to create the rule for.
  * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
@@ -17,7 +17,7 @@ import { AzionRule } from './types';
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
  *
  * @example
- * const result = await createRuleWrapper({
+ * const result = await createRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   data: { name: 'My New Rule', behaviors: [...] },
@@ -46,7 +46,7 @@ export const createRuleWrapper = ({
  * Retrieves a specific rule from an Azion Edge Application.
  *
  * @async
- * @function getRuleWrapper
+ * @function
  * @param {Object} params - The parameters for retrieving a rule.
  * @param {number} params.applicationId - The ID of the application containing the rule.
  * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
@@ -55,7 +55,7 @@ export const createRuleWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
  *
  * @example
- * const result = await getRuleWrapper({
+ * const result = await getRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   ruleId: 456,
@@ -84,7 +84,7 @@ export const getRuleWrapper = ({
  * Retrieves a list of rules for an Azion Edge Application.
  *
  * @async
- * @function getRulesWrapper
+ * @function
  * @param {Object} params - The parameters for retrieving rules.
  * @param {number} params.applicationId - The ID of the application to retrieve rules from.
  * @param {'request' | 'response'} params.phase - The phase of the rules to retrieve (request or response).
@@ -93,7 +93,7 @@ export const getRuleWrapper = ({
  * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
  *
  * @example
- * const result = await getRulesWrapper({
+ * const result = await getRules({
  *   applicationId: 123,
  *   phase: 'request',
  *   params: { page: 1, page_size: 20 },
@@ -122,7 +122,7 @@ export const getRulesWrapper = ({
  * Updates an existing rule in an Azion Edge Application.
  *
  * @async
- * @function updateRuleWrapper
+ * @function
  * @param {Object} params - The parameters for updating a rule.
  * @param {number} params.applicationId - The ID of the application containing the rule.
  * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
@@ -132,7 +132,7 @@ export const getRulesWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
  *
  * @example
- * const result = await updateRuleWrapper({
+ * const result = await updateRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   ruleId: 456,
@@ -164,7 +164,7 @@ export const updateRuleWrapper = ({
  * Deletes a rule from an Azion Edge Application.
  *
  * @async
- * @function deleteRuleWrapper
+ * @function
  * @param {Object} params - The parameters for deleting a rule.
  * @param {number} params.applicationId - The ID of the application containing the rule.
  * @param {'request' | 'response'} params.phase - The phase of the rule (request or response).
@@ -173,7 +173,7 @@ export const updateRuleWrapper = ({
  * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
  *
  * @example
- * const result = await deleteRuleWrapper({
+ * const result = await deleteRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   ruleId: 456,
@@ -201,7 +201,7 @@ export const deleteRuleWrapper = ({
  * Internal method to create a new rule.
  *
  * @async
- * @function createRuleMethod
+ * @function
  * @param {string} token - Authentication token for Azion API.
  * @param {number} Id - The ID of the application.
  * @param {'request' | 'response'} phase - The phase of the rule (request or response).
@@ -233,7 +233,7 @@ const createRuleMethod = async (
  * Internal method to retrieve a specific rule.
  *
  * @async
- * @function getRuleMethod
+ * @function
  * @param {string} token - Authentication token for Azion API.
  * @param {number} Id - The ID of the application.
  * @param {'request' | 'response'} phase - The phase of the rule (request or response).
@@ -265,7 +265,7 @@ const getRuleMethod = async (
  * Internal method to retrieve a list of rules.
  *
  * @async
- * @function getRulesMethod
+ * @function
  * @param {string} token - Authentication token for Azion API.
  * @param {number} Id - The ID of the application.
  * @param {'request' | 'response'} phase - The phase of the rules to retrieve (request or response).
@@ -297,7 +297,7 @@ const getRulesMethod = async (
  * Internal method to update an existing rule.
  *
  * @async
- * @function updateRuleMethod
+ * @function
  * @param {string} token - Authentication token for Azion API.
  * @param {number} Id - The ID of the application.
  * @param {'request' | 'response'} phase - The phase of the rule (request or response).
@@ -338,7 +338,7 @@ const updateRuleMethod = async (
  * Internal method to delete a rule.
  *
  * @async
- * @function deleteRuleMethod
+ * @function
  * @param {string} token - Authentication token for Azion API.
  * @param {number} Id - The ID of the application.
  * @param {'request' | 'response'} phase - The phase of the rule (request or response).
