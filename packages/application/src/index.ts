@@ -420,8 +420,6 @@ const createAzionApplicationClient: CreateAzionApplicationClient = (
   return client;
 };
 
-export default createAzionApplicationClient;
-
 export * from './cache-settings/types';
 export * from './device-groups/types';
 export * from './functions-instances/types';
@@ -432,6 +430,7 @@ export * from './types';
 
 export {
   createApplicationWrapper as createApplication,
+  createAzionApplicationClient,
   createCacheSettingWrapper as createCacheSetting,
   createDeviceGroupWrapper as createDeviceGroup,
   createFunctionInstanceWrapper as createFunctionInstance,
@@ -463,3 +462,5 @@ export {
   updateOriginWrapper as updateOrigin,
   updateRuleWrapper as updateRule,
 };
+
+export default createAzionApplicationClient;
