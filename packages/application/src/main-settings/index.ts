@@ -49,7 +49,6 @@ import {
   putApplication as putApplicationApi,
 } from './services/index';
 import { ApiCreateApplicationPayload, ApiListApplicationsParams, ApiUpdateApplicationPayload } from './services/types';
-import { AzionApplicationSettings } from './types';
 
 /**
  * Creates a new Azion Edge Application.
@@ -880,7 +879,7 @@ export const deleteApplicationMethod = async (
  * @param {Object} params - The parameters for creating an application.
  * @param {ApiCreateApplicationPayload} params.data - The data for the new application.
  * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the created application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the created application data or an error.
  *
  * @example
  * const result = await createApplication({
@@ -899,8 +898,7 @@ export const createApplicationWrapper = ({
 }: {
   data: ApiCreateApplicationPayload;
   options?: AzionClientOptions;
-}): Promise<AzionApplicationResponse<AzionApplicationSettings>> =>
-  createApplicationMethod(resolveToken(), data, options);
+}): Promise<AzionApplicationResponse<AzionApplication>> => createApplicationMethod(resolveToken(), data, options);
 
 /**
  * Retrieves a specific Azion Edge Application by ID.
@@ -910,7 +908,7 @@ export const createApplicationWrapper = ({
  * @param {Object} params - The parameters for retrieving an application.
  * @param {number} params.applicationId - The ID of the application to retrieve.
  * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the application data or an error.
  *
  * @example
  * const result = await getApplication({
@@ -929,8 +927,7 @@ export const getApplicationWrapper = ({
 }: {
   applicationId: number;
   options?: AzionClientOptions;
-}): Promise<AzionApplicationResponse<AzionApplicationSettings>> =>
-  getApplicationMethod(resolveToken(), applicationId, options);
+}): Promise<AzionApplicationResponse<AzionApplication>> => getApplicationMethod(resolveToken(), applicationId, options);
 
 /**
  * Retrieves a list of Azion Edge Applications.
@@ -940,7 +937,7 @@ export const getApplicationWrapper = ({
  * @param {Object} params - The parameters for retrieving applications.
  * @param {ApiListApplicationsParams} [params.params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationCollectionResponse<AzionApplicationSettings>>} A promise that resolves with a collection of applications or an error.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionApplication>>} A promise that resolves with a collection of applications or an error.
  *
  * @example
  * const result = await getApplications({
@@ -959,7 +956,7 @@ export const getApplicationsWrapper = ({
 }: {
   params?: ApiListApplicationsParams;
   options?: AzionClientOptions;
-}): Promise<AzionApplicationCollectionResponse<AzionApplicationSettings>> =>
+}): Promise<AzionApplicationCollectionResponse<AzionApplication>> =>
   getApplicationsMethod(resolveToken(), params, options);
 
 /**
@@ -971,7 +968,7 @@ export const getApplicationsWrapper = ({
  * @param {number} params.applicationId - The ID of the application to update.
  * @param {ApiUpdateApplicationPayload} params.data - The updated data for the application.
  * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the updated application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the updated application data or an error.
  *
  * @example
  * const result = await putApplication({
@@ -993,7 +990,7 @@ export const putApplicationWrapper = ({
   applicationId: number;
   data: ApiUpdateApplicationPayload;
   options?: AzionClientOptions;
-}): Promise<AzionApplicationResponse<AzionApplicationSettings>> =>
+}): Promise<AzionApplicationResponse<AzionApplication>> =>
   putApplicationMethod(resolveToken(), applicationId, data, options);
 
 /**
@@ -1005,7 +1002,7 @@ export const putApplicationWrapper = ({
  * @param {number} params.applicationId - The ID of the application to patch.
  * @param {Partial<ApiUpdateApplicationPayload>} params.data - The partial data to update in the application.
  * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionApplicationSettings>>} A promise that resolves with the patched application data or an error.
+ * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the patched application data or an error.
  *
  * @example
  * const result = await patchApplication({
@@ -1027,7 +1024,7 @@ export const patchApplicationWrapper = ({
   applicationId: number;
   data: Partial<ApiUpdateApplicationPayload>;
   options?: AzionClientOptions;
-}): Promise<AzionApplicationResponse<AzionApplicationSettings>> =>
+}): Promise<AzionApplicationResponse<AzionApplication>> =>
   patchApplicationMethod(resolveToken(), applicationId, data, options);
 
 /**
