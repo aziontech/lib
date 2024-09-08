@@ -69,7 +69,7 @@ export const createApplicationMethod = async (
 
   if (!apiResponse || !apiResponse.results) {
     return {
-      error: mapApiError(apiResponse, 'patch application', 'Failed to patch application'),
+      error: mapApiError(apiResponse, 'post application', 'Failed to post application'),
     };
   }
 
@@ -220,7 +220,7 @@ export const getApplicationMethod = async (
 
   if (!apiResponse || !apiResponse.results) {
     return {
-      error: mapApiError(apiResponse, 'patch application', 'Failed to patch application'),
+      error: mapApiError(apiResponse, 'get application', 'Failed to get application'),
     };
   }
 
@@ -556,7 +556,7 @@ export const putApplicationMethod = async (
 
   if (!apiResponse || !apiResponse.results) {
     return {
-      error: mapApiError(apiResponse, 'patch application', 'Failed to patch application'),
+      error: mapApiError(apiResponse, 'put application', 'Failed to put application'),
     };
   }
 
