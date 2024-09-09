@@ -13,7 +13,7 @@
       "azion/storage": ["../storage/src/index.ts"],
       "azion/purge": ["../purge/src/index.ts"],
       "azion/config": ["../config/src/index.ts"],
-      "azion/application": ["../application/src/index.ts"]
+      "azion/applications": ["../applications/src/index.ts"]
     }
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { AzionApplicationClient } from '../../application/src/types';
+import { AzionApplicationClient } from '../../applications/src/types';
 import { AzionPurgeClient } from '../../purge/src/types';
 import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
 import { AzionStorageClient } from '../../storage/src/types';

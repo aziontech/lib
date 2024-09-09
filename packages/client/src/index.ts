@@ -1,4 +1,4 @@
-import createAzionApplicationClient, { AzionApplicationClient } from 'azion/application';
+import createAzionApplicationClient, { AzionApplicationClient } from 'azion/applications';
 import { defineConfig } from 'azion/config';
 import createPurgeClient, { AzionPurgeClient } from 'azion/purge';
 import createSqlClient, { AzionSQLClient } from 'azion/sql';
