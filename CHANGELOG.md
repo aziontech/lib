@@ -1,3 +1,10 @@
+## [1.7.0-stage.10](https://github.com/aziontech/lib/compare/v1.7.0-stage.9...v1.7.0-stage.10) (2024-09-09)
+
+
+### Features
+
+* add package application (#37) ([e53c5b0](https://github.com/aziontech/lib/commit/e53c5b0908233484d976c2bb25df921bb9588b87))
+
 ## [1.7.0-stage.9](https://github.com/aziontech/lib/compare/v1.7.0-stage.8...v1.7.0-stage.9) (2024-09-05)
 
 
