@@ -371,7 +371,7 @@ export const getApplicationsMethod = async (
 
   if (!apiResponse || !apiResponse.results) {
     return {
-      error: mapApiError(apiResponse, 'put application', 'Failed to put application'),
+      error: mapApiError(apiResponse, 'get applications', 'Failed to get applications'),
     };
   }
 
