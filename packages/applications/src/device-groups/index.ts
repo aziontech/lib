@@ -168,15 +168,15 @@ export const updateDeviceGroupMethod = async (
  * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The created device group or an error.
  *
  * @example
- * const result = await createDeviceGroup({
+ * const { error, data } = await createDeviceGroup({
  *   applicationId: 1234,
  *   data: { name: 'My Device Group', user_agent: 'Mozilla/5.0' },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Device group created: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to create device group:', error);
  * } else {
- *   console.error('Failed to create device group:', result.error);
+ *   console.log('Device group created:', data.name);
  * }
  */
 export const createDeviceGroupWrapper = ({
@@ -200,15 +200,15 @@ export const createDeviceGroupWrapper = ({
  * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
  *
  * @example
- * const result = await deleteDeviceGroup({
+ * const { error, data } = await deleteDeviceGroup({
  *   applicationId: 1234,
  *   deviceGroupId: 5678,
  *   options: { debug: true }
  * });
- * if (result.data !== undefined) {
- *   console.log('Device group deleted successfully');
+ * if (error) {
+ *   console.error('Failed to delete device group:', error);
  * } else {
- *   console.error('Failed to delete device group:', result.error);
+ *   console.log('Device group deleted successfully');
  * }
  */
 export const deleteDeviceGroupWrapper = ({
@@ -232,15 +232,15 @@ export const deleteDeviceGroupWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The retrieved device group or an error.
  *
  * @example
- * const result = await getDeviceGroup({
+ * const { error, data } = await getDeviceGroup({
  *   applicationId: 1234,
  *   deviceGroupId: 5678,
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Retrieved device group: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to get device group:', error);
  * } else {
- *   console.error('Failed to get device group:', result.error);
+ *   console.log('Retrieved device group:', data.name);
  * }
  */
 export const getDeviceGroupWrapper = ({
@@ -264,15 +264,15 @@ export const getDeviceGroupWrapper = ({
  * @returns {Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>>} A collection of device groups or an error.
  *
  * @example
- * const result = await getDeviceGroups({
+ * const { error, data } = await getDeviceGroups({
  *   applicationId: 1234,
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Retrieved ${result.data.results.length} device groups`);
+ * if (error) {
+ *   console.error('Failed to get device groups:', error);
  * } else {
- *   console.error('Failed to get device groups:', result.error);
+ *   console.log(`Retrieved ${data.results.length} device groups`);
  * }
  */
 export const getDeviceGroupsWrapper = ({
@@ -297,16 +297,16 @@ export const getDeviceGroupsWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} The updated device group or an error.
  *
  * @example
- * const result = await updateDeviceGroup({
+ * const { error, data } = await updateDeviceGroup({
  *   applicationId: 1234,
  *   deviceGroupId: 5678,
  *   data: { name: 'Updated Device Group' },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Updated device group: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to update device group:', error);
  * } else {
- *   console.error('Failed to update device group:', result.error);
+ *   console.log('Updated device group:', data.name);
  * }
  */
 export const updateDeviceGroupWrapper = ({

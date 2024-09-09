@@ -13,11 +13,23 @@ import { AzionCacheSetting } from './types';
 /**
  * Creates a new cache setting for a specific application.
  *
- * @param {string} token - Authentication token for Azion API.
- * @param {number} Id - Application ID.
- * @param {ApiBaseCacheSettingPayload} cacheSettingData - Data for the cache setting to be created.
- * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @param {Object} params - Parameters for creating a cache setting.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiBaseCacheSettingPayload} params.data - Data for the cache setting to be created.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The created cache setting or an error.
+ *
+ * @example
+ * const { error, data } = await createCacheSetting({
+ *   applicationId: 1234,
+ *   data: { name: 'My Cache Setting', browser_cache_settings: 'override' },
+ *   options: { debug: true }
+ * });
+ * if (error) {
+ *   console.error('Failed to create cache setting:', error);
+ * } else {
+ *   console.log('Cache setting created:', data.name);
+ * }
  */
 export const createCacheSettingMethod = async (
   token: string,
@@ -181,15 +193,15 @@ export const deleteCacheSettingMethod = async (
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The created cache setting or an error.
  *
  * @example
- * const result = await createCacheSetting({
+ * const { error, data } = await createCacheSetting({
  *   applicationId: 1234,
  *   data: { name: 'My Cache Setting', browser_cache_settings: 'override' },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Cache setting created: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to create cache setting:', error);
  * } else {
- *   console.error('Failed to create cache setting:', result.error);
+ *   console.log('Cache setting created:', data.name);
  * }
  */
 export const createCacheSettingWrapper = ({
@@ -213,15 +225,15 @@ export const createCacheSettingWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The retrieved cache setting or an error.
  *
  * @example
- * const result = await getCacheSetting({
+ * const { error, data } = await getCacheSetting({
  *   applicationId: 1234,
  *   cacheSettingId: 5678,
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Retrieved cache setting: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to get cache setting:', error);
  * } else {
- *   console.error('Failed to get cache setting:', result.error);
+ *   console.log('Retrieved cache setting:', data.name);
  * }
  */
 export const getCacheSettingWrapper = ({
@@ -245,15 +257,15 @@ export const getCacheSettingWrapper = ({
  * @returns {Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>} A collection of cache settings or an error.
  *
  * @example
- * const result = await getCacheSettings({
+ * const { error, data } = await getCacheSettings({
  *   applicationId: 1234,
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Retrieved ${result.data.results.length} cache settings`);
+ * if (error) {
+ *   console.error('Failed to get cache settings:', error);
  * } else {
- *   console.error('Failed to get cache settings:', result.error);
+ *   console.log(`Retrieved ${data.results.length} cache settings`);
  * }
  */
 export const getCacheSettingsWrapper = ({
@@ -278,16 +290,16 @@ export const getCacheSettingsWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} The updated cache setting or an error.
  *
  * @example
- * const result = await updateCacheSetting({
+ * const { error, data } = await updateCacheSetting({
  *   applicationId: 1234,
  *   cacheSettingId: 5678,
  *   data: { name: 'Updated Cache Setting' },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Updated cache setting: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to update cache setting:', error);
  * } else {
- *   console.error('Failed to update cache setting:', result.error);
+ *   console.log('Updated cache setting:', data.name);
  * }
  */
 export const updateCacheSettingWrapper = ({
@@ -313,15 +325,15 @@ export const updateCacheSettingWrapper = ({
  * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
  *
  * @example
- * const result = await deleteCacheSetting({
+ * const { error, data } = await deleteCacheSetting({
  *   applicationId: 1234,
  *   cacheSettingId: 5678,
  *   options: { debug: true }
  * });
- * if (result.data !== undefined) {
- *   console.log('Cache setting deleted successfully');
+ * if (error) {
+ *   console.error('Failed to delete cache setting:', error);
  * } else {
- *   console.error('Failed to delete cache setting:', result.error);
+ *   console.log('Cache setting deleted successfully');
  * }
  */
 export const deleteCacheSettingWrapper = ({

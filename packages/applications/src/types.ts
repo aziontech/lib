@@ -118,7 +118,7 @@ export interface CacheOperations {
    * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} A promise that resolves with the created cache setting data or an error.
    *
    * @example
-   * const result = await cacheOperations.createCacheSetting({
+   * const { error, data } = await cacheOperations.createCacheSetting({
    *   data: {
    *     name: 'My Cache Setting',
    *     browser_cache_settings: 'override',
@@ -129,10 +129,10 @@ export interface CacheOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Created cache setting:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Created cache setting:', data);
    * }
    */
   createCacheSetting: (params: {
@@ -151,14 +151,14 @@ export interface CacheOperations {
    * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} A promise that resolves with the cache setting data or an error.
    *
    * @example
-   * const result = await cacheOperations.getCacheSetting({
+   * const { error, data } = await cacheOperations.getCacheSetting({
    *   cacheSettingId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved cache setting:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved cache setting:', data);
    * }
    */
   getCacheSetting: (params: {
@@ -177,14 +177,14 @@ export interface CacheOperations {
    * @returns {Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>} A promise that resolves with a collection of cache settings or an error.
    *
    * @example
-   * const result = await cacheOperations.getCacheSettings({
+   * const { error, data } = await cacheOperations.getCacheSettings({
    *   params: { page: 1, page_size: 20 },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved cache settings:', result.data.results);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved cache settings:', data.results);
    * }
    */
   getCacheSettings: (params: {
@@ -204,7 +204,7 @@ export interface CacheOperations {
    * @returns {Promise<AzionApplicationResponse<AzionCacheSetting>>} A promise that resolves with the updated cache setting data or an error.
    *
    * @example
-   * const result = await cacheOperations.updateCacheSetting({
+   * const { error, data } = await cacheOperations.updateCacheSetting({
    *   cacheSettingId: 123,
    *   data: {
    *     name: 'Updated Cache Setting',
@@ -213,10 +213,10 @@ export interface CacheOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Updated cache setting:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Updated cache setting:', data);
    * }
    */
   updateCacheSetting: (params: {
@@ -236,14 +236,14 @@ export interface CacheOperations {
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the cache setting is deleted or rejects with an error.
    *
    * @example
-   * const result = await cacheOperations.deleteCacheSetting({
+   * const { error, data } = await cacheOperations.deleteCacheSetting({
    *   cacheSettingId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data !== undefined) {
-   *   console.log('Cache setting deleted successfully');
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Cache setting deleted successfully');
    * }
    */
   deleteCacheSetting: (params: {
@@ -269,7 +269,7 @@ export interface OriginOperations {
    * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the created origin data or an error.
    *
    * @example
-   * const result = await originOperations.createOrigin({
+   * const { error, data } = await originOperations.createOrigin({
    *   data: {
    *     name: 'My Origin',
    *     origin_type: 'single_origin',
@@ -278,10 +278,10 @@ export interface OriginOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Created origin:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Created origin:', data);
    * }
    */
   createOrigin: (params: {
@@ -300,14 +300,14 @@ export interface OriginOperations {
    * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the origin data or an error.
    *
    * @example
-   * const result = await originOperations.getOrigin({
+   * const { error, data } = await originOperations.getOrigin({
    *   originKey: 'abc123',
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved origin:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved origin:', data);
    * }
    */
   getOrigin: (params: {
@@ -326,14 +326,14 @@ export interface OriginOperations {
    * @returns {Promise<AzionApplicationCollectionResponse<AzionOrigin>>} A promise that resolves with a collection of origins or an error.
    *
    * @example
-   * const result = await originOperations.getOrigins({
+   * const { error, data } = await originOperations.getOrigins({
    *   params: { page: 1, page_size: 20 },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved origins:', result.data.results);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved origins:', data.results);
    * }
    */
   getOrigins: (params: {
@@ -353,7 +353,7 @@ export interface OriginOperations {
    * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the updated origin data or an error.
    *
    * @example
-   * const result = await originOperations.updateOrigin({
+   * const { error, data } = await originOperations.updateOrigin({
    *   originKey: 'abc123',
    *   data: {
    *     name: 'Updated Origin',
@@ -361,10 +361,10 @@ export interface OriginOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Updated origin:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Updated origin:', data);
    * }
    */
   updateOrigin: (params: {
@@ -384,14 +384,14 @@ export interface OriginOperations {
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the origin is deleted or rejects with an error.
    *
    * @example
-   * const result = await originOperations.deleteOrigin({
+   * const { error, data } = await originOperations.deleteOrigin({
    *   originKey: 'abc123',
    *   options: { debug: true }
    * });
-   * if (result.data !== undefined) {
-   *   console.log('Origin deleted successfully');
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Origin deleted successfully');
    * }
    */
   deleteOrigin: (params: {
@@ -417,7 +417,7 @@ export interface RuleOperations {
    * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
    *
    * @example
-   * const result = await ruleOperations.createRule({
+   * const { error, data } = await ruleOperations.createRule({
    *   data: {
    *     name: 'My Rule',
    *     phase: 'request',
@@ -426,10 +426,10 @@ export interface RuleOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Created rule:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Created rule:', data);
    * }
    */
   createRule: (params: {
@@ -448,14 +448,14 @@ export interface RuleOperations {
    * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
    *
    * @example
-   * const result = await ruleOperations.getRule({
+   * const { error, data } = await ruleOperations.getRule({
    *   ruleId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved rule:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved rule:', data);
    * }
    */
   getRule: (params: { ruleId: number; options?: AzionClientOptions }) => Promise<AzionApplicationResponse<AzionRule>>;
@@ -471,14 +471,14 @@ export interface RuleOperations {
    * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
    *
    * @example
-   * const result = await ruleOperations.getRules({
+   * const { error, data } = await ruleOperations.getRules({
    *   params: { page: 1, page_size: 20 },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved rules:', result.data.results);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved rules:', data.results);
    * }
    */
   getRules: (params: {
@@ -498,7 +498,7 @@ export interface RuleOperations {
    * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
    *
    * @example
-   * const result = await ruleOperations.updateRule({
+   * const { error, data } = await ruleOperations.updateRule({
    *   ruleId: 123,
    *   data: {
    *     name: 'Updated Rule',
@@ -506,10 +506,10 @@ export interface RuleOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Updated rule:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Updated rule:', data);
    * }
    */
   updateRule: (params: {
@@ -529,14 +529,14 @@ export interface RuleOperations {
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
    *
    * @example
-   * const result = await ruleOperations.deleteRule({
+   * const { error, data } = await ruleOperations.deleteRule({
    *   ruleId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data !== undefined) {
-   *   console.log('Rule deleted successfully');
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Rule deleted successfully');
    * }
    */
   deleteRule: (params: { ruleId: number; options?: AzionClientOptions }) => Promise<AzionApplicationResponse<void>>;
@@ -559,17 +559,17 @@ export interface DeviceGroupOperations {
    * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} A promise that resolves with the created device group data or an error.
    *
    * @example
-   * const result = await deviceGroupOperations.createDeviceGroup({
+   * const { error, data } = await deviceGroupOperations.createDeviceGroup({
    *   data: {
    *     name: 'Mobile Devices',
    *     user_agent: 'Mobile|Android|iPhone|iPad|iPod'
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Created device group:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Created device group:', data);
    * }
    */
   createDeviceGroup: (params: {
@@ -588,14 +588,14 @@ export interface DeviceGroupOperations {
    * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} A promise that resolves with the device group data or an error.
    *
    * @example
-   * const result = await deviceGroupOperations.getDeviceGroup({
+   * const { error, data } = await deviceGroupOperations.getDeviceGroup({
    *   deviceGroupId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved device group:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved device group:', data);
    * }
    */
   getDeviceGroup: (params: {
@@ -614,14 +614,14 @@ export interface DeviceGroupOperations {
    * @returns {Promise<AzionApplicationCollectionResponse<AzionDeviceGroup>>} A promise that resolves with a collection of device groups or an error.
    *
    * @example
-   * const result = await deviceGroupOperations.getDeviceGroups({
+   * const { error, data } = await deviceGroupOperations.getDeviceGroups({
    *   params: { page: 1, page_size: 20 },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved device groups:', result.data.results);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved device groups:', data.results);
    * }
    */
   getDeviceGroups: (params: {
@@ -641,7 +641,7 @@ export interface DeviceGroupOperations {
    * @returns {Promise<AzionApplicationResponse<AzionDeviceGroup>>} A promise that resolves with the updated device group data or an error.
    *
    * @example
-   * const result = await deviceGroupOperations.updateDeviceGroup({
+   * const { error, data } = await deviceGroupOperations.updateDeviceGroup({
    *   deviceGroupId: 123,
    *   data: {
    *     name: 'Updated Mobile Devices',
@@ -649,10 +649,10 @@ export interface DeviceGroupOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Updated device group:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Updated device group:', data);
    * }
    */
   updateDeviceGroup: (params: {
@@ -672,14 +672,14 @@ export interface DeviceGroupOperations {
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the device group is deleted or rejects with an error.
    *
    * @example
-   * const result = await deviceGroupOperations.deleteDeviceGroup({
+   * const { error, data } = await deviceGroupOperations.deleteDeviceGroup({
    *   deviceGroupId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data !== undefined) {
-   *   console.log('Device group deleted successfully');
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Device group deleted successfully');
    * }
    */
   deleteDeviceGroup: (params: {
@@ -705,7 +705,7 @@ export interface FunctionOperations {
    * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} A promise that resolves with the created function instance data or an error.
    *
    * @example
-   * const result = await functionOperations.createFunctionInstance({
+   * const { error, data } = await functionOperations.createFunctionInstance({
    *   data: {
    *     name: 'My Function',
    *     code: 'async function handleRequest(request) { return new Response("Hello, World!"); }',
@@ -713,10 +713,10 @@ export interface FunctionOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Created function instance:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Created function instance:', data);
    * }
    */
   createFunctionInstance: (params: {
@@ -735,14 +735,14 @@ export interface FunctionOperations {
    * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} A promise that resolves with the function instance data or an error.
    *
    * @example
-   * const result = await functionOperations.getFunctionInstance({
+   * const { error, data } = await functionOperations.getFunctionInstance({
    *   functionInstanceId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved function instance:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved function instance:', data);
    * }
    */
   getFunctionInstance: (params: {
@@ -761,14 +761,14 @@ export interface FunctionOperations {
    * @returns {Promise<AzionApplicationCollectionResponse<AzionFunctionInstance>>} A promise that resolves with a collection of function instances or an error.
    *
    * @example
-   * const result = await functionOperations.getFunctionInstances({
+   * const { error, data } = await functionOperations.getFunctionInstances({
    *   params: { page: 1, page_size: 20 },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved function instances:', result.data.results);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved function instances:', data.results);
    * }
    */
   getFunctionInstances: (params: {
@@ -788,7 +788,7 @@ export interface FunctionOperations {
    * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} A promise that resolves with the updated function instance data or an error.
    *
    * @example
-   * const result = await functionOperations.updateFunctionInstance({
+   * const { error, data } = await functionOperations.updateFunctionInstance({
    *   functionInstanceId: 123,
    *   data: {
    *     name: 'Updated Function',
@@ -796,10 +796,10 @@ export interface FunctionOperations {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Updated function instance:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Updated function instance:', data);
    * }
    */
   updateFunctionInstance: (params: {
@@ -819,14 +819,14 @@ export interface FunctionOperations {
    * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the function instance is deleted or rejects with an error.
    *
    * @example
-   * const result = await functionOperations.deleteFunctionInstance({
+   * const { error, data } = await functionOperations.deleteFunctionInstance({
    *   functionInstanceId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data !== undefined) {
-   *   console.log('Function instance deleted successfully');
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Function instance deleted successfully');
    * }
    */
   deleteFunctionInstance: (params: {
@@ -848,7 +848,7 @@ export interface AzionApplication extends ApiApplication {
    *
    * @example
    * // Creating a new cache setting
-   * const newCacheSetting = await application.cache.createCacheSetting({
+   * const { error, data } = await application.cache.createCacheSetting({
    *   data: {
    *     name: 'My Cache Setting',
    *     browser_cache_settings: 'override',
@@ -856,6 +856,11 @@ export interface AzionApplication extends ApiApplication {
    *     cache_by_query_string: 'ignore'
    *   }
    * });
+   * if (error) {
+   *   console.error('Error:', error);
+   * } else {
+   *   console.log('Created cache setting:', data);
+   * }
    */
   cache: CacheOperations;
 
@@ -865,7 +870,7 @@ export interface AzionApplication extends ApiApplication {
    *
    * @example
    * // Creating a new origin
-   * const newOrigin = await application.origins.createOrigin({
+   * const { error, data } = await application.origins.createOrigin({
    *   data: {
    *     name: 'My Origin',
    *     addresses: [{ address: 'example.com' }],
@@ -873,6 +878,11 @@ export interface AzionApplication extends ApiApplication {
    *     host_header: 'example.com'
    *   }
    * });
+   * if (error) {
+   *   console.error('Error:', error);
+   * } else {
+   *   console.log('Created origin:', data);
+   * }
    */
   origins: OriginOperations;
 
@@ -887,7 +897,7 @@ export interface AzionApplication extends ApiApplication {
      *
      * @example
      * // Creating a new request rule
-     * const newRequestRule = await application.rules.request.createRule({
+     * const { error, data } = await application.rules.request.createRule({
      *   data: {
      *     name: 'My Request Rule',
      *     phase: 'request',
@@ -895,6 +905,11 @@ export interface AzionApplication extends ApiApplication {
      *     criteria: [[{ conditional: 'if', input: '${uri}', operator: 'starts_with', value: '/api' }]]
      *   }
      * });
+     * if (error) {
+     *   console.error('Error:', error);
+     * } else {
+     *   console.log('Created request rule:', data);
+     * }
      */
     request: RuleOperations;
 
@@ -904,7 +919,7 @@ export interface AzionApplication extends ApiApplication {
      *
      * @example
      * // Creating a new response rule
-     * const newResponseRule = await application.rules.response.createRule({
+     * const { error, data } = await application.rules.response.createRule({
      *   data: {
      *     name: 'My Response Rule',
      *     phase: 'response',
@@ -912,6 +927,11 @@ export interface AzionApplication extends ApiApplication {
      *     criteria: [[{ conditional: 'if', input: '${status}', operator: 'is_equal', value: '200' }]]
      *   }
      * });
+     * if (error) {
+     *   console.error('Error:', error);
+     * } else {
+     *   console.log('Created response rule:', data);
+     * }
      */
     response: RuleOperations;
   };
@@ -922,12 +942,17 @@ export interface AzionApplication extends ApiApplication {
    *
    * @example
    * // Creating a new device group
-   * const newDeviceGroup = await application.devices.createDeviceGroup({
+   * const { error, data } = await application.devices.createDeviceGroup({
    *   data: {
    *     name: 'Mobile Devices',
    *     user_agent: 'Mobile|Android|iPhone|iPad|iPod'
    *   }
    * });
+   * if (error) {
+   *   console.error('Error:', error);
+   * } else {
+   *   console.log('Created device group:', data);
+   * }
    */
   devices: DeviceGroupOperations;
 
@@ -937,13 +962,18 @@ export interface AzionApplication extends ApiApplication {
    *
    * @example
    * // Creating a new function instance
-   * const newFunction = await application.functions.createFunctionInstance({
+   * const { error, data } = await application.functions.createFunctionInstance({
    *   data: {
    *     name: 'My Function',
    *     edge_function_id: 5678,
    *     args: {}
    *   }
    * });
+   * if (error) {
+   *   console.error('Error:', error);
+   * } else {
+   *   console.log('Created function instance:', data);
+   * }
    */
   functions: FunctionOperations;
 }
@@ -965,7 +995,7 @@ export interface AzionApplicationClient {
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the created application data or an error.
    *
    * @example
-   * const result = await applicationClient.createApplication({
+   * const { error, data } = await applicationClient.createApplication({
    *   data: {
    *     name: 'My New Application',
    *     delivery_protocol: 'http',
@@ -974,10 +1004,10 @@ export interface AzionApplicationClient {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Created application:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Created application:', data);
    * }
    */
   createApplication: (params: {
@@ -996,14 +1026,14 @@ export interface AzionApplicationClient {
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the application data or an error.
    *
    * @example
-   * const result = await applicationClient.getApplication({
+   * const { error, data } = await applicationClient.getApplication({
    *   applicationId: 123,
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved application:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved application:', data);
    * }
    */
   getApplication: (params: {
@@ -1013,7 +1043,7 @@ export interface AzionApplicationClient {
 
   /**
    * Retrieves a list of Azion Edge Applications.
-   *GIT
+   *
    * @function
    * @name AzionApplicationClient.getApplications
    * @param {Object} params - The parameters for retrieving applications.
@@ -1022,14 +1052,14 @@ export interface AzionApplicationClient {
    * @returns {Promise<AzionApplicationCollectionResponse<AzionApplication>>} A promise that resolves with a collection of applications or an error.
    *
    * @example
-   * const result = await applicationClient.getApplications({
+   * const { error, data } = await applicationClient.getApplications({
    *   params: { page: 1, page_size: 20 },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Retrieved applications:', result.data.results);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Retrieved applications:', data.results);
    * }
    */
   getApplications: (params: {
@@ -1049,7 +1079,7 @@ export interface AzionApplicationClient {
    * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the updated application data or an error.
    *
    * @example
-   * const result = await applicationClient.putApplication({
+   * const { error, data } = await applicationClient.putApplication({
    *   applicationId: 123,
    *   data: {
    *     name: 'Updated Application',
@@ -1057,10 +1087,10 @@ export interface AzionApplicationClient {
    *   },
    *   options: { debug: true }
    * });
-   * if (result.data) {
-   *   console.log('Updated application:', result.data);
+   * if (error) {
+   *   console.error('Error:', error);
    * } else {
-   *   console.error('Error:', result.error);
+   *   console.log('Updated application:', data);
    * }
    */
   putApplication: (params: {
@@ -1068,10 +1098,56 @@ export interface AzionApplicationClient {
     data: ApiUpdateApplicationPayload;
     options?: AzionClientOptions;
   }) => Promise<AzionApplicationResponse<AzionApplication>>;
+
+  /**
+   * Deletes an Azion Edge Application.
+   *
+   * @function
+   * @name AzionApplicationClient.deleteApplication
+   * @param {Object} params - The parameters for deleting an application.
+   * @param {number} params.applicationId - The ID of the application to delete.
+
+   * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the application is deleted or rejects with an error.
+   *
+   * @example
+   * const { error, data } = await applicationClient.deleteApplication({
+   *   applicationId: 123,
+   *   options: { debug: true }
+   * });
+   * if (error) {
+   *   console.error('Error:', error);
+   * } else {
+   *   console.log('Application deleted successfully');
+   * }
+   */
   deleteApplication: (params: {
     applicationId: number;
     options?: AzionClientOptions;
   }) => Promise<AzionApplicationResponse<void>>;
+
+  /**
+   * Partially updates an existing Azion Edge Application.
+   *
+   * @function
+   * @name AzionApplicationClient.patchApplication
+   * @param {Object} params - The parameters for partially updating an application.
+   * @param {number} params.applicationId - The ID of the application to update.
+   * @param {Partial<ApiUpdateApplicationPayload>} params.data - The partial data for updating the application.
+
+   * @returns {Promise<AzionApplicationResponse<AzionApplication>>} A promise that resolves with the updated application data or an error.
+   *
+   * @example
+   * const { error, data } = await applicationClient.patchApplication({
+   *   applicationId: 123,
+   *   data: { name: 'Partially Updated Application' },
+   *   options: { debug: true }
+   * });
+   * if (error) {
+   *   console.error('Error:', error);
+   * } else {
+   *   console.log('Partially updated application:', data);
+   * }
+   */
   patchApplication: (params: {
     applicationId: number;
     data: Partial<ApiUpdateApplicationPayload>;

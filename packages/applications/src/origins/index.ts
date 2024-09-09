@@ -101,26 +101,28 @@ export const updateOriginMethod = async (
 };
 
 /**
- * Creates a new origin for an Azion Edge Application.
+ * Creates a new origin for a specific application.
  *
- * @async
- * @function
- * @param {Object} params - The parameters for creating an origin.
- * @param {number} params.applicationId - The ID of the application to create the origin for.
- * @param {ApiCreateOriginPayload} params.data - The data for the new origin.
- * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the created origin data or an error.
+ * @param {Object} params - Parameters for creating an origin.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiCreateOriginPayload} params.data - Data for the origin to be created.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} The created origin or an error.
  *
  * @example
- * const result = await createOrigin({
- *   applicationId: 123,
- *   data: { name: 'My New Origin', addresses: [{ address: 'example.com' }] },
+ * const { error, data } = await createOrigin({
+ *   applicationId: 1234,
+ *   data: {
+ *     name: 'My New Origin',
+ *     addresses: [{ address: 'example.com' }],
+ *     origin_type: 'single_origin'
+ *   },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Origin created:', result.data);
+ * if (error) {
+ *   console.error('Failed to create origin:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Origin created:', data);
  * }
  */
 export const createOriginWrapper = ({
@@ -134,26 +136,24 @@ export const createOriginWrapper = ({
 }): Promise<AzionApplicationResponse<AzionOrigin>> => createOriginMethod(resolveToken(), applicationId, data, options);
 
 /**
- * Deletes an origin from an Azion Edge Application.
+ * Deletes a specific origin from an application.
  *
- * @async
- * @function
- * @param {Object} params - The parameters for deleting an origin.
- * @param {number} params.applicationId - The ID of the application containing the origin.
- * @param {string} params.originKey - The key of the origin to delete.
- * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the origin is deleted or rejects with an error.
+ * @param {Object} params - Parameters for deleting an origin.
+ * @param {number} params.applicationId - Application ID.
+ * @param {string} params.originKey - Key of the origin to delete.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<void>>} A response indicating success or an error.
  *
  * @example
- * const result = await deleteOrigin({
- *   applicationId: 123,
+ * const { error, data } = await deleteOrigin({
+ *   applicationId: 1234,
  *   originKey: 'origin-key',
  *   options: { debug: true }
  * });
- * if (result.data !== undefined) {
- *   console.log('Origin deleted successfully');
+ * if (error) {
+ *   console.error('Failed to delete origin:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Origin deleted successfully');
  * }
  */
 export const deleteOriginWrapper = ({
@@ -167,26 +167,24 @@ export const deleteOriginWrapper = ({
 }): Promise<AzionApplicationResponse<void>> => deleteOriginMethod(resolveToken(), applicationId, originKey, options);
 
 /**
- * Retrieves a specific origin from an Azion Edge Application.
+ * Retrieves a specific origin from an application.
  *
- * @async
- * @function
- * @param {Object} params - The parameters for retrieving an origin.
- * @param {number} params.applicationId - The ID of the application containing the origin.
- * @param {string} params.originKey - The key of the origin to retrieve.
- * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the origin data or an error.
+ * @param {Object} params - Parameters for retrieving an origin.
+ * @param {number} params.applicationId - Application ID.
+ * @param {string} params.originKey - Key of the origin to retrieve.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} The retrieved origin or an error.
  *
  * @example
- * const result = await getOrigin({
- *   applicationId: 123,
+ * const { error, data } = await getOrigin({
+ *   applicationId: 1234,
  *   originKey: 'origin-key',
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Origin retrieved:', result.data);
+ * if (error) {
+ *   console.error('Failed to get origin:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Retrieved origin:', data);
  * }
  */
 export const getOriginWrapper = ({
@@ -201,26 +199,24 @@ export const getOriginWrapper = ({
   getOriginMethod(resolveToken(), applicationId, originKey, options);
 
 /**
- * Retrieves a list of origins for an Azion Edge Application.
+ * Retrieves a list of origins for a specific application.
  *
- * @async
- * @function
- * @param {Object} params - The parameters for retrieving origins.
- * @param {number} params.applicationId - The ID of the application to retrieve origins from.
- * @param {ApiListOriginsParams} [params.params] - Optional parameters for filtering and pagination.
- * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationCollectionResponse<AzionOrigin>>} A promise that resolves with a collection of origins or an error.
+ * @param {Object} params - Parameters for listing origins.
+ * @param {number} params.applicationId - Application ID.
+ * @param {ApiListOriginsParams} [params.params] - Parameters for filtering and pagination.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationCollectionResponse<AzionOrigin>>} A collection of origins or an error.
  *
  * @example
- * const result = await getOrigins({
- *   applicationId: 123,
+ * const { error, data } = await getOrigins({
+ *   applicationId: 1234,
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Origins retrieved:', result.data.results);
+ * if (error) {
+ *   console.error('Failed to get origins:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Retrieved origins:', data.results);
  * }
  */
 export const getOriginsWrapper = ({
@@ -235,28 +231,29 @@ export const getOriginsWrapper = ({
   getOriginsMethod(resolveToken(), applicationId, params, options);
 
 /**
- * Updates an existing origin in an Azion Edge Application.
+ * Updates an existing origin in a specific application.
  *
- * @async
- * @function
- * @param {Object} params - The parameters for updating an origin.
- * @param {number} params.applicationId - The ID of the application containing the origin.
- * @param {string} params.originKey - The key of the origin to update.
- * @param {ApiUpdateOriginRequest} params.data - The updated data for the origin.
- * @param {AzionClientOptions} [params.options] - Optional client options.
- * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} A promise that resolves with the updated origin data or an error.
+ * @param {Object} params - Parameters for updating an origin.
+ * @param {number} params.applicationId - Application ID.
+ * @param {string} params.originKey - Key of the origin to update.
+ * @param {ApiUpdateOriginRequest} params.data - Updated data for the origin.
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionApplicationResponse<AzionOrigin>>} The updated origin or an error.
  *
  * @example
- * const result = await updateOrigin({
- *   applicationId: 123,
+ * const { error, data } = await updateOrigin({
+ *   applicationId: 1234,
  *   originKey: 'origin-key',
- *   data: { name: 'Updated Origin Name' },
+ *   data: {
+ *     name: 'Updated Origin',
+ *     addresses: [{ address: 'updated-example.com' }]
+ *   },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Origin updated:', result.data);
+ * if (error) {
+ *   console.error('Failed to update origin:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Updated origin:', data);
  * }
  */
 export const updateOriginWrapper = ({

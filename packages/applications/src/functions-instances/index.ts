@@ -182,7 +182,7 @@ export const updateFunctionInstanceMethod = async (
  * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} The created function instance or an error.
  *
  * @example
- * const result = await createFunctionInstance({
+ * const { error, data } = await createFunctionInstance({
  *   applicationId: 1234,
  *   data: {
  *     name: 'My Function Instance',
@@ -191,10 +191,10 @@ export const updateFunctionInstanceMethod = async (
  *   },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log(`Function instance created: ${result.data.name}`);
+ * if (error) {
+ *   console.error('Failed to create function instance:', error);
  * } else {
- *   console.error('Failed to create function instance:', result.error);
+ *   console.log('Function instance created:', data.name);
  * }
  */
 export const createFunctionInstanceWrapper = ({
@@ -218,15 +218,15 @@ export const createFunctionInstanceWrapper = ({
  * @returns {Promise<AzionApplicationResponse<void>>} Confirmation of deletion or an error.
  *
  * @example
- * const result = await deleteFunctionInstance({
+ * const { error, data } = await deleteFunctionInstance({
  *   applicationId: 1234,
  *   functionInstanceId: 5678,
  *   options: { debug: true }
  * });
- * if (result.data !== undefined) {
- *   console.log('Function instance deleted successfully');
+ * if (error) {
+ *   console.error('Failed to delete function instance:', error);
  * } else {
- *   console.error('Failed to delete function instance:', result.error);
+ *   console.log('Function instance deleted successfully');
  * }
  */
 export const deleteFunctionInstanceWrapper = ({
@@ -250,15 +250,15 @@ export const deleteFunctionInstanceWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} The retrieved function instance or an error.
  *
  * @example
- * const result = await getFunctionInstance({
+ * const { error, data } = await getFunctionInstance({
  *   applicationId: 1234,
  *   functionInstanceId: 5678,
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Retrieved function instance:', result.data);
+ * if (error) {
+ *   console.error('Failed to get function instance:', error);
  * } else {
- *   console.error('Failed to get function instance:', result.error);
+ *   console.log('Retrieved function instance:', data.name);
  * }
  */
 export const getFunctionInstanceWrapper = ({
@@ -282,15 +282,15 @@ export const getFunctionInstanceWrapper = ({
  * @returns {Promise<AzionApplicationCollectionResponse<AzionFunctionInstance>>} A collection of function instances or an error.
  *
  * @example
- * const result = await getFunctionInstances({
+ * const { error, data } = await getFunctionInstances({
  *   applicationId: 1234,
  *   params: { page: 1, page_size: 20, sort: 'name', order: 'asc' },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Function instances:', result.data);
+ * if (error) {
+ *   console.error('Failed to get function instances:', error);
  * } else {
- *   console.error('Failed to get function instances:', result.error);
+ *   console.log('Function instances:', data.results);
  * }
  */
 export const getFunctionInstancesWrapper = ({
@@ -315,20 +315,19 @@ export const getFunctionInstancesWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionFunctionInstance>>} The updated function instance or an error.
  *
  * @example
- * const result = await updateFunctionInstance({
+ * const { error, data } = await updateFunctionInstance({
  *   applicationId: 1234,
  *   functionInstanceId: 5678,
  *   data: {
  *     name: 'Updated Function Instance',
- *     code: 'async function handleRequest(request) { return new Response("Updated Hello World"); }',
- *     active: false
+ *     args: { key: 'new value' }
  *   },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Updated function instance:', result.data);
+ * if (error) {
+ *   console.error('Failed to update function instance:', error);
  * } else {
- *   console.error('Failed to update function instance:', result.error);
+ *   console.log('Updated function instance:', data);
  * }
  */
 export const updateFunctionInstanceWrapper = ({

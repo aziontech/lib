@@ -17,16 +17,16 @@ import { AzionRule } from './types';
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the created rule data or an error.
  *
  * @example
- * const result = await createRule({
+ * const { error, data } = await createRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   data: { name: 'My New Rule', behaviors: [...] },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Rule created:', result.data);
+ * if (error) {
+ *   console.error('Error:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Rule created:', data);
  * }
  */
 export const createRuleWrapper = ({
@@ -55,16 +55,16 @@ export const createRuleWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the rule data or an error.
  *
  * @example
- * const result = await getRule({
+ * const { error, data } = await getRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   ruleId: 456,
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Rule retrieved:', result.data);
+ * if (error) {
+ *   console.error('Error:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Rule retrieved:', data);
  * }
  */
 export const getRuleWrapper = ({
@@ -93,16 +93,16 @@ export const getRuleWrapper = ({
  * @returns {Promise<AzionApplicationCollectionResponse<AzionRule>>} A promise that resolves with a collection of rules or an error.
  *
  * @example
- * const result = await getRules({
+ * const { error, data } = await getRules({
  *   applicationId: 123,
  *   phase: 'request',
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Rules retrieved:', result.data.results);
+ * if (error) {
+ *   console.error('Error:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Rules retrieved:', data.results);
  * }
  */
 export const getRulesWrapper = ({
@@ -132,17 +132,17 @@ export const getRulesWrapper = ({
  * @returns {Promise<AzionApplicationResponse<AzionRule>>} A promise that resolves with the updated rule data or an error.
  *
  * @example
- * const result = await updateRule({
+ * const { error, data } = await updateRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   ruleId: 456,
  *   data: { name: 'Updated Rule Name', behaviors: [...] },
  *   options: { debug: true }
  * });
- * if (result.data) {
- *   console.log('Rule updated:', result.data);
+ * if (error) {
+ *   console.error('Error:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Rule updated:', data);
  * }
  */
 export const updateRuleWrapper = ({
@@ -173,16 +173,16 @@ export const updateRuleWrapper = ({
  * @returns {Promise<AzionApplicationResponse<void>>} A promise that resolves when the rule is deleted or rejects with an error.
  *
  * @example
- * const result = await deleteRule({
+ * const { error, data } = await deleteRule({
  *   applicationId: 123,
  *   phase: 'request',
  *   ruleId: 456,
  *   options: { debug: true }
  * });
- * if (result.data !== undefined) {
- *   console.log('Rule deleted successfully');
+ * if (error) {
+ *   console.error('Error:', error);
  * } else {
- *   console.error('Error:', result.error);
+ *   console.log('Rule deleted successfully');
  * }
  */
 export const deleteRuleWrapper = ({
