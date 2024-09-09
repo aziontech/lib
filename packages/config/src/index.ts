@@ -9,7 +9,7 @@ import { AzionConfig } from './types';
  * @param {string} config.domain.name - The domain name.
  * @param {boolean} [config.domain.cnameAccessOnly] - Whether to restrict access only to CNAMEs.
  * @param {string[]} [config.domain.cnames] - List of CNAMEs for the domain.
- * @param {number} [config.domain.edgeApplicationId] - ID of the edge application.
+ * @param {number} [config.domain.Id] - ID of the edge application.
  * @param {number} [config.domain.edgeFirewallId] - ID of the edge firewall.
  * @param {string|number|null} [config.domain.digitalCertificateId] - ID of the digital certificate.
  * @param {Object} [config.domain.mtls] - Configuration for mTLS.
@@ -129,7 +129,7 @@ import { AzionConfig } from './types';
  *     name: 'example.com',
  *     cnameAccessOnly: false,
  *     cnames: ['www.example.com', 'cdn.example.com'],
- *     edgeApplicationId: 12345,
+ *     Id: 12345,
  *     edgeFirewallId: 67890,
  *     digitalCertificateId: null,
  *     mtls: {

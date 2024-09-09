@@ -58,7 +58,7 @@ const config = defineConfig({
     name: 'example.com',
     cnameAccessOnly: false,
     cnames: ['www.example.com', 'cdn.example.com'],
-    edgeApplicationId: 12345,
+    Id: 12345,
     edgeFirewallId: 67890,
     digitalCertificateId: null,
     mtls: {
@@ -146,7 +146,7 @@ Type definition for the domain configuration.
 - `name: string` - The domain name.
 - `cnameAccessOnly?: boolean` - Whether to restrict access only to CNAMEs.
 - `cnames?: string[]` - List of CNAMEs for the domain.
-- `edgeApplicationId?: number` - ID of the edge application.
+- `Id?: number` - ID of the edge application.
 - `edgeFirewallId?: number` - ID of the edge firewall.
 - `digitalCertificateId?: string | number | null` - ID of the digital certificate.
 - `mtls?: MTLSConfig` - Configuration for mTLS.
@@ -237,6 +237,7 @@ Type definition for the response rule configuration.
 - `match: string` - Match criteria for the rule.
 - `variable?: string` - Variable to be used in the match.
 - `behavior?: ResponseBehavior` - Behavior to apply when the rule matches.
+
   - `setCookie?: string | null` - Set a cookie.
   - `setHeaders?: string[]` - Set headers.
   - `deliver?: boolean | null` - Deliver the content.
@@ -253,6 +254,7 @@ Type definition for the response rule configuration.
   Type definition for the rule set.
 
   **Properties:**
+
   - `request: AzionRequestRule[]` - Ruleset for Request phase.
   - `response?: AzionResponseRule[]` - Ruleset for Response phase.
 
