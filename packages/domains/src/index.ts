@@ -218,7 +218,17 @@ const deleteDomainMethod = async (
  * Create a new domain
  * @param domain Domain to create
  * @param options Options to create the domain
- * @returns Domain created
+ * @returns Domain created with data or error
+ *
+ * @example
+ * const domain = { name: 'example.com', edgeApplicationId: 123 };
+ * const { data, error } = await createDomain(domain);
+ * if(data) {
+ *  console.log(data);
+ * } else {
+ * console.error(error);
+ *
+ *
  */
 const createDomainWrapper = async (
   domain: AzionCreateDomain,
@@ -231,7 +241,15 @@ const createDomainWrapper = async (
  * List domains
  * @param options Options to list the domains
  * @param queryParams Query parameters to list the domains
- * @returns List of domains
+ * @returns List of domains with data or error
+ *
+ * @example
+ * const { data, error } = await getDomains();
+ * if(data) {
+ * console.log(data.results);
+ * } else {
+ * console.error(error);
+ * }
  */
 const getDomainsWrapper = async (
   options?: AzionClientOptions,
@@ -244,7 +262,15 @@ const getDomainsWrapper = async (
  * Get a domain by ID
  * @param domainId Domain ID
  * @param options Options to get the domain
- * @returns Domain
+ * @returns Domain with data or error
+ *
+ * @example
+ * const { data, error } = await getDomain(123);
+ * if(data) {
+ * console.log(data);
+ * } else {
+ * console.error(error);
+ *
  */
 const getDomainWrapper = async (
   domainId: number,
@@ -258,7 +284,16 @@ const getDomainWrapper = async (
  * @param domainId Domain ID
  * @param domain Domain to update
  * @param options Options to update the domain
- * @returns Domain updated
+ * @returns Domain updated with data or error
+ *
+ * @example
+ * const domain = { name: 'example.com', edgeApplicationId: 123 };
+ * const { data, error } = await updateDomain(123, domain);
+ * if(data) {
+ * console.log(data);
+ * } else {
+ * console.error(error);
+ * }
  */
 const updateDomainWrapper = async (
   domainId: number,
@@ -272,7 +307,15 @@ const updateDomainWrapper = async (
  * Delete a domain
  * @param domainId Domain ID
  * @param options Options to delete the domain
- * @returns Domain deleted
+ * @returns Domain deleted with data or error
+ *
+ * @example
+ * const { data, error } = await deleteDomain(123);
+ * if(data) {
+ * console.log(data.id);
+ * } else {
+ * console.error(error);
+ *
  */
 const deleteDomainWrapper = async (
   domainId: number,
@@ -304,12 +347,16 @@ const createClient: AzionDomainsCreateClient = (
      * Create a new domain
      * @param domain Domain to create
      * @param options Options to create the domain
-     * @returns Domain created
+     * @returns Domain created with data or error
      *
      * @example
      * const domain = { name: 'example.com', edgeApplicationId: 123 };
-     * const result = await client.createDomain(domain);
-     * console.log(result);
+     * const { data, error } = await client.createDomain(domain);
+     * if(data) {
+     * console.log(data);
+     * } else {
+     * console.error(error);
+     * }
      */
     createDomain: (domain: AzionCreateDomain, options?: AzionClientOptions) =>
       createDomainMethod(tokenValue, domain, { ...options, debug: debugValue }),
@@ -318,11 +365,15 @@ const createClient: AzionDomainsCreateClient = (
      * List domains
      * @param options Options to list the domains
      * @param queryParams Query parameters to list the domains
-     * @returns List of domains
+     * @returns List of domains with data or error
      *
      * @example
-     * const results = await client.getDomains();
-     * console.log(results);
+     * const { data, error } = await client.getDomains();
+     * if(data) {
+     * console.log(data.results);
+     * } else {
+     * console.error(error);
+     * }
      */
     getDomains: (
       options?: AzionClientOptions,
@@ -333,11 +384,15 @@ const createClient: AzionDomainsCreateClient = (
      * Get a domain by ID
      * @param domainId Domain ID
      * @param options Options to get the domain
-     * @returns Domain
+     * @returns Domain created with data or error
      *
      * @example
-     * const result = await client.getDomain(123);
-     * console.log(result);
+     * const { data, error } = await client.getDomain(123);
+     * if(data) {
+     * console.log(data);
+     * } else {
+     * console.error(error);
+     * }
      */
     getDomain: (domainId: number, options?: AzionClientOptions) =>
       getDomainMethod(tokenValue, domainId, { ...options, debug: debugValue }),
@@ -347,12 +402,16 @@ const createClient: AzionDomainsCreateClient = (
      * @param domainId Domain ID
      * @param domain Domain to update
      * @param options Options to update the domain
-     * @returns Domain updated
+     * @returns Domain updated with data or error
      *
      * @example
      * const domain = { name: 'example.com', edgeApplicationId: 123 };
-     * const result = await client.updateDomain(123, domain);
-     * console.log(result);
+     * const { data, error } = await client.updateDomain(123, domain);
+     * if(data) {
+     * console.log(data);
+     * } else {
+     * console.error(error);
+     * }
      */
     updateDomain: (domainId: number, domain: AzionUpdateDomain, options?: AzionClientOptions) =>
       updateDomainMethod(tokenValue, domainId, domain, { ...options, debug: debugValue }),
@@ -361,10 +420,14 @@ const createClient: AzionDomainsCreateClient = (
      * Delete a domain
      * @param domainId Domain ID
      * @param options Options to delete the domain
-     * @returns Domain deleted
+     * @returns Domain deleted with data or error
      * @example
-     * const result = await client.deleteDomain(123);
-     * console.log(result);
+     * const { data, error } = await client.deleteDomain(123);
+     * if(data) {
+     * console.log(data.id);
+     * } else {
+     * console.error(error);
+     * }
      */
     deleteDomain: (domainId: number, options?: AzionClientOptions) =>
       deleteDomainMethod(tokenValue, domainId, { ...options, debug: debugValue }),
