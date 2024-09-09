@@ -23,15 +23,15 @@ export const mapApiError = (
     if (errorKey && typeof error[errorKey as keyof typeof error] === 'string') {
       errorMessage = error[errorKey as keyof typeof error] as string;
     }
-    // Caso 2: { detail: 'message' }
+    // Case 2: { detail: 'message' }
     else if ('detail' in error && typeof error.detail === 'string') {
       errorMessage = error.detail;
     }
-    // Caso 3: { message: 'message' }
+    // Case 2: { message: 'message' }
     else if ('message' in error && typeof error.message === 'string') {
       errorMessage = error.message;
     }
-    // Caso 4: { error: 'message' } ou { error: { message: 'message' } }
+    // Case 4: { error: 'message' } or { error: { message: 'message' } }
     else if ('error' in error) {
       if (typeof error.error === 'string') {
         errorMessage = error.error;
@@ -48,7 +48,7 @@ export const mapApiError = (
     errorMessage = error;
   }
 
-  // Usa defaultMessage como fallback final se nenhuma mensagem de erro for encontrada
+  // Use default Message as final fallback if no error message is found
   return {
     message: errorMessage || defaultMessage,
     operation,
