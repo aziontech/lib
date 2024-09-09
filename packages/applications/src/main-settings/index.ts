@@ -934,13 +934,15 @@ export const getApplicationWrapper = ({
  *
  * @async
  * @function
- * @param {Object} params - The parameters for retrieving applications.
+ * @param {Object} [params] - The parameters for retrieving applications.
  * @param {ApiListApplicationsParams} [params.params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [params.options] - Optional client options.
  * @returns {Promise<AzionApplicationCollectionResponse<AzionApplication>>} A promise that resolves with a collection of applications or an error.
  *
  * @example
- * const result = await getApplications({
+ * const result = await getApplicationsWrapper();
+ * // ou
+ * const result = await getApplicationsWrapper({
  *   params: { page: 1, page_size: 20 },
  *   options: { debug: true }
  * });
@@ -950,14 +952,11 @@ export const getApplicationWrapper = ({
  *   console.error('Error:', result.error);
  * }
  */
-export const getApplicationsWrapper = ({
-  params,
-  options,
-}: {
+export const getApplicationsWrapper = (params?: {
   params?: ApiListApplicationsParams;
   options?: AzionClientOptions;
 }): Promise<AzionApplicationCollectionResponse<AzionApplication>> =>
-  getApplicationsMethod(resolveToken(), params, options);
+  getApplicationsMethod(resolveToken(), params?.params, params?.options);
 
 /**
  * Updates an existing Azion Edge Application.
