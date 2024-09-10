@@ -1,3 +1,10 @@
+## [1.7.0-stage.11](https://github.com/aziontech/lib/compare/v1.7.0-stage.10...v1.7.0-stage.11) (2024-09-10)
+
+
+### Features
+
+* add package domains (#38) ([9a020c1](https://github.com/aziontech/lib/commit/9a020c14907f65009da97dc507fe901017452fe6))
+
 ## [1.7.0-stage.10](https://github.com/aziontech/lib/compare/v1.7.0-stage.9...v1.7.0-stage.10) (2024-09-09)
 
 
