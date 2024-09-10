@@ -1,5 +1,6 @@
 import createAzionApplicationClient, { AzionApplicationClient } from 'azion/applications';
 import { defineConfig } from 'azion/config';
+import createDomainsClient, { AzionDomainsClient } from 'azion/domains';
 import createPurgeClient, { AzionPurgeClient } from 'azion/purge';
 import createSqlClient, { AzionSQLClient } from 'azion/sql';
 import createStorageClient, { AzionStorageClient } from 'azion/storage';
@@ -42,6 +43,13 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
   const purgeClient: AzionPurgeClient = createPurgeClient({ token, options });
 
   /**
+   * Domains client with methods to interact with Azion Edge Domains.
+   * @type {AzionCreateClientDomains}
+   */
+  const domainsClient: AzionDomainsClient = createDomainsClient({ token, options });
+
+  /**
+   * Azion Client object containing Storage, SQL, and Purge clients.
    * Edge Application client with methods to interact with Azion Edge Applications.
    * @type {AzionApplicationClient}
    */
@@ -62,6 +70,7 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
     storage: storageClient,
     sql: sqlClient,
     purge: purgeClient,
+    domains: domainsClient,
     application: applicationClient,
   };
 

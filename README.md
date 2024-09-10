@@ -12,6 +12,7 @@ These libraries are designed to be versatile and can be used both within and out
   - [Storage](#storage)
   - [SQL](#sql)
   - [Purge](#purge)
+  - [Domains](#domains)
 - [Utilities](#utilities)
   - [Cookies](#cookies)
   - [Jwt](#jwt)
@@ -231,6 +232,39 @@ if (cacheKeyResult) {
 ```
 
 Read more in the [Purge README](./packages/purge/README.md).
+
+### Domains
+
+The Domains library provides methods to interact with Azion Edge Domains.
+
+#### Examples
+
+**JavaScript:**
+
+```javascript
+import { createClient } from 'azion/domains';
+
+const client = createClient({ token: 'your-token' });
+
+const { data: allDomains } = await client.getDomains();
+
+console.log(`Retrieved ${allDomains.count} domains`);
+```
+
+**TypeScript:**
+
+```typescript
+import { createClient } from 'azion/domains';
+import type { AzionDomainsClient, AzionDomainsResponse, AzionDomains } from 'azion/domains';
+
+const client: AzionDomainsClient = createClient({ token: 'your-token' });
+
+const { data: allDomains }: AzionDomainsResponse<AzionDomains> = await client.getDomains();
+
+console.log(`Retrieved ${allDomains.count} domains`);
+```
+
+Read more in the [Domains README](./packages/domains/README.md).
 
 ## Utilities
 

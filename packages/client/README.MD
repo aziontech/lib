@@ -13,6 +13,7 @@ Azion Client provides a unified interface to interact with various Azion service
     - [Storage Client](#storage-client)
     - [SQL Client](#sql-client)
     - [Purge Client](#purge-client)
+    - [Domains Client](#domains-client)
 - [API Reference](#api-reference)
   - [`createClient`](#createclient)
 - [Types](#types)
@@ -219,6 +220,65 @@ if (wildcardResult) {
 }
 ```
 
+#### Domains Client
+
+**JavaScript:**
+
+```javascript
+import { createClient } from 'azion';
+
+const client = createClient({ token: 'your-api-token', debug: true });
+
+const { data: newDomain } = await client.domains.createDomain('example.com', 'my-new-domain');
+
+if (newDomain) {
+  console.log(`Domain created with name: ${newDomain.name}`);
+}
+
+const { data: allDomains } = await client.domains.getDomains();
+
+if (allDomains) {
+  console.log(`Retrieved ${allDomains.count} domains`);
+}
+
+const { data: deletedDomain } = await client.domains.deleteDomain('example.com');
+
+if (deletedDomain) {
+  console.log(`Domain deleted with name: ${deletedDomain.name}`);
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { createClient } from 'azion';
+import { AzionClient, AzionDomainsResponse, AzionDomain, AzionDeletedDomain, AzionDomains } from 'azion/domains';
+
+const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
+
+const { data: newDomain }: AzionDomainsResponse<AzionDomain> = await client.domains.createDomain(
+  'example.com',
+  'my-new-domain',
+);
+
+if (newDomain) {
+  console.log(`Domain created with name: ${newDomain.name}`);
+}
+
+const { data: allDomains }: AzionDomainsResponse<AzionDomains> = await client.domains.getDomains();
+
+if (allDomains) {
+  console.log(`Retrieved ${allDomains.count} domains`);
+}
+
+const { data: deletedDomain }: AzionDomainsResponse<AzionDeletedDomain> =
+  await client.domains.deleteDomain('example.com');
+
+if (deletedDomain) {
+  console.log(`Domain deleted with name: ${deletedDomain.name}`);
+}
+```
+
 ## API Reference
 
 ### `createClient`
@@ -255,6 +315,7 @@ An object with methods to interact with Azion services.
 - `storage: StorageClient`
 - `sql: AzionSQLClient`
 - `purge: PurgeClient`
+- `domains: DomainsClient`
 
 ## Contributing
 

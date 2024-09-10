@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 
+import { AzionDomainsClient } from 'azion/domains';
 import { AzionApplicationClient } from '../../applications/src/types';
 import { AzionPurgeClient } from '../../purge/src/types';
 import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
@@ -101,6 +102,32 @@ export interface AzionClient {
    * const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
    */
   purge: AzionPurgeClient;
+
+  /* Domains client with methods to interact with Azion Edge Domains.
+   *
+   * @type {AzionDomainsClient}
+   *
+   * @example
+   * // Create a new domain
+   * const { data: newDomain } = await client.domains.createDomain('example.com');
+   *
+   * @example
+   * // Get all domains
+   * const { data, error } = await client.domains.getDomains();
+   *
+   * @example
+   * // Get a specific domain and perform operations
+   * const { data: domain, error } = await client.domains.getDomain('example.com');
+   * if (domain) {
+   *
+   *   // Update domain
+   *   const updatedDetails = await domain.updateDomain({ name: 'new-origin.example.com' });
+   *
+   *   // Delete a domain
+   *   const deletedDomain = await domain.deleteDomain();
+   * }
+   */
+  domains: AzionDomainsClient;
 
   /**
    * Edge Application client with methods to interact with Azion Edge Applications.

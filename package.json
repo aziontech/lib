@@ -135,6 +135,11 @@
       "require": "./packages/utils/dist/index.js",
       "import": "./packages/utils/dist/index.mjs",
       "types": "./packages/utils/dist/index.d.ts"
+    },
+    "./domains": {
+      "require": "./packages/domains/dist/index.js",
+      "import": "./packages/domains/dist/index.mjs",
+      "types": "./packages/domains/dist/index.d.ts"
     }
   },
   "typesVersions": {
@@ -171,6 +176,9 @@
       ],
       "utils": [
         "./packages/utils/dist/index.d.ts"
+      ],
+      "domains": [
+        "./packages/domains/dist/index.d.ts"
       ]
     }
   },
