@@ -371,7 +371,12 @@ describe('Domains Package', () => {
       };
       jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
 
-      const result = await updateDomain(170, { name: 'Overwritten Domain', active: false }, { debug: mockDebug });
+      const result = await updateDomain(
+        170,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { name: 'Overwritten Domain', active: false, edgeApplicationId: undefined } as any,
+        { debug: mockDebug },
+      );
 
       expect(result.error).toEqual({
         message: 'Edge Application ID is required',
