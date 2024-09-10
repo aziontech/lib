@@ -1,4 +1,4 @@
-import { createDomain, deleteDomain, getDomainById, getDomains, updateDomain } from './services/api';
+import { createDomain, deleteDomain, getDomainById, getDomains, updateDomain } from './services/api/index';
 import {
   AzionClientOptions,
   AzionCreateDomain,
@@ -10,7 +10,7 @@ import {
   AzionDomainsResponse,
   AzionUpdateDomain,
 } from './types';
-import { resolveDebug, resolveToken } from './utils';
+import { resolveDebug, resolveToken } from './utils/index';
 
 /**
  * Create a new domain

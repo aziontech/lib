@@ -1,4 +1,4 @@
-import { limitArraySize, resolveDebug, resolveToken } from '.';
+import { limitArraySize, resolveDebug, resolveToken } from './index';
 
 describe('Utils', () => {
   describe('resolveToken', () => {

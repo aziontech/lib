@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import createClient, { createDomain, deleteDomain, getDomain, getDomains, updateDomain } from '.';
-import * as services from './services/api';
+import createClient, { createDomain, deleteDomain, getDomain, getDomains, updateDomain } from './index';
+import * as services from './services/api/index';
 
 describe('Domains Package', () => {
   const mockToken = 'mock-token';
