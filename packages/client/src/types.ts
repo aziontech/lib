@@ -1,10 +1,21 @@
 /* eslint-disable no-unused-vars */
 
 import { AzionDomainsClient } from 'azion/domains';
+import { AzionApplicationClient } from '../../applications/src/types';
 import { AzionPurgeClient } from '../../purge/src/types';
 import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
 import { AzionStorageClient } from '../../storage/src/types';
 
+/**
+ * Azion Client interface containing all available service clients.
+ *
+ * @interface AzionClient
+ *
+ * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
+ * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
+ * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
+ * @property {AzionApplicationClient}  - Client for Azion Edge Application operations.
+ */
 export interface AzionClient {
   /**
    * Storage client with methods to interact with Azion Edge Storage.
@@ -89,19 +100,10 @@ export interface AzionClient {
    * @example
    * // Purge a URL
    * const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
-   *
-   * @example
-   * // Purge a cache key
-   * const cacheKeyResult = await client.purge.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
-   *
-   * @example
-   * // Purge using a wildcard
-   * const wildcardResult = await client.purge.purgeWildCard(['http://example.com/*']);
    */
   purge: AzionPurgeClient;
 
-  /**
-   * Domains client with methods to interact with Azion Edge Domains.
+  /* Domains client with methods to interact with Azion Edge Domains.
    *
    * @type {AzionDomainsClient}
    *
@@ -126,6 +128,74 @@ export interface AzionClient {
    * }
    */
   domains: AzionDomainsClient;
+
+  /**
+   * Edge Application client with methods to interact with Azion Edge Applications.
+   *
+   * @type {AzionApplicationClient}
+   *
+   * @example
+   * // Create a new Edge Application
+   * const { data: newApp } = await client.application.createApplication({
+   *   data: {
+   *     name: 'My New App',
+   *     delivery_protocol: 'http',
+   *     origin_type: 'single_origin',
+   *     address: 'example.com'
+   *   }
+   * });
+   *
+   * @example
+   * // Get all Edge Applications
+   * const { data: allApps } = await client.application.getApplications({
+   *   params: { page: 1, page_size: 20, sort: 'name', order_by: 'asc' }
+   * });
+   *
+   * @example
+   * // Get a specific Edge Application and perform operations
+   * const { data: app } = await client.application.getApplication({ applicationId: 123 });
+   * if (app) {
+   *   // Create a new cache setting
+   *   const { data: newCacheSetting } = await app.cache.createCacheSetting({
+   *     data: { name: 'My Cache Setting', browser_cache_settings: 'override' }
+   *   });
+   *
+   *   // Create a new origin
+   *   const { data: newOrigin } = await app.origins.createOrigin({
+   *     data: { name: 'My Origin', addresses: [{ address: 'api.example.com' }] }
+   *   });
+   *
+   *   // Create a new rule
+   *   const { data: newRule } = await app.rules.request.createRule({
+   *     data: {
+   *       name: 'My Rule',
+   *       behaviors: [{ name: 'set_origin', target: newOrigin.id }],
+   *       criteria: [{ condition: 'starts_with', variable: '${uri}', input: '/api' }]
+   *     }
+   *   });
+   *
+   *   // Create a new function instance
+   *   const { data: newFunction } = await app.functions.createFunctionInstance({
+   *     data: {
+   *       name: 'My Function Instance',
+   *       edge_function_id: 1234,
+   *       args: {}
+   *     }
+   *   });
+   * }
+   *
+   * @example
+   * // Update an Edge Application
+   * const { data: updatedApp } = await client.application.putApplication({
+   *   applicationId: 123,
+   *   data: { name: 'Updated App Name', delivery_protocol: 'https' }
+   * });
+   *
+   * @example
+   * // Delete an Edge Application
+   * const { data: deletedApp } = await client.application.deleteApplication({ applicationId: 123 });
+   */
+  application: AzionApplicationClient;
 }
 
 /**

@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.7.0-stage.9",
+  "version": "1.7.0-stage.10",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
     "azion": "./bin/azion"
@@ -81,6 +81,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./applications": {
+      "require": "./packages/applications/dist/index.js",
+      "import": "./packages/applications/dist/index.mjs",
+      "types": "./packages/applications/dist/index.d.ts"
+    },
     "./types": {
       "require": "./packages/types/dist/index.js",
       "import": "./packages/types/dist/index.mjs",
@@ -139,6 +144,9 @@
   },
   "typesVersions": {
     "*": {
+      "application": [
+        "./packages/application/dist/index.d.ts"
+      ],
       "client": [
         "./packages/client/dist/index.d.ts"
       ],
