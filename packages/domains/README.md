@@ -28,7 +28,7 @@ Azion Edge Domains provides a simple interface to interact with the Azion Edge D
   - [`ClientConfig`](#clientconfig)
   - [`AzionDomainsResponse<T>`](#aziondomainsresponset)
   - [`AzionDomain`](#aziondomain)
-  - [`AzionDomainCollection`](#aziondomains)
+  - [`AzionDomainCollection`](#aziondomaincollection)
   - [`AzionDeleteDomain`](#aziondeletedomain)
 - [Contributing](#contributing)
 
