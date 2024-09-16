@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { generateManifest, validateConfig } from '.';
+import { processConfig, validateConfig } from '.';
 import { AzionConfig } from '../types';
 
 describe('generate', () => {
@@ -32,9 +32,9 @@ describe('generate', () => {
     });
   });
 
-  describe('generateManifest', () => {
+  describe('processConfig', () => {
     describe('Cache and Rules', () => {
-      it('should generate a manifest from the configuration object', () => {
+      it('should process config from the configuration object', () => {
         const config = {
           build: {
             preset: {
@@ -46,7 +46,7 @@ describe('generate', () => {
             },
           },
         };
-        expect(generateManifest(config)).toEqual(
+        expect(processConfig(config)).toEqual(
           expect.objectContaining({
             build: {
               preset: {
@@ -75,7 +75,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
         );
       });
@@ -99,7 +99,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result).toHaveProperty('cache');
         expect(result.cache).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'directCache' })]));
       });
@@ -119,7 +119,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -144,7 +144,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             browser_cache_settings_maximum_ttl: 6,
@@ -170,7 +170,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache).toEqual([]);
       });
 
@@ -200,7 +200,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -236,7 +236,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             browser_cache_settings_maximum_ttl: 11,
@@ -256,7 +256,7 @@ describe('generate', () => {
           ],
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
         );
       });
@@ -276,7 +276,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         // Checks if the forward_cookies behavior is included and set to true when forwardCookies is true
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
@@ -308,7 +308,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         // Checks if the forward_cookies behavior is not included when forwardCookies is false or not specified
         expect(result.rules[0].behaviors).not.toEqual(
           expect.arrayContaining([
@@ -351,7 +351,7 @@ describe('generate', () => {
             ],
           },
         };
-        const resultWithAllFields = generateManifest(azionConfigWithAllFields);
+        const resultWithAllFields = processConfig(azionConfigWithAllFields);
         expect(resultWithAllFields.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -380,7 +380,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfigWithTypeMissing)).toThrow(
+        expect(() => processConfig(azionConfigWithTypeMissing)).toThrow(
           "The 'name or type' field is required in the 'setOrigin' object.",
         );
       });
@@ -395,7 +395,7 @@ describe('generate', () => {
           ],
         };
 
-        expect(() => generateManifest(azionConfigWithUndefinedProperty)).toThrow(
+        expect(() => processConfig(azionConfigWithUndefinedProperty)).toThrow(
           'No additional properties are allowed in cache item objects.',
         );
       });
@@ -421,7 +421,7 @@ describe('generate', () => {
           target: '.edge/worker.js',
         };
 
-        const resultPathOnly = generateManifest(azionConfigWithRunFunctionOnlyPath);
+        const resultPathOnly = processConfig(azionConfigWithRunFunctionOnlyPath);
         expect(resultPathOnly.rules[0].behaviors).toEqual(
           expect.arrayContaining([expect.objectContaining(expectedBehaviorPathOnly)]),
         );
@@ -442,7 +442,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -467,7 +467,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'deliver' field must be a boolean or null.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'deliver' field must be a boolean or null.");
       });
 
       it('should throw an error if setCookie is not a string', () => {
@@ -485,7 +485,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'setCookie' field must be a string or null.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'setCookie' field must be a string or null.");
       });
 
       it('should throw an error if setHeaders is not an array of strings', () => {
@@ -503,7 +503,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'setHeaders' field must be an array of strings.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'setHeaders' field must be an array of strings.");
       });
 
       it('should correctly add deliver behavior when deliver is true', () => {
@@ -521,7 +521,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -546,7 +546,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -572,7 +572,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -584,7 +584,7 @@ describe('generate', () => {
       });
     });
     describe('Origin', () => {
-      it('should process the manifest config when the origin is single_origin and all fields', () => {
+      it('should process the config config when the origin is single_origin and all fields', () => {
         const azionConfig: AzionConfig = {
           origin: [
             {
@@ -610,7 +610,7 @@ describe('generate', () => {
             },
           ],
         };
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.origin).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -637,7 +637,7 @@ describe('generate', () => {
         );
       });
 
-      it('should process the manifest config when the origin is provided id and key', () => {
+      it('should process the config config when the origin is provided id and key', () => {
         const azionConfig: any = {
           origin: [
             {
@@ -653,7 +653,7 @@ describe('generate', () => {
             },
           ],
         };
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.origin).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -680,11 +680,11 @@ describe('generate', () => {
             },
           ],
         };
-        expect(() => generateManifest(azionConfig)).toThrow('When origin type is single_origin, addresses is required');
+        expect(() => processConfig(azionConfig)).toThrow('When origin type is single_origin, addresses is required');
       });
 
-      // should process the manifest config when the origin is single_origin and addresses is array of strings
-      it('should process the manifest config when the origin is single_origin and addresses is array of strings', () => {
+      // should process the config config when the origin is single_origin and addresses is array of strings
+      it('should process the config config when the origin is single_origin and addresses is array of strings', () => {
         const azionConfig: any = {
           origin: [
             {
@@ -694,7 +694,7 @@ describe('generate', () => {
             },
           ],
         };
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.origin).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -732,12 +732,12 @@ describe('generate', () => {
             },
           ],
         };
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           'When origin type is single_origin, weight must be between 0 and 10',
         );
       });
 
-      it('should process the manifest config when the origin is object_storage and all fields', () => {
+      it('should process the config config when the origin is object_storage and all fields', () => {
         const azionConfig: any = {
           origin: [
             {
@@ -748,7 +748,7 @@ describe('generate', () => {
             },
           ],
         };
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.origin).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -761,7 +761,7 @@ describe('generate', () => {
         );
       });
 
-      it('should process the manifest config when the origin name and type are the same as the rules setOrigin name and type', () => {
+      it('should process the config config when the origin name and type are the same as the rules setOrigin name and type', () => {
         const azionConfig: any = {
           origin: [
             {
@@ -787,8 +787,8 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).not.toThrow();
-        const result = generateManifest(azionConfig);
+        expect(() => processConfig(azionConfig)).not.toThrow();
+        const result = processConfig(azionConfig);
         expect(result.origin).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -827,7 +827,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "Rule setOrigin name 'another origin storage' not found in the origin settings",
         );
       });
@@ -858,7 +858,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "Rule setOrigin name 'my origin storage' not found in the origin settings",
         );
       });
@@ -881,7 +881,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "Rule setOrigin name 'my origin storage' not found in the origin settings",
         );
       });
@@ -912,12 +912,12 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'type' field must be a string and one of 'single_origin', 'object_storage', 'load_balancer' or 'live_ingest'.",
         );
       });
 
-      it('should correctly process the manifest config when the origin is single_origin', () => {
+      it('should correctly process the config config when the origin is single_origin', () => {
         const azionConfig: any = {
           origin: [
             {
@@ -946,8 +946,8 @@ describe('generate', () => {
             ],
           },
         };
-        expect(() => generateManifest(azionConfig)).not.toThrow();
-        const result = generateManifest(azionConfig);
+        expect(() => processConfig(azionConfig)).not.toThrow();
+        const result = processConfig(azionConfig);
         expect(result.origin).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -983,7 +983,7 @@ describe('generate', () => {
             },
           ],
         };
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           'Origin path cannot be "/". Please use empty string or "/path"',
         );
       });
@@ -1004,7 +1004,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1030,7 +1030,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1056,7 +1056,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1086,7 +1086,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1117,7 +1117,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1143,7 +1143,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1169,7 +1169,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1199,7 +1199,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1238,7 +1238,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules).toEqual([
           expect.objectContaining({
             name: 'Example Rule',
@@ -1272,7 +1272,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0]).toEqual(
           expect.objectContaining({
             name: 'First Request Rule',
@@ -1327,7 +1327,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual([
           expect.objectContaining({
             name: 'add_request_header',
@@ -1360,7 +1360,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfigWithoutOrigin)).toThrow(
+        expect(() => processConfig(azionConfigWithoutOrigin)).toThrow(
           "Rule setOrigin name 'undefined origin' not found in the origin settings",
         );
       });
@@ -1387,7 +1387,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1416,7 +1416,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1456,7 +1456,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1487,7 +1487,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.rules[0].behaviors).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -1516,7 +1516,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_query_string: 'ignore',
@@ -1541,7 +1541,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_query_string: 'whitelist',
@@ -1565,7 +1565,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'list' field is required when 'option' is 'whitelist' or 'blacklist'.",
         );
       });
@@ -1586,7 +1586,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_query_string: 'blacklist',
@@ -1610,7 +1610,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_query_string: 'all',
@@ -1633,7 +1633,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_cookie: 'ignore',
@@ -1658,7 +1658,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_cookie: 'whitelist',
@@ -1682,7 +1682,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'list' field is required when 'option' is 'whitelist' or 'blacklist'.",
         );
       });
@@ -1703,7 +1703,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_cookie: 'blacklist',
@@ -1727,7 +1727,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.cache[0]).toEqual(
           expect.objectContaining({
             cache_by_cookie: 'all',
@@ -1737,17 +1737,17 @@ describe('generate', () => {
       });
     });
     describe('Domain', () => {
-      it('should throw process the manifest config when the domain name is not provided', () => {
+      it('should throw process the config config when the domain name is not provided', () => {
         const azionConfig: any = {
           domain: {
             cnames: ['www.example.com'],
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'name' field is required in the domain object.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'name' field is required in the domain object.");
       });
 
-      it('should correctly process the manifest config when the domain cnameAccessOnly undefined', () => {
+      it('should correctly process the config config when the domain cnameAccessOnly undefined', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1755,7 +1755,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1765,7 +1765,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain cnameAccessOnly is true', () => {
+      it('should correctly process the config config when the domain cnameAccessOnly is true', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1774,7 +1774,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1784,7 +1784,7 @@ describe('generate', () => {
         );
       });
 
-      it('should throw process the manifest config when the domain cnames is not an array', () => {
+      it('should throw process the config config when the domain cnames is not an array', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1792,10 +1792,10 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'cnames' field must be an array of strings.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'cnames' field must be an array of strings.");
       });
 
-      it('should throw process the manifest config when the domain digitalCertificateId different from lets_encrypt', () => {
+      it('should throw process the config config when the domain digitalCertificateId different from lets_encrypt', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1803,12 +1803,12 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "Domain mydomain has an invalid digital certificate ID: mycert. Only 'lets_encrypt' or null is supported.",
         );
       });
 
-      it('should correctly process the manifest config when the domain digitalCertificateId is null', () => {
+      it('should correctly process the config config when the domain digitalCertificateId is null', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1816,7 +1816,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1825,7 +1825,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain digitalCertificateId is lets_encrypt', () => {
+      it('should correctly process the config config when the domain digitalCertificateId is lets_encrypt', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1833,7 +1833,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1842,14 +1842,14 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain digitalCertificateId is number', () => {
+      it('should correctly process the config config when the domain digitalCertificateId is number', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
             digitalCertificateId: 12345,
           },
         };
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1858,14 +1858,14 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain digitalCertificateId is not provided', () => {
+      it('should correctly process the config config when the domain digitalCertificateId is not provided', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1874,13 +1874,13 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain mtls is not provided', () => {
+      it('should correctly process the config config when the domain mtls is not provided', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
           },
         };
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1889,7 +1889,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain mtls is active and verification equal enforce', () => {
+      it('should correctly process the config config when the domain mtls is active and verification equal enforce', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1900,7 +1900,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1911,7 +1911,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain mtls is active and verification equal permissive', () => {
+      it('should correctly process the config config when the domain mtls is active and verification equal permissive', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1922,7 +1922,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1943,7 +1943,7 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'verification and trustedCaCertificateId' fields are required in the mtls object.",
         );
       });
@@ -1958,12 +1958,12 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'verification and trustedCaCertificateId' fields are required in the mtls object.",
         );
       });
 
-      it('should correctly process the manifest config when the domain mtls and crlList is present', () => {
+      it('should correctly process the config config when the domain mtls and crlList is present', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1975,7 +1975,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -1987,7 +1987,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain edgeApplicationId is provided', () => {
+      it('should correctly process the config config when the domain edgeApplicationId is provided', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -1995,7 +1995,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -2012,10 +2012,10 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'edgeApplicationId' field must be a number.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'edgeApplicationId' field must be a number.");
       });
 
-      it('should correctly process the manifest config when the domain edgeApplicationId is not provided', () => {
+      it('should correctly process the config config when the domain edgeApplicationId is not provided', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -2023,7 +2023,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -2032,7 +2032,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the domain edgeFirewallId is provided', () => {
+      it('should correctly process the config config when the domain edgeFirewallId is provided', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
@@ -2040,7 +2040,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -2057,17 +2057,17 @@ describe('generate', () => {
           },
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'edgeFirewallId' field must be a number.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'edgeFirewallId' field must be a number.");
       });
 
-      it('should correctly process the manifest config when the domain edgeFirewallId is not provided', () => {
+      it('should correctly process the config config when the domain edgeFirewallId is not provided', () => {
         const azionConfig: any = {
           domain: {
             name: 'mydomain',
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.domain).toEqual(
           expect.objectContaining({
             name: 'mydomain',
@@ -2077,7 +2077,7 @@ describe('generate', () => {
       });
     });
     describe('Purge', () => {
-      it('should correctly process the manifest config when the purge is type url', () => {
+      it('should correctly process the config config when the purge is type url', () => {
         const azionConfig: any = {
           purge: [
             {
@@ -2087,7 +2087,7 @@ describe('generate', () => {
           ],
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.purge).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -2099,7 +2099,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the purge is type url and method is provided', () => {
+      it('should correctly process the config config when the purge is type url and method is provided', () => {
         const azionConfig: any = {
           purge: [
             {
@@ -2110,7 +2110,7 @@ describe('generate', () => {
           ],
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.purge).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -2133,7 +2133,7 @@ describe('generate', () => {
           ],
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'method' field must be either 'delete'. Default is 'delete'.",
         );
       });
@@ -2148,12 +2148,12 @@ describe('generate', () => {
           ],
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'type' field must be either 'url', 'cachekey' or 'wildcard'.",
         );
       });
 
-      it('should correctly process the manifest config when the purge is type cachekey', () => {
+      it('should correctly process the config config when the purge is type cachekey', () => {
         const azionConfig: any = {
           purge: [
             {
@@ -2163,7 +2163,7 @@ describe('generate', () => {
           ],
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.purge).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -2175,7 +2175,7 @@ describe('generate', () => {
         );
       });
 
-      it('should correctly process the manifest config when the purge is type cachekey and layer is provided', () => {
+      it('should correctly process the config config when the purge is type cachekey and layer is provided', () => {
         const azionConfig: any = {
           purge: [
             {
@@ -2186,7 +2186,7 @@ describe('generate', () => {
           ],
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.purge).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -2210,12 +2210,12 @@ describe('generate', () => {
           ],
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow(
+        expect(() => processConfig(azionConfig)).toThrow(
           "The 'layer' field must be either 'edge_caching' or 'l2_caching'. Default is 'edge_caching'.",
         );
       });
 
-      it('should correctly process the manifest config when the purge is type wildcard', () => {
+      it('should correctly process the config config when the purge is type wildcard', () => {
         const azionConfig: AzionConfig = {
           purge: [
             {
@@ -2225,7 +2225,7 @@ describe('generate', () => {
           ],
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.purge).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -2247,11 +2247,11 @@ describe('generate', () => {
           ],
         };
 
-        expect(() => generateManifest(azionConfig)).toThrow("The 'urls' field must be an array of strings.");
+        expect(() => processConfig(azionConfig)).toThrow("The 'urls' field must be an array of strings.");
       });
     });
     describe('Build', () => {
-      it('should correctly process the manifest config when the build is type build', () => {
+      it('should correctly process the config config when the build is type build', () => {
         const azionConfig: AzionConfig = {
           build: {
             builder: 'esbuild',
@@ -2261,7 +2261,7 @@ describe('generate', () => {
           },
         };
 
-        const result = generateManifest(azionConfig);
+        const result = processConfig(azionConfig);
         expect(result.build).toEqual(
           expect.objectContaining({
             builder: 'esbuild',
@@ -2270,15 +2270,6 @@ describe('generate', () => {
             },
           }),
         );
-      });
-
-      it('should throw an error when the build preset not provided', () => {
-        const azionConfig: any = {
-          build: {
-            builder: 'esbuild',
-          },
-        };
-        expect(() => generateManifest(azionConfig)).toThrow("The 'preset' field is required in the 'build' object.");
       });
     });
   });

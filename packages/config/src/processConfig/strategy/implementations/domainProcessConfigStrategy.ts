@@ -1,12 +1,12 @@
 import { AzionConfig } from '../../../types';
-import ManifestStrategy from '../manifestStrategy';
+import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * DomainManisfestStrategy
- * @class DomainManisfestStrategy
- * @description This class is implementation of the Domain Manifest Strategy.
+ * DomainProcessConfigStrategy
+ * @class DomainProcessConfigStrategy
+ * @description This class is implementation of the Domain ProcessConfig Strategy.
  */
-class DomainManisfestStrategy extends ManifestStrategy {
+class DomainProcessConfigStrategy extends ProcessConfigStrategy {
   generate(config: AzionConfig) {
     const domain = config?.domain;
     if (!domain) {
@@ -54,4 +54,4 @@ class DomainManisfestStrategy extends ManifestStrategy {
   }
 }
 
-export default DomainManisfestStrategy;
+export default DomainProcessConfigStrategy;

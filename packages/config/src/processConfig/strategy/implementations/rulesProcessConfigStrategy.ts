@@ -1,13 +1,13 @@
 import { AzionConfig } from '../../../types';
 import { requestBehaviors, responseBehaviors } from '../../helpers/behaviors';
-import ManifestStrategy from '../manifestStrategy';
+import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * RulesManifestStrategy
- * @class RulesManifestStrategy
- * @description This class is implementation of the Rules Manifest Strategy.
+ * RulesProcessConfigStrategy
+ * @class RulesProcessConfigStrategy
+ * @description This class is implementation of the Rules ProcessConfig Strategy.
  */
-class RulesManifestStrategy extends ManifestStrategy {
+class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   /**
    * Adds behaviors to the CDN rule.
    * @param cdnRule - The CDN rule.
@@ -94,4 +94,4 @@ class RulesManifestStrategy extends ManifestStrategy {
   }
 }
 
-export default RulesManifestStrategy;
+export default RulesProcessConfigStrategy;

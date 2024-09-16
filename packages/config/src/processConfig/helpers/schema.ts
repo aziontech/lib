@@ -63,10 +63,8 @@ const azionConfigSchema = {
         },
       },
       additionalProperties: false,
-      required: ['preset'],
       errorMessage: {
         additionalProperties: "No additional properties are allowed in the 'build' object.",
-        required: "The 'preset' field is required in the 'build' object.",
       },
     },
     origin: {

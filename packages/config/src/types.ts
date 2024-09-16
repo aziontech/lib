@@ -270,7 +270,7 @@ export type AzionBuild = {
   /** Entry file for the build */
   entry?: string;
   /** Preset configuration e.g next */
-  preset: {
+  preset?: {
     name: string;
   };
   /** MemoryFS configuration */

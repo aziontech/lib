@@ -1,12 +1,12 @@
 import { AzionConfig } from '../../../types';
-import ManifestStrategy from '../manifestStrategy';
+import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * PurgeManifestStrategy
- * @class PurgeManifestStrategy
- * @description This class is implementation of the Purge Manifest Strategy.
+ * PurgeProcessConfigStrategy
+ * @class PurgeProcessConfigStrategy
+ * @description This class is implementation of the Purge ProcessConfig Strategy.
  */
-class PurgeManifestStrategy extends ManifestStrategy {
+class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
   generate(config: AzionConfig) {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const payload: any[] = [];
@@ -41,4 +41,4 @@ class PurgeManifestStrategy extends ManifestStrategy {
   }
 }
 
-export default PurgeManifestStrategy;
+export default PurgeProcessConfigStrategy;

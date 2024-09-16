@@ -1,4 +1,4 @@
-import { generateManifest, validateConfig } from './generate/index';
+import { processConfig, validateConfig } from './processConfig/index';
 import { AzionConfig } from './types';
 
 /**
@@ -211,6 +211,6 @@ function defineConfig(config: AzionConfig): AzionConfig {
   return config;
 }
 
-export { defineConfig, generateManifest };
+export { defineConfig, processConfig };
 
 export type * from './types';

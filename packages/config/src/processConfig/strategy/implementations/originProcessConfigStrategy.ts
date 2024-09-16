@@ -1,12 +1,12 @@
 import { AzionConfig, AzionOrigin } from '../../../types';
-import ManifestStrategy from '../manifestStrategy';
+import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * OriginManifestStrategy
- * @class OriginManifestStrategy
- * @description This class is implementation of the Origin Manifest Strategy.
+ * OriginProcessConfigStrategy
+ * @class OriginProcessConfigStrategy
+ * @description This class is implementation of the Origin ProcessConfig Strategy.
  */
-class OriginManifestStrategy extends ManifestStrategy {
+class OriginProcessConfigStrategy extends ProcessConfigStrategy {
   generate(config: AzionConfig) {
     const payload: AzionOrigin[] = [];
     if (!Array.isArray(config?.origin) || config?.origin.length === 0) {
@@ -75,4 +75,4 @@ class OriginManifestStrategy extends ManifestStrategy {
   }
 }
 
-export default OriginManifestStrategy;
+export default OriginProcessConfigStrategy;

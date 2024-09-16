@@ -1,13 +1,13 @@
 import { evaluate } from 'mathjs';
 import { AzionConfig } from '../../../types';
-import ManifestStrategy from '../manifestStrategy';
+import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * CacheManifestStrategy
- * @class CacheManifestStrategy
- * @description This class is implementation of the Cache Manifest Strategy.
+ * CacheProcessConfigStrategy
+ * @class CacheProcessConfigStrategy
+ * @description This class is implementation of the Cache ProcessConfig Strategy.
  */
-class CacheManifestStrategy extends ManifestStrategy {
+class CacheProcessConfigStrategy extends ProcessConfigStrategy {
   generate(config: AzionConfig) {
     // Helper function to safely evaluate mathematical expressions
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,4 +67,4 @@ class CacheManifestStrategy extends ManifestStrategy {
   }
 }
 
-export default CacheManifestStrategy;
+export default CacheProcessConfigStrategy;

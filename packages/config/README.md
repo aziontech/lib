@@ -10,7 +10,7 @@ This module provides a function to configure and validate options for the Azion 
   - [Example Generate Manifest](#example-generate-manifest)
 - [API Reference](#api-reference)
   - [`defineConfig`](#defineconfig)
-  - [`generateManifest`](#generatemanifest)
+  - [`processConfig`](#generatemanifest)
 - [Types](#types)
   - [`AzionBuild`](#azionbuild)
   - [`AzionConfig`](#azionconfig)
@@ -121,21 +121,21 @@ const config = defineConfig({
 ### Example Generate Manifest
 
 ```javascript
-import { generateManifest } from 'azion';
+import { processConfig } from 'azion';
 
 const config = {...};
 
-const manifest = generateManifest(config);
+const manifest = processConfig(config);
 
 console.log(manifest);
 ```
 
 ```typescript
-import { AzionConfig, generateManifest } from 'azion';
+import { AzionConfig, processConfig } from 'azion';
 
 const config: AzionConfig = {...};
 
-const manifest = generateManifest(config);
+const manifest = processConfig(config);
 
 console.log(manifest);
 ```
@@ -150,7 +150,7 @@ Configures and validates the options for the Azion Edge Application.
 
 - `config: AzionConfig` - The configuration object for the Azion Edge Application.
 
-### `generateManifest`
+### `processConfig`
 
 Generates a manifest file for the Azion Edge Application.
 
@@ -178,7 +178,7 @@ Type definition for the build configuration.
 **Properties:**
 
 - `builder?: 'esbuild' | 'webpack'` - The builder to use.
-- `preset: { name: string; }` - The preset to use.
+- `preset?: { name: string; }` - The preset to use.
 - `entry?: string` - The entry file.
 - `polyfills?: boolean` - Whether to include polyfills.
 - `worker?: boolean` - Whether to build a owner worker.

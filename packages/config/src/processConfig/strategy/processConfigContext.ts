@@ -1,18 +1,18 @@
 import { AzionConfig } from '../../types';
-import ManifestStrategy from './manifestStrategy';
+import ProcessConfigStrategy from './processConfigStrategy';
 
 /**
- * ManifestContext
+ * ProcessConfigContext
  * @class
- * @description This class is responsible for generating the context of the manifest.
+ * @description This class is responsible for generating the context of the process config.
  */
-class ManifestContext {
-  strategies: { [key: string]: ManifestStrategy };
+class ProcessConfigContext {
+  strategies: { [key: string]: ProcessConfigStrategy };
   constructor() {
     this.strategies = {};
   }
 
-  setStrategy(type: string, strategy: ManifestStrategy): void {
+  setStrategy(type: string, strategy: ProcessConfigStrategy): void {
     this.strategies[type] = strategy;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,4 +24,4 @@ class ManifestContext {
   }
 }
 
-export default ManifestContext;
+export default ProcessConfigContext;
