@@ -1,4 +1,4 @@
-import createAzionApplicationClient, { AzionApplicationClient } from 'azion/applications';
+import createAzionApplicationClient, { AzionApplicationsClient } from 'azion/applications';
 import { defineConfig, generateManifest } from 'azion/config';
 import createDomainsClient, { AzionDomainsClient } from 'azion/domains';
 import createPurgeClient, { AzionPurgeClient } from 'azion/purge';
@@ -51,9 +51,9 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
   /**
    * Azion Client object containing Storage, SQL, and Purge clients.
    * Edge Application client with methods to interact with Azion Edge Applications.
-   * @type {AzionApplicationClient}
+   * @type {AzionApplicationsClient}
    */
-  const applicationClient: AzionApplicationClient = createAzionApplicationClient({ token, options });
+  const applicationClient: AzionApplicationsClient = createAzionApplicationClient({ token, options });
 
   /**
    * Azion Client object containing Storage, SQL, Purge, and Edge Application clients.
@@ -64,14 +64,15 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
    * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
    * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
    * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
-   * @property {AzionApplicationClient} application - Client for Azion Edge Application operations.
+   * @property {AzionDomainsClient} applications - Client for Azion Edge Domains operations.
+   * @property {AzionApplicationsClient} applications - Client for Azion Edge Application operations.
    */
   const client: AzionClient = {
     storage: storageClient,
     sql: sqlClient,
     purge: purgeClient,
     domains: domainsClient,
-    application: applicationClient,
+    applications: applicationClient,
   };
 
   return client;

@@ -28,7 +28,7 @@ Azion Edge Domains provides a simple interface to interact with the Azion Edge D
   - [`ClientConfig`](#clientconfig)
   - [`AzionDomainsResponse<T>`](#aziondomainsresponset)
   - [`AzionDomain`](#aziondomain)
-  - [`AzionDomains`](#aziondomains)
+  - [`AzionDomainCollection`](#aziondomaincollection)
   - [`AzionDeleteDomain`](#aziondeletedomain)
 - [Contributing](#contributing)
 
@@ -132,9 +132,9 @@ if (domains) {
 
 ```typescript
 import { getDomains } from 'azion/domains';
-import type { AzionDomains, AzionDomainsResponse } from 'azion/domains';
+import type { AzionDomainCollection, AzionDomainsResponse } from 'azion/domains';
 
-const { data: domains, error }: AzionDomainsResponse<AzionDomains> = await getDomains();
+const { data: domains, error }: AzionDomainsResponse<AzionDomainCollection> = await getDomains();
 
 if (domains) {
   console.log(`Found ${domains.count} domains`);
@@ -303,7 +303,7 @@ Lists all domains.
 
 **Returns:**
 
-- `Promise<AzionDomainsResponse<AzionDomains>>` - An array of domain objects or error failed.
+- `Promise<AzionDomainsResponse<AzionDomainCollection>>` - An array of domain objects or error failed.
 
 ### `getDomain`
 
@@ -390,7 +390,7 @@ Configuration options for the Azion Domains client.
 - `mtls.trustedCaCertificateId: number` - Trusted CA certificate ID.
 - `mtls.crlList: number[]` - List of CRL IDs.
 
-### `AzionDomains`
+### `AzionDomainCollection`
 
 - `state: 'pending' | 'executed' | 'failed'` - State of the domain list.
 - `pages: number` - Number of pages.

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { AzionDomainsClient } from 'azion/domains';
-import { AzionApplicationClient } from '../../applications/src/types';
+import { AzionApplicationsClient } from '../../applications/src/types';
 import { AzionPurgeClient } from '../../purge/src/types';
 import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
 import { AzionStorageClient } from '../../storage/src/types';
@@ -14,7 +14,7 @@ import { AzionStorageClient } from '../../storage/src/types';
  * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
  * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
  * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
- * @property {AzionApplicationClient}  - Client for Azion Edge Application operations.
+ * @property {AzionApplicationsClient}  - Client for Azion Edge Application operations.
  */
 export interface AzionClient {
   /**
@@ -132,11 +132,11 @@ export interface AzionClient {
   /**
    * Edge Application client with methods to interact with Azion Edge Applications.
    *
-   * @type {AzionApplicationClient}
+   * @type {AzionApplicationsClient}
    *
    * @example
    * // Create a new Edge Application
-   * const { data: newApp } = await client.application.createApplication({
+   * const { data: newApp } = await client.applications.createApplication({
    *   data: {
    *     name: 'My New App',
    *     delivery_protocol: 'http',
@@ -147,13 +147,13 @@ export interface AzionClient {
    *
    * @example
    * // Get all Edge Applications
-   * const { data: allApps } = await client.application.getApplications({
+   * const { data: allApps } = await client.applications.getApplications({
    *   params: { page: 1, page_size: 20, sort: 'name', order_by: 'asc' }
    * });
    *
    * @example
    * // Get a specific Edge Application and perform operations
-   * const { data: app } = await client.application.getApplication({ applicationId: 123 });
+   * const { data: app } = await client.applications.getApplication({ applicationId: 123 });
    * if (app) {
    *   // Create a new cache setting
    *   const { data: newCacheSetting } = await app.cache.createCacheSetting({
@@ -186,16 +186,16 @@ export interface AzionClient {
    *
    * @example
    * // Update an Edge Application
-   * const { data: updatedApp } = await client.application.putApplication({
+   * const { data: updatedApp } = await client.applications.putApplication({
    *   applicationId: 123,
    *   data: { name: 'Updated App Name', delivery_protocol: 'https' }
    * });
    *
    * @example
    * // Delete an Edge Application
-   * const { data: deletedApp } = await client.application.deleteApplication({ applicationId: 123 });
+   * const { data: deletedApp } = await client.applications.deleteApplication({ applicationId: 123 });
    */
-  application: AzionApplicationClient;
+  applications: AzionApplicationsClient;
 }
 
 /**

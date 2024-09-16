@@ -169,9 +169,9 @@ if (buckets) {
 **TypeScript:**
 
 ```typescript
-import { getBuckets, AzionStorageResponse, AzionBuckets } from 'azion/storage';
+import { getBuckets, AzionStorageResponse, AzionBucketCollection } from 'azion/storage';
 
-const { data: buckets, error }: AzionStorageResponse<AzionBuckets> = await getBuckets({
+const { data: buckets, error }: AzionStorageResponse<AzionBucketCollection> = await getBuckets({
   params: { page: 1, page_size: 10 },
 });
 if (buckets) {
@@ -451,7 +451,7 @@ import {
   AzionStorageResponse,
   AzionBucket,
   AzionBucketObject,
-  AzionBuckets,
+  AzionBucketCollection,
 } from 'azion/storage';
 
 const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
@@ -464,7 +464,7 @@ if (data) {
   console.log(`Bucket created with name: ${data.name}`);
 }
 
-const { data: allBuckets }: AzionStorageResponse<AzionBuckets> = await client.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionBucketCollection> = await client.getBuckets();
 if (allBuckets) {
   console.log(`Retrieved ${allBuckets.count} buckets`);
 }
@@ -530,7 +530,7 @@ Retrieves a list of buckets with optional filtering and pagination.
 
 **Returns:**
 
-- `Promise<AzionStorageResponse<AzionBuckets>>` - Array of bucket objects or error.
+- `Promise<AzionStorageResponse<AzionBucketCollection>>` - Array of bucket objects or error.
 
 ### `getBucket`
 
@@ -655,7 +655,7 @@ Configuration options for the Storage client.
 
 An object with methods to interact with Storage.
 
-- `getBuckets: (options?: BucketCollectionOptions) => Promise<AzionStorageResponse<AzionBuckets>>`
+- `getBuckets: (options?: BucketCollectionOptions) => Promise<AzionStorageResponse<AzionBucketCollection>>`
 - `createBucket: (name: string, edge_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
 - `updateBucket: (name: string, edge_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
 - `deleteBucket: (name: string) => Promise<AzionStorageResponse<AzionDeletedBucket>>`

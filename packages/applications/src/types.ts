@@ -981,14 +981,14 @@ export interface AzionApplication extends ApiApplication {
 /**
  * Interface for the Azion Application Client, providing methods to interact with Azion Edge Applications.
  *
- * @interface AzionApplicationClient
+ * @interface AzionApplicationsClient
  */
-export interface AzionApplicationClient {
+export interface AzionApplicationsClient {
   /**
    * Creates a new Azion Edge Application.
    *
    * @function
-   * @name AzionApplicationClient.createApplication
+   * @name AzionApplicationsClient.createApplication
    * @param {Object} params - The parameters for creating an application.
    * @param {ApiCreateApplicationPayload} params.data - The data for the new application.
 
@@ -1019,7 +1019,7 @@ export interface AzionApplicationClient {
    * Retrieves a specific Azion Edge Application.
    *
    * @function
-   * @name AzionApplicationClient.getApplication
+   * @name AzionApplicationsClient.getApplication
    * @param {Object} params - The parameters for retrieving an application.
    * @param {number} params.applicationId - The ID of the application to retrieve.
 
@@ -1045,7 +1045,7 @@ export interface AzionApplicationClient {
    * Retrieves a list of Azion Edge Applications.
    *
    * @function
-   * @name AzionApplicationClient.getApplications
+   * @name AzionApplicationsClient.getApplications
    * @param {Object} params - The parameters for retrieving applications.
    * @param {AzionApplicationCollectionOptions} [params.params] - Optional parameters for filtering and pagination.
 
@@ -1071,7 +1071,7 @@ export interface AzionApplicationClient {
    * Updates an existing Azion Edge Application.
    *
    * @function
-   * @name AzionApplicationClient.putApplication
+   * @name AzionApplicationsClient.putApplication
    * @param {Object} params - The parameters for updating an application.
    * @param {number} params.applicationId - The ID of the application to update.
    * @param {ApiUpdateApplicationPayload} params.data - The updated data for the application.
@@ -1103,7 +1103,7 @@ export interface AzionApplicationClient {
    * Deletes an Azion Edge Application.
    *
    * @function
-   * @name AzionApplicationClient.deleteApplication
+   * @name AzionApplicationsClient.deleteApplication
    * @param {Object} params - The parameters for deleting an application.
    * @param {number} params.applicationId - The ID of the application to delete.
 
@@ -1129,7 +1129,7 @@ export interface AzionApplicationClient {
    * Partially updates an existing Azion Edge Application.
    *
    * @function
-   * @name AzionApplicationClient.patchApplication
+   * @name AzionApplicationsClient.patchApplication
    * @param {Object} params - The parameters for partially updating an application.
    * @param {number} params.applicationId - The ID of the application to update.
    * @param {Partial<ApiUpdateApplicationPayload>} params.data - The partial data for updating the application.
@@ -1163,7 +1163,7 @@ export interface AzionApplicationClient {
  * the client will attempt to use the AZION_TOKEN environment variable.
  * @param {AzionClientOptions} [config.options] - Additional client options.
  *
- * @returns {AzionApplicationClient} An instance of the Azion Application Client.
+ * @returns {AzionApplicationsClient} An instance of the Azion Application Client.
  *
  * @example
  * // Create an application client with a token and debug mode enabled
@@ -1178,4 +1178,4 @@ export interface AzionApplicationClient {
  */
 export type CreateAzionApplicationClient = (
   config?: Partial<{ token: string; options?: AzionClientOptions }>,
-) => AzionApplicationClient;
+) => AzionApplicationsClient;

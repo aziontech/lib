@@ -90,7 +90,13 @@ if (deletedBucket) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, AzionStorageResponse, AzionBucket, AzionDeletedBucket, AzionBuckets } from 'azion/storage';
+import {
+  AzionClient,
+  AzionStorageResponse,
+  AzionBucket,
+  AzionDeletedBucket,
+  AzionBucketCollection,
+} from 'azion/storage';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -102,7 +108,7 @@ if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
 
-const { data: allBuckets }: AzionStorageResponse<AzionBuckets> = await client.storage.getBuckets();
+const { data: allBuckets }: AzionStorageResponse<AzionBucketCollection> = await client.storage.getBuckets();
 if (allBuckets) {
   console.log(`Retrieved ${allBuckets.count} buckets`);
 }
@@ -252,7 +258,13 @@ if (deletedDomain) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, AzionDomainsResponse, AzionDomain, AzionDeletedDomain, AzionDomains } from 'azion/domains';
+import {
+  AzionClient,
+  AzionDomainsResponse,
+  AzionDomain,
+  AzionDeletedDomain,
+  AzionDomainCollection,
+} from 'azion/domains';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -265,7 +277,7 @@ if (newDomain) {
   console.log(`Domain created with name: ${newDomain.name}`);
 }
 
-const { data: allDomains }: AzionDomainsResponse<AzionDomains> = await client.domains.getDomains();
+const { data: allDomains }: AzionDomainsResponse<AzionDomainCollection> = await client.domains.getDomains();
 
 if (allDomains) {
   console.log(`Retrieved ${allDomains.count} domains`);

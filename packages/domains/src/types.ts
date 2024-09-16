@@ -56,7 +56,7 @@ export type AzionDomain = {
 };
 
 /**
- * AzionDomains is a type that represents the domains object in the Azion API.
+ * AzionDomainCollection is a type that represents the domains object in the Azion API.
  * @param state The state of the response.
  * @param count The count of the domains.
  * @param pages The number of pages.
@@ -106,14 +106,14 @@ export type AzionClientOptions = {
 };
 
 /**
- * AzionDomains is a type that represents the domains object in the Azion API.
+ * AzionDomainCollection is a type that represents the domains object in the Azion API.
  * @param state The state of the response.
  * @param count The count of the domains.
  * @param pages The number of pages.
  * @param results The list of domains.
  * @returns An object with the domains data.
  */
-export type AzionDomains = {
+export type AzionDomainCollection = {
   state: ResponseState;
   count: number;
   pages: number;
@@ -160,7 +160,7 @@ export interface AzionDomainsClient {
    * getDomains is a function that gets the domains in the Azion API.
    * @param {AzionClientOptions} options The options of the client.
    * @param {{ orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' }} queryParams The query parameters of the request.
-   * @returns {Promise<AzionDomainsResponse<AzionDomains>>} The response of the API.
+   * @returns {Promise<AzionDomainsResponse<AzionDomainCollection>>} The response of the API.
    * @example
    * const { data, error } = await client.getDomains();
    * if (error) {
@@ -172,7 +172,7 @@ export interface AzionDomainsClient {
   getDomains: (
     options?: AzionClientOptions,
     queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
-  ) => Promise<AzionDomainsResponse<AzionDomains>>;
+  ) => Promise<AzionDomainsResponse<AzionDomainCollection>>;
   /**
    * getDomain is a function that gets a domain in the Azion API.
    * @param {number} domainId The id of the domain.

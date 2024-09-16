@@ -4,7 +4,7 @@ import {
   AzionCreateDomain,
   AzionDeletedDomain,
   AzionDomain,
-  AzionDomains,
+  AzionDomainCollection,
   AzionDomainsClient,
   AzionDomainsCreateClient,
   AzionDomainsResponse,
@@ -65,7 +65,7 @@ const getDomainsMethod = async (
   token: string,
   queryParams?: { order_by?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
   options?: AzionClientOptions,
-): Promise<AzionDomainsResponse<AzionDomains>> => {
+): Promise<AzionDomainsResponse<AzionDomainCollection>> => {
   const apiResponse = await getDomains(resolveToken(token), options, queryParams);
   if (apiResponse.results) {
     return {
@@ -254,7 +254,7 @@ const createDomainWrapper = async (
 const getDomainsWrapper = async (
   options?: AzionClientOptions,
   queryParams?: { orderBy?: 'id' | 'name'; page?: number; pageSize?: number; sort?: 'asc' | 'desc' },
-): Promise<AzionDomainsResponse<AzionDomains>> => {
+): Promise<AzionDomainsResponse<AzionDomainCollection>> => {
   return getDomainsMethod(resolveToken(), queryParams, options);
 };
 

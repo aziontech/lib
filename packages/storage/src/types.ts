@@ -129,7 +129,7 @@ export interface AzionDeletedBucket {
   state?: 'executed' | 'executed-runtime' | 'pending';
 }
 
-export interface AzionBuckets {
+export interface AzionBucketCollection {
   buckets: AzionBucket[];
   count: number;
 }
@@ -139,9 +139,11 @@ export interface AzionStorageClient {
    * Retrieves a list of buckets with optional filtering and pagination.
    * @param {Object} params - Parameters for retrieving buckets.
    * @param {AzionBucketCollectionParams} [params.params] - Optional parameters for filtering and pagination.
-   * @returns {Promise<AzionStorageResponse<AzionBuckets>>} Array of buckets or error message.
+   * @returns {Promise<AzionStorageResponse<AzionBucketCollection>>} Array of buckets or error message.
    */
-  getBuckets: (params?: { params?: AzionBucketCollectionParams }) => Promise<AzionStorageResponse<AzionBuckets>>;
+  getBuckets: (params?: {
+    params?: AzionBucketCollectionParams;
+  }) => Promise<AzionStorageResponse<AzionBucketCollection>>;
   /**
    * Creates a new bucket.
    * @param {Object} params - Parameters for creating a bucket.
