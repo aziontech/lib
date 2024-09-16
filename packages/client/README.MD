@@ -258,7 +258,13 @@ if (deletedDomain) {
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, AzionDomainsResponse, AzionDomain, AzionDeletedDomain, AzionDomains } from 'azion/domains';
+import {
+  AzionClient,
+  AzionDomainsResponse,
+  AzionDomain,
+  AzionDeletedDomain,
+  AzionDomainCollection,
+} from 'azion/domains';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -271,7 +277,7 @@ if (newDomain) {
   console.log(`Domain created with name: ${newDomain.name}`);
 }
 
-const { data: allDomains }: AzionDomainsResponse<AzionDomains> = await client.domains.getDomains();
+const { data: allDomains }: AzionDomainsResponse<AzionDomainCollection> = await client.domains.getDomains();
 
 if (allDomains) {
   console.log(`Retrieved ${allDomains.count} domains`);
