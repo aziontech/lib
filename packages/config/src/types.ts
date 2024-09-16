@@ -10,6 +10,8 @@ export type AzionDomain = {
   cnames?: string[];
   /** Associated edge application ID */
   id?: number;
+  /** Associated edge appliaction ID */
+  edgeApplicationId?: number;
   /** Associated edge firewall ID */
   edgeFirewallId?: number;
   /** Digital certificate ID */

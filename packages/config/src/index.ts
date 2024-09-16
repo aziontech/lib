@@ -1,3 +1,4 @@
+import { generateManifest, validateConfig } from './generate/index';
 import { AzionConfig } from './types';
 
 /**
@@ -205,8 +206,11 @@ import { AzionConfig } from './types';
  *   // ... other configurations
  * });
  */
-export function defineConfig(config: AzionConfig): AzionConfig {
+function defineConfig(config: AzionConfig): AzionConfig {
+  validateConfig(config);
   return config;
 }
+
+export { defineConfig, generateManifest };
 
 export type * from './types';

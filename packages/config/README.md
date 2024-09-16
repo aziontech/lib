@@ -7,9 +7,12 @@ This module provides a function to configure and validate options for the Azion 
 - [Installation](#installation)
 - [Usage](#usage)
   - [Example Configuration](#example-configuration)
+  - [Example Generate Manifest](#example-generate-manifest)
 - [API Reference](#api-reference)
   - [`defineConfig`](#defineconfig)
+  - [`generateManifest`](#generatemanifest)
 - [Types](#types)
+  - [`AzionBuild`](#azionbuild)
   - [`AzionConfig`](#azionconfig)
   - [`AzionDomain`](#aziondomain)
   - [`AzionOrigin`](#azionorigin)
@@ -115,11 +118,41 @@ const config = defineConfig({
 });
 ```
 
+### Example Generate Manifest
+
+```javascript
+import { generateManifest } from 'azion';
+
+const config = {...};
+
+const manifest = generateManifest(config);
+
+console.log(manifest);
+```
+
+```typescript
+import { AzionConfig, generateManifest } from 'azion';
+
+const config: AzionConfig = {...};
+
+const manifest = generateManifest(config);
+
+console.log(manifest);
+```
+
 ## API Reference
 
 ### `defineConfig`
 
 Configures and validates the options for the Azion Edge Application.
+
+**Parameters:**
+
+- `config: AzionConfig` - The configuration object for the Azion Edge Application.
+
+### `generateManifest`
+
+Generates a manifest file for the Azion Edge Application.
 
 **Parameters:**
 
@@ -131,11 +164,26 @@ Configures and validates the options for the Azion Edge Application.
 
 **Properties:**
 
-- `domain: AzionDomain` - The domain object.
+- `build?: AzionBuild` - The build configuration.
+- `domain?: AzionDomain` - The domain object.
 - `origin?: AzionOrigin[]` - List of origins.
 - `cache?: AzionCache[]` - List of cache settings.
 - `rules?: AzionRules[]` - List of edge rules.
 - `purge?: AzionPurge[]` - List of URLs or CacheKeys to purge.
+
+### `AzionBuild`
+
+Type definition for the build configuration.
+
+**Properties:**
+
+- `builder?: 'esbuild' | 'webpack'` - The builder to use.
+- `preset: { name: string; }` - The preset to use.
+- `entry?: string` - The entry file.
+- `polyfills?: boolean` - Whether to include polyfills.
+- `worker?: boolean` - Whether to build a owner worker.
+- `custom?: Record<string, any>` - Custom build configuration.
+- `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - Memory file system configuration.
 
 ### `AzionDomain`
 
@@ -146,7 +194,8 @@ Type definition for the domain configuration.
 - `name: string` - The domain name.
 - `cnameAccessOnly?: boolean` - Whether to restrict access only to CNAMEs.
 - `cnames?: string[]` - List of CNAMEs for the domain.
-- `Id?: number` - ID of the edge application.
+- `id?: number` - ID of the edge application.
+- `edgeApplicationId?: number` - ID of the edge application.
 - `edgeFirewallId?: number` - ID of the edge firewall.
 - `digitalCertificateId?: string | number | null` - ID of the digital certificate.
 - `mtls?: MTLSConfig` - Configuration for mTLS.
