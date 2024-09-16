@@ -57,8 +57,8 @@ import {
 } from './rules-engine/index';
 
 import type {
-  AzionApplicationClient,
   AzionApplicationCollectionOptions,
+  AzionApplicationsClient,
   AzionClientOptions,
   CreateAzionApplicationClient,
 } from './types';
@@ -69,11 +69,11 @@ import { resolveDebug, resolveToken } from './utils';
 
 const createAzionApplicationClient: CreateAzionApplicationClient = (
   config?: Partial<{ token: string; options?: AzionClientOptions }>,
-): AzionApplicationClient => {
+): AzionApplicationsClient => {
   const tokenValue = resolveToken(config?.token);
   const debugValue = resolveDebug(config?.options?.debug);
 
-  const client: AzionApplicationClient = {
+  const client: AzionApplicationsClient = {
     createApplication: async ({ data }: { data: ApiCreateApplicationPayload; options?: AzionClientOptions }) =>
       createApplicationMethod(tokenValue, data, { ...config, debug: debugValue }),
     deleteApplication: async ({ applicationId, options }: { applicationId: number; options?: AzionClientOptions }) =>
