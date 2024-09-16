@@ -11,10 +11,10 @@ import {
 } from './services/api/index';
 import {
   AzionBucket,
+  AzionBucketCollection,
   AzionBucketCollectionParams,
   AzionBucketObject,
   AzionBucketObjects,
-  AzionBuckets,
   AzionClientOptions,
   AzionDeletedBucket,
   AzionDeletedBucketObject,
@@ -130,13 +130,13 @@ export const deleteBucketMethod = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {AzionBucketCollectionParams} [params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
- * @returns {Promise<AzionStorageResponse<AzionBuckets>>} Array of bucket objects or error message.
+ * @returns {Promise<AzionStorageResponse<AzionBucketCollection>>} Array of bucket objects or error message.
  */
 export const getBucketsMethod = async (
   token: string,
   params?: AzionBucketCollectionParams,
   options?: AzionClientOptions,
-): Promise<AzionStorageResponse<AzionBuckets>> => {
+): Promise<AzionStorageResponse<AzionBucketCollection>> => {
   const apiResponse = await getBuckets(resolveToken(token), params, resolveDebug(options?.debug));
   if (apiResponse?.results && apiResponse.results.length > 0) {
     const buckets = apiResponse.results?.map((bucket) => ({
@@ -648,7 +648,7 @@ const getBucketsWrapper = ({
 }: {
   params?: AzionBucketCollectionParams;
   options?: AzionClientOptions;
-}): Promise<AzionStorageResponse<AzionBuckets>> =>
+}): Promise<AzionStorageResponse<AzionBucketCollection>> =>
   getBucketsMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -886,7 +886,9 @@ const client: CreateAzionStorageClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionStorageClient = {
-    getBuckets: (params?: { params?: AzionBucketCollectionParams }): Promise<AzionStorageResponse<AzionBuckets>> =>
+    getBuckets: (params?: {
+      params?: AzionBucketCollectionParams;
+    }): Promise<AzionStorageResponse<AzionBucketCollection>> =>
       getBucketsMethod(tokenValue, params?.params, { ...config, debug: debugValue }),
     createBucket: ({
       name,
