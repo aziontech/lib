@@ -7,7 +7,7 @@ These libraries are designed to be versatile and can be used both within and out
 ## Table of Contents
 
 - [Installation](#installation)
-- [Products](#products)
+- [Usage](#usage)
   - [Client](#client)
   - [Storage](./packages/storage/README.md)
   - [SQL](./packages/sql/README.md)
@@ -37,7 +37,7 @@ or
 yarn add azion
 ```
 
-## Products
+## Usage
 
 ### Using the Client vs. Independent Package Functions
 
