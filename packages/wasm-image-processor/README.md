@@ -50,7 +50,8 @@ const image = await loadImage('https://example.com/image.jpg');
 **TypeScript:**
 
 ```typescript
-import { loadImage, WasmImage } from 'azion/wasm-image-processor';
+import { loadImage } from 'azion/wasm-image-processor';
+import type { WasmImage } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 ```
@@ -69,7 +70,8 @@ const resizedImage = image.resize(0.5, 0.5);
 **TypeScript:**
 
 ```typescript
-import { loadImage, WasmImage } from 'azion/wasm-image-processor';
+import { loadImage } from 'azion/wasm-image-processor';
+import type { WasmImage } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const resizedImage: WasmImage = image.resize(0.5, 0.5);
@@ -90,7 +92,8 @@ console.log(imageResponse);
 **TypeScript:**
 
 ```typescript
-import { loadImage, WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
+import { loadImage } from 'azion/wasm-image-processor';
+import type { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const imageResponse: Response = image.getImageResponse('jpeg' as SupportedImageFormat);
@@ -111,7 +114,8 @@ image.clean();
 **TypeScript:**
 
 ```typescript
-import { loadImage, WasmImage } from 'azion/wasm-image-processor';
+import { loadImage } from 'azion/wasm-image-processor';
+import type { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 image.clean();
@@ -134,7 +138,8 @@ clean(resizedImage);
 **TypeScript:**
 
 ```typescript
-import { loadImage, resize, getImageResponse, clean, PhotonImage } from 'azion/wasm-image-processor';
+import { loadImage, resize, getImageResponse, clean } from 'azion/wasm-image-processor';
+import type { WasmImage, PhotonImage } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const resizedImage: PhotonImage = resize(image.image, 0.5, 0.5);
