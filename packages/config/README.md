@@ -7,10 +7,10 @@ This module provides a function to configure and validate options for the Azion 
 - [Installation](#installation)
 - [Usage](#usage)
   - [Example Configuration](#example-configuration)
-  - [Example Generate Manifest](#example-generate-manifest)
+  - [Example Process Configuration](#example-process-configuration)
 - [API Reference](#api-reference)
   - [`defineConfig`](#defineconfig)
-  - [`processConfig`](#generatemanifest)
+  - [`processConfig`](#processconfig)
 - [Types](#types)
   - [`AzionBuild`](#azionbuild)
   - [`AzionConfig`](#azionconfig)
@@ -118,7 +118,7 @@ const config = defineConfig({
 });
 ```
 
-### Example Generate Manifest
+### Example Process Configuration
 
 ```javascript
 import { processConfig } from 'azion';
@@ -152,7 +152,7 @@ Configures and validates the options for the Azion Edge Application.
 
 ### `processConfig`
 
-Generates a manifest file for the Azion Edge Application.
+Processes the configuration object and returns a manifest.
 
 **Parameters:**
 
