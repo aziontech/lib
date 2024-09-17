@@ -1,3 +1,27 @@
+## [1.7.0](https://github.com/aziontech/lib/compare/v1.6.0...v1.7.0) (2024-09-17)
+
+
+### Features
+
+* add package application (#37) ([e53c5b0](https://github.com/aziontech/lib/commit/e53c5b0908233484d976c2bb25df921bb9588b87))
+* add package domains (#38) ([9a020c1](https://github.com/aziontech/lib/commit/9a020c14907f65009da97dc507fe901017452fe6))
+* azion cli binary  (#32) ([0670adb](https://github.com/aziontech/lib/commit/0670adb9b4f9086126a8f5387f95e001da3a748b))
+* enable azion stage ([6588e63](https://github.com/aziontech/lib/commit/6588e63ba7fa9f60f0570316ae501a1d21e1fe40))
+* jsdoc for azion client ([a4a2bd3](https://github.com/aziontech/lib/commit/a4a2bd39a2e01184aaf0bbf320c194d2364853e6))
+* process config in azion/config (#41) ([9a6afc0](https://github.com/aziontech/lib/commit/9a6afc0233f356e0a20f60bcf39ed03347689fea))
+* updating function returns (#36) ([088bbd3](https://github.com/aziontech/lib/commit/088bbd359a9f33de73352a35db59601dee053285))
+
+
+### Bug Fixes
+
+* bin path (again) ([b43676a](https://github.com/aziontech/lib/commit/b43676a324df9f3d470dacabd395450be79144d9))
+* cli bin path (#33) ([f1aee5e](https://github.com/aziontech/lib/commit/f1aee5e30f0eab8e9f5209c730439af81779309b))
+* cli relative path (#34) ([c6b5fb4](https://github.com/aziontech/lib/commit/c6b5fb4214c012780ba8315acad78d5202eed1df))
+* npm bin path ([3833208](https://github.com/aziontech/lib/commit/3833208bfd127509616f40aa1177f95a8ec7ff1b))
+* npm bin path (#35) ([ea5bb4f](https://github.com/aziontech/lib/commit/ea5bb4f8f6a1cd9d30945d06fdb5357183c3bbf2))
+* storage endpoint ([dd3e140](https://github.com/aziontech/lib/commit/dd3e14023735133b5ead3fba89d1f636233d736b))
+* storage params ([c995bbb](https://github.com/aziontech/lib/commit/c995bbbd8168cc9138370baf9849e20267e067a9))
+
 ## [1.7.0-stage.12](https://github.com/aziontech/lib/compare/v1.7.0-stage.11...v1.7.0-stage.12) (2024-09-17)
 
 
