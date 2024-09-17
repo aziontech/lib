@@ -2,28 +2,34 @@
 export interface ApiDatabaseResponse {
   id: number;
   name: string;
-  client_id: string;
+  clientId: string;
   status: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-  is_active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  isActive: boolean;
 }
 
 export interface ApiListDatabasesResponse {
-  count: number;
-  links: {
+  count?: number;
+  links?: {
     first: string | null;
     last: string | null;
     next: string | null;
     prev: string | null;
   };
-  results: ApiDatabaseResponse[];
+  results?: ApiDatabaseResponse[];
+  error?: ApiError;
 }
 
+export type ApiError = {
+  message: string;
+  operation: string;
+};
+
 export interface ApiQueryExecutionResponse {
-  state: 'executed' | 'pending';
-  data: {
+  state?: 'executed' | 'pending' | 'failed';
+  data?: {
     results: {
       columns: string[];
       rows: (number | string)[][];
@@ -32,14 +38,17 @@ export interface ApiQueryExecutionResponse {
       query_duration_ms?: number;
     };
   }[];
+  error?: ApiError;
 }
 
 export interface ApiCreateDatabaseResponse {
-  state: 'executed' | 'pending';
-  data: ApiDatabaseResponse;
+  state?: 'executed' | 'pending' | 'failed';
+  data?: ApiDatabaseResponse;
+  error?: ApiError;
 }
 
 export interface ApiDeleteDatabaseResponse {
-  state: 'executed' | 'pending';
-  data: null;
+  state?: 'executed' | 'pending';
+  data?: { id: number };
+  error?: ApiError;
 }

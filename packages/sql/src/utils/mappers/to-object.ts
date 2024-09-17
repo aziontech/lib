@@ -1,30 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AzionQueryResponse } from '../../types';
+import { AzionDatabaseQueryResponse } from '../../types';
 
 export type JsonObjectQueryExecutionResponse = {
-  state: 'executed' | 'pending' | 'executed-runtime';
-  data: {
+  results?: {
     statement?: string;
     rows: { [key: string]: any }[];
   }[];
-  info?: {
-    rowsRead?: number;
-    rowsWritten?: number;
-    durationMs?: number;
-  };
 };
 
-export const toObjectQueryExecutionResponse = ({ state, data }: AzionQueryResponse) => {
+export const toObjectQueryExecutionResponse = ({ results }: AzionDatabaseQueryResponse) => {
   let transformedData: any = [];
-  if (data instanceof Array) {
-    if (data.length === 0) {
+  if (results instanceof Array) {
+    if (results.length === 0) {
       return {
-        state,
-        data: [],
+        results: [],
       };
     }
     let transformedRows: any = null;
-    transformedData = data?.map((item) => {
+    transformedData = results?.map((item) => {
       if (item?.rows) {
         transformedRows = item.rows.map((row) => {
           const obj: { [key: string]: any } = {};
@@ -43,7 +36,6 @@ export const toObjectQueryExecutionResponse = ({ state, data }: AzionQueryRespon
     });
   }
   return {
-    state,
-    data: transformedData,
+    results: transformedData,
   };
 };

@@ -6,8 +6,10 @@ import type {
   AzionClientOptions,
   AzionDatabase,
   AzionDatabaseCollectionOptions,
-  AzionDeletedDatabase,
-  AzionQueryResponse,
+  AzionDatabaseCollections,
+  AzionDatabaseDeleteResponse,
+  AzionDatabaseQueryResponse,
+  AzionDatabaseResponse,
   AzionSQLClient,
   CreateAzionSQLClient,
 } from './types';
@@ -27,30 +29,34 @@ const createDatabaseMethod = async (
   token: string,
   name: string,
   options?: AzionClientOptions,
-): Promise<AzionDatabase | null> => {
+): Promise<AzionDatabaseResponse<AzionDatabase>> => {
   const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolveDebug(options?.debug));
-  if (apiResponse) {
-    const { data } = apiResponse;
+  if (apiResponse.data) {
     return {
-      ...data,
-      query: (statements: string[]) =>
-        queryDatabaseMethod(resolveToken(token), data.name, statements, {
-          ...options,
-          debug: resolveDebug(options?.debug),
-        }),
-      execute: (statements: string[], options?: AzionClientOptions) =>
-        executeDatabaseMethod(resolveToken(token), data.name, statements, {
-          ...options,
-          debug: resolveDebug(options?.debug),
-        }),
-      listTables: (options?: AzionClientOptions) =>
-        listTablesWrapper(data.name, {
-          ...options,
-          debug: resolveDebug(options?.debug),
-        }),
-    };
+      data: {
+        state: apiResponse.state,
+        ...apiResponse.data,
+        query: (statements: string[]) =>
+          queryDatabaseMethod(resolveToken(token), name, statements, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        execute: (statements: string[], options?: AzionClientOptions) =>
+          executeDatabaseMethod(resolveToken(token), name, statements, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getTables: (options?: AzionClientOptions) =>
+          listTablesWrapper(name, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      },
+    } as AzionDatabaseResponse<AzionDatabase>;
   }
-  return null;
+  return {
+    error: apiResponse.error,
+  };
 };
 
 /**
@@ -58,23 +64,25 @@ const createDatabaseMethod = async (
  * @param token Token to authenticate with the API.
  * @param id ID of the database to delete.
  * @param debug Debug mode for detailed logging.
- * @returns Object confirming deletion or null if deletion failed.
+ * @returns Object confirming deletion or error if deletion failed.
  */
 const deleteDatabaseMethod = async (
   token: string,
   id: number,
   options?: AzionClientOptions,
-): Promise<AzionDeletedDatabase | null> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> => {
   const apiResponse = await deleteEdgeDatabase(resolveToken(token), id, resolveDebug(options?.debug));
-  if (apiResponse) {
-    const { data, state } = apiResponse;
+  if (apiResponse?.data) {
     return {
-      id,
-      data,
-      state,
+      data: {
+        state: apiResponse.state ?? 'executed',
+        id: apiResponse.data.id,
+      },
     };
   }
-  return null;
+  return {
+    error: apiResponse.error,
+  };
 };
 
 /**
@@ -88,36 +96,53 @@ const getDatabaseMethod = async (
   token: string,
   name: string,
   options?: AzionClientOptions,
-): Promise<AzionDatabase | null> => {
+): Promise<AzionDatabaseResponse<AzionDatabase>> => {
   if (!name || name === '') {
-    throw new Error('Database name is required');
+    return {
+      error: {
+        message: 'Database name is required',
+        operation: 'get database',
+      },
+    };
   }
   const databaseResponse = await getEdgeDatabases(resolveToken(token), { search: name }, resolveDebug(options?.debug));
   if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
-    throw new Error(`Database with name '${name}' not found`);
+    return {
+      error: {
+        message: `Database with name '${name}' not found`,
+        operation: 'get database',
+      },
+    };
   }
   const databaseResult = databaseResponse?.results[0];
   if (!databaseResult || databaseResult.id === undefined || databaseResult.name !== name) {
-    throw new Error(`Database with name '${name}' not found`);
+    return {
+      error: {
+        message: `Database with name '${name}' not found`,
+        operation: 'get database',
+      },
+    };
   }
   return {
-    ...databaseResult,
-    query: (statements: string[], options?: AzionClientOptions) =>
-      queryDatabaseMethod(resolveToken(token), databaseResult.name, statements, {
-        ...options,
-        debug: resolveDebug(options?.debug),
-      }),
-    execute: (statements: string[], options?: AzionClientOptions) =>
-      executeDatabaseMethod(resolveToken(token), databaseResult.name, statements, {
-        ...options,
-        debug: resolveDebug(options?.debug),
-      }),
-    listTables: (options?: AzionClientOptions) =>
-      listTablesWrapper(databaseResult.name, {
-        ...options,
-        debug: resolveDebug(options?.debug),
-      }),
-  };
+    data: {
+      ...databaseResult,
+      query: (statements: string[]) =>
+        queryDatabaseMethod(resolveToken(token), databaseResult.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
+      execute: (statements: string[], options?: AzionClientOptions) =>
+        executeDatabaseMethod(resolveToken(token), databaseResult.name, statements, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
+      getTables: (options?: AzionClientOptions) =>
+        listTablesWrapper(databaseResult.name, {
+          ...options,
+          debug: resolveDebug(options?.debug),
+        }),
+    },
+  } as AzionDatabaseResponse<AzionDatabase>;
 };
 
 /**
@@ -125,35 +150,48 @@ const getDatabaseMethod = async (
  * @param token Token to authenticate with the API.
  * @param params Optional parameters for filtering and pagination.
  * @param debug Debug mode for detailed logging.
- * @returns Array of database objects or null if retrieval failed.
+ * @returns Array of database objects or error if retrieval failed.
  */
 const getDatabasesMethod = async (
   token: string,
   params?: AzionDatabaseCollectionOptions,
   options?: AzionClientOptions,
-): Promise<AzionDatabase[] | null> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> => {
   const apiResponse = await getEdgeDatabases(resolveToken(token), params, resolveDebug(options?.debug));
-  if (apiResponse) {
-    return apiResponse.results.map((db: ApiDatabaseResponse) => ({
-      ...db,
-      query: (statements: string[]): Promise<AzionQueryResponse | null> =>
-        queryDatabaseMethod(resolveToken(token), db.name, statements, {
-          ...options,
-          debug: resolveDebug(options?.debug),
-        }),
-      execute: (statements: string[], options?: AzionClientOptions): Promise<AzionQueryResponse | null> =>
-        executeDatabaseMethod(resolveToken(token), db.name, statements, {
-          ...options,
-          debug: resolveDebug(options?.debug),
-        }),
-      listTables: (options?: AzionClientOptions): Promise<AzionQueryResponse | null> =>
-        listTablesWrapper(db.name, {
-          ...options,
-          debug: resolveDebug(options?.debug),
-        }),
-    }));
+  if (apiResponse?.results && apiResponse.results.length > 0) {
+    const databases = apiResponse.results.map((db: ApiDatabaseResponse) => {
+      return {
+        ...db,
+        query: (statements: string[]): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
+          queryDatabaseMethod(resolveToken(token), db.name, statements, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        execute: (
+          statements: string[],
+          options?: AzionClientOptions,
+        ): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
+          executeDatabaseMethod(resolveToken(token), db.name, statements, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+        getTables: (options?: AzionClientOptions): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
+          listTablesWrapper(db.name, {
+            ...options,
+            debug: resolveDebug(options?.debug),
+          }),
+      };
+    });
+    return {
+      data: {
+        count: apiResponse.count,
+        databases,
+      },
+    };
   }
-  return null;
+  return {
+    error: apiResponse.error,
+  };
 };
 
 /**
@@ -169,15 +207,25 @@ const queryDatabaseMethod = async (
   name: string,
   statements: string[],
   options?: AzionClientOptions,
-): Promise<AzionQueryResponse> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   if (!name || name === '') {
-    throw new Error('Database name is required');
+    return {
+      error: {
+        message: 'Database name is required',
+        operation: 'query database',
+      },
+    };
   }
   if (options?.debug) {
     console.log(`Executing statements on database ${name}: ${statements}`);
   }
   if (!Array.isArray(statements) || statements.length === 0) {
-    throw new Error('No statements to execute. Please provide at least one statement. e.g ["SELECT * FROM users"]');
+    return {
+      error: {
+        message: 'No statements to execute. Please provide at least one statement. e.g ["SELECT * FROM users"]',
+        operation: 'query database',
+      },
+    };
   }
   const isStatement = statements.some((statement) =>
     ['SELECT', 'PRAGMA'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
@@ -205,17 +253,26 @@ const executeDatabaseMethod = async (
   name: string,
   statements: string[],
   options?: AzionClientOptions,
-): Promise<AzionQueryResponse> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   if (options?.debug) {
     console.log(`Executing statements on database ${name}: ${statements}`);
   }
   if (!name || name === '') {
-    throw new Error('Database name is required');
+    return {
+      error: {
+        message: 'Database name is required',
+        operation: 'execute database',
+      },
+    };
   }
   if (!Array.isArray(statements) || statements.length === 0) {
-    throw new Error(
-      'No statements to execute. Please provide at least one statement. e.g ["INSERT INTO users (name) VALUES (\'John\')"]',
-    );
+    return {
+      error: {
+        message:
+          'No statements to execute. Please provide at least one statement. e.g ["INSERT INTO users (name) VALUES (\'John\')"]',
+        operation: 'execute database',
+      },
+    };
   }
   const isWriteStatement = statements.some((statement) =>
     ['INSERT', 'UPDATE', 'DELETE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
@@ -224,15 +281,24 @@ const executeDatabaseMethod = async (
     ['CREATE', 'ALTER', 'DROP', 'TRUNCATE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
   );
   if (!isAdminStatement && !isWriteStatement) {
-    throw new Error('Only write statements are allowed');
+    return {
+      error: {
+        message: 'Only write statements are allowed',
+        operation: 'execute database',
+      },
+    };
   }
   if (isAdminStatement && options?.force === false) {
-    throw new Error('To admin statements, you need to set the force option to true');
+    return {
+      error: {
+        message: 'To admin statements, you need to set the force option to true',
+        operation: 'execute database',
+      },
+    };
   }
   const resultQuery = await apiQuery(token, name, statements, options);
   return {
-    state: resultQuery.state,
-    data: {},
+    data: resultQuery.data,
   };
 };
 
@@ -241,17 +307,20 @@ const executeDatabaseMethod = async (
  *
  * @param {string} name - Name of the database to create.
  * @param {AzionClientOptions} [options] - Optional parameters for the deletion.
- * @returns {Promise<AzionDatabase | null>} The created database object or null if creation failed.
+ * @returns {Promise<AzionDatabaseResponse<AzionDatabase>>} The created database object or error if creation failed.
  *
  * @example
- * const database = await createDatabase('my-new-database', { debug: true });
- * if (database) {
- *   console.log(`Database created with ID: ${database.id}`);
+ * const { data, error } = await createDatabase('my-new-database', { debug: true });
+ * if (data) {
+ *  console.log(`Database ${data.id} created successfully`);
  * } else {
- *   console.error('Failed to create database');
+ *  console.error(`Failed to create database: ${error.message}`);
  * }
  */
-const createDatabaseWrapper = async (name: string, options?: AzionClientOptions): Promise<AzionDatabase | null> =>
+const createDatabaseWrapper = async (
+  name: string,
+  options?: AzionClientOptions,
+): Promise<AzionDatabaseResponse<AzionDatabase>> =>
   await createDatabaseMethod(resolveToken(), name, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -259,17 +328,20 @@ const createDatabaseWrapper = async (name: string, options?: AzionClientOptions)
  *
  * @param {number} id - ID of the database to delete.
  * @param {AzionClientOptions} [options] - Optional parameters for the deletion.
- * @returns {Promise<AzionDeletedDatabase | null>} Object confirming deletion or null if deletion failed.
+ * @returns {Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>>} Object confirming deletion or error if deletion failed.
  *
  * @example
- * const result = await deleteDatabase(123, { debug: true });
- * if (result) {
- *   console.log(`Database ${result.id} deleted successfully`);
+ * const { data, error } = await deleteDatabase(123, { debug: true });
+ * if (data) {
+ * console.log(`Database ${data.id} deleted successfully`);
  * } else {
- *   console.error('Failed to delete database');
- * }
+ * console.error(`Failed to delete database: ${error.message}`);
+ *
  */
-const deleteDatabaseWrapper = (id: number, options?: AzionClientOptions): Promise<AzionDeletedDatabase | null> =>
+const deleteDatabaseWrapper = (
+  id: number,
+  options?: AzionClientOptions,
+): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> =>
   deleteDatabaseMethod(resolveToken(), id, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -277,17 +349,20 @@ const deleteDatabaseWrapper = (id: number, options?: AzionClientOptions): Promis
  *
  * @param {string} name - Name of the database to retrieve.
  * @param {AzionClientOptions} [options] - Optional parameters for the deletion.
- * @returns {Promise<AzionDatabase | null>} The retrieved database object or null if not found.
+ * @returns {Promise<AzionDatabaseResponse<AzionDatabase>>} The retrieved database object or error if not found.
  *
  * @example
- * const database = await getDatabase('my-db', { debug: true });
- * if (database) {
- *   console.log(`Retrieved database: ${database.id}`);
+ * const { data, error } = await getDatabase('my-db', { debug: true });
+ * if (data) {
+ *  console.log(`Retrieved database ${data.name} (ID: ${data.id})`);
  * } else {
- *   console.error('Database not found');
+ *  console.error(`Failed to retrieve database: ${error.message}`);
  * }
  */
-const getDatabaseWrapper = async (name: string, options?: AzionClientOptions): Promise<AzionDatabase | null> =>
+const getDatabaseWrapper = async (
+  name: string,
+  options?: AzionClientOptions,
+): Promise<AzionDatabaseResponse<AzionDatabase>> =>
   getDatabaseMethod(resolveToken(), name, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -295,20 +370,22 @@ const getDatabaseWrapper = async (name: string, options?: AzionClientOptions): P
  *
  * @param {Partial<AzionDatabaseCollectionOptions>} [params] - Optional parameters for filtering and pagination.
  * @param {AzionClientOptions} [options] - Optional parameters for the deletion.
- * @returns {Promise<AzionDatabase[] | null>} Array of database objects or null if retrieval failed.
+ * @returns {Promise<AzionDatabaseResponse<AzionDatabaseCollections>>} Array of database objects or error if retrieval failed.
  *
  * @example
- * const databases = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
- * if (databases) {
- *   console.log(`Retrieved ${databases.length} databases`);
+ * const { data: allDatabases, error } = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
+ * if (allDatabases) {
+ * console.log(`Retrieved ${allDatabases.count} databases`);
+ * allDatabases.results.forEach(db => console.log(`- ${db.name} (ID: ${db.id})`));
  * } else {
- *   console.error('Failed to retrieve databases');
+ * console.error('Failed to retrieve databases', error);
  * }
+ *
  */
 const getDatabasesWrapper = (
   params?: Partial<AzionDatabaseCollectionOptions>,
   options?: AzionClientOptions,
-): Promise<AzionDatabase[] | null> =>
+): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> =>
   getDatabasesMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -320,7 +397,7 @@ const getDatabasesWrapper = (
 const listTablesWrapper = async (
   databaseName: string,
   options?: AzionClientOptions,
-): Promise<AzionQueryResponse | null> => {
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   return queryDatabaseMethod(resolveToken(), databaseName, ['PRAGMA table_list'], {
     ...options,
     debug: resolveDebug(options?.debug),
@@ -336,20 +413,18 @@ const listTablesWrapper = async (
  * @param options.force Force the query execution.
  * @returns The query response object or null if the query failed.
  * @example
- * const queryResult = await useQuery('my-db', ['SELECT * FROM users']);
- * if (queryResult) {
- *  console.log(`Query executed with ${queryResult.data.length} statements`);
- *  const resultObject = queryResult.toObject();
- *  console.log(`Result: ${resultObject}`);
+ * const { data, error } = await useQuery('my-db', ['SELECT * FROM users']);
+ * if (data) {
+ *  console.log(`Query executed with success`, data);
  * } else {
- * console.error('Failed to execute query');
- * }
+ * console.error(`Failed to execute query: ${error.message}`);
+ *
  */
 const useQuery = (
   name: string,
   statements: string[],
   options?: AzionClientOptions,
-): Promise<AzionQueryResponse | null> =>
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
   queryDatabaseMethod(resolveToken(), name, statements, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -359,17 +434,20 @@ const useQuery = (
  * @param options.debug Debug mode for detailed logging.
  * @param options.force Force the query execution.
  * @returns The query response object or null if the query failed.
+ *
  * @example
- * const executeResult = await useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
- * if (executeResult?.state === 'executed') {
- *   console.log(`Executed with success`);
- * }
+ * const { data, error } = await useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")']);
+ * if (data) {
+ * console.log(`Statements executed with success`, data);
+ * } else {
+ * console.error(`Failed to execute statements: `, error);
+ *
  */
 const useExecute = async (
   name: string,
   statements: string[],
   options?: AzionClientOptions,
-): Promise<AzionQueryResponse | null> =>
+): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
   executeDatabaseMethod(resolveToken(), name, statements, { ...options, debug: resolveDebug(options?.debug) });
 
 /**
@@ -382,7 +460,7 @@ const useExecute = async (
  * const sqlClient = createClient({ token: 'your-api-token', options: { debug: true } });
  *
  * // Create a new database
- * const newDatabase = await sqlClient.createDatabase('my-new-db');
+ * const { data: newDatabase } = await sqlClient.createDatabase('my-new-db');
  *
  * // Get all databases
  * const allDatabases = await sqlClient.getDatabases();
@@ -397,77 +475,13 @@ const client: CreateAzionSQLClient = (
   const debugValue = resolveDebug(config?.options?.debug);
 
   const client: AzionSQLClient = {
-    /**
-     * Creates a new database.
-     *
-     * @param {string} name - Name of the new database.
-     * @returns {Promise<AzionDatabase | null>} The created database object or null if creation failed.
-     *
-     * @example
-     * const newDatabase = await sqlClient.createDatabase('my-new-db');
-     * if (newDatabase) {
-     *   console.log(`Database created with ID: ${newDatabase.id}`);
-     * } else {
-     *   console.error('Failed to create database');
-     * }
-     */
-    createDatabase: (name: string): Promise<AzionDatabase | null> =>
+    createDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
       createDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
-
-    /**
-     * Deletes a database by its ID.
-     *
-     * @param {number} id - ID of the database to delete.
-     * @returns {Promise<AzionDeletedDatabase | null>} Object confirming deletion or null if deletion failed.
-     *
-     * @example
-     * const result = await sqlClient.deleteDatabase(123);
-     * if (result) {
-     *   console.log(`Database ${result.id} deleted successfully`);
-     * } else {
-     *   console.error('Failed to delete database');
-     * }
-     */
-    deleteDatabase: (id: number): Promise<AzionDeletedDatabase | null> =>
+    deleteDatabase: (id: number): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> =>
       deleteDatabaseMethod(tokenValue, id, { ...config, debug: debugValue }),
-
-    /**
-     * Retrieves a database by its Name.
-     *
-     * @param {string} name - Name of the database to retrieve.
-     * @returns {Promise<AzionDatabase | null>} The retrieved database object or null if not found.
-     *
-     * @example
-     * const database = await sqlClient.getDatabase('my-db');
-     * if (database) {
-     *   console.log(`Retrieved database: ${database.name}`);
-     * } else {
-     *   console.error('Database not found');
-     * }
-     */
-    getDatabase: (name: string): Promise<AzionDatabase | null> =>
+    getDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
       getDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
-
-    /**
-     * Retrieves a list of databases with optional filtering and pagination.
-     *
-     * @param {AzionDatabaseCollectionOptions} [params] - Optional parameters for filtering and pagination.
-     * @param {string} [params.ordering] - Field to order the results by.
-     * @param {number} [params.page] - Page number for pagination.
-     * @param {number} [params.page_size] - Number of items per page.
-     * @param {string} [params.search] - Search term to filter databases.
-     * @returns {Promise<AzionDatabase[] | null>} Array of database objects or null if retrieval failed.
-     *
-     * @example
-     * const databases = await sqlClient.getDatabases({ page: 1, page_size: 10, search: 'test' });
-     * if (databases) {
-     *   console.log(`Retrieved ${databases.length} databases`);
-     *   databases.forEach(db => console.log(`- ${db.name} (ID: ${db.id})`));
-     * } else {
-     *   console.error('Failed to retrieve databases');
-     * }
-     */
-    getDatabases: (params?: AzionDatabaseCollectionOptions): Promise<AzionDatabase[] | null> =>
+    getDatabases: (params?: AzionDatabaseCollectionOptions): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> =>
       getDatabasesMethod(tokenValue, params, { ...config, debug: debugValue }),
   } as const;
 
@@ -479,7 +493,7 @@ export {
   deleteDatabaseWrapper as deleteDatabase,
   getDatabaseWrapper as getDatabase,
   getDatabasesWrapper as getDatabases,
-  listTablesWrapper as listTables,
+  listTablesWrapper as getTables,
   useExecute,
   useQuery,
 };

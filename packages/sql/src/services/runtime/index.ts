@@ -1,5 +1,5 @@
 import { Azion } from 'azion/types';
-import { AzionClientOptions, NonSelectQueryResult, QueryResult } from '../../types';
+import { AzionClientOptions, QueryResult } from '../../types';
 
 export const getAzionSql = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,11 +10,16 @@ export class InternalAzionSql {
   private database: Azion.Sql.Database | null = null;
 
   constructor() {
-    this.database = getAzionSql().Database;
+    this.database = getAzionSql()?.Database || null;
   }
 
-  mapperQuery = async (resultRows: { statement: string; result: Azion.Sql.Rows }[]) => {
-    const resultStatements: QueryResult[] | NonSelectQueryResult[] = [];
+  /**
+   * Maps query results to a structured format.
+   * @param {Array<{ statement: string; result: Azion.Sql.Rows }>} resultRows - The result rows from the query.
+   * @returns {Promise<Array<QueryResult | NonSelectQueryResult>>} The mapped query results.
+   */
+  mapperQuery = async (resultRows: { statement: string; result: Azion.Sql.Rows }[]): Promise<QueryResult[]> => {
+    const resultStatements: QueryResult[] = [];
     for (const row of resultRows) {
       const columns = row.result.columnCount();
       if (columns === 0) {
@@ -43,6 +48,13 @@ export class InternalAzionSql {
     return Promise.resolve(resultStatements);
   };
 
+  /**
+   * Executes a series of SQL statements on the specified database.
+   * @param {string} name - The name of the database.
+   * @param {string[]} statements - The SQL statements to execute.
+   * @param {AzionClientOptions} [options] - Optional client options.
+   * @returns {Promise<Array<{ statement: string; result: Azion.Sql.Rows }>>} The results of the executed statements.
+   */
   query = async (
     name: string,
     statements: string[],

@@ -153,7 +153,7 @@ console.log(parsedRequest);
 
 ```typescript
 import { parseRequest } from 'azion/utils';
-import { ParsedRequest } from 'azion/utils/types';
+import type { ParsedRequest } from 'azion/utils';
 
 const parsedRequest: ParsedRequest = await parseRequest(event);
 console.log(parsedRequest);

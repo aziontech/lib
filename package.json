@@ -1,7 +1,10 @@
 {
   "name": "azion",
-  "version": "1.6.0",
+  "version": "1.7.0-stage.12",
   "description": "Azion Packages for Edge Computing.",
+  "bin": {
+    "azion": "./bin/azion"
+  },
   "scripts": {
     "prepare": "husky",
     "compile": "npm run compile --workspaces",
@@ -10,7 +13,9 @@
     "format": "npm run prettier --workspaces --if-present",
     "format:check": "npm run prettier:check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "build": "tsup"
+    "download:cli": "node ./cli/scripts/download-cli.mjs",
+    "postinstall": "npm run download:cli",
+    "build": "npm run download:cli && npm run compile"
   },
   "keywords": [
     "azion",
@@ -67,13 +72,19 @@
   "files": [
     "README.md",
     "package.json",
-    "packages/**/dist/**/*"
+    "packages/**/dist/**/*",
+    "cli/**/*"
   ],
   "exports": {
     ".": {
       "require": "./packages/client/dist/index.js",
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
+    },
+    "./applications": {
+      "require": "./packages/applications/dist/index.js",
+      "import": "./packages/applications/dist/index.mjs",
+      "types": "./packages/applications/dist/index.d.ts"
     },
     "./types": {
       "require": "./packages/types/dist/index.js",
@@ -124,10 +135,18 @@
       "require": "./packages/utils/dist/index.js",
       "import": "./packages/utils/dist/index.mjs",
       "types": "./packages/utils/dist/index.d.ts"
+    },
+    "./domains": {
+      "require": "./packages/domains/dist/index.js",
+      "import": "./packages/domains/dist/index.mjs",
+      "types": "./packages/domains/dist/index.d.ts"
     }
   },
   "typesVersions": {
     "*": {
+      "application": [
+        "./packages/application/dist/index.d.ts"
+      ],
       "client": [
         "./packages/client/dist/index.d.ts"
       ],
@@ -157,7 +176,14 @@
       ],
       "utils": [
         "./packages/utils/dist/index.d.ts"
+      ],
+      "domains": [
+        "./packages/domains/dist/index.d.ts"
       ]
     }
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "progress": "^2.0.3"
   }
 }

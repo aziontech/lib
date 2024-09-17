@@ -7,15 +7,18 @@ These libraries are designed to be versatile and can be used both within and out
 ## Table of Contents
 
 - [Installation](#installation)
-- [Products](#products)
+- [Usage](#usage)
   - [Client](#client)
-  - [Storage](#storage)
-  - [SQL](#sql)
-  - [Purge](#purge)
-- [Utilities](#utilities)
-  - [Cookies](#cookies)
-  - [WASM Image Processor](#wasm-image-processor)
-  - [Utils](#utils)
+  - [Storage](./packages/storage/README.md)
+  - [SQL](./packages/sql/README.md)
+  - [Purge](./packages/purge/README.md)
+  - [Domains](./packages/domains/README.md)
+  - [Applications](./packages/applications/README.md)
+- Utilities
+  - [Cookies](./packages/cookies/README.md)
+  - [Jwt](./packages/jwt/README.md)
+  - [WASM Image Processor](./packages/wasm-image-processor/README.md)
+  - [Utils](./packages/utils/README.md)
 - [Types](#types)
 - [AzionConfig](#config)
 - [Contributing](#contributing)
@@ -34,7 +37,63 @@ or
 yarn add azion
 ```
 
-## Products
+## Usage
+
+### Using the Client vs. Independent Package Functions
+
+The Azion client provides a unified interface to interact with all products and services. You can use the client to access and manage all functionalities across Storage, SQL, Purge, and more. When using the client, you can pass configurations (e.g., `token`, `debug`) explicitly as parameters.
+
+```javascript
+import { createClient } from 'azion';
+
+const client = createClient({ token: 'your-api-token', debug: true });
+
+// Example: Creating a database via the client
+const { data: newDatabase, error } = await client.sql.createDatabase('my-new-database');
+if (data) {
+  console.log(`Database created with ID: ${newDatabase.id}`);
+} else {
+  console.error('Failed to create database', error);
+}
+```
+
+Alternatively, if you prefer to use individual functions directly from each package, you need to configure tokens and settings via environment variables (e.g., using a `.env` file). Each module has its own internal client that manages the interaction.
+
+Example with explicit client for a specific module:
+
+```typescript
+import { createClient, StorageClient } from 'azion/storage';
+
+const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
+
+const { data, error }: AzionStorageResponse<AzionBucket> = await client.createBucket({
+  name: 'my-new-bucket',
+  edge_access: 'public',
+});
+
+if (data) {
+  console.log(`Bucket created with name: ${data.name}`);
+} else {
+  console.error('Failed to create bucket', error);
+}
+```
+
+You can also use individual functions without any client by importing them directly from the package. This approach requires environment variables for configuration:
+
+```javascript
+import { createDatabase } from 'azion/sql';
+
+const { data, error } = await createDatabase('my-new-database', { debug: true });
+if (data) {
+  console.log(`Database created with ID: ${data.id}`);
+} else {
+  console.error('Failed to create database', error);
+}
+```
+
+More information on specific functionalities and usage can be found in the README file of each package (e.g., [Storage README](./packages/storage/README.md), [SQL README](./packages/sql/README.md), etc.).
+
+This flexibility allows you to either manage everything through the client for simplicity or call specific functions from each package with more control over environment configurations.
 
 ### Client
 
@@ -50,21 +109,21 @@ import { createClient } from 'azion';
 const client = createClient({ token: 'your-api-token', debug: true });
 
 // Storage
-const newBucket = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket, error } = await client.storage.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
 console.log(`Bucket created with name: ${newBucket.name}`);
 
-const allBuckets = await client.storage.getBuckets();
-console.log(`Retrieved ${allBuckets.length} buckets`);
+const { data: allBuckets, error } = await client.storage.getBuckets();
+console.log(`Retrieved ${allBuckets.count} buckets`);
 
 // SQL
-const newDatabase = await client.sql.createDatabase('my-new-db');
+const { data: newDatabase, error } = await client.sql.createDatabase('my-new-db');
 console.log(`Database created with ID: ${newDatabase.id}`);
 
-const allDatabases = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
+const { data: allDatabases, error } = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.count} databases`);
 
 // Purge
-const purgeResult = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const { data: purgeResult, error } = await client.purge.purgeURL(['http://example.com/image.jpg']);
 console.log(`Purge successful: ${purgeResult.items}`);
 ```
 
@@ -72,288 +131,36 @@ console.log(`Purge successful: ${purgeResult.items}`);
 
 ```typescript
 import { createClient } from 'azion';
-import { AzionClient, Bucket, AzionDatabase, Purge } from 'azion/types';
+import type { AzionClient } from 'azion/client';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse, AzionDatabaseCollection } from 'azion/sql';
+import type { AzionStorageResponse, AzionBucket, AzionBucketCollection } from 'azion/storage';
+import type { AzionPurgeResponse, AzionPurge } from 'azion/purge';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
 // Storage
-const newBucket: Bucket | null = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket, error }: AzionStorageResponse<AzionBucket> = await client.createBucket({
+  name: 'my-new-bucket',
+  edge_access: 'public',
+});
 console.log(`Bucket created with name: ${newBucket.name}`);
 
-const allBuckets: Bucket[] | null = await client.storage.getBuckets();
-console.log(`Retrieved ${allBuckets.length} buckets`);
+const { data: allBuckets, error }: AzionStorageResponse<AzionBucketCollection> = await client.getBuckets();
+console.log(`Retrieved ${allBuckets.count} buckets`);
 
 // SQL
-const newDatabase: AzionDatabase | null = await client.sql.createDatabase('my-new-db');
+const { data: newDatabase, error }: AzionDatabaseResponse<AzionDatabase> = await client.sql.createDatabase('my-new-db');
 console.log(`Database created with ID: ${newDatabase.id}`);
 
-const allDatabases: AzionDatabase[] | null = await client.sql.getDatabases();
-console.log(`Retrieved ${allDatabases.length} databases`);
+const { data: allDatabases, error }: AzionDatabaseResponse<AzionDatabaseCollections> = await client.sql.getDatabases();
+console.log(`Retrieved ${allDatabases.count} databases`);
 
 // Purge
-const purgeResult: Purge | null = await client.purge.purgeURL(['http://example.com/image.jpg']);
+const { data: purgeResult, error }: AzionPurgeResponse<AzionPurge> = await client.purge.purgeURL([
+  'http://example.com/image.jpg',
+]);
 console.log(`Purge successful: ${purgeResult.items}`);
 ```
-
-### Storage
-
-The Storage library provides methods to interact with Azion Edge Storage.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { createClient } from 'azion/storage';
-
-const client = createClient({ token: 'your-api-token', debug: true });
-
-const newBucket = await client.createBucket('my-new-bucket', 'public');
-if (newBucket) {
-  console.log(`Bucket created with name: ${newBucket.name}`);
-}
-
-const allBuckets = await client.getBuckets();
-if (allBuckets) {
-  console.log(`Retrieved ${allBuckets.length} buckets`);
-}
-```
-
-**TypeScript:**
-
-```typescript
-import { createClient } from 'azion/storage';
-import { StorageClient, Bucket } from 'azion/storage/types';
-
-const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
-
-const newBucket: Bucket | null = await client.createBucket('my-new-bucket', 'public');
-if (newBucket) {
-  console.log(`Bucket created with name: ${newBucket.name}`);
-}
-
-const allBuckets: Bucket[] | null = await client.getBuckets();
-if (allBuckets) {
-  console.log(`Retrieved ${allBuckets.length} buckets`);
-}
-```
-
-Read more in the [Storage README](./packages/storage/README.md).
-
-### SQL
-
-The SQL library provides methods to interact with Azion Edge SQL databases.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { createClient } from 'azion/sql';
-
-const client = createClient({ token: 'your-api-token', debug: true });
-
-const newDatabase = await client.createDatabase('my-new-db');
-if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
-}
-
-const allDatabases = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
-}
-```
-
-**TypeScript:**
-
-```typescript
-import { createClient } from 'azion/sql';
-import { AzionSQLClient, AzionDatabase } from 'azion/sql/types';
-
-const client: AzionSQLClient = createClient({ token: 'your-api-token', debug: true });
-
-const newDatabase: AzionDatabase | null = await client.createDatabase('my-new-db');
-if (newDatabase) {
-  console.log(`Database created with ID: ${newDatabase.id}`);
-}
-
-const allDatabases: AzionDatabase[] | null = await client.getDatabases();
-if (allDatabases) {
-  console.log(`Retrieved ${allDatabases.length} databases`);
-}
-```
-
-Read more in the [SQL README](./packages/sql/README.MD).
-
-### Purge
-
-The Purge library provides methods to purge URLs, Cache Keys, and Wildcard expressions from the Azion Edge cache.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { createClient } from 'azion/purge';
-
-const client = createClient({ token: 'your-api-token', debug: true });
-
-const purgeResult = await client.purgeURL(['http://example.com/image.jpg']);
-if (purgeResult) {
-  console.log(`Purge successful: ${purgeResult.items}`);
-}
-
-const cacheKeyResult = await client.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
-if (cacheKeyResult) {
-  console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
-}
-```
-
-**TypeScript:**
-
-```typescript
-import { createClient } from 'azion/purge';
-import { PurgeClient, Purge } from 'azion/purge/types';
-
-const client: PurgeClient = createClient({ token: 'your-api-token', debug: true });
-
-const purgeResult: Purge | null = await client.purgeURL(['http://example.com/image.jpg']);
-if (purgeResult) {
-  console.log(`Purge successful: ${purgeResult.items}`);
-}
-
-const cacheKeyResult: Purge | null = await client.purgeCacheKey(['my-cache-key-1', 'my-cache-key-2']);
-if (cacheKeyResult) {
-  console.log(`Cache key purge successful: ${cacheKeyResult.items}`);
-}
-```
-
-Read more in the [Purge README](./packages/purge/README.md).
-
-## Utilities
-
-### Cookies
-
-The Cookies library provides methods to get and set cookies.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { getCookie, setCookie } from 'azion/cookies';
-
-const myCookie = getCookie(request, 'my-cookie');
-setCookie(response, 'my-cookie', 'cookie-value', { maxAge: 3600 });
-```
-
-**TypeScript:**
-
-```typescript
-import { getCookie, setCookie } from 'azion/cookies';
-import { CookieOptions } from 'azion/cookies/types';
-
-const myCookie: string | undefined = getCookie(request, 'my-cookie');
-const options: CookieOptions = { maxAge: 3600 };
-setCookie(response, 'my-cookie', 'cookie-value', options);
-```
-
-Read more in the [Cookies README](./packages/cookies/README.md).
-
-### WASM Image Processor
-
-The WASM Image Processor library provides methods to process images using WebAssembly.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { loadImage } from 'azion/wasm-image-processor';
-
-const image = await loadImage('https://example.com/image.jpg');
-image.resize(0.5, 0.5);
-const image = image.getImageResponse('jpeg');
-console.log(imageResponse);
-```
-
-**TypeScript:**
-
-```typescript
-import { loadImage } from 'azion/wasm-image-processor';
-import { WasmImage } from 'azion/wasm-image-processor/types';
-
-const image: WasmImage = await loadImage('https://example.com/image.jpg');
-image.resize(0.5, 0.5);
-const imageResponse = image.getImageResponse('jpeg');
-console.log(imageResponse);
-```
-
-Read more in the [WASM Image Processor README](./packages/wasm-image-processor/README.md).
-
-### Utils
-
-The Utils package provides a set of utility functions that simplify common tasks when working with Azion edge functions.
-
-#### Available Functions
-
-- **`mountSPA(requestURL: RequestURL): Promise<Response>`**  
-  Handles routing for Single-page Applications (SPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
-
-- **`mountMPA(requestURL: RequestURL): Promise<Response>`**  
-  Handles routing for Multi-page Applications (MPA) by determining if the incoming request is for a static asset or an application route. It mounts the appropriate request URL for fetching the required resource.
-
-- **`parseRequest(event: FetchEvent): Promise<ParsedRequest>`**  
-  Parses and logs the details of an incoming request, extracting key information such as headers, cookies, body, and client data. It provides a structured object with these details for further processing or logging.
-
-#### Examples
-
-**JavaScript:**
-
-```javascript
-import { mountSPA, mountMPA, parseRequest } from 'azion/utils';
-
-// Handle SPA routing
-const myApp1 = await mountSPA('https://example.com/');
-console.log(myApp1);
-// Fetches: file:///index.html
-// Response object representing the content of index.html
-
-// Handle MPA routing
-const myApp2 = await mountMPA('https://example.com/about');
-console.log(myApp2);
-// Fetches: file:///about/index.html
-// Response object representing the content of about/index.html
-
-// Parse a request
-const parsedRequest = await parseRequest(event);
-console.log(parsedRequest);
-```
-
-**TypeScript:**
-
-```typescript
-import { mountSPA, mountMPA, parseRequest } from 'azion/utils';
-import { ParsedRequest } from 'azion/utils/types';
-
-// Handle SPA routing
-const myApp1: Response = await mountSPA('https://example.com/');
-console.log(myApp1);
-// Fetches: file:///index.html
-// Response object representing the content of index.html
-
-// Handle MPA routing
-const myApp2: Response = await mountMPA('https://example.com/about');
-console.log(myApp2);
-// Fetches: file:///about/index.html
-// Response object representing the content of about/index.html
-
-// Parse a request
-const parsedRequest: ParsedRequest = await parseRequest(event);
-console.log(parsedRequest);
-```
-
-Read more in the [Utils README](./packages/utils/README.md).
 
 ## Types
 
@@ -387,6 +194,7 @@ This is the first example using JSDoc to provide type information:
 ```javascript
 /** @type {import('azion').AzionConfig} */
 const config = {
+  build: {},
   domain: {},
   origin: [],
   cache: [],
@@ -403,6 +211,7 @@ This is the second example using the `defineConfig` function to enforce types an
 import { defineConfig } from 'azion';
 
 const config = defineConfig({
+  build: {},
   domain: {},
   origin: [],
   cache: [],
@@ -418,3 +227,4 @@ Read more in the [AzionConfig README](./packages/config/README.md).
 ## Contributing
 
 Feel free to submit issues or pull requests to improve the functionality or documentation.
+AzionDomainCollectionAzionDomainCollection

@@ -1,12 +1,12 @@
 import { getCookie } from './getCookie';
-import { setCookie } from './setCookie';
+import { CookieOptions, setCookie } from './setCookie';
 
 const cookies = {
   getCookie,
   setCookie,
 };
 
-export { getCookie, setCookie };
+export { CookieOptions, getCookie, setCookie };
 
 export default cookies;
 

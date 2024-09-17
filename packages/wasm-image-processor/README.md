@@ -51,7 +51,7 @@ const image = await loadImage('https://example.com/image.jpg');
 
 ```typescript
 import { loadImage } from 'azion/wasm-image-processor';
-import { WasmImage } from 'azion/wasm-image-processor/types';
+import type { WasmImage } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 ```
@@ -71,7 +71,7 @@ const resizedImage = image.resize(0.5, 0.5);
 
 ```typescript
 import { loadImage } from 'azion/wasm-image-processor';
-import { WasmImage } from 'azion/wasm-image-processor/types';
+import type { WasmImage } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const resizedImage: WasmImage = image.resize(0.5, 0.5);
@@ -93,7 +93,7 @@ console.log(imageResponse);
 
 ```typescript
 import { loadImage } from 'azion/wasm-image-processor';
-import { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor/types';
+import type { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const imageResponse: Response = image.getImageResponse('jpeg' as SupportedImageFormat);
@@ -115,7 +115,7 @@ image.clean();
 
 ```typescript
 import { loadImage } from 'azion/wasm-image-processor';
-import { WasmImage } from 'azion/wasm-image-processor/types';
+import type { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 image.clean();
@@ -139,7 +139,7 @@ clean(resizedImage);
 
 ```typescript
 import { loadImage, resize, getImageResponse, clean } from 'azion/wasm-image-processor';
-import { PhotonImage } from 'azion/wasm-image-processor/types';
+import type { WasmImage, PhotonImage } from 'azion/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const resizedImage: PhotonImage = resize(image.image, 0.5, 0.5);

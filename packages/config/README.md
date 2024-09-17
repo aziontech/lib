@@ -7,9 +7,12 @@ This module provides a function to configure and validate options for the Azion 
 - [Installation](#installation)
 - [Usage](#usage)
   - [Example Configuration](#example-configuration)
+  - [Example Process Configuration](#example-process-configuration)
 - [API Reference](#api-reference)
   - [`defineConfig`](#defineconfig)
+  - [`processConfig`](#processconfig)
 - [Types](#types)
+  - [`AzionBuild`](#azionbuild)
   - [`AzionConfig`](#azionconfig)
   - [`AzionDomain`](#aziondomain)
   - [`AzionOrigin`](#azionorigin)
@@ -58,7 +61,7 @@ const config = defineConfig({
     name: 'example.com',
     cnameAccessOnly: false,
     cnames: ['www.example.com', 'cdn.example.com'],
-    edgeApplicationId: 12345,
+    Id: 12345,
     edgeFirewallId: 67890,
     digitalCertificateId: null,
     mtls: {
@@ -115,11 +118,41 @@ const config = defineConfig({
 });
 ```
 
+### Example Process Configuration
+
+```javascript
+import { processConfig } from 'azion';
+
+const config = {...};
+
+const manifest = processConfig(config);
+
+console.log(manifest);
+```
+
+```typescript
+import { AzionConfig, processConfig } from 'azion';
+
+const config: AzionConfig = {...};
+
+const manifest = processConfig(config);
+
+console.log(manifest);
+```
+
 ## API Reference
 
 ### `defineConfig`
 
 Configures and validates the options for the Azion Edge Application.
+
+**Parameters:**
+
+- `config: AzionConfig` - The configuration object for the Azion Edge Application.
+
+### `processConfig`
+
+Processes the configuration object and returns a manifest.
 
 **Parameters:**
 
@@ -131,11 +164,26 @@ Configures and validates the options for the Azion Edge Application.
 
 **Properties:**
 
-- `domain: AzionDomain` - The domain object.
+- `build?: AzionBuild` - The build configuration.
+- `domain?: AzionDomain` - The domain object.
 - `origin?: AzionOrigin[]` - List of origins.
 - `cache?: AzionCache[]` - List of cache settings.
 - `rules?: AzionRules[]` - List of edge rules.
 - `purge?: AzionPurge[]` - List of URLs or CacheKeys to purge.
+
+### `AzionBuild`
+
+Type definition for the build configuration.
+
+**Properties:**
+
+- `builder?: 'esbuild' | 'webpack'` - The builder to use.
+- `preset?: { name: string; }` - The preset to use.
+- `entry?: string` - The entry file.
+- `polyfills?: boolean` - Whether to include polyfills.
+- `worker?: boolean` - Whether to build a owner worker.
+- `custom?: Record<string, any>` - Custom build configuration.
+- `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - Memory file system configuration.
 
 ### `AzionDomain`
 
@@ -146,6 +194,7 @@ Type definition for the domain configuration.
 - `name: string` - The domain name.
 - `cnameAccessOnly?: boolean` - Whether to restrict access only to CNAMEs.
 - `cnames?: string[]` - List of CNAMEs for the domain.
+- `id?: number` - ID of the edge application.
 - `edgeApplicationId?: number` - ID of the edge application.
 - `edgeFirewallId?: number` - ID of the edge firewall.
 - `digitalCertificateId?: string | number | null` - ID of the digital certificate.
@@ -237,6 +286,7 @@ Type definition for the response rule configuration.
 - `match: string` - Match criteria for the rule.
 - `variable?: string` - Variable to be used in the match.
 - `behavior?: ResponseBehavior` - Behavior to apply when the rule matches.
+
   - `setCookie?: string | null` - Set a cookie.
   - `setHeaders?: string[]` - Set headers.
   - `deliver?: boolean | null` - Deliver the content.
@@ -253,6 +303,7 @@ Type definition for the response rule configuration.
   Type definition for the rule set.
 
   **Properties:**
+
   - `request: AzionRequestRule[]` - Ruleset for Request phase.
   - `response?: AzionResponseRule[]` - Ruleset for Response phase.
 

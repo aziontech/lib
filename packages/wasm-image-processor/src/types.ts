@@ -1,4 +1,4 @@
-import { PhotonImage } from './photon/lib/index';
+import { PhotonImage as PhotonImageType } from './photon/lib/index';
 
 export interface WasmImage {
   /** The underlying PhotonImage object. */
@@ -26,3 +26,5 @@ export interface WasmImage {
 }
 
 export type SupportedImageFormat = 'webp' | 'jpeg' | 'png';
+
+export type PhotonImage = PhotonImageType;
