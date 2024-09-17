@@ -7,6 +7,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
+    "moduleResolution": "node",
     "paths": {
       "azion": ["../client/src/index.ts"],
       "azion/sql": ["../sql/src/index.ts"],

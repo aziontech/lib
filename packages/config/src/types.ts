@@ -9,7 +9,9 @@ export type AzionDomain = {
   /** List of CNAMEs associated with the domain */
   cnames?: string[];
   /** Associated edge application ID */
-  Id?: number;
+  id?: number;
+  /** Associated edge appliaction ID */
+  edgeApplicationId?: number;
   /** Associated edge firewall ID */
   edgeFirewallId?: number;
   /** Digital certificate ID */
@@ -262,10 +264,37 @@ export type AzionPurge = {
   layer?: 'edge_caching' | 'l2_caching';
 };
 
+export type AzionBuild = {
+  /** Bunlder to be used */
+  builder?: 'webpack' | 'esbuild';
+  /** Entry file for the build */
+  entry?: string;
+  /** Preset configuration e.g next */
+  preset?: {
+    name: string;
+  };
+  /** MemoryFS configuration */
+  memoryFS?: {
+    /** List of directories to be injected */
+    injectionDirs: string[];
+    /** Remove path prefix */
+    removePathPrefix: string;
+  };
+  /** Polyfills enabled */
+  polyfills?: boolean;
+  /** if true will use the owner worker with addEventListener */
+  worker?: boolean;
+  /** Custom configuration to bundlers e.g minify: true */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  custom?: Record<string, any>;
+};
+
 /**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
+  /** Build configuration */
+  build?: AzionBuild;
   /** Domain configuration */
   domain?: AzionDomain;
   /** Origin configurations */

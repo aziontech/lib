@@ -9,12 +9,21 @@
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "test": "jest --clearCache && jest -c jest.config.js .",
+    "test:watch": "jest -c jest.config.js . --watch",
+    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
   },
   "author": "aziontech",
   "license": "MIT",
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-errors": "^3.0.0",
+    "ajv-keywords": "^5.1.0",
+    "mathjs": "^13.1.1"
+  }
 }

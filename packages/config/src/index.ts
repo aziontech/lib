@@ -1,3 +1,4 @@
+import { processConfig, validateConfig } from './processConfig/index';
 import { AzionConfig } from './types';
 
 /**
@@ -5,6 +6,18 @@ import { AzionConfig } from './types';
  *
  * @param {AzionConfig} config - The configuration object for the Azion Edge Application.
  *
+ * @param {Object} [config.build] - Configuration for the build.
+ * @param {string} config.build.builder - Bundler to use for the build.
+ * @param {string} config.build.entry - Entry file for the build.
+ * @param {Object} config.build.preset - Preset configuration for the build.
+ * @param {string} config.build.preset.name - Name of the preset.
+ * @param {Object} [config.build.memoryFS] - Configuration for the MemoryFS.
+ * @param {string[]} config.build.memoryFS.injectionDirs - List of directories to inject.
+ * @param {string} config.build.memoryFS.removePathPrefix - Path prefix to remove.
+ * @param {boolean} [config.build.polyfills] - Whether to enable polyfills.
+ * @param {boolean} [config.build.worker] - Whether to use the owner worker with addEventListener.
+ * @param {Object} [config.build.custom] - Custom configuration for the bundler.
+ * @param {Object} [config.build.custom.*] - Custom configuration options for the bundler.
  * @param {Object} [config.domain] - Configuration for the domain.
  * @param {string} config.domain.name - The domain name.
  * @param {boolean} [config.domain.cnameAccessOnly] - Whether to restrict access only to CNAMEs.
@@ -125,6 +138,13 @@ import { AzionConfig } from './types';
  *
  * @example
  * const config = AzionConfig({
+ *   build: {
+ *    builder: 'webpack',
+ *    preset: {
+ *     name: 'react',
+ *    },
+ *    polyfills: true,
+ *   },
  *   domain: {
  *     name: 'example.com',
  *     cnameAccessOnly: false,
@@ -186,8 +206,11 @@ import { AzionConfig } from './types';
  *   // ... other configurations
  * });
  */
-export function defineConfig(config: AzionConfig): AzionConfig {
+function defineConfig(config: AzionConfig): AzionConfig {
+  validateConfig(config);
   return config;
 }
+
+export { defineConfig, processConfig };
 
 export type * from './types';
