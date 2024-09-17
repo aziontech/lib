@@ -1,3 +1,10 @@
+## [1.7.0-stage.12](https://github.com/aziontech/lib/compare/v1.7.0-stage.11...v1.7.0-stage.12) (2024-09-17)
+
+
+### Features
+
+* process config in azion/config (#41) ([9a6afc0](https://github.com/aziontech/lib/commit/9a6afc0233f356e0a20f60bcf39ed03347689fea))
+
 ## [1.7.0-stage.11](https://github.com/aziontech/lib/compare/v1.7.0-stage.10...v1.7.0-stage.11) (2024-09-10)
 
 
