@@ -7,7 +7,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  * @description This class is implementation of the Domain ProcessConfig Strategy.
  */
 class DomainProcessConfigStrategy extends ProcessConfigStrategy {
-  generate(config: AzionConfig) {
+  transformToManifest(config: AzionConfig) {
     const domain = config?.domain;
     if (!domain) {
       return {};
@@ -51,6 +51,25 @@ class DomainProcessConfigStrategy extends ProcessConfigStrategy {
       domainSetting.is_mtls_enabled = false;
     }
     return domainSetting;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+    const domain = payload.domain || {};
+    transformedPayload.domain = {
+      name: domain.name,
+      cnameAccessOnly: domain.cname_access_only,
+      cnames: domain.cnames,
+      digitalCertificateId: domain.digital_certificate_id,
+      edgeApplicationId: domain.edge_application_id,
+      edgeFirewallId: domain.edge_firewall_id,
+      mtls: {
+        verification: domain.mtls_verification,
+        trustedCaCertificateId: domain.mtls_trusted_ca_certificate_id,
+        crlList: domain.crl_list,
+      },
+    };
+    return transformedPayload.domain;
   }
 }
 

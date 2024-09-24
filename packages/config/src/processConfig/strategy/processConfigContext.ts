@@ -15,12 +15,35 @@ class ProcessConfigContext {
   setStrategy(type: string, strategy: ProcessConfigStrategy): void {
     this.strategies[type] = strategy;
   }
+  /**
+   * Transform to manifest is responsible for transforming the config to the manifest.
+   * @param config AzionConfig
+   * @param context manifest object
+   * @returns
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  generate(config: AzionConfig, context: any) {
+  transformToManifest(config: AzionConfig, context: any) {
     Object.keys(this.strategies).forEach((key) => {
-      context[key] = this.strategies[key].generate(config, context);
+      context[key] = this.strategies[key].transformToManifest(config, context);
     });
     return context;
+  }
+
+  /**
+   * Transform to config is responsible for transforming the payload to the config.
+   * @param payload Manifest object
+   * @param transformedPayload AzionConfig object
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformToConfig(payload: any, transformedPayload: AzionConfig): AzionConfig {
+    Object.keys(this.strategies).forEach((key) => {
+      transformedPayload[key as keyof AzionConfig] = this.strategies[key].transformToConfig(
+        payload,
+        transformedPayload,
+      );
+    });
+    return transformedPayload;
   }
 }
 

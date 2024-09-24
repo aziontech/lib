@@ -7,13 +7,20 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  * @description This class is implementation of the Build Process Config Strategy.
  */
 class BuildProcessConfigStrategy extends ProcessConfigStrategy {
-  generate(config: AzionConfig) {
+  transformToManifest(config: AzionConfig) {
     const build = config?.build;
     if (!build) {
       return {};
     }
     const payload: AzionBuild = build;
     return payload;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+    const build = payload?.build;
+    transformedPayload.build = build;
+    return transformedPayload.build;
   }
 }
 
