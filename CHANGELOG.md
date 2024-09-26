@@ -1,3 +1,10 @@
+## [1.8.0-stage.3](https://github.com/aziontech/lib/compare/v1.8.0-stage.2...v1.8.0-stage.3) (2024-09-26)
+
+
+### Bug Fixes
+
+* remove logs bin install ([754df4b](https://github.com/aziontech/lib/commit/754df4ba47cab262fb1a30c5f70cbc074cd6b3f4))
+
 ## [1.8.0-stage.2](https://github.com/aziontech/lib/compare/v1.8.0-stage.1...v1.8.0-stage.2) (2024-09-26)
 
 
