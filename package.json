@@ -183,7 +183,6 @@
     }
   },
   "dependencies": {
-    "chalk": "^5.3.0",
     "progress": "^2.0.3"
   }
 }
