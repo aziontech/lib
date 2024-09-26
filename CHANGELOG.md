@@ -1,3 +1,16 @@
+## [1.8.0-stage.6](https://github.com/aziontech/lib/compare/v1.8.0-stage.5...v1.8.0-stage.6) (2024-09-26)
+
+
+### Features
+
+* new azion cli version (#47) ([191dd9c](https://github.com/aziontech/lib/commit/191dd9ca4b991969e2b142a9e7bfd9ffc4da05d1))
+
+
+### Bug Fixes
+
+* handle download and extraction errors gracefully (#49) ([1aab72e](https://github.com/aziontech/lib/commit/1aab72e2ec04ed46081ab5b171bf81dd8501b76a))
+* improve configuration validation (#48) ([d7ee13e](https://github.com/aziontech/lib/commit/d7ee13e0f124821e2af58b3e4d44ba5ccf932442))
+
 ## [1.8.0-stage.5](https://github.com/aziontech/lib/compare/v1.8.0-stage.4...v1.8.0-stage.5) (2024-09-26)
 
 
