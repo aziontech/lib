@@ -173,16 +173,61 @@ async function downloadAndExtract(platform) {
   }
 }
 
+function checkExistingCliVersion() {
+  try {
+    const output = execSync('azion -v', { stdio: 'pipe' }).toString().trim();
+    const versionMatch = output.match(/v(\d+\.\d+\.\d+)/);
+    return versionMatch ? versionMatch[1] : null;
+  } catch (error) {
+    return null;
+  }
+}
+
 async function main() {
   try {
-    log.highlight(`Installing Azion CLI v${version}`);
+    log.highlight(`Checking Azion CLI v${version}`);
     console.log();
+
+    const existingVersion = checkExistingCliVersion();
+    if (existingVersion) {
+      log.info(`Azion CLI is already installed (version ${existingVersion})`);
+      if (existingVersion === version) {
+        log.success(`Azion CLI v${version} is already installed and up to date.`);
+        process.exit(0);
+      } else {
+        log.info(`Current version (${existingVersion}) differs from desired (${version}). Proceeding with update...`);
+      }
+    }
+
+    const platform = getPlatform();
+    const finalName = platform.os === 'windows' ? 'azion.exe' : 'azion';
+    const finalPath = path.join(binDir, finalName);
+
+    if (fs.existsSync(finalPath)) {
+      log.info(`Azion CLI binary found at: ${chalk.cyan(finalPath)}`);
+
+      // Check current binary version
+      try {
+        const currentVersion = execSync(`"${finalPath}" -v`).toString().trim();
+        const versionMatch = currentVersion.match(/v(\d+\.\d+\.\d+)/);
+        if (versionMatch && versionMatch[1] === version) {
+          log.success(`Azion CLI v${version} is already installed and up to date.`);
+          process.exit(0);
+        } else {
+          log.info(
+            `Current version (${versionMatch ? versionMatch[1] : 'unknown'}) differs from desired (${version}). Updating...`,
+          );
+        }
+      } catch (error) {
+        log.warning(`Unable to verify current version. Proceeding with installation.`);
+      }
+    }
+
     if (!fs.existsSync(binDir)) {
       fs.mkdirSync(binDir, { recursive: true, mode: 0o755 });
       log.success(`Directory created: ${chalk.cyan(binDir)}`);
     }
 
-    const platform = getPlatform();
     log.info(`Detected platform: ${chalk.cyan(JSON.stringify(platform))}`);
     await downloadAndExtract(platform);
     log.highlight('Installation completed successfully!');
