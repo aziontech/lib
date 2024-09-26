@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import https from 'https';
@@ -13,6 +14,7 @@ const baseUrl = `https://github.com/aziontech/azion/releases/download/${version}
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Navigate up the directory tree to find the root directory of the installed library
 let packageRoot = __dirname;
 while (!fs.existsSync(path.join(packageRoot, 'package.json'))) {
   const parentDir = path.dirname(packageRoot);
@@ -24,13 +26,14 @@ while (!fs.existsSync(path.join(packageRoot, 'package.json'))) {
 
 const binDir = path.join(packageRoot, 'bin');
 
-function isGlobalInstall() {
-  const npmRoot = path.resolve(process.execPath, '..', '..');
-  const npmGlobalPrefix = path.resolve(npmRoot, 'lib', 'node_modules');
-  const packagePath = path.resolve(__dirname, '..', '..');
-
-  return packagePath.startsWith(npmGlobalPrefix);
-}
+const log = {
+  info: (msg) => console.log(chalk.blue('ℹ ') + msg),
+  success: (msg) => console.log(chalk.green('✔ ') + msg),
+  warning: (msg) => console.log(chalk.yellow('⚠ ') + msg),
+  error: (msg) => console.error(chalk.red('✖ ') + msg),
+  highlight: (msg) => console.log(chalk.hex('#FFA500')('🚀 ' + msg)),
+  url: (msg) => chalk.hex('#0000AA')(msg),
+};
 
 function getPlatform() {
   const platform = os.platform();
@@ -49,21 +52,44 @@ function getPlatform() {
 
 function downloadFile(url, dest) {
   return new Promise((resolve, reject) => {
+    log.info(`Downloading from ${chalk.blackBright(url)}`);
     https
       .get(url, (response) => {
         if (response.statusCode === 302) {
+          // Handle redirect
           return downloadFile(response.headers.location, dest).then(resolve).catch(reject);
         }
+
         const file = fs.createWriteStream(dest);
         response.pipe(file);
+
         file.on('finish', () => {
           file.close();
-          resolve();
+          const fileSize = fs.statSync(dest).size;
+          log.success(`File downloaded: ${chalk.cyan(dest)}`);
+          log.info(`File size: ${chalk.yellow(fileSize)} bytes`);
+          if (fileSize === 0) {
+            reject(new Error('The downloaded file is empty'));
+          } else {
+            resolve();
+          }
         });
       })
       .on('error', (err) => {
         fs.unlink(dest, () => reject(err));
       });
+  });
+}
+
+function listDirectoryContents(dir) {
+  const files = fs.readdirSync(dir);
+  log.info(`Directory contents ${chalk.cyan(dir)}:`);
+  files.forEach((file) => {
+    const filePath = path.join(dir, file);
+    const stats = fs.statSync(filePath);
+    console.log(
+      `  ${chalk.cyan(file)} (${stats.isDirectory() ? 'directory' : 'file'}, ${chalk.yellow(stats.size)} bytes)`,
+    );
   });
 }
 
@@ -75,18 +101,38 @@ async function downloadAndExtract(platform) {
   try {
     await downloadFile(url, filePath);
 
-    if (platform.ext === 'tar.gz') {
-      execSync(`tar -xzvf "${filePath}" -C "${binDir}"`, { stdio: 'inherit' });
-    } else if (platform.ext === 'zip') {
-      execSync(`unzip -o "${filePath}" -d "${binDir}"`, { stdio: 'inherit' });
+    log.info(`Extracting ${chalk.cyan(fileName)}...`);
+    log.info(`File path: ${chalk.cyan(filePath)}`);
+    log.info(`Destination directory: ${chalk.cyan(binDir)}`);
+
+    try {
+      if (platform.ext === 'tar.gz') {
+        log.info('Executing tar command...');
+        execSync(`tar -xzvf "${filePath}" -C "${binDir}"`, { stdio: 'inherit' });
+      } else if (platform.ext === 'zip') {
+        log.info('Executing unzip command...');
+        execSync(`unzip -o "${filePath}" -d "${binDir}"`, { stdio: 'inherit' });
+      }
+    } catch (error) {
+      log.error(`Error extracting file: ${error.message}`);
+      log.info('File contents:');
+      execSync(`file "${filePath}"`, { stdio: 'inherit' });
+      throw error;
     }
 
-    fs.unlinkSync(filePath);
+    log.success('Extraction completed. Verifying directory contents:');
+    listDirectoryContents(binDir);
 
+    fs.unlinkSync(filePath);
+    log.info(`Compressed file removed: ${chalk.cyan(filePath)}`);
+
+    // Find the extracted binary
     const files = fs.readdirSync(binDir);
     const extractedBinary = files.find((file) => file.startsWith('azion'));
 
     if (!extractedBinary) {
+      log.error('Extracted binary not found. Directory contents:');
+      listDirectoryContents(binDir);
       throw new Error('Extracted binary not found');
     }
 
@@ -94,13 +140,21 @@ async function downloadAndExtract(platform) {
     const finalName = platform.os === 'windows' ? 'azion.exe' : 'azion';
     const finalPath = path.join(binDir, finalName);
 
+    // Rename the extracted binary
     fs.renameSync(extractedPath, finalPath);
+    log.success(`Binary renamed from ${chalk.cyan(extractedPath)} to ${chalk.cyan(finalPath)}`);
 
+    // Set execution permissions on Unix
     if (platform.os !== 'windows') {
       fs.chmodSync(finalPath, '755');
+      log.success(`Execution permissions set for ${chalk.cyan(finalPath)}`);
     }
+
+    log.success(`Azion CLI installed at: ${chalk.cyan(finalPath)}`);
   } catch (error) {
+    log.error(`Error during download or extraction: ${error.message}`);
     if (fs.existsSync(filePath)) {
+      log.info(`Removing corrupted file: ${chalk.cyan(filePath)}`);
       fs.unlinkSync(filePath);
     }
     throw error;
@@ -119,26 +173,56 @@ function checkExistingCliVersion() {
 
 async function main() {
   try {
-    if (!isGlobalInstall()) {
-      return;
-    }
+    log.highlight(`Checking Azion CLI v${version}`);
+    console.log();
 
     const existingVersion = checkExistingCliVersion();
-    if (existingVersion && existingVersion === version) {
-      return;
+    if (existingVersion) {
+      log.info(`Azion CLI is already installed (version ${existingVersion})`);
+      if (existingVersion === version) {
+        log.success(`Azion CLI v${version} is already installed and up to date.`);
+        process.exit(0);
+      } else {
+        log.info(`Current version (${existingVersion}) differs from desired (${version}). Proceeding with update...`);
+      }
     }
 
     const platform = getPlatform();
-    // const finalName = platform.os === 'windows' ? 'azion.exe' : 'azion';
-    // const finalPath = path.join(binDir, finalName);
+    const finalName = platform.os === 'windows' ? 'azion.exe' : 'azion';
+    const finalPath = path.join(binDir, finalName);
+
+    if (fs.existsSync(finalPath)) {
+      log.info(`Azion CLI binary found at: ${chalk.cyan(finalPath)}`);
+
+      // Check current binary version
+      try {
+        const currentVersion = execSync(`"${finalPath}" -v`).toString().trim();
+        const versionMatch = currentVersion.match(/v(\d+\.\d+\.\d+)/);
+        if (versionMatch && versionMatch[1] === version) {
+          log.success(`Azion CLI v${version} is already installed and up to date.`);
+          process.exit(0);
+        } else {
+          log.info(
+            `Current version (${versionMatch ? versionMatch[1] : 'unknown'}) differs from desired (${version}). Updating...`,
+          );
+        }
+      } catch (error) {
+        log.warning(`Unable to verify current version. Proceeding with installation.`);
+      }
+    }
 
     if (!fs.existsSync(binDir)) {
       fs.mkdirSync(binDir, { recursive: true, mode: 0o755 });
+      log.success(`Directory created: ${chalk.cyan(binDir)}`);
     }
 
+    log.info(`Detected platform: ${chalk.cyan(JSON.stringify(platform))}`);
     await downloadAndExtract(platform);
+    log.highlight('Installation completed successfully!');
+    log.info(`Azion CLI has been installed in: ${chalk.cyan(binDir)}`);
+    process.exit(0);
   } catch (error) {
-    console.error(`Error during installation: ${error.message}`);
+    log.error(`Error during installation: ${error.message}`);
     process.exit(1);
   }
 }
