@@ -6,7 +6,7 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const defaultVersion = '1.37.0';
+const defaultVersion = '1.39.0';
 const version = process.env.AZION_CLI_VERSION || defaultVersion;
 
 const baseUrl = `https://github.com/aziontech/azion/releases/download/${version}`;
