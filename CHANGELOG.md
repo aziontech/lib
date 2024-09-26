@@ -1,3 +1,10 @@
+## [1.8.0-stage.2](https://github.com/aziontech/lib/compare/v1.8.0-stage.1...v1.8.0-stage.2) (2024-09-26)
+
+
+### Bug Fixes
+
+* cli bin conflicts (#45) ([daabc33](https://github.com/aziontech/lib/commit/daabc33db63e41f65088d19ce320f3ab531bd3ea))
+
 ## [1.8.0-stage.1](https://github.com/aziontech/lib/compare/v1.7.0...v1.8.0-stage.1) (2024-09-26)
 
 
