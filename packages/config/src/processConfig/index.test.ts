@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { processConfig, validateConfig } from '.';
+import { convertJsonConfigToObject, processConfig, validateConfig } from '.';
 import { AzionConfig } from '../types';
 
 describe('generate', () => {
@@ -2270,6 +2270,1133 @@ describe('generate', () => {
             },
           }),
         );
+      });
+    });
+  });
+
+  describe('convertJsonConfigToObject', () => {
+    describe('Domain', () => {
+      it('should correctly process the config domain', () => {
+        const jsonConfig = {
+          domain: {
+            name: 'mydomain',
+            cname_access_only: true,
+            cnames: ['www.example.com'],
+            digital_certificate_id: 'lets_encrypt',
+            is_mtls_enabled: true,
+            mtls_verification: 'enforce',
+            mtls_trusted_ca_certificate_id: 12345,
+            edge_application_id: 12345,
+            edge_firewall_id: 12345,
+          },
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.domain).toEqual(
+          expect.objectContaining({
+            name: 'mydomain',
+            cnameAccessOnly: true,
+            cnames: ['www.example.com'],
+            digitalCertificateId: 'lets_encrypt',
+            mtls: {
+              verification: 'enforce',
+              trustedCaCertificateId: 12345,
+              crlList: undefined,
+            },
+            edgeApplicationId: 12345,
+            edgeFirewallId: 12345,
+          }),
+        );
+      });
+    });
+    describe('Build', () => {
+      it('should correctly process the config build', () => {
+        const jsonConfig = {
+          build: {
+            builder: 'esbuild',
+            preset: {
+              name: 'react',
+            },
+          },
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.build).toEqual(
+          expect.objectContaining({
+            builder: 'esbuild',
+            preset: {
+              name: 'react',
+            },
+          }),
+        );
+      });
+    });
+    describe('Origin', () => {
+      it('should correctly process the config origin', () => {
+        const jsonConfig = {
+          origin: [
+            {
+              name: 'my origin storage',
+              origin_type: 'object_storage',
+              bucket: 'mybucket',
+              prefix: 'myfolder',
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.origin).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'my origin storage',
+              type: 'object_storage',
+              bucket: 'mybucket',
+              prefix: 'myfolder',
+            }),
+          ]),
+        );
+      });
+      it('should correctly process the config origin with origin_type single_origin', () => {
+        const jsonConfig = {
+          origin: [
+            {
+              name: 'my single origin',
+              origin_type: 'single_origin',
+              addresses: [
+                {
+                  address: 'http.bin.org',
+                },
+              ],
+              origin_path: '',
+              method: 'ip_hash',
+              origin_protocol_policy: 'preserve',
+              host_header: '${host}',
+              is_origin_redirection_enabled: true,
+              connection_timeout: 60,
+              timeout_between_bytes: 120,
+              hmac_authentication: true,
+              hmac_region_name: 'us-east-1',
+              hmac_access_key: 'myaccesskey',
+              hmac_secret_key: 'secretKey',
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.origin).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'my single origin',
+              type: 'single_origin',
+              path: '',
+              addresses: [
+                {
+                  address: 'http.bin.org',
+                },
+              ],
+              protocolPolicy: 'preserve',
+              hostHeader: '${host}',
+              method: 'ip_hash',
+              redirection: true,
+              connectionTimeout: 60,
+              timeoutBetweenBytes: 120,
+              hmac: {
+                region: 'us-east-1',
+                accessKey: 'myaccesskey',
+                secretKey: 'secretKey',
+              },
+            }),
+          ]),
+        );
+      });
+    });
+    describe('Cache', () => {
+      it('should correctly process the config cache', () => {
+        const jsonConfig = {
+          cache: [
+            {
+              name: 'testCache',
+              cache_by_query_string: 'ignore',
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.cache).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'testCache',
+              cacheByQueryString: {
+                option: 'ignore',
+                list: [],
+              },
+            }),
+          ]),
+        );
+      });
+    });
+    describe('Purge', () => {
+      it('should correctly process the config purge', () => {
+        const jsonConfig = {
+          purge: [
+            {
+              type: 'url',
+              urls: ['https://example.com'],
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.purge).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              type: 'url',
+              urls: ['https://example.com'],
+              method: 'delete',
+            }),
+          ]),
+        );
+      });
+    });
+    describe('Rules', () => {
+      describe('Request', () => {
+        it('should correctly process the config rules', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                is_active: true,
+                description: 'This rule redirects all traffic.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'redirect_to_301',
+                    target: 'https://example.com',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                description: 'This rule redirects all traffic.',
+                active: true,
+                variable: 'uri',
+                match: '/test',
+                behavior: {
+                  redirectTo301: 'https://example.com',
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with origin object_storage', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule responds with a file from the origin storage.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'set_origin',
+                    target: 'my origin storage',
+                  },
+                ],
+              },
+            ],
+            origin: [
+              {
+                name: 'my origin storage',
+                origin_type: 'object_storage',
+                bucket: 'mybucket',
+                prefix: 'myfolder',
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule responds with a file from the origin storage.',
+                behavior: {
+                  setOrigin: {
+                    name: 'my origin storage',
+                    type: 'object_storage',
+                  },
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with rewrite behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule rewrites the request path.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'rewrite_request',
+                    target: '/new',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule rewrites the request path.',
+                behavior: {
+                  rewrite: '/new',
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with deliver behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule delivers the request.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'deliver',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule delivers the request.',
+                behavior: {
+                  deliver: true,
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with set_cookie behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule sets a cookie.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'add_request_cookie',
+                    target: 'cookieName=cookieValue',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule sets a cookie.',
+                behavior: {
+                  setCookie: 'cookieName=cookieValue',
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with set_headers behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule sets a header.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'add_request_header',
+                    target: 'X-Header: value',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule sets a header.',
+                behavior: {
+                  setHeaders: ['X-Header: value'],
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with setCache string behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule sets the cache.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'set_cache_policy',
+                    target: 'testCache',
+                  },
+                ],
+              },
+            ],
+            cache: [
+              {
+                name: 'testCache',
+                cache_by_query_string: 'ignore',
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule sets the cache.',
+                behavior: {
+                  setCache: 'testCache',
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with setCache object behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule sets the cache.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'set_cache_policy',
+                    target: {
+                      name: 'directCache',
+                      browser_cache_settings_maximum_ttl: 300,
+                      cdn_cache_settings_maximum_ttl: 600,
+                    },
+                  },
+                ],
+              },
+            ],
+            cache: [
+              {
+                name: 'testCache',
+                cache_by_query_string: 'ignore',
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule sets the cache.',
+                behavior: {
+                  setCache: {
+                    name: 'directCache',
+                    browser_cache_settings_maximum_ttl: 300,
+                    cdn_cache_settings_maximum_ttl: 600,
+                  },
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with forwarCookie behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule forwards the cookie.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'forward_cookies',
+                    target: null,
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule forwards the cookie.',
+                behavior: {
+                  forwardCookies: true,
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with runFunction behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule runs a function.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'run_function',
+                    target: 'myFunction',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule runs a function.',
+                behavior: {
+                  runFunction: {
+                    path: 'myFunction',
+                  },
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with enableGZIP behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule enables GZIP compression.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'enable_gzip',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule enables GZIP compression.',
+                behavior: {
+                  enableGZIP: true,
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with bypassCache behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule bypasses the cache.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'bypass_cache_phase',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule bypasses the cache.',
+                behavior: {
+                  bypassCache: true,
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with httpToHttps behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule redirects HTTP to HTTPS.',
+                criteria: [
+                  {
+                    variable: `\${scheme}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: 'http',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'redirect_http_to_https',
+                    target: null,
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'scheme',
+                match: 'http',
+                description: 'This rule redirects HTTP to HTTPS.',
+                behavior: {
+                  httpToHttps: true,
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules with capture behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'request',
+                description: 'This rule captures the request.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'capture_match_groups',
+                    target: {
+                      regex: '^/user/(.*)',
+                      captured_array: 'userId',
+                      subject: '${uri}',
+                    },
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'uri',
+                match: '/test',
+                description: 'This rule captures the request.',
+                behavior: {
+                  capture: {
+                    match: '^/user/(.*)',
+                    captured: 'userId',
+                    subject: '${uri}',
+                  },
+                },
+              }),
+            ]),
+          );
+        });
+      });
+
+      describe('Response', () => {
+        it('should correctly process the config rules with redirect_to_301', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule redirects all traffic.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'redirect_to_301',
+                    target: 'https://example.com',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                description: 'This rule redirects all traffic.',
+                variable: 'uri',
+                match: '/test',
+                behavior: {
+                  redirectTo301: 'https://example.com',
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with redirect_to_302', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule redirects all traffic.',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'redirect_to_302',
+                    target: 'https://example.com',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                description: 'This rule redirects all traffic.',
+                variable: 'uri',
+                match: '/test',
+                behavior: {
+                  redirectTo302: 'https://example.com',
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with setCookie behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule sets a cookie.',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'set_cookie',
+                    target: 'cookieName=cookieValue',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'status',
+                match: '200',
+                description: 'This rule sets a cookie.',
+                behavior: {
+                  setCookie: 'cookieName=cookieValue',
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with set_headers behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule sets a header.',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'add_response_header',
+                    target: 'X-Header: value',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'status',
+                match: '200',
+                description: 'This rule sets a header.',
+                behavior: {
+                  setHeaders: ['X-Header: value'],
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with enableGZIP behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule enables GZIP compression.',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'enable_gzip',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'status',
+                match: '200',
+                description: 'This rule enables GZIP compression.',
+                behavior: {
+                  enableGZIP: true,
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with filterCookie behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule filters the cookie.',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'filter_response_cookie',
+                    target: 'cookieName',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'status',
+                match: '200',
+                description: 'This rule filters the cookie.',
+                behavior: {
+                  filterCookie: 'cookieName',
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with filterHeaders behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule filters the header.',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'filter_response_header',
+                    target: 'X-Header',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'status',
+                match: '200',
+                description: 'This rule filters the header.',
+                behavior: {
+                  filterHeader: 'X-Header',
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with runFunction behavior', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule',
+                phase: 'response',
+                description: 'This rule runs a function.',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
+                behaviors: [
+                  {
+                    name: 'run_function',
+                    target: 'myFunction',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule',
+                variable: 'status',
+                match: '200',
+                description: 'This rule runs a function.',
+                behavior: {
+                  runFunction: {
+                    path: 'myFunction',
+                  },
+                },
+              }),
+            ]),
+          );
+        });
       });
     });
   });

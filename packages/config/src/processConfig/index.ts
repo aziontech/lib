@@ -36,6 +36,18 @@ function validateConfig(config: AzionConfig) {
   }
 }
 
+function factoryProcessContext() {
+  const processConfigContext = new ProcessConfigContext();
+  processConfigContext.setStrategy('build', new BuildProcessConfigStrategy());
+  processConfigContext.setStrategy('origin', new OriginProcessConfigStrategy());
+  processConfigContext.setStrategy('cache', new CacheProcessConfigStrategy());
+  processConfigContext.setStrategy('domain', new DomainProcessConfigStrategy());
+  processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
+  // Rules must be last to apply to behaviors (origin, cache...)
+  processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
+  return processConfigContext;
+}
+
 /**
  * Processes the provided configuration object and returns a JSON object that can be used to create or update an Azion CDN configuration.
  * @param inputConfig AzionConfig
@@ -69,18 +81,53 @@ function processConfig(inputConfig: AzionConfig) {
   const payloadCDN: any = {};
 
   // ProcessConfig Strategy Pattern
-  const processConfigContext = new ProcessConfigContext();
-  processConfigContext.setStrategy('build', new BuildProcessConfigStrategy());
-  processConfigContext.setStrategy('origin', new OriginProcessConfigStrategy());
-  processConfigContext.setStrategy('cache', new CacheProcessConfigStrategy());
-  processConfigContext.setStrategy('domain', new DomainProcessConfigStrategy());
-  processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
-
-  // Rules must be last to apply to behaviors (origin, cache...)
-  processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
-  processConfigContext.generate(config, payloadCDN);
+  const processConfigContext = factoryProcessContext();
+  processConfigContext.transformToManifest(config, payloadCDN);
 
   return payloadCDN;
 }
 
-export { processConfig, validateConfig };
+/**
+ * Converts a JSON string to an AzionConfig object.
+ * @param {string} config - The JSON string to be converted.
+ * @returns {AzionConfig} The AzionConfig object.
+ * @throws {Error} Throws an error if the provided JSON string is invalid.
+ *
+ * @example
+ * const config = `{
+ * "origin": [
+ *   {
+ *    "name": "My Origin",
+ *    "origin_type": "single_origin",
+ *    "origin_path": '',
+ *     "method": 'ip_hash',
+ *    "addresses": [
+ *      {
+ *        "address": "origin.example.com",
+ *        "weight": 100
+ *      }
+ *    ],
+ *   }
+ * ]
+ *}`;
+ * const configObject = convertJsonConfigToObject(config);
+ * console.log(configObject);
+ *
+ */
+function convertJsonConfigToObject(config: string): AzionConfig {
+  let configObject = {};
+  try {
+    configObject = JSON.parse(config);
+  } catch (error) {
+    throw new Error('Invalid JSON configuration.');
+  }
+
+  const payloadConfig: AzionConfig = {};
+  const processConfigContext = factoryProcessContext();
+
+  processConfigContext.transformToConfig(configObject, payloadConfig);
+
+  return payloadConfig;
+}
+
+export { convertJsonConfigToObject, processConfig, validateConfig };

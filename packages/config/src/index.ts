@@ -1,4 +1,4 @@
-import { processConfig, validateConfig } from './processConfig/index';
+import { convertJsonConfigToObject, processConfig, validateConfig } from './processConfig/index';
 import { AzionConfig } from './types';
 
 /**
@@ -211,6 +211,6 @@ function defineConfig(config: AzionConfig): AzionConfig {
   return config;
 }
 
-export { defineConfig, processConfig };
+export { convertJsonConfigToObject, defineConfig, processConfig };
 
 export type * from './types';

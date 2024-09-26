@@ -1,5 +1,5 @@
 import { evaluate } from 'mathjs';
-import { AzionConfig } from '../../../types';
+import { AzionCache, AzionConfig } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
@@ -8,27 +8,27 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  * @description This class is implementation of the Cache ProcessConfig Strategy.
  */
 class CacheProcessConfigStrategy extends ProcessConfigStrategy {
-  generate(config: AzionConfig) {
-    // Helper function to safely evaluate mathematical expressions
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const evaluateMathExpression = (expression: any) => {
-      if (typeof expression === 'number') {
-        return expression;
-      }
-      if (/^[0-9+\-*/.() ]+$/.test(expression)) {
-        return evaluate(expression);
-      }
-      throw new Error(`Expression is not purely mathematical: ${expression}`);
-    };
+  // Helper function to safely evaluate mathematical expressions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private evaluateMathExpression = (expression: any) => {
+    if (typeof expression === 'number') {
+      return expression;
+    }
+    if (/^[0-9+\-*/.() ]+$/.test(expression)) {
+      return evaluate(expression);
+    }
+    throw new Error(`Expression is not purely mathematical: ${expression}`);
+  };
 
+  transformToManifest(config: AzionConfig) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
     if (!Array.isArray(config?.cache) || config?.cache.length === 0) {
       return payload;
     }
     config?.cache.forEach((cache) => {
-      const maxAgeSecondsBrowser = cache?.browser ? evaluateMathExpression(cache.browser.maxAgeSeconds) : 0;
-      const maxAgeSecondsEdge = cache?.edge ? evaluateMathExpression(cache.edge.maxAgeSeconds) : 60;
+      const maxAgeSecondsBrowser = cache?.browser ? this.evaluateMathExpression(cache.browser.maxAgeSeconds) : 0;
+      const maxAgeSecondsEdge = cache?.edge ? this.evaluateMathExpression(cache.edge.maxAgeSeconds) : 60;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cacheSetting: any = {
@@ -64,6 +64,77 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
       payload.push(cacheSetting);
     });
     return payload;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+    const config = payload.cache;
+    if (!Array.isArray(config) || config.length === 0) {
+      return;
+    }
+    transformedPayload.cache = [];
+    config.forEach((cache) => {
+      const maxAgeSecondsBrowser = cache.browser_cache_settings_maximum_ttl
+        ? this.evaluateMathExpression(cache.browser_cache_settings_maximum_ttl)
+        : 0;
+      const maxAgeSecondsEdge = cache.cdn_cache_settings_maximum_ttl
+        ? this.evaluateMathExpression(cache.cdn_cache_settings_maximum_ttl)
+        : 60;
+      const cacheSetting: AzionCache = {
+        name: cache.name,
+        stale: cache.stale,
+        browser: {
+          maxAgeSeconds: maxAgeSecondsBrowser,
+        },
+        edge: {
+          maxAgeSeconds: maxAgeSecondsEdge,
+        },
+        methods: {
+          post: cache.enable_caching_for_post,
+          options: cache.enable_caching_for_options,
+        },
+        queryStringSort: cache.enable_query_string_sort,
+      };
+
+      if (cache.cache_by_query_string) {
+        cacheSetting.cacheByQueryString = {
+          option:
+            // eslint-disable-next-line no-nested-ternary
+            cache.cache_by_query_string === 'varies' ? 'all' : cache.cache_by_query_string,
+        };
+        if (cache.cache_by_query_string === 'whitelist' || cache.cache_by_query_string === 'blacklist') {
+          cacheSetting.cacheByQueryString = {
+            ...cacheSetting.cacheByQueryString,
+            list: cache.query_string_fields || [],
+          };
+        } else {
+          cacheSetting.cacheByQueryString = {
+            ...cacheSetting.cacheByQueryString,
+            list: [],
+          };
+        }
+      }
+
+      if (cache.cache_by_cookie) {
+        cacheSetting.cacheByCookie = {
+          option: cache.cache_by_cookie === 'varies' ? 'all' : cache.cache_by_cookie,
+        };
+        if (cache.cache_by_cookie === 'whitelist' || cache.cache_by_cookie === 'blacklist') {
+          cacheSetting.cacheByCookie = {
+            ...cacheSetting.cacheByCookie,
+            list: cache.cookie_names || [],
+          };
+        } else {
+          cacheSetting.cacheByCookie = {
+            ...cacheSetting.cacheByCookie,
+            list: [],
+          };
+        }
+      }
+
+      transformedPayload.cache!.push(cacheSetting);
+    });
+    return transformedPayload.cache;
   }
 }
 
