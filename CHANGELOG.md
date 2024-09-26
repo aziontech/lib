@@ -1,3 +1,10 @@
+## [1.8.0-stage.1](https://github.com/aziontech/lib/compare/v1.7.0...v1.8.0-stage.1) (2024-09-26)
+
+
+### Features
+
+* add convert json config to config object (#44) ([1b09352](https://github.com/aziontech/lib/commit/1b093526d76c8ae473f76991b62cb71fe1f5f11c))
+
 ## [1.7.0](https://github.com/aziontech/lib/compare/v1.6.0...v1.7.0) (2024-09-17)
 
 
