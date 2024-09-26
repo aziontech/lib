@@ -207,7 +207,13 @@ import { AzionConfig } from './types';
  * });
  */
 function defineConfig(config: AzionConfig): AzionConfig {
-  validateConfig(config);
+  try {
+    validateConfig(config);
+  } catch (error) {
+    const errorNoStack = new Error((error as Error).message);
+    errorNoStack.stack = undefined;
+    throw errorNoStack;
+  }
   return config;
 }
 
