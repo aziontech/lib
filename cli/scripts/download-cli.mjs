@@ -217,7 +217,10 @@ async function main() {
     }
 
     log.info(`Detected platform: ${chalk.cyan(JSON.stringify(platform))}`);
-    await downloadAndExtract(platform);
+    await downloadAndExtract(platform).catch((error) => {
+      log.error(`Error during download or extraction: ${error.message}`);
+      process.exit(0);
+    });
     log.highlight('Installation completed successfully!');
     log.info(`Azion CLI has been installed in: ${chalk.cyan(binDir)}`);
     process.exit(0);
