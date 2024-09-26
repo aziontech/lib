@@ -1,3 +1,10 @@
+## [1.8.0-stage.5](https://github.com/aziontech/lib/compare/v1.8.0-stage.4...v1.8.0-stage.5) (2024-09-26)
+
+
+### Bug Fixes
+
+* bin install ([f801f3c](https://github.com/aziontech/lib/commit/f801f3cac98ca5aa2d950a6eb0d5f905b13b1423))
+
 ## [1.8.0-stage.4](https://github.com/aziontech/lib/compare/v1.8.0-stage.3...v1.8.0-stage.4) (2024-09-26)
 
 
