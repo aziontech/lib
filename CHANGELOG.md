@@ -1,3 +1,10 @@
+## [1.8.0-stage.4](https://github.com/aziontech/lib/compare/v1.8.0-stage.3...v1.8.0-stage.4) (2024-09-26)
+
+
+### Bug Fixes
+
+* revert changes to bin install script ([80be55f](https://github.com/aziontech/lib/commit/80be55f695dbf17e61f85e9344772aa961f12bb3))
+
 ## [1.8.0-stage.3](https://github.com/aziontech/lib/compare/v1.8.0-stage.2...v1.8.0-stage.3) (2024-09-26)
 
 
