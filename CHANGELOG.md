@@ -1,3 +1,10 @@
+## [1.8.0-stage.7](https://github.com/aziontech/lib/compare/v1.8.0-stage.6...v1.8.0-stage.7) (2024-09-27)
+
+
+### Bug Fixes
+
+* adding cli script dependency (#50) ([a0f8e31](https://github.com/aziontech/lib/commit/a0f8e31d601793b1785bf044125d3e98e0b0bb9c))
+
 ## [1.8.0-stage.6](https://github.com/aziontech/lib/compare/v1.8.0-stage.5...v1.8.0-stage.6) (2024-09-26)
 
 
