@@ -1,5 +1,10 @@
 import { AzionConfig } from '../../../types';
-import { requestBehaviors, responseBehaviors } from '../../helpers/behaviors';
+import {
+  requestBehaviors,
+  responseBehaviors,
+  revertRequestBehaviors,
+  revertResponseBehaviors,
+} from '../../helpers/behaviors';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
@@ -35,7 +40,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  generate(config: AzionConfig, context: any) {
+  transformToManifest(config: AzionConfig, context: any) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
     // request
@@ -91,6 +96,63 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     }
 
     return payload;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const addBehaviorsObject = (behaviors: any, behaviorDefinitions: any, context: any) => {
+      if (behaviors && Array.isArray(behaviors)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return behaviors.map((behavior: any) => {
+          const behaviorName = behavior.name;
+          if (behaviorDefinitions[behaviorName as keyof typeof behaviorDefinitions]) {
+            return behaviorDefinitions[behaviorName as keyof typeof behaviorDefinitions].transform(
+              behavior.target,
+              context,
+            );
+          }
+          console.warn(`Unknown behavior: ${behaviorName}`);
+          return {};
+        })[0];
+      }
+      return undefined;
+    };
+
+    const rulesConfig = payload.rules;
+    if (!rulesConfig) {
+      return;
+    }
+
+    transformedPayload.rules = {
+      request: [],
+      response: [],
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rulesConfig.forEach((rule: any) => {
+      if (rule.phase === 'request') {
+        transformedPayload.rules!.request!.push({
+          name: rule.name,
+          description: rule.description,
+          active: rule.is_active,
+          variable: rule.criteria[0].variable.replace('${', '').replace('}', ''),
+          match: rule.criteria[0].input_value,
+          behavior: addBehaviorsObject(rule.behaviors, revertRequestBehaviors, transformedPayload),
+        });
+      } else if (rule.phase === 'response') {
+        transformedPayload.rules!.response!.push({
+          name: rule.name,
+          description: rule.description,
+          active: rule.is_active,
+          variable: rule.criteria[0].variable.replace('${', '').replace('}', ''),
+          match: rule.criteria[0].input_value,
+          behavior: addBehaviorsObject(rule.behaviors, revertResponseBehaviors, transformedPayload),
+        });
+      }
+    });
+
+    return transformedPayload.rules;
   }
 }
 

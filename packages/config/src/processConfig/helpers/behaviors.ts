@@ -209,3 +209,162 @@ export const responseBehaviors = {
   },
   // Adicione mais comportamentos conforme necessário
 };
+
+export const revertRequestBehaviors = {
+  set_origin: {
+    transform: (value: any, payloadCDN: any) => {
+      const origin = payloadCDN.origin.find((o: any) => o.name === value);
+      if (!origin) {
+        throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
+      }
+      return {
+        setOrigin: {
+          name: value,
+          type: origin.type,
+        },
+      };
+    },
+  },
+  rewrite_request: {
+    transform: (value: any) => {
+      return {
+        rewrite: value,
+      };
+    },
+  },
+  deliver: {
+    transform: () => ({
+      deliver: true,
+    }),
+  },
+  add_request_cookie: {
+    transform: (value: any) => ({
+      setCookie: value,
+    }),
+  },
+  add_request_header: {
+    transform: (value: any) => ({
+      setHeaders: value.split(','),
+    }),
+  },
+  set_cache_policy: {
+    transform: (value: any) => {
+      if (typeof value === 'string') {
+        return {
+          setCache: value,
+        };
+      }
+      if (typeof value === 'object') {
+        const cacheSetting = {
+          name: value.name,
+          ...value,
+        };
+        return {
+          setCache: cacheSetting,
+        };
+      }
+      return undefined;
+    },
+  },
+  forward_cookies: {
+    transform: () => {
+      return {
+        forwardCookies: true,
+      };
+    },
+  },
+  run_function: {
+    transform: (value: any) => ({
+      runFunction: {
+        path: value,
+      },
+    }),
+  },
+  enable_gzip: {
+    transform: () => {
+      return {
+        enableGZIP: true,
+      };
+    },
+  },
+  bypass_cache_phase: {
+    transform: () => {
+      return {
+        bypassCache: true,
+      };
+    },
+  },
+  redirect_http_to_https: {
+    transform: () => {
+      return {
+        httpToHttps: true,
+      };
+    },
+  },
+  redirect_to_301: {
+    transform: (value: any) => ({
+      redirectTo301: value,
+    }),
+  },
+  redirect_to_302: {
+    transform: (value: any) => ({
+      redirectTo302: value,
+    }),
+  },
+  capture_match_groups: {
+    transform: (value: any) => ({
+      capture: {
+        match: value.regex,
+        captured: value.captured_array,
+        subject: value.subject,
+      },
+    }),
+  },
+};
+
+export const revertResponseBehaviors = {
+  set_cookie: {
+    transform: (value: any) => ({
+      setCookie: value,
+    }),
+  },
+  add_response_header: {
+    transform: (value: any) => ({
+      setHeaders: value.split(','),
+    }),
+  },
+  enable_gzip: {
+    transform: () => {
+      return {
+        enableGZIP: true,
+      };
+    },
+  },
+  filter_response_cookie: {
+    transform: (value: any) => ({
+      filterCookie: value,
+    }),
+  },
+  filter_response_header: {
+    transform: (value: any) => ({
+      filterHeader: value,
+    }),
+  },
+  run_function: {
+    transform: (value: any) => ({
+      runFunction: {
+        path: value,
+      },
+    }),
+  },
+  redirect_to_301: {
+    transform: (value: any) => ({
+      redirectTo301: value,
+    }),
+  },
+  redirect_to_302: {
+    transform: (value: any) => ({
+      redirectTo302: value,
+    }),
+  },
+};

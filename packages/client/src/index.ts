@@ -1,5 +1,5 @@
 import createAzionApplicationClient, { AzionApplicationsClient } from 'azion/applications';
-import { defineConfig, processConfig } from 'azion/config';
+import { convertJsonConfigToObject, defineConfig, processConfig } from 'azion/config';
 import createDomainsClient, { AzionDomainsClient } from 'azion/domains';
 import createPurgeClient, { AzionPurgeClient } from 'azion/purge';
 import createSqlClient, { AzionSQLClient } from 'azion/sql';
@@ -78,7 +78,7 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
   return client;
 }
 
-export { createClient, defineConfig, processConfig };
+export { convertJsonConfigToObject, createClient, defineConfig, processConfig };
 
 export default createClient;
 

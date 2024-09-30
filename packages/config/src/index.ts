@@ -1,4 +1,4 @@
-import { processConfig, validateConfig } from './processConfig/index';
+import { convertJsonConfigToObject, processConfig, validateConfig } from './processConfig/index';
 import { AzionConfig } from './types';
 
 /**
@@ -207,10 +207,16 @@ import { AzionConfig } from './types';
  * });
  */
 function defineConfig(config: AzionConfig): AzionConfig {
-  validateConfig(config);
+  try {
+    validateConfig(config);
+  } catch (error) {
+    const errorNoStack = new Error((error as Error).message);
+    errorNoStack.stack = undefined;
+    throw errorNoStack;
+  }
   return config;
 }
 
-export { defineConfig, processConfig };
+export { convertJsonConfigToObject, defineConfig, processConfig };
 
 export type * from './types';
