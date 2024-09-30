@@ -1,3 +1,22 @@
+## [1.8.0](https://github.com/aziontech/lib/compare/v1.7.0...v1.8.0) (2024-09-30)
+
+
+### Features
+
+* add convert json config to config object (#44) ([1b09352](https://github.com/aziontech/lib/commit/1b093526d76c8ae473f76991b62cb71fe1f5f11c))
+* new azion cli version (#47) ([191dd9c](https://github.com/aziontech/lib/commit/191dd9ca4b991969e2b142a9e7bfd9ffc4da05d1))
+
+
+### Bug Fixes
+
+* adding cli script dependency (#50) ([a0f8e31](https://github.com/aziontech/lib/commit/a0f8e31d601793b1785bf044125d3e98e0b0bb9c))
+* bin install ([f801f3c](https://github.com/aziontech/lib/commit/f801f3cac98ca5aa2d950a6eb0d5f905b13b1423))
+* cli bin conflicts (#45) ([daabc33](https://github.com/aziontech/lib/commit/daabc33db63e41f65088d19ce320f3ab531bd3ea))
+* handle download and extraction errors gracefully (#49) ([1aab72e](https://github.com/aziontech/lib/commit/1aab72e2ec04ed46081ab5b171bf81dd8501b76a))
+* improve configuration validation (#48) ([d7ee13e](https://github.com/aziontech/lib/commit/d7ee13e0f124821e2af58b3e4d44ba5ccf932442))
+* remove logs bin install ([754df4b](https://github.com/aziontech/lib/commit/754df4ba47cab262fb1a30c5f70cbc074cd6b3f4))
+* revert changes to bin install script ([80be55f](https://github.com/aziontech/lib/commit/80be55f695dbf17e61f85e9344772aa961f12bb3))
+
 ## [1.8.0-stage.7](https://github.com/aziontech/lib/compare/v1.8.0-stage.6...v1.8.0-stage.7) (2024-09-27)
 
 
