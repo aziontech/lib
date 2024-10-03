@@ -296,10 +296,7 @@ const executeDatabaseMethod = async (
       },
     };
   }
-  const resultQuery = await apiQuery(token, name, statements, options);
-  return {
-    data: resultQuery.data,
-  };
+  return apiQuery(token, name, statements, options);
 };
 
 /**

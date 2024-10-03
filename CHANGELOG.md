@@ -1,3 +1,10 @@
+### [1.8.1-stage.1](https://github.com/aziontech/lib/compare/v1.8.0...v1.8.1-stage.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* returning error in useExecute (#53) ([243cb29](https://github.com/aziontech/lib/commit/243cb297236df16c10de9dac8360efe6f3060f70))
+
 ## [1.8.0](https://github.com/aziontech/lib/compare/v1.7.0...v1.8.0) (2024-09-30)
 
 
