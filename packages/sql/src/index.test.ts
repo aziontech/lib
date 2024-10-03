@@ -150,6 +150,11 @@ describe('SQL Module', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (globalThis as any).Azion = {};
     });
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should successfully execute a query', async () => {
       const mockResponseDatabases = {
         results: [
@@ -231,7 +236,30 @@ describe('SQL Module', () => {
       });
     });
 
+    it('should return error if useExecute when token invalid', async () => {
+      const mockResponseDatabases = {
+        error: {
+          message: 'Invalid token header. No credentials provided.',
+          operation: 'get databases',
+        },
+      };
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+
+      await expect(
+        useExecute('test-db', ['INSERT INTO users (id, name) VALUES (1, "John Doe")'], { debug: mockDebug }),
+      ).resolves.toEqual({
+        error: { message: 'Invalid token header. No credentials provided.', operation: 'get databases' },
+      });
+    });
+
     it('should return error if query execution fails', async () => {
+      const mockResponseDatabases = {
+        results: [
+          { id: 1, name: 'test-db' },
+          { id: 2, name: 'test-db-2' },
+        ],
+      };
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
       (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue({
         error: { message: 'Error executing query', operation: 'executing query' },
       });
