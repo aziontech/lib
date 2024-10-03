@@ -1,3 +1,10 @@
+### [1.8.2](https://github.com/aziontech/lib/compare/v1.8.1...v1.8.2) (2024-10-03)
+
+
+### Bug Fixes
+
+* change CLI bin in release workflow (#55) ([6f3ad79](https://github.com/aziontech/lib/commit/6f3ad79fdb4a144c8863276dd15fcf7436371358))
+
 ### [1.8.2-stage.1](https://github.com/aziontech/lib/compare/v1.8.1...v1.8.2-stage.1) (2024-10-03)
 
 
