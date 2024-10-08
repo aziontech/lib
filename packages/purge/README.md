@@ -201,7 +201,7 @@ if (purgeWildCardResponse) {
 **TypeScript:**
 
 ```typescript
-import { createClient,  } from 'azion/purge';
+import { createClient } from 'azion/purge';
 import type { AzionPurgeClient, AzionPurgeResponse, AzionPurge } from 'azion/purge';
 
 const client: AzionPurgeClient = createClient({ token: 'your-api-token', options: { debug: true } });
