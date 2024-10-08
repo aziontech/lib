@@ -1,3 +1,4 @@
+import { fetchWithErrorHandling } from '../../utils';
 import {
   ApiCreateDeviceGroupPayload,
   ApiCreateDeviceGroupResponse,
@@ -34,12 +35,14 @@ const getDeviceGroups = async (
       sort,
       order,
     });
-    const response = await fetch(`${BASE_URL}/${Id}/device_groups?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/device_groups?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting device groups:', error);
@@ -63,12 +66,14 @@ const getDeviceGroupById = async (
   debug?: boolean,
 ): Promise<ApiGetDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/device_groups/${deviceGroupId}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/device_groups/${deviceGroupId}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting device group by ID:', error);
@@ -92,17 +97,19 @@ const createDeviceGroup = async (
   debug?: boolean,
 ): Promise<ApiCreateDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/device_groups`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/device_groups`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(deviceGroupData),
       },
-      body: JSON.stringify(deviceGroupData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error creating device group:', error);
@@ -128,17 +135,19 @@ const updateDeviceGroup = async (
   debug?: boolean,
 ): Promise<ApiUpdateDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/device_groups/${deviceGroupId}`, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/device_groups/${deviceGroupId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(deviceGroupData),
       },
-      body: JSON.stringify(deviceGroupData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error updating device group:', error);
@@ -162,12 +171,14 @@ const deleteDeviceGroup = async (
   debug?: boolean,
 ): Promise<ApiDeleteDeviceGroupResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/device_groups/${deviceGroupId}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/device_groups/${deviceGroupId}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error deleting device group:', error);
