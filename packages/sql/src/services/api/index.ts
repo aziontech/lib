@@ -1,5 +1,6 @@
 import { AzionDatabaseCollectionOptions } from '../../types';
 import { limitArraySize } from '../../utils';
+import fetchWithErrorHandling from '../../utils/fetch';
 import type {
   ApiCreateDatabaseResponse,
   ApiDeleteDatabaseResponse,
@@ -36,15 +37,18 @@ const handleApiError = (fields: string[], data: any, operation: string) => {
  */
 const postEdgeDatabase = async (token: string, name: string, debug?: boolean): Promise<ApiCreateDatabaseResponse> => {
   try {
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Token ${token}`,
-        'Content-Type': 'application/json',
+    const result = await fetchWithErrorHandling(
+      BASE_URL,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
       },
-      body: JSON.stringify({ name }),
-    });
-    const result = await response.json();
+      debug,
+    );
     if (!result.state) {
       result.error = handleApiError(['detail'], result, 'post database');
       return {
@@ -81,14 +85,16 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
  */
 const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): Promise<ApiDeleteDatabaseResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Token ${token}`,
+    const result = await fetchWithErrorHandling(
+      `${BASE_URL}/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       },
-    });
-    if (debug) console.log('Response Delete Database:', response);
-    const result = await response.json();
+      debug,
+    );
     if (!result.state) {
       result.error = handleApiError(['detail'], result, 'delete database');
       return {
@@ -122,16 +128,18 @@ const postQueryEdgeDatabase = async (
   debug?: boolean,
 ): Promise<ApiQueryExecutionResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}/query`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Token ${token}`,
-        'Content-Type': 'application/json',
+    const result = await fetchWithErrorHandling(
+      `${BASE_URL}/${id}/query`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ statements }),
       },
-      body: JSON.stringify({ statements }),
-    });
-
-    const result = await response.json();
+      debug,
+    );
     if (!result.data || !Array.isArray(result.data)) {
       result.error = handleApiError(['detail'], result, 'post query');
       return {
@@ -182,13 +190,16 @@ const postQueryEdgeDatabase = async (
  */
 const getEdgeDatabaseById = async (token: string, id: number, debug?: boolean): Promise<ApiCreateDatabaseResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Token ${token}`,
+    const result = await fetchWithErrorHandling(
+      `${BASE_URL}/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       },
-    });
-    const result = await response.json();
+      debug,
+    );
     if (!result.data) {
       result.error = handleApiError(['detail'], result, 'get databases');
       return {
@@ -224,13 +235,16 @@ const getEdgeDatabases = async (
         }
       });
     }
-    const response = await fetch(url?.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      url?.toString(),
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       },
-    });
-    const data = await response.json();
+      debug,
+    );
     if (!data.results) {
       data.error = handleApiError(['detail'], data, 'get databases');
       return {
