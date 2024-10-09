@@ -1,3 +1,4 @@
+import fetchWithErrorHandling from '../../utils/index';
 import {
   ApiCreateBucketResponse,
   ApiCreateObjectResponse,
@@ -47,11 +48,14 @@ const getBuckets = async (
   try {
     const { page_size = 10, page = 1 } = params || {};
     const queryParams = new URLSearchParams({ page_size: String(page_size), page: String(page) });
-    const response = await fetch(`${BASE_URL}?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     if (!data.results) {
       data.error = handleApiError(['detail'], data, 'get all buckets');
       return {
@@ -82,13 +86,15 @@ const postBucket = async (
   debug?: boolean,
 ): Promise<ApiCreateBucketResponse> => {
   try {
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
-      body: JSON.stringify({ name, edge_access }),
-    });
-    const data = await response.json();
-
+    const data = await fetchWithErrorHandling(
+      BASE_URL,
+      {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
+        body: JSON.stringify({ name, edge_access }),
+      },
+      debug,
+    );
     if (!data?.state) {
       data.error = handleApiError(['name', 'edge_access', 'detail'], data, 'create bucket');
       return {
@@ -119,12 +125,15 @@ const patchBucket = async (
   debug?: boolean,
 ): Promise<ApiEditBucketResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${name}`, {
-      method: 'PATCH',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
-      body: JSON.stringify({ edge_access }),
-    });
-    const data = await response.json();
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${name}`,
+      {
+        method: 'PATCH',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
+        body: JSON.stringify({ edge_access }),
+      },
+      debug,
+    );
     if (!data?.state) {
       data.error = handleApiError(['name', 'edge_access', 'detail'], data, 'update bucket');
       return {
@@ -149,11 +158,14 @@ const patchBucket = async (
  */
 const deleteBucket = async (token: string, name: string, debug?: boolean): Promise<ApiDeleteBucketResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${name}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${name}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     if (!data?.state) {
       data.error = handleApiError(['detail'], data, 'delete bucket');
       return {
@@ -186,11 +198,14 @@ const getObjects = async (
   try {
     const { max_object_count = 10000 } = params || {};
     const queryParams = new URLSearchParams({ max_object_count: String(max_object_count) });
-    const response = await fetch(`${BASE_URL}/${bucketName}/objects?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${bucketName}/objects?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     if (!data.results) {
       data.error = handleApiError(['detail'], data, 'get all objects');
       return {
@@ -223,16 +238,19 @@ const postObject = async (
   debug?: boolean,
 ): Promise<ApiCreateObjectResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${bucketName}/objects/${key}`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/octet-stream',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${bucketName}/objects/${key}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/octet-stream',
+          Authorization: `Token ${token}`,
+        },
+        body: file,
       },
-      body: file,
-    });
-    const data = await response.json();
+      debug,
+    );
     if (!data?.state) {
       data.error = handleApiError(['detail'], data, 'create object');
       return {
@@ -303,16 +321,19 @@ const putObject = async (
   debug?: boolean,
 ): Promise<ApiCreateObjectResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${bucketName}/objects/${key}`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/octet-stream',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${bucketName}/objects/${key}`,
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/octet-stream',
+          Authorization: `Token ${token}`,
+        },
+        body: file,
       },
-      body: file,
-    });
-    const data = await response.json();
+      debug,
+    );
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -337,11 +358,14 @@ const deleteObject = async (
   debug?: boolean,
 ): Promise<ApiDeleteObjectResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${bucketName}/objects/${key}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${bucketName}/objects/${key}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     if (!data?.state) {
       data.error = handleApiError(['detail'], data, 'delete object');
       return {
