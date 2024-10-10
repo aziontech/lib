@@ -1,4 +1,6 @@
-import { limitArraySize, resolveDebug, resolveToken } from './index';
+import { limitArraySize, resolveDebug, resolveToken, fetchWithErrorHandling } from './index';
+
+global.fetch = jest.fn();
 
 describe('Utils', () => {
   describe('resolveToken', () => {
@@ -98,6 +100,116 @@ describe('Utils', () => {
       const mockArray: number[] = [];
       const result = limitArraySize(mockArray, 2);
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('fetchWithErrorHandling', () => {
+    const URL = 'https://example.com';
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return data when the fetch is successful and the response is JSON', async () => {
+      const mockResponseData = { message: 'Success' };
+      const mockResponse = {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: jest.fn().mockResolvedValue(mockResponseData),
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await fetchWithErrorHandling(URL);
+
+      expect(result).toEqual(mockResponseData);
+      expect(fetch).toHaveBeenCalledWith(URL, undefined);
+    });
+
+    it('should throw an error if the fetch response is not ok', async () => {
+      const mockResponse = {
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+
+      await expect(fetchWithErrorHandling(URL)).rejects.toThrow('HTTP error! Status: 404 - Not Found');
+
+      expect(fetch).toHaveBeenCalledWith(URL, undefined);
+    });
+
+    it('should throw an error if the response is not JSON', async () => {
+      const mockResponse = {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue('Not JSON'),
+        headers: {
+          get: jest.fn().mockReturnValue('text/html'),
+        },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+
+      await expect(fetchWithErrorHandling(URL)).rejects.toThrow('Expected JSON response, but got: Not JSON');
+
+      expect(fetch).toHaveBeenCalledWith(URL, undefined);
+    });
+
+    it('should log an error if debug is enabled and fetch response is not ok', async () => {
+      const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
+
+      const mockResponse = {
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+
+      await expect(fetchWithErrorHandling(URL, undefined, true)).rejects.toThrow(
+        'HTTP error! Status: 500 - Internal Server Error',
+      );
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('Error in fetch: HTTP error! Status: 500 - Internal Server Error');
+
+      mockConsoleLog.mockRestore();
+    });
+
+    it('should log an error if debug is enabled and response is not JSON', async () => {
+      const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
+
+      const mockResponse = {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockReturnValue('Not JSON'),
+        headers: {
+          get: jest.fn().mockReturnValue('text/html'),
+        },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+
+      await expect(fetchWithErrorHandling(URL, undefined, true)).rejects.toThrow(
+        'Expected JSON response, but got: Not JSON',
+      );
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('Error in fetch: Expected JSON response, but got: Not JSON');
+
+      mockConsoleLog.mockRestore();
     });
   });
 });
