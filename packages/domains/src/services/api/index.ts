@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AzionClientOptions, AzionDomain } from '../../types';
 import { fetchWithErrorHandling } from '../../utils/index';
 import {
@@ -10,7 +11,6 @@ import {
 const BASE_URL =
   process.env.AZION_ENV === 'stage' ? 'https://stage-api.azion.net/domains' : 'https://api.azionapi.net/domains';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleApiError = (fields: string[], data: any) => {
   let error = undefined;
   fields.forEach((field: string) => {
@@ -72,9 +72,11 @@ const createDomain = async (
       };
     }
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error creating Domain:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'create domain' },
+    };
   }
 };
 
@@ -121,9 +123,11 @@ const getDomains = async (
           : undefined,
       })),
     };
-  } catch (error) {
+  } catch (error: any) {
     if (options?.debug) console.error('Error listing Domains:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'list domains' },
+    };
   }
 };
 
@@ -147,9 +151,11 @@ const getDomainById = async (
       };
     }
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (options?.debug) console.error('Error getting Domain:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get domain' },
+    };
   }
 };
 
@@ -199,9 +205,11 @@ const updateDomain = async (
       };
     }
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (options?.debug) console.error('Error updating Domain:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'update domain' },
+    };
   }
 };
 
@@ -218,11 +226,14 @@ const deleteDomain = async (
         headers: makeHeaders(token),
       },
       options?.debug,
+      false,
     );
     return { results: undefined };
-  } catch (error) {
+  } catch (error: any) {
     if (options?.debug) console.error('Error deleting Domain:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'delete domain' },
+    };
   }
 };
 
