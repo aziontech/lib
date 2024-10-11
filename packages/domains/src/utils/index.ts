@@ -32,8 +32,13 @@ export const limitArraySize = <T>(array: T[], limit: number): T[] => {
   return array;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function fetchWithErrorHandling(url: string, options?: RequestInit, debug?: boolean): Promise<any> {
+export async function fetchWithErrorHandling(
+  url: string,
+  options?: RequestInit,
+  debug?: boolean,
+  jsonResponse: boolean = true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
   const response = await fetch(url, options);
 
   if (!response.ok) {
@@ -44,16 +49,21 @@ export async function fetchWithErrorHandling(url: string, options?: RequestInit,
     throw new Error(msg);
   }
 
-  const contentType = response.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/json')) {
-    const textResponse = await response.text();
-    const msg = `Expected JSON response, but got: ${textResponse}`;
+  if (jsonResponse) {
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      const msg = `Expected JSON response, but got: ${textResponse}`;
 
-    if (debug) console.log(`Error in fetch: ${msg}`);
+      if (debug) console.log(`Error in fetch: ${msg}`);
 
-    throw new Error(msg);
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    return data;
+  } else {
+    const data = await response.text();
+    return data;
   }
-
-  const data = await response.json();
-  return data;
 }

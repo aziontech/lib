@@ -1,4 +1,4 @@
-import { limitArraySize, resolveDebug, resolveToken, fetchWithErrorHandling } from './index';
+import { fetchWithErrorHandling, limitArraySize, resolveDebug, resolveToken } from './index';
 
 global.fetch = jest.fn();
 
@@ -110,7 +110,7 @@ describe('Utils', () => {
       jest.clearAllMocks();
     });
 
-    it('should return data when the fetch is successful and the response is JSON', async () => {
+    it('should return JSON data when jsonResponse is true, the fetch is successful and the response is JSON', async () => {
       const mockResponseData = { message: 'Success' };
       const mockResponse = {
         ok: true,
@@ -130,7 +130,7 @@ describe('Utils', () => {
       expect(fetch).toHaveBeenCalledWith(URL, undefined);
     });
 
-    it('should throw an error if the fetch response is not ok', async () => {
+    it('should throw an error if the fetch response is NOT ok', async () => {
       const mockResponse = {
         ok: false,
         status: 404,
@@ -147,7 +147,7 @@ describe('Utils', () => {
       expect(fetch).toHaveBeenCalledWith(URL, undefined);
     });
 
-    it('should throw an error if the response is not JSON', async () => {
+    it('should throw an error if jsonResponse is true but response is NOT JSON', async () => {
       const mockResponse = {
         ok: true,
         status: 200,
@@ -164,6 +164,28 @@ describe('Utils', () => {
 
       expect(fetch).toHaveBeenCalledWith(URL, undefined);
     });
+
+    it('should return text data when jsonResponse is false, the fetch is successful and the response is NOT JSON', async () => {
+      const mockResponseData = 'Some plain text.';
+      const mockResponse = {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: jest.fn().mockResolvedValue(mockResponseData),
+        headers: {
+          get: jest.fn().mockReturnValue('text/plain'),
+        },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await fetchWithErrorHandling(URL, undefined, false, false);
+
+      expect(result).toEqual(mockResponseData);
+      expect(fetch).toHaveBeenCalledWith(URL, undefined);
+    });
+
+    it('should throw an error if fetch response is not ok and jsonResponse is false', async () => {});
 
     it('should log an error if debug is enabled and fetch response is not ok', async () => {
       const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
