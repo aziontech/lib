@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AzionDatabaseCollectionOptions } from '../../types';
 import { limitArraySize } from '../../utils';
 import fetchWithErrorHandling from '../../utils/fetch';
@@ -70,9 +71,11 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
         updatedAt: result.data.updated_at,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error creating EdgeDB:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'post database' },
+    };
   }
 };
 
@@ -107,9 +110,11 @@ const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): P
         id,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error deleting EdgeDB:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'delete database' },
+    };
   }
 };
 
@@ -175,9 +180,11 @@ const postQueryEdgeDatabase = async (
       state: result.state,
       data: result.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error querying EdgeDB:', error);
-    throw new Error((error as Error)?.message);
+    return {
+      error: { message: error.toString(), operation: 'post query' },
+    };
   }
 };
 
@@ -201,16 +208,18 @@ const getEdgeDatabaseById = async (token: string, id: number, debug?: boolean): 
       debug,
     );
     if (!result.data) {
-      result.error = handleApiError(['detail'], result, 'get databases');
+      result.error = handleApiError(['detail'], result, 'get database');
       return {
         error: result.error ?? JSON.stringify(result),
       };
     }
     if (debug) console.log('Response:', result);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting EdgeDB:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get database' },
+    };
   }
 };
 
@@ -274,9 +283,11 @@ const getEdgeDatabases = async (
         updatedAt: result.updated_at,
       })),
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting all EdgeDBs:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get databases' },
+    };
   }
 };
 
