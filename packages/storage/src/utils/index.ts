@@ -85,23 +85,24 @@ export const findBucketByName = async (
   };
 };
 
-export default async function fetchWithErrorHandling(
+export async function fetchWithErrorHandling(
   url: string,
   options?: RequestInit,
   debug?: boolean,
+  jsonResponse: boolean = true,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
-  try {
-    const response = await fetch(url, options);
+  const response = await fetch(url, options);
 
-    if (!response.ok) {
-      const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+  if (!response.ok) {
+    const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
 
-      if (debug) console.log(`Error in fetch: ${msg}`);
+    if (debug) console.log(`Error in fetch: ${msg}`);
 
-      throw new Error(msg);
-    }
+    throw new Error(msg);
+  }
 
+  if (jsonResponse) {
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const textResponse = await response.text();
@@ -114,9 +115,8 @@ export default async function fetchWithErrorHandling(
 
     const data = await response.json();
     return data;
-  } catch (err) {
-    if (debug) console.log(`Error in fetch: ${err}`);
-
-    throw err;
+  } else {
+    const data = await response.text();
+    return data;
   }
 }

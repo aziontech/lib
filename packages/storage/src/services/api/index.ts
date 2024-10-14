@@ -1,4 +1,5 @@
-import fetchWithErrorHandling from '../../utils/index';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { fetchWithErrorHandling } from '../../utils/index';
 import {
   ApiCreateBucketResponse,
   ApiCreateObjectResponse,
@@ -64,9 +65,11 @@ const getBuckets = async (
     }
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting all buckets:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get all buckets' },
+    };
   }
 };
 
@@ -103,9 +106,11 @@ const postBucket = async (
     }
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error creating bucket:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'create bucket' },
+    };
   }
 };
 
@@ -142,9 +147,11 @@ const patchBucket = async (
     }
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error updating bucket:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'update bucket' },
+    };
   }
 };
 
@@ -174,9 +181,11 @@ const deleteBucket = async (token: string, name: string, debug?: boolean): Promi
     }
     if (debug) console.log('Response Delete Bucket:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error deleting bucket:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'delete bucket' },
+    };
   }
 };
 
@@ -214,9 +223,11 @@ const getObjects = async (
     }
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting all objects:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get all objects' },
+    };
   }
 };
 
@@ -259,9 +270,11 @@ const postObject = async (
     }
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error posting object:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'create object' },
+    };
   }
 };
 
@@ -287,7 +300,7 @@ const getObjectByKey = async (
     });
     if (response.headers.get('content-type') === 'application/json') {
       const data = await response.json();
-      const error = handleApiError(['detail'], data, 'get all objects');
+      const error = handleApiError(['detail'], data, 'get object by key');
       return {
         error: error ?? JSON.stringify(data),
       };
@@ -297,9 +310,11 @@ const getObjectByKey = async (
     return {
       data,
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting object by name:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get object by key' },
+    };
   }
 };
 
@@ -336,9 +351,11 @@ const putObject = async (
     );
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error putting object:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'put object' },
+    };
   }
 };
 
@@ -374,9 +391,11 @@ const deleteObject = async (
     }
     if (debug) console.log('Response:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error deleting object:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'delete object' },
+    };
   }
 };
 
