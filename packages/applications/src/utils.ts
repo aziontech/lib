@@ -61,6 +61,8 @@ export const mapApiError = (
  *
  * @param {string} url - The URL to send the fetch request to.
  * @param {RequestInit} [options] - Optional configuration for the fetch request (headers, method, body, ...).
+ * @param {boolean} debug - Running in debug mode.
+ * @param {boolean} jsonResponse - The fetch must expect a json response.
  * @returns {Promise<any>} - A promise that resolves to the fetched data if the request is successful.
  * @throws {Error} - Throws an error if the response status is not in the 2xx range or if the response is not in JSON format.
  *
@@ -74,19 +76,24 @@ export const mapApiError = (
  *  }
  * }
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function fetchWithErrorHandling(url: string, options?: RequestInit, debug?: boolean): Promise<any> {
-  try {
-    const response = await fetch(url, options);
+export async function fetchWithErrorHandling(
+  url: string,
+  options?: RequestInit,
+  debug?: boolean,
+  jsonResponse: boolean = true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
+  const response = await fetch(url, options);
 
-    if (!response.ok) {
-      const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+  if (!response.ok) {
+    const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
 
-      if (debug) console.log(`Error in fetch: ${msg}`);
+    if (debug) console.log(`Error in fetch: ${msg}`);
 
-      throw new Error(msg);
-    }
+    throw new Error(msg);
+  }
 
+  if (jsonResponse) {
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const textResponse = await response.text();
@@ -99,9 +106,8 @@ export async function fetchWithErrorHandling(url: string, options?: RequestInit,
 
     const data = await response.json();
     return data;
-  } catch (err) {
-    if (debug) console.log(`Error in fetch: ${err}`);
-
-    throw err;
+  } else {
+    const data = await response.text();
+    return data;
   }
 }
