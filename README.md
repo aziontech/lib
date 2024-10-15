@@ -19,6 +19,7 @@ These libraries are designed to be versatile and can be used both within and out
   - [Jwt](./packages/jwt/README.md)
   - [WASM Image Processor](./packages/wasm-image-processor/README.md)
   - [Utils](./packages/utils/README.md)
+- [AI](./packages/ai/README.md)
 - [Types](#types)
 - [AzionConfig](#config)
 - [Contributing](#contributing)

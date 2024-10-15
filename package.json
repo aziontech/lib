@@ -3,7 +3,8 @@
   "version": "1.8.2",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
-    "azion": "./bin/azion"
+    "azion": "./bin/azion",
+    "azlib": "./bin/azion"
   },
   "scripts": {
     "prepare": "husky",
@@ -81,6 +82,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./ai": {
+      "require": "./packages/ai/dist/index.js",
+      "import": "./packages/ai/dist/index.mjs",
+      "types": "./packages/ai/dist/index.d.ts"
+    },
     "./applications": {
       "require": "./packages/applications/dist/index.js",
       "import": "./packages/applications/dist/index.mjs",
@@ -144,6 +150,9 @@
   },
   "typesVersions": {
     "*": {
+      "ai": [
+        "./packages/ai/dist/index.d.ts"
+      ],
       "application": [
         "./packages/application/dist/index.d.ts"
       ],
