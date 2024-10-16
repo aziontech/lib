@@ -1,3 +1,4 @@
+import { fetchWithErrorHandling } from '../../utils';
 import {
   ApiCreateRulePayload,
   ApiListRulesParams,
@@ -33,12 +34,14 @@ export const listRules = async (
       sort,
       order,
     });
-    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/rules_engine/${phase}/rules?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error listing rules:', error);
@@ -63,12 +66,14 @@ export const getRuleById = async (
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting rule by ID:', error);
@@ -94,17 +99,19 @@ export const createRule = async (
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/rules_engine/${phase}/rules`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(ruleData),
       },
-      body: JSON.stringify(ruleData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error creating rule:', error);
@@ -131,17 +138,19 @@ export const updateRule = async (
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(ruleData),
       },
-      body: JSON.stringify(ruleData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error updating rule:', error);
@@ -166,11 +175,14 @@ export const deleteRule = async (
   debug?: boolean,
 ): Promise<void> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    if (debug) console.log('Response status:', response.status);
+    await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
   } catch (error) {
     if (debug) console.error('Error deleting rule:', error);
     throw error;

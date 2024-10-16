@@ -54,3 +54,60 @@ export const mapApiError = (
     operation,
   };
 };
+
+/**
+ * Fetches data from the given URL and handles errors based on the HTTP status code.
+ * It also ensures the response is in JSON format, throwing an error if it is not.
+ *
+ * @param {string} url - The URL to send the fetch request to.
+ * @param {RequestInit} [options] - Optional configuration for the fetch request (headers, method, body, ...).
+ * @param {boolean} debug - Running in debug mode.
+ * @param {boolean} jsonResponse - The fetch must expect a json response.
+ * @returns {Promise<any>} - A promise that resolves to the fetched data if the request is successful.
+ * @throws {Error} - Throws an error if the response status is not in the 2xx range or if the response is not in JSON format.
+ *
+ * @example
+ * async function fetchData() {
+ *  try {
+ *    const data = await fetchWithErrorHandling('https://example.com/x')
+ *    console.log('response data:', data)
+ *  } catch (err) {
+ *    console.log('error:', err)
+ *  }
+ * }
+ */
+export async function fetchWithErrorHandling(
+  url: string,
+  options?: RequestInit,
+  debug?: boolean,
+  jsonResponse: boolean = true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+
+    if (debug) console.log(`Error in fetch: ${msg}`);
+
+    throw new Error(msg);
+  }
+
+  if (jsonResponse) {
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      const msg = `Expected JSON response, but got: ${textResponse}`;
+
+      if (debug) console.log(`Error in fetch: ${msg}`);
+
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    return data;
+  } else {
+    const data = await response.text();
+    return data;
+  }
+}
