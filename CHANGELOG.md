@@ -1,3 +1,10 @@
+## [1.9.0-stage.1](https://github.com/aziontech/lib/compare/v1.8.2...v1.9.0-stage.1) (2024-10-16)
+
+
+### Features
+
+* improve fetch error handling (#57) ([bb901e5](https://github.com/aziontech/lib/commit/bb901e5d039beab758a5f0652255c9e96ac51437))
+
 ### [1.8.2](https://github.com/aziontech/lib/compare/v1.8.1...v1.8.2) (2024-10-03)
 
 
