@@ -16,33 +16,33 @@ The Azion AI Client provides a simple interface to interact with the Azion AI AP
 
 Install the package using npm or yarn:
 
-\```
-npm install @azion/ai
-\```
+```
+npm install azion
+```
 
 or
 
-\```
-yarn add @azion/ai
-\```
+```
+yarn add azion
+```
 
 ## Environment Variables
 
 Configure the client using the following environment variables:
 
-- \`AZION_TOKEN\`: Your Azion API token.
-- \`AZION_DEBUG\`: Enable debug mode (true/false).
+- `AZION_TOKEN`: Your Azion API token.
+- `AZION_DEBUG`: Enable debug mode (true/false).
 
-Example \`.env\` file:
+Example `.env` file:
 
-\```
+```
 AZION_TOKEN=your-api-token
 AZION_DEBUG=true
-\```
+```
 
 ## Debug Mode
 
-Debug mode provides detailed logging of API requests and responses. Enable it by setting the \`AZION_DEBUG\` environment variable to \`true\` or passing \`true\` as the \`debug\` parameter in the methods.
+Debug mode provides detailed logging of API requests and responses. Enable it by setting the `AZION_DEBUG` environment variable to `true` or passing `true` as the `debug` parameter in the methods.
 
 ## Usage
 
@@ -62,8 +62,8 @@ Create a client instance with specific configurations.
 
 #### Chat
 
-\```typescript
-import { chat } from '@azion/ai';
+```typescript
+import { chat } from 'azion/ai';
 import type { AzionAIRequest, AzionAIResponse, AzionAIResult } from '@azion/ai';
 
 const request: AzionAIRequest = {
@@ -75,12 +75,12 @@ console.log('AI response:', response.choices[0].message.content);
 } else {
 console.error('Chat failed', error);
 }
-\```
+```
 
 #### Streaming Chat
 
-\```typescript
-import { streamChat } from '@azion/ai';
+```typescript
+import { streamChat } from 'azion/ai';
 import type { AzionAIRequest, AzionAIStreamResponse, AzionAIResult } from '@azion/ai';
 
 const request: AzionAIRequest = {
@@ -94,53 +94,53 @@ process.stdout.write(chunk.data.choices[0].delta.content || '');
 console.error('Error:', chunk.error);
 }
 }
-\```
+```
 
 ## API Reference
 
-### \`chat\`
+### `chat`
 
 Sends a chat request to the Azion AI service.
 
 **Parameters:**
 
-- \`request: AzionAIRequest\` - Request object containing chat parameters.
-- \`options?: AzionClientOptions\` - Additional client options.
+- `request: AzionAIRequest` - Request object containing chat parameters.
+- `options?: AzionClientOptions` - Additional client options.
 
 **Returns:**
 
-- \`Promise<AzionAIResult<AzionAIResponse>>\` - A promise that resolves to the chat result or an error.
+- `Promise<AzionAIResult<AzionAIResponse>>` - A promise that resolves to the chat result or an error.
 
-### \`streamChat\`
+### `streamChat`
 
 Sends a streaming chat request to the Azion AI service.
 
 **Parameters:**
 
-- \`request: AzionAIRequest\` - Request object containing chat parameters.
-- \`options?: AzionClientOptions\` - Additional client options.
+- `request: AzionAIRequest` - Request object containing chat parameters.
+- `options?: AzionClientOptions` - Additional client options.
 
 **Returns:**
 
-- \`AsyncGenerator<AzionAIResult<AzionAIStreamResponse>>\` - An async generator that produces partial chat results.
+- `AsyncGenerator<AzionAIResult<AzionAIStreamResponse>>` - An async generator that produces partial chat results.
 
-### \`createClient\`
+### `createClient`
 
 Creates an Azion AI client with methods to interact with AI services.
 
 **Parameters:**
 
-- \`config?: Partial<{ token: string; options?: AzionClientOptions }>\` - Optional configuration for the client.
+- `config?: Partial<{ token: string; options?: AzionClientOptions }>` - Optional configuration for the client.
 
 **Returns:**
 
-- \`AzionAIClient\` - A client object with methods to interact with AI services.
+- `AzionAIClient` - A client object with methods to interact with AI services.
 
 ## Types
 
 Here are the main types used in the Azion AI Client:
 
-\```typescript
+```typescript
 import type {
 AzionAIMessage,
 AzionAIConfig,
@@ -154,7 +154,7 @@ CreateAzionAIClient
 } from '@azion/ai';
 
 // AzionAIMessage
-\```
+```
 
 For more detailed information about these types, please refer to the source code.
 
