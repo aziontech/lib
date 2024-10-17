@@ -26,13 +26,13 @@ import { resolveDebug, resolveToken } from './utils';
  * @returns {Promise<AzionAIResult<AzionAIResponse>>} A promise that resolves to the chat result or an error.
  *
  * @example
- * const result = await chatMethod('your-token', {
+ * const { data, error } = await chatMethod('your-token', {
  *   messages: [{ role: 'user', content: 'Hello, AI!' }]
  * }, { debug: true });
- * if (result.data) {
- *   console.log('AI response:', result.data.choices[0].message.content);
- * } else {
- *   console.error('Error:', result.error);
+ * if (data) {
+ *   console.log('AI response:', data.choices[0].message.content);
+ * } else if (error) {
+ *   console.error('Error:', error.message);
  * }
  */
 export const chatMethod = async (
@@ -72,11 +72,11 @@ export const chatMethod = async (
  * const stream = streamChatMethod('your-token', {
  *   messages: [{ role: 'user', content: 'Tell me a story' }]
  * }, { debug: true });
- * for await (const chunk of stream) {
- *   if (chunk.data) {
- *     console.log('AI chunk:', chunk.data.choices[0].delta.content);
- *   } else {
- *     console.error('Error:', chunk.error);
+ * for await (const { data, error } of stream) {
+ *   if (data) {
+ *     console.log('AI chunk:', data.choices[0].delta.content);
+ *   } else if (error) {
+ *     console.error('Error:', error.message);
  *   }
  * }
  */
@@ -114,13 +114,13 @@ export const streamChatMethod = async function* (
  * @returns {Promise<AzionAIResult<AzionAIResponse>>} A promise that resolves to the chat result or an error.
  *
  * @example
- * const result = await chat({
+ * const { data, error } = await chat({
  *   messages: [{ role: 'user', content: 'What is the capital of France?' }]
  * });
- * if (result.data) {
- *   console.log('AI response:', result.data.choices[0].message.content);
- * } else {
- *   console.error('Error:', result.error);
+ * if (data) {
+ *   console.log('AI response:', data.choices[0].message.content);
+ * } else if (error) {
+ *   console.error('Error:', error.message);
  * }
  */
 const chat = (request: AzionAIRequest, options?: AzionClientOptions): Promise<AzionAIResult<AzionAIResponse>> =>
@@ -143,11 +143,11 @@ const chat = (request: AzionAIRequest, options?: AzionClientOptions): Promise<Az
  * const stream = streamChat({
  *   messages: [{ role: 'user', content: 'Write a short story about a robot' }]
  * });
- * for await (const chunk of stream) {
- *   if (chunk.data) {
- *     process.stdout.write(chunk.data.choices[0].delta.content || '');
- *   } else {
- *     console.error('Error:', chunk.error);
+ * for await (const { data, error } of stream) {
+ *   if (data) {
+ *     process.stdout.write(data.choices[0].delta.content || '');
+ *   } else if (error) {
+ *     console.error('Error:', error.message);
  *   }
  * }
  */
@@ -171,17 +171,24 @@ const streamChat = (
  * const aiClient = createClient({ token: 'your-api-token', options: { debug: true } });
  *
  * // Using the chat method
- * const chatResult = await aiClient.chat({
+ * const { data: chatData, error: chatError } = await aiClient.chat({
  *   messages: [{ role: 'user', content: 'Explain quantum computing' }]
  * });
- * console.log(chatResult.data?.choices[0].message.content);
+ * if (chatData) {
+ *   console.log('AI response:', chatData.choices[0].message.content);
+ * } else if (chatError) {
+ *   console.error('Chat error:', chatError.message);
+ * }
  *
  * // Using the streamChat method
- * for await (const chunk of aiClient.streamChat({
+ * const stream = aiClient.streamChat({
  *   messages: [{ role: 'user', content: 'Write a poem about AI' }]
- * })) {
- *   if (chunk.data) {
- *     process.stdout.write(chunk.data.choices[0].delta.content || '');
+ * });
+ * for await (const { data: streamData, error: streamError } of stream) {
+ *   if (streamData) {
+ *     process.stdout.write(streamData.choices[0].delta.content || '');
+ *   } else if (streamError) {
+ *     console.error('Stream error:', streamError.message);
  *   }
  * }
  */
