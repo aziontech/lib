@@ -1,3 +1,4 @@
+import createAzionAIClient, { AzionAIClient } from 'azion/ai';
 import createAzionApplicationClient, { AzionApplicationsClient } from 'azion/applications';
 import { convertJsonConfigToObject, defineConfig, processConfig } from 'azion/config';
 import createDomainsClient, { AzionDomainsClient } from 'azion/domains';
@@ -13,15 +14,15 @@ import { AzionClient, AzionClientConfig } from './types';
  * @param {AzionClientConfig} [config] - Client configuration options.
  * @param {string} [config.token] - Authentication token for Azion API.
  * @param {boolean} [config.debug=false] - Enable debug mode for detailed logging.
- * @returns {AzionClient} An object containing SQL, Storage, Purge, and Edge Application clients.
+ * @returns {AzionClient} An object containing SQL, Storage, Purge, Edge Application, and AI clients.
  *
  * @example
  * // Create a client with a token and debug mode enabled
- * const client = createClient({ token: 'your-api-token', debug: true });
+ * const client = createClient({ token: 'your-api-token', options: { debug: true } });
  *
  * @example
  * // Create a client using environment variables for token
- * const client = createClient({ debug: true });
+ * const client = createClient({ options: { debug: true } });
  */
 function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
   /**
@@ -44,19 +45,24 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
 
   /**
    * Domains client with methods to interact with Azion Edge Domains.
-   * @type {AzionCreateClientDomains}
+   * @type {AzionDomainsClient}
    */
   const domainsClient: AzionDomainsClient = createDomainsClient({ token, options });
 
   /**
-   * Azion Client object containing Storage, SQL, and Purge clients.
    * Edge Application client with methods to interact with Azion Edge Applications.
    * @type {AzionApplicationsClient}
    */
   const applicationClient: AzionApplicationsClient = createAzionApplicationClient({ token, options });
 
   /**
-   * Azion Client object containing Storage, SQL, Purge, and Edge Application clients.
+   * AI client with methods to interact with Azion AI services.
+   * @type {AzionAIClient}
+   */
+  const aiClient: AzionAIClient = createAzionAIClient({ token, options });
+
+  /**
+   * Azion Client object containing Storage, SQL, Purge, Edge Application, and AI clients.
    * Use this object to interact with various Azion services.
    *
    * @type {AzionClient}
@@ -64,8 +70,9 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
    * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
    * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
    * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
-   * @property {AzionDomainsClient} applications - Client for Azion Edge Domains operations.
+   * @property {AzionDomainsClient} domains - Client for Azion Edge Domains operations.
    * @property {AzionApplicationsClient} applications - Client for Azion Edge Application operations.
+   * @property {AzionAIClient} ai - Client for Azion AI operations.
    */
   const client: AzionClient = {
     storage: storageClient,
@@ -73,6 +80,7 @@ function createClient({ token, options }: AzionClientConfig = {}): AzionClient {
     purge: purgeClient,
     domains: domainsClient,
     applications: applicationClient,
+    ai: aiClient,
   };
 
   return client;

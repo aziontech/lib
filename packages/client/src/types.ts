@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { AzionDomainsClient } from 'azion/domains';
+import { AzionAIClient } from '../../ai/src/types';
 import { AzionApplicationsClient } from '../../applications/src/types';
 import { AzionPurgeClient } from '../../purge/src/types';
 import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
@@ -14,7 +15,9 @@ import { AzionStorageClient } from '../../storage/src/types';
  * @property {AzionStorageClient} storage - Client for Azion Edge Storage operations.
  * @property {AzionSQLClient} sql - Client for Azion Edge SQL database operations.
  * @property {AzionPurgeClient} purge - Client for Azion Edge Purge operations.
- * @property {AzionApplicationsClient}  - Client for Azion Edge Application operations.
+ * @property {AzionDomainsClient} domains - Client for Azion Edge Domains operations.
+ * @property {AzionApplicationsClient} applications - Client for Azion Edge Application operations.
+ * @property {AzionAIClient} ai - Client for Azion AI operations.
  */
 export interface AzionClient {
   /**
@@ -196,6 +199,37 @@ export interface AzionClient {
    * const { data: deletedApp } = await client.applications.deleteApplication({ applicationId: 123 });
    */
   applications: AzionApplicationsClient;
+
+  /**
+   * AI client with methods to interact with Azion AI services.
+   *
+   * @type {AzionAIClient}
+   *
+   * @example
+   * // Using the chat method
+   * const { data, error } = await client.ai.chat({
+   *   messages: [{ role: 'user', content: 'Explique a computação quântica' }]
+   * });
+   * if (data) {
+   *   console.log('Resposta da IA:', data.choices[0].message.content);
+   * } else if (error) {
+   *   console.error('Erro:', error.message);
+   * }
+   *
+   * @example
+   * // Using the streamChat method
+   * const stream = client.ai.streamChat({
+   *   messages: [{ role: 'user', content: 'Escreva um poema sobre IA' }]
+   * });
+   * for await (const { data, error } of stream) {
+   *   if (data) {
+   *     process.stdout.write(data.choices[0].delta.content || '');
+   *   } else if (error) {
+   *     console.error('Erro de stream:', error.message);
+   *   }
+   * }
+   */
+  ai: AzionAIClient;
 }
 
 /**
@@ -221,10 +255,6 @@ export interface AzionClient {
  * // Create a client using environment variables for token and default options
  * const client = createClient();
  */
-export interface AzionClientConfig {
-  token?: string;
-  options?: AzionClientOptions;
-}
 export interface AzionClientConfig {
   token?: string;
   options?: AzionClientOptions;
