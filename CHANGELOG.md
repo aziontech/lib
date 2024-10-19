@@ -1,3 +1,10 @@
+## [1.9.0-stage.2](https://github.com/aziontech/lib/compare/v1.9.0-stage.1...v1.9.0-stage.2) (2024-10-19)
+
+
+### Features
+
+* azion/ai (#58) ([f873a00](https://github.com/aziontech/lib/commit/f873a00becc4e174a9457e29087509eafdb68992))
+
 ## [1.9.0-stage.1](https://github.com/aziontech/lib/compare/v1.8.2...v1.9.0-stage.1) (2024-10-16)
 
 
