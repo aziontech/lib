@@ -34,7 +34,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AZION_TOKEN: ${{ secrets.AZION_TOKEN }}
         run: |
-          node scripts/code-review.js
+          node scripts/code-review.mjs
         continue-on-error: true
         id: code_review
 
