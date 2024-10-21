@@ -1,3 +1,10 @@
+## [1.9.0-stage.3](https://github.com/aziontech/lib/compare/v1.9.0-stage.2...v1.9.0-stage.3) (2024-10-21)
+
+
+### Bug Fixes
+
+* azion/ai exports ([81c636e](https://github.com/aziontech/lib/commit/81c636eda6be676db07f738c9117e7aee0659d93))
+
 ## [1.9.0-stage.2](https://github.com/aziontech/lib/compare/v1.9.0-stage.1...v1.9.0-stage.2) (2024-10-19)
 
 
