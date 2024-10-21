@@ -22,10 +22,18 @@ describe('Domains Package', () => {
           is_active: true,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'createDomain');
 
       const result = await createDomain({ name: 'example.com', edgeApplicationId: 123 }, { debug: mockDebug });
+
       expect(result).toEqual({
         data: {
           state: 'executed',
@@ -43,13 +51,17 @@ describe('Domains Package', () => {
       );
     });
 
-    it('should throw an error if the domain creation fails', async () => {
+    it('should return an error if the domain creation fails', async () => {
       const mockError = new Error('Error creating Domain: Request failed');
+
       jest.spyOn(global, 'fetch').mockRejectedValue(mockError);
       jest.spyOn(services, 'createDomain');
-      await expect(createDomain({ name: 'example.com', edgeApplicationId: 123 }, { debug: mockDebug })).rejects.toThrow(
-        mockError,
-      );
+
+      const result = await createDomain({ name: 'example.com', edgeApplicationId: 123 }, { debug: mockDebug });
+
+      expect(result).toEqual({
+        error: { message: 'Error: Error creating Domain: Request failed', operation: 'create domain' },
+      });
       expect(services.createDomain).toHaveBeenCalledWith(
         mockToken,
         { name: 'example.com', edgeApplicationId: 123 },
@@ -67,7 +79,13 @@ describe('Domains Package', () => {
           is_active: true,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'createDomain');
       const domain: any = {
         name: 'example.com',
@@ -93,12 +111,16 @@ describe('Domains Package', () => {
       expect(services.createDomain).toHaveBeenCalledWith(mockToken, domain, { debug: mockDebug });
     });
 
-    it('should an error if the domain edgeApplicationId is not provided', async () => {
+    it('should return an error if the domain edgeApplicationId is not provided', async () => {
       jest.spyOn(global, 'fetch').mockResolvedValue({
         json: () =>
           Promise.resolve({
             edge_application_id: ['This field is required.'],
           }),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
       } as any);
       // @eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(createDomain({ name: 'example.com' } as any, { debug: mockDebug })).resolves.toEqual({
@@ -110,7 +132,13 @@ describe('Domains Package', () => {
       const mockResponse = {
         detail: 'Invalid Token',
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'createDomain');
 
       const result = await createDomain({ name: 'example.com', edgeApplicationId: 123 }, { debug: mockDebug });
@@ -161,7 +189,13 @@ describe('Domains Package', () => {
     });
 
     it('should list domains', async () => {
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponseListDomains),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'getDomains');
 
       const results = await getDomains({ debug: mockDebug });
@@ -183,7 +217,13 @@ describe('Domains Package', () => {
     });
 
     it('should list domains with all fields', async () => {
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponseListDomains),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'getDomains');
 
       const queryParams: any = { orderBy: 'id', page: 1, pageSize: 1, sort: 'asc' };
@@ -210,7 +250,13 @@ describe('Domains Package', () => {
       mockResponseListDomains.results[0].mtls_verification = 'enforce';
       mockResponseListDomains.results[0].mtls_trusted_ca_certificate_id = 123;
       mockResponseListDomains.results[0].crl_list = [111];
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponseListDomains),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'getDomains');
 
       const results = await getDomains({ debug: mockDebug });
@@ -248,7 +294,13 @@ describe('Domains Package', () => {
           is_active: true,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'getDomainById');
 
       const result = await getDomain(123, { debug: mockDebug });
@@ -285,7 +337,13 @@ describe('Domains Package', () => {
           crl_list: [111],
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'getDomainById');
 
       const result = await getDomain(123, { debug: mockDebug });
@@ -333,7 +391,13 @@ describe('Domains Package', () => {
           edge_firewall_id: null,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'updateDomain');
 
       const result = await updateDomain(
@@ -369,7 +433,13 @@ describe('Domains Package', () => {
       const mockResponse = {
         edge_application_id: ['This field is required.'],
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
 
       const result = await updateDomain(
         170,
@@ -388,7 +458,13 @@ describe('Domains Package', () => {
       const mockResponse = {
         duplicated_domain_name: 'my domain',
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
 
       const result = await updateDomain(170, { name: 'my domain', edgeApplicationId: 123 }, { debug: mockDebug });
 
@@ -417,7 +493,13 @@ describe('Domains Package', () => {
           edge_firewall_id: null,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(mockResponse),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+      } as any);
       jest.spyOn(services, 'updateDomain');
 
       const domain: any = {
@@ -460,7 +542,15 @@ describe('Domains Package', () => {
 
   describe('deleteDomain', () => {
     it('should delete a domain', async () => {
-      jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, status: 204 } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve({}),
+        ok: true,
+        headers: {
+          get: () => 'application/json',
+        },
+        status: 204,
+        text: jest.fn().mockResolvedValue(''),
+      } as any);
       jest.spyOn(services, 'deleteDomain');
 
       const result = await deleteDomain(123, { debug: mockDebug });
@@ -468,16 +558,22 @@ describe('Domains Package', () => {
       expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
     });
 
-    it('should throw an error if the domain deletion fails with a message', async () => {
+    it('should return an error if the domain deletion fails with a message', async () => {
       jest.spyOn(global, 'fetch').mockResolvedValue({
-        ok: true,
+        ok: false,
         status: 404,
+        statusText: 'Not Found',
         json: () => Promise.resolve({ detail: 'Not found.' }),
       } as any);
       jest.spyOn(services, 'deleteDomain');
 
       const result = await deleteDomain(123, { debug: mockDebug });
-      expect(result).toEqual(expect.objectContaining({ error: { message: 'Not found.', operation: 'delete domain' } }));
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          error: { message: 'Error: HTTP error! Status: 404 - Not Found', operation: 'delete domain' },
+        }),
+      );
       expect(services.deleteDomain).toHaveBeenCalledWith(mockToken, 123, { debug: mockDebug });
     });
   });
@@ -493,7 +589,15 @@ describe('Domains Package', () => {
           is_active: true,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: jest.fn().mockResolvedValue(mockResponse),
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      } as any);
       jest.spyOn(services, 'createDomain');
 
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });
@@ -541,7 +645,15 @@ describe('Domains Package', () => {
           },
         ],
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponseListDomains) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: jest.fn().mockResolvedValue(mockResponseListDomains),
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      } as any);
       jest.spyOn(services, 'getDomains');
 
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });
@@ -574,7 +686,15 @@ describe('Domains Package', () => {
           is_active: true,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: jest.fn().mockResolvedValue(mockResponse),
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      } as any);
       jest.spyOn(services, 'getDomainById');
 
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });
@@ -612,7 +732,15 @@ describe('Domains Package', () => {
           edge_firewall_id: null,
         },
       };
-      jest.spyOn(global, 'fetch').mockResolvedValue({ json: () => Promise.resolve(mockResponse) } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: jest.fn().mockResolvedValue(mockResponse),
+        headers: {
+          get: jest.fn().mockReturnValue('application/json'),
+        },
+      } as any);
       jest.spyOn(services, 'updateDomain');
 
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });
@@ -642,7 +770,12 @@ describe('Domains Package', () => {
     });
 
     it('should create a client with deleteDomain', async () => {
-      jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, status: 204 } as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 204,
+        statusText: 'No Content',
+        text: jest.fn().mockResolvedValue(''),
+      } as any);
       jest.spyOn(services, 'deleteDomain');
 
       const client = createClient({ token: mockToken, options: { debug: mockDebug } });

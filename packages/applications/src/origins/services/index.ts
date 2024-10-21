@@ -1,3 +1,4 @@
+import { fetchWithErrorHandling } from '../../utils';
 import {
   ApiCreateOriginPayload,
   ApiCreateOriginResponse,
@@ -35,12 +36,14 @@ const listOrigins = async (
       order,
       filter,
     });
-    const response = await fetch(`${BASE_URL}/${Id}/origins?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/origins?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error listing origins:', error);
@@ -64,12 +67,14 @@ const getOriginByKey = async (
   debug?: boolean,
 ): Promise<ApiGetOriginResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/origins/${originKey}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/origins/${originKey}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting origin by key:', error);
@@ -93,17 +98,19 @@ const createOrigin = async (
   debug?: boolean,
 ): Promise<ApiCreateOriginResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/origins`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/origins`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(originData),
       },
-      body: JSON.stringify(originData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error creating origin:', error);
@@ -129,17 +136,19 @@ const updateOrigin = async (
   debug?: boolean,
 ): Promise<ApiUpdateOriginResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/origins/${originKey}`, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/origins/${originKey}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(originData),
       },
-      body: JSON.stringify(originData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error updating origin:', error);
@@ -163,12 +172,14 @@ const deleteOrigin = async (
   debug?: boolean,
 ): Promise<ApiDeleteOriginResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/origins/${originKey}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/origins/${originKey}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error deleting origin:', error);

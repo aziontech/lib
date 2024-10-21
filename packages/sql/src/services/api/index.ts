@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AzionDatabaseCollectionOptions } from '../../types';
 import { limitArraySize } from '../../utils';
+import fetchWithErrorHandling from '../../utils/fetch';
 import type {
   ApiCreateDatabaseResponse,
   ApiDeleteDatabaseResponse,
@@ -36,15 +38,18 @@ const handleApiError = (fields: string[], data: any, operation: string) => {
  */
 const postEdgeDatabase = async (token: string, name: string, debug?: boolean): Promise<ApiCreateDatabaseResponse> => {
   try {
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Token ${token}`,
-        'Content-Type': 'application/json',
+    const result = await fetchWithErrorHandling(
+      BASE_URL,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
       },
-      body: JSON.stringify({ name }),
-    });
-    const result = await response.json();
+      debug,
+    );
     if (!result.state) {
       result.error = handleApiError(['detail'], result, 'post database');
       return {
@@ -66,9 +71,11 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
         updatedAt: result.data.updated_at,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error creating EdgeDB:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'post database' },
+    };
   }
 };
 
@@ -81,14 +88,16 @@ const postEdgeDatabase = async (token: string, name: string, debug?: boolean): P
  */
 const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): Promise<ApiDeleteDatabaseResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Token ${token}`,
+    const result = await fetchWithErrorHandling(
+      `${BASE_URL}/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       },
-    });
-    if (debug) console.log('Response Delete Database:', response);
-    const result = await response.json();
+      debug,
+    );
     if (!result.state) {
       result.error = handleApiError(['detail'], result, 'delete database');
       return {
@@ -101,9 +110,11 @@ const deleteEdgeDatabase = async (token: string, id: number, debug?: boolean): P
         id,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error deleting EdgeDB:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'delete database' },
+    };
   }
 };
 
@@ -122,16 +133,18 @@ const postQueryEdgeDatabase = async (
   debug?: boolean,
 ): Promise<ApiQueryExecutionResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}/query`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Token ${token}`,
-        'Content-Type': 'application/json',
+    const result = await fetchWithErrorHandling(
+      `${BASE_URL}/${id}/query`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ statements }),
       },
-      body: JSON.stringify({ statements }),
-    });
-
-    const result = await response.json();
+      debug,
+    );
     if (!result.data || !Array.isArray(result.data)) {
       result.error = handleApiError(['detail'], result, 'post query');
       return {
@@ -167,9 +180,11 @@ const postQueryEdgeDatabase = async (
       state: result.state,
       data: result.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error querying EdgeDB:', error);
-    throw new Error((error as Error)?.message);
+    return {
+      error: { message: error.toString(), operation: 'post query' },
+    };
   }
 };
 
@@ -182,24 +197,29 @@ const postQueryEdgeDatabase = async (
  */
 const getEdgeDatabaseById = async (token: string, id: number, debug?: boolean): Promise<ApiCreateDatabaseResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Token ${token}`,
+    const result = await fetchWithErrorHandling(
+      `${BASE_URL}/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       },
-    });
-    const result = await response.json();
+      debug,
+    );
     if (!result.data) {
-      result.error = handleApiError(['detail'], result, 'get databases');
+      result.error = handleApiError(['detail'], result, 'get database');
       return {
         error: result.error ?? JSON.stringify(result),
       };
     }
     if (debug) console.log('Response:', result);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting EdgeDB:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get database' },
+    };
   }
 };
 
@@ -224,13 +244,16 @@ const getEdgeDatabases = async (
         }
       });
     }
-    const response = await fetch(url?.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      url?.toString(),
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       },
-    });
-    const data = await response.json();
+      debug,
+    );
     if (!data.results) {
       data.error = handleApiError(['detail'], data, 'get databases');
       return {
@@ -260,9 +283,11 @@ const getEdgeDatabases = async (
         updatedAt: result.updated_at,
       })),
     };
-  } catch (error) {
+  } catch (error: any) {
     if (debug) console.error('Error getting all EdgeDBs:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'get databases' },
+    };
   }
 };
 
