@@ -1,3 +1,4 @@
+import { fetchWithErrorHandling } from '../../utils';
 import {
   ApiCreateFunctionInstancePayload,
   ApiCreateFunctionInstanceResponse,
@@ -35,12 +36,14 @@ const listFunctionInstances = async (
       order_by,
       filter,
     });
-    const response = await fetch(`${BASE_URL}/${Id}/functions_instances?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/functions_instances?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error listing function instances:', error);
@@ -64,12 +67,14 @@ const getFunctionInstanceById = async (
   debug?: boolean,
 ): Promise<ApiGetFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting function instance by ID:', error);
@@ -93,16 +98,19 @@ const createFunctionInstance = async (
   debug?: boolean,
 ): Promise<ApiCreateFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${edgeApplicationId}/functions_instances`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(functionInstanceData),
       },
-      body: JSON.stringify(functionInstanceData),
-    });
-    const data = await response.json();
+      debug,
+    );
     if (debug) console.log('Response:', data);
     return data;
   } catch (error) {
@@ -129,17 +137,19 @@ const updateFunctionInstance = async (
   debug?: boolean,
 ): Promise<ApiUpdateFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/functions_instances/${functionInstanceId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(functionInstanceData),
       },
-      body: JSON.stringify(functionInstanceData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error updating function instance:', error);
@@ -163,12 +173,14 @@ const deleteFunctionInstance = async (
   debug?: boolean,
 ): Promise<ApiDeleteFunctionInstanceResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${edgeApplicationId}/functions_instances/${edgeFunctionInstanceId}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${edgeApplicationId}/functions_instances/${edgeFunctionInstanceId}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error deleting function instance:', error);

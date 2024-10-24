@@ -20,6 +20,42 @@ const handleApiError = (fields: string[], data: any, operation: string) => {
   return error;
 };
 
+async function fetchWithErrorHandling(
+  url: string,
+  options?: RequestInit,
+  debug?: boolean,
+  jsonResponse: boolean = true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+
+    if (debug) console.log(`Error in fetch: ${msg}`);
+
+    throw new Error(msg);
+  }
+
+  if (jsonResponse) {
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      const msg = `Expected JSON response, but got: ${textResponse}`;
+
+      if (debug) console.log(`Error in fetch: ${msg}`);
+
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    return data;
+  } else {
+    const data = await response.text();
+    return data;
+  }
+}
+
 /**
  * Purge URLs from the Azion Edge cache.
  *
@@ -67,17 +103,20 @@ const postPurgeWildcard = async (token: string, urls: string[], debug?: boolean)
  */
 const postPurge = async (url: string, token: string, urls: string[], debug?: boolean): Promise<ApiPurgeResponse> => {
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Token ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json; version=3',
+    const result = await fetchWithErrorHandling(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json; version=3',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ items: urls, layer: 'edge_cache' }),
       },
-      credentials: 'include',
-      body: JSON.stringify({ items: urls, layer: 'edge_cache' }),
-    });
-    const result = await response.json();
+      debug,
+    );
     if (!result.data) {
       if (debug) console.log('Response Error:', result);
       result.error = handleApiError(['detail', 'error', 'items'], result, 'post purge');
@@ -87,9 +126,12 @@ const postPurge = async (url: string, token: string, urls: string[], debug?: boo
     }
     if (debug) console.log('Response:', result);
     return result;
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (debug) console.error('Error purging:', error);
-    throw error;
+    return {
+      error: { message: error.toString(), operation: 'post purge' },
+    };
   }
 };
 
