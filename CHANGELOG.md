@@ -1,3 +1,16 @@
+## [1.9.0](https://github.com/aziontech/lib/compare/v1.8.2...v1.9.0) (2024-10-28)
+
+
+### Features
+
+* azion/ai (#58) ([f873a00](https://github.com/aziontech/lib/commit/f873a00becc4e174a9457e29087509eafdb68992))
+* improve fetch error handling (#57) ([bb901e5](https://github.com/aziontech/lib/commit/bb901e5d039beab758a5f0652255c9e96ac51437))
+
+
+### Bug Fixes
+
+* azion/ai exports ([81c636e](https://github.com/aziontech/lib/commit/81c636eda6be676db07f738c9117e7aee0659d93))
+
 ## [1.9.0-stage.3](https://github.com/aziontech/lib/compare/v1.9.0-stage.2...v1.9.0-stage.3) (2024-10-21)
 
 
