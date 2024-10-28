@@ -1,3 +1,4 @@
+import { fetchWithErrorHandling } from '../../utils';
 import {
   ApiCreateApplicationPayload,
   ApiCreateApplicationResponse,
@@ -32,12 +33,14 @@ const getApplications = async (
       page: String(page),
       page_size: String(page_size),
     });
-    const response = await fetch(`${BASE_URL}?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting all applications:', error);
@@ -55,12 +58,14 @@ const getApplications = async (
  */
 const getApplicationById = async (token: string, Id: number, debug?: boolean): Promise<ApiGetApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting application by ID:', error);
@@ -82,17 +87,19 @@ const postApplication = async (
   debug?: boolean,
 ): Promise<ApiCreateApplicationResponse> => {
   try {
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      BASE_URL,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(applicationData),
       },
-      body: JSON.stringify(applicationData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error creating application:', error);
@@ -116,17 +123,19 @@ const putApplication = async (
   debug?: boolean,
 ): Promise<ApiUpdateApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}`,
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(applicationData),
       },
-      body: JSON.stringify(applicationData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error updating application:', error);
@@ -150,17 +159,19 @@ const patchApplication = async (
   debug?: boolean,
 ): Promise<ApiUpdateApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}`, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(applicationData),
       },
-      body: JSON.stringify(applicationData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error patching application:', error);
@@ -178,12 +189,14 @@ const patchApplication = async (
  */
 const deleteApplication = async (token: string, Id: number, debug?: boolean): Promise<ApiDeleteApplicationResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error deleting application:', error);

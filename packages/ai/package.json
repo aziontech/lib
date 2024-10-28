@@ -1,0 +1,40 @@
+{
+    "name": "@azion/ai",
+    "version": "1.0.0",
+    "description": "Azion AI client for interacting with Copilot API",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "require": "./dist/index.js",
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.ts"
+      }
+    },
+    "scripts": {
+      "compile": "tsup --config ../../tsup.config.json",
+      "lint": "eslint .",
+      "lint:fix": "eslint --fix .",
+      "prettier": "prettier --write .",
+      "test": "jest --clearCache && jest",
+      "test:watch": "jest -c jest.config.js . --watch",
+      "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
+    },
+    "author": "aziontech",
+    "license": "MIT",
+    "files": [
+      "dist",
+      "package.json"
+    ],
+    "dependencies": {
+      "@azion/types": "^1.0.0"
+    },
+    "devDependencies": {
+      "@jest/globals": "^29.7.0",
+      "@types/jest": "^29.5.12",
+      "jest": "^29.7.0",
+      "ts-jest": "^29.1.5",
+      "ts-node": "^10.9.2"
+    }
+  }

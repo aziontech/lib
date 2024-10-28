@@ -1,3 +1,4 @@
+import { fetchWithErrorHandling } from '../../utils';
 import {
   ApiCreateCacheSettingPayload,
   ApiCreateCacheSettingResponse,
@@ -25,12 +26,14 @@ export const getCacheSettings = async (
       sort,
       order,
     });
-    const response = await fetch(`${BASE_URL}/${Id}/cache_settings?${queryParams.toString()}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/cache_settings?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting cache settings:', error);
@@ -45,12 +48,14 @@ export const getCacheSetting = async (
   debug?: boolean,
 ): Promise<ApiGetCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error getting cache setting by ID:', error);
@@ -65,17 +70,19 @@ export const postCacheSetting = async (
   debug?: boolean,
 ): Promise<ApiCreateCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/cache_settings`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/cache_settings`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(cacheSettingData),
       },
-      body: JSON.stringify(cacheSettingData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error creating cache setting:', error);
@@ -91,17 +98,19 @@ export const patchCacheSetting = async (
   debug?: boolean,
 ): Promise<ApiUpdateCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json; version=3',
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json; version=3',
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(cacheSettingData),
       },
-      body: JSON.stringify(cacheSettingData),
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error updating cache setting:', error);
@@ -116,12 +125,14 @@ export const deleteCacheSetting = async (
   debug?: boolean,
 ): Promise<ApiDeleteCacheSettingResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`, {
-      method: 'DELETE',
-      headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-    });
-    const data = await response.json();
-    if (debug) console.log('Response:', data);
+    const data = await fetchWithErrorHandling(
+      `${BASE_URL}/${Id}/cache_settings/${cacheSettingId}`,
+      {
+        method: 'DELETE',
+        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+      },
+      debug,
+    );
     return data;
   } catch (error) {
     if (debug) console.error('Error deleting cache setting:', error);
