@@ -82,6 +82,11 @@
       "import": "./packages/client/dist/index.mjs",
       "types": "./packages/client/dist/index.d.ts"
     },
+    "./presets": {
+      "require": "./packages/presets/dist/index.js",
+      "import": "./packages/presets/dist/index.mjs",
+      "types": "./packages/presets/dist/index.d.ts"
+    },
     "./ai": {
       "require": "./packages/ai/dist/index.js",
       "import": "./packages/ai/dist/index.mjs",
@@ -152,6 +157,9 @@
     "*": {
       "ai": [
         "./packages/ai/dist/index.d.ts"
+      ],
+      "presets": [
+        "./packages/presets/dist/index.d.ts"
       ],
       "application": [
         "./packages/application/dist/index.d.ts"
