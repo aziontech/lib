@@ -1,3 +1,10 @@
+## [1.10.0-stage.1](https://github.com/aziontech/lib/compare/v1.9.0...v1.10.0-stage.1) (2024-11-06)
+
+
+### Features
+
+* presets ([71d9835](https://github.com/aziontech/lib/commit/71d983587e49295829406c1654600ac054c3d46b))
+
 ## [1.9.0](https://github.com/aziontech/lib/compare/v1.8.2...v1.9.0) (2024-10-28)
 
 

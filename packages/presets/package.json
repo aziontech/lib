@@ -1,0 +1,36 @@
+{
+  "name": "@lib/presets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "compile": "tsup --config ../../tsup.config.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "jest --clearCache && jest -c jest.config.js .",
+    "test:watch": "jest -c jest.config.js . --watch",
+    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "aziontech",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-errors": "^3.0.0",
+    "ajv-keywords": "^5.1.0"
+  }
+}
