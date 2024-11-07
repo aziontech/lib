@@ -1,3 +1,16 @@
+## [1.11.0](https://github.com/aziontech/lib/compare/v1.10.0...v1.11.0) (2024-11-07)
+
+
+### Features
+
+* add automatic cli latest version detection ([5442afc](https://github.com/aziontech/lib/commit/5442afc2cd84796a53049ca61e675b3d0943de3c))
+* update cli version ([d1f7832](https://github.com/aziontech/lib/commit/d1f78326ae2b92d0f86a7811db276e5f965383be))
+
+
+### Bug Fixes
+
+* typo ([41bbca1](https://github.com/aziontech/lib/commit/41bbca1e0cfa393951c272604210accb0b37db1d))
+
 ## [1.11.0-stage.1](https://github.com/aziontech/lib/compare/v1.10.0...v1.11.0-stage.1) (2024-11-07)
 
 
