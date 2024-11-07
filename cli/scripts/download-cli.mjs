@@ -171,19 +171,78 @@ function checkExistingCliVersion() {
   }
 }
 
+async function getLatestVersion() {
+  return new Promise((resolve, reject) => {
+    log.info('Fetching latest version from GitHub API...');
+
+    const options = {
+      hostname: 'api.github.com',
+      path: '/repos/aziontech/azion/releases/latest',
+      headers: {
+        'User-Agent': 'Azion-CLI-Installer',
+      },
+    };
+
+    https
+      .get(options, (response) => {
+        let data = '';
+        response.on('data', (chunk) => (data += chunk));
+        response.on('end', () => {
+          try {
+            const release = JSON.parse(data);
+            const version = release.tag_name.replace(/^v/, '');
+
+            if (/^\d+\.\d+\.\d+$/.test(version)) {
+              log.success(`Latest version found from API: ${version}`);
+              resolve(version);
+            } else {
+              log.warning(`Invalid version format from API: ${version}`);
+              log.info(`Using default version: ${defaultVersion}`);
+              resolve(defaultVersion);
+            }
+          } catch (err) {
+            log.warning(`Error processing API response: ${err.message}`);
+            log.info(`Using default version: ${defaultVersion}`);
+            resolve(defaultVersion);
+          }
+        });
+      })
+      .on('error', (err) => {
+        log.warning(`Could not fetch latest version: ${err.message}`);
+        log.info(`Using default version: ${defaultVersion}`);
+        resolve(defaultVersion);
+      });
+  });
+}
+
 async function main() {
   try {
-    log.highlight(`Checking Azion CLI v${version}`);
+    let selectedVersion;
+
+    if (process.env.AZION_CLI_VERSION) {
+      selectedVersion = process.env.AZION_CLI_VERSION;
+      log.info(`Using version from environment variable: ${selectedVersion}`);
+    } else {
+      selectedVersion = await getLatestVersion();
+      log.info(`Using latest version: ${selectedVersion}`);
+    }
+
+    // Manter a URL base original
+    const baseUrl = `https://github.com/aziontech/azion/releases/download/v${selectedVersion}`;
+
+    log.highlight(`Checking Azion CLI v${selectedVersion}`);
     console.log();
 
     const existingVersion = checkExistingCliVersion();
     if (existingVersion) {
       log.info(`Azion CLI is already installed (version ${existingVersion})`);
-      if (existingVersion === version) {
-        log.success(`Azion CLI v${version} is already installed and up to date.`);
+      if (existingVersion === selectedVersion) {
+        log.success(`Azion CLI v${selectedVersion} is already installed and up to date.`);
         process.exit(0);
       } else {
-        log.info(`Current version (${existingVersion}) differs from desired (${version}). Proceeding with update...`);
+        log.info(
+          `Current version (${existingVersion}) differs from desired (${selectedVersion}). Proceeding with update...`,
+        );
       }
     }
 
@@ -198,12 +257,12 @@ async function main() {
       try {
         const currentVersion = execSync(`"${finalPath}" -v`).toString().trim();
         const versionMatch = currentVersion.match(/v(\d+\.\d+\.\d+)/);
-        if (versionMatch && versionMatch[1] === version) {
-          log.success(`Azion CLI v${version} is already installed and up to date.`);
+        if (versionMatch && versionMatch[1] === selectedVersion) {
+          log.success(`Azion CLI v${selectedVersion} is already installed and up to date.`);
           process.exit(0);
         } else {
           log.info(
-            `Current version (${versionMatch ? versionMatch[1] : 'unknown'}) differs from desired (${version}). Updating...`,
+            `Current version (${versionMatch ? versionMatch[1] : 'unknown'}) differs from desired (${selectedVersion}). Updating...`,
           );
         }
       } catch (error) {
