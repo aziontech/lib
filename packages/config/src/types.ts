@@ -265,8 +265,8 @@ export type AzionPurge = {
 };
 
 export type AzionBuild = {
-  /** Bunlder to be used */
-  builder?: 'webpack' | 'esbuild';
+  /** JavaScript bundler to be used for building the application */
+  bundler?: 'webpack' | 'esbuild';
   /** Entry file for the build */
   entry?: string;
   /** Preset configuration e.g next */
