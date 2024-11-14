@@ -1,12 +1,18 @@
-import createAzionAIClient, { AzionAIClient } from 'azion/ai';
-import createAzionApplicationClient, { AzionApplicationsClient } from 'azion/applications';
+import type { AzionAIClient } from 'azion/ai';
+import createAzionAIClient from 'azion/ai';
+import type { AzionApplicationsClient } from 'azion/applications';
+import createAzionApplicationClient from 'azion/applications';
 import { convertJsonConfigToObject, defineConfig, processConfig } from 'azion/config';
-import createDomainsClient, { AzionDomainsClient } from 'azion/domains';
-import createPurgeClient, { AzionPurgeClient } from 'azion/purge';
-import createSqlClient, { AzionSQLClient } from 'azion/sql';
-import createStorageClient, { AzionStorageClient } from 'azion/storage';
+import type { AzionDomainsClient } from 'azion/domains';
+import createDomainsClient from 'azion/domains';
+import type { AzionPurgeClient } from 'azion/purge';
+import createPurgeClient from 'azion/purge';
+import type { AzionSQLClient } from 'azion/sql';
+import createSqlClient from 'azion/sql';
+import type { AzionStorageClient } from 'azion/storage';
+import createStorageClient from 'azion/storage';
 
-import { AzionClient, AzionClientConfig } from './types';
+import type { AzionClient, AzionClientConfig } from './types';
 
 /**
  * Creates an Azion Client with methods to interact with Azion services
