@@ -1,6 +1,8 @@
-import { evaluate } from 'mathjs';
+import { all, create } from 'mathjs';
 import { AzionCache, AzionConfig } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
+
+const math = create(all);
 
 /**
  * CacheProcessConfigStrategy
@@ -15,7 +17,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
       return expression;
     }
     if (/^[0-9+\-*/.() ]+$/.test(expression)) {
-      return evaluate(expression);
+      return math.evaluate(expression);
     }
     throw new Error(`Expression is not purely mathematical: ${expression}`);
   };
