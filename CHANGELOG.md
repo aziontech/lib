@@ -1,3 +1,17 @@
+### [1.11.1](https://github.com/aziontech/lib/compare/v1.11.0...v1.11.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* resolve mathjs runtime configuration conflict ([0ece55e](https://github.com/aziontech/lib/commit/0ece55ed3db9ad191568be8bf87f05e1c1ca3293))
+
+### [1.11.1-stage.1](https://github.com/aziontech/lib/compare/v1.11.0...v1.11.1-stage.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* resolve mathjs runtime configuration conflict ([0ece55e](https://github.com/aziontech/lib/commit/0ece55ed3db9ad191568be8bf87f05e1c1ca3293))
+
 ## [1.11.0](https://github.com/aziontech/lib/compare/v1.10.0...v1.11.0) (2024-11-07)
 
 
