@@ -52,16 +52,18 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           description: rule.description ?? '',
           is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           order: index + 2, // index starts at 2, because the default rule is index 1
-          criteria: [
-            [
-              {
-                variable: `\${${rule.variable ?? 'uri'}}`,
-                operator: 'matches',
-                conditional: 'if',
-                input_value: rule.match,
-              },
-            ],
-          ],
+          criteria: rule.criteria
+            ? [rule.criteria] // Wrap user's criteria array in another array
+            : [
+                [
+                  {
+                    variable: `\${${rule.variable ?? 'uri'}}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: rule.match,
+                  },
+                ],
+              ],
           behaviors: [],
         };
         this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, context);
@@ -78,16 +80,18 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           description: rule.description ?? '',
           is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           order: index + 2, // index starts at 2, because the default rule is index 1
-          criteria: [
-            [
-              {
-                variable: `\${${rule.variable ?? 'uri'}}`,
-                operator: 'matches',
-                conditional: 'if',
-                input_value: rule.match,
-              },
-            ],
-          ],
+          criteria: rule.criteria
+            ? [rule.criteria] // Wrap user's criteria array in another array
+            : [
+                [
+                  {
+                    variable: `\${${rule.variable ?? 'uri'}}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: rule.match,
+                  },
+                ],
+              ],
           behaviors: [],
         };
         this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, context);
@@ -136,8 +140,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           description: rule.description,
           active: rule.is_active,
-          variable: rule.criteria[0].variable.replace('${', '').replace('}', ''),
-          match: rule.criteria[0].input_value,
+          criteria: rule.criteria,
           behavior: addBehaviorsObject(rule.behaviors, revertRequestBehaviors, transformedPayload),
         });
       } else if (rule.phase === 'response') {
@@ -145,8 +148,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           description: rule.description,
           active: rule.is_active,
-          variable: rule.criteria[0].variable.replace('${', '').replace('}', ''),
-          match: rule.criteria[0].input_value,
+          criteria: rule.criteria,
           behavior: addBehaviorsObject(rule.behaviors, revertResponseBehaviors, transformedPayload),
         });
       }
