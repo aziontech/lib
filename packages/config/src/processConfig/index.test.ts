@@ -3157,6 +3157,156 @@ describe('generate', () => {
             ]),
           );
         });
+        it('should correctly process rules with criteria', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testCriteria',
+                  criteria: [
+                    {
+                      variable: '${uri}',
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '^/',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          const result = processConfig(azionConfig);
+          expect(result.rules[0].criteria).toEqual([
+            [
+              {
+                variable: '${uri}',
+                operator: 'matches',
+                conditional: 'if',
+                input_value: '^/',
+              },
+            ],
+          ]);
+        });
+
+        it('should throw error when using both match and criteria', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testInvalidRule',
+                  match: '^\\/',
+                  criteria: [
+                    {
+                      variable: '${uri}',
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '^/',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          expect(() => processConfig(azionConfig)).toThrow(
+            "Cannot use 'match' or 'variable' together with 'criteria'.",
+          );
+        });
+
+        it('should correctly process multiple criteria conditions', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testMultipleCriteria',
+                  criteria: [
+                    {
+                      variable: '${uri}',
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '^/',
+                    },
+                    {
+                      variable: '${device_group}',
+                      operator: 'is_equal',
+                      conditional: 'and',
+                      input_value: 'mobile',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          const result = processConfig(azionConfig);
+          expect(result.rules[0].criteria).toEqual([
+            [
+              {
+                variable: '${uri}',
+                operator: 'matches',
+                conditional: 'if',
+                input_value: '^/',
+              },
+              {
+                variable: '${device_group}',
+                operator: 'is_equal',
+                conditional: 'and',
+                input_value: 'mobile',
+              },
+            ],
+          ]);
+        });
+
+        it('should correctly process criteria with operator without value', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testCriteriaWithoutValue',
+                  criteria: [
+                    {
+                      variable: '${http_header}',
+                      operator: 'exists',
+                      conditional: 'if',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          const result = processConfig(azionConfig);
+          expect(result.rules[0].criteria).toEqual([
+            [
+              {
+                variable: '${http_header}',
+                operator: 'exists',
+                conditional: 'if',
+              },
+            ],
+          ]);
+        });
       });
 
       describe('Response', () => {
