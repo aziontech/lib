@@ -1,3 +1,5 @@
+import { RuleConditional, RuleOperatorWithValue, RuleOperatorWithoutValue, RuleVariable } from './constants';
+
 /**
  * Domain configuration for Azion.
  */
@@ -119,6 +121,28 @@ export type AzionCache = {
     list?: string[];
   };
 };
+
+export type AzionRuleCriteriaBase = {
+  /** Variable to be evaluated */
+  variable: RuleVariable;
+  /** Conditional type */
+  conditional: RuleConditional;
+};
+
+export type AzionRuleCriteriaWithValue = AzionRuleCriteriaBase & {
+  /** Operator for comparison that requires input value */
+  operator: RuleOperatorWithValue;
+  /** Input value for comparison */
+  input_value: string;
+};
+
+export type AzionRuleCriteriaWithoutValue = AzionRuleCriteriaBase & {
+  /** Operator for comparison that doesn't require input value */
+  operator: RuleOperatorWithoutValue;
+};
+
+export type AzionRuleCriteria = AzionRuleCriteriaWithValue | AzionRuleCriteriaWithoutValue;
+
 /**
  * Request rule configuration for Azion.
  */
@@ -130,9 +154,11 @@ export type AzionRequestRule = {
   /** Indicates if the rule is active */
   active?: boolean;
   /** Match criteria for the rule */
-  match: string;
+  match?: string;
   /** Variable to be used in the match */
-  variable?: string;
+  variable?: RuleVariable;
+  /** Array of criteria for complex conditions */
+  criteria?: AzionRuleCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior?: {
     /** Set a new origin */
@@ -201,9 +227,11 @@ export type AzionResponseRule = {
   /** Indicates if the rule is active */
   active?: boolean;
   /** Match criteria for the rule */
-  match: string;
+  match?: string;
   /** Variable to be used in the match */
-  variable?: string;
+  variable?: RuleVariable;
+  /** Array of criteria for complex conditions */
+  criteria?: AzionRuleCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior?: {
     /** Set a cookie */

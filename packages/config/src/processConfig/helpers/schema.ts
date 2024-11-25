@@ -1,3 +1,269 @@
+import {
+  RULE_CONDITIONALS,
+  RULE_OPERATORS_WITH_VALUE,
+  RULE_OPERATORS_WITHOUT_VALUE,
+  RULE_VARIABLES,
+} from '../../constants';
+
+const criteriaBaseSchema = {
+  type: 'object',
+  properties: {
+    variable: {
+      type: 'string',
+      pattern: '^\\$\\{[^}]+\\}$',
+      errorMessage: "The 'variable' field must be wrapped in ${} and be one of the valid variables",
+    },
+    conditional: {
+      type: 'string',
+      enum: RULE_CONDITIONALS,
+      errorMessage: `The 'conditional' field must be one of: ${RULE_CONDITIONALS.join(', ')}`,
+    },
+  },
+  required: ['variable', 'conditional'],
+};
+
+const criteriaWithValueSchema = {
+  ...criteriaBaseSchema,
+  properties: {
+    ...criteriaBaseSchema.properties,
+    operator: {
+      type: 'string',
+      enum: RULE_OPERATORS_WITH_VALUE,
+      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITH_VALUE.join(', ')}`,
+    },
+    input_value: {
+      type: 'string',
+      errorMessage: "The 'input_value' field must be a string",
+    },
+  },
+  required: [...criteriaBaseSchema.required, 'operator', 'input_value'],
+};
+
+const criteriaWithoutValueSchema = {
+  ...criteriaBaseSchema,
+  properties: {
+    ...criteriaBaseSchema.properties,
+    operator: {
+      type: 'string',
+      enum: RULE_OPERATORS_WITHOUT_VALUE,
+      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITHOUT_VALUE.join(', ')}`,
+    },
+  },
+  required: [...criteriaBaseSchema.required, 'operator'],
+};
+
+const ruleSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string",
+    },
+    description: {
+      type: 'string',
+      errorMessage: "The 'description' field must be a string",
+    },
+    active: {
+      type: 'boolean',
+      errorMessage: "The 'active' field must be a boolean",
+    },
+    match: {
+      type: 'string',
+      errorMessage: "The 'match' field must be a string",
+    },
+    variable: {
+      type: 'string',
+      enum: RULE_VARIABLES,
+      errorMessage: `The 'variable' field must be one of: ${RULE_VARIABLES.join(', ')}`,
+    },
+    criteria: {
+      type: 'array',
+      items: {
+        oneOf: [criteriaWithValueSchema, criteriaWithoutValueSchema],
+      },
+      errorMessage: {
+        oneOf: 'Each criteria item must follow either the with-value or without-value format',
+      },
+    },
+    behavior: {
+      type: 'object',
+      properties: {
+        setOrigin: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: "The 'name' field must be a string.",
+            },
+            type: {
+              type: 'string',
+              errorMessage: "The 'type' field must be a string.",
+            },
+          },
+          required: ['name', 'type'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'setOrigin' object.",
+            required: "The 'name or type' field is required in the 'setOrigin' object.",
+          },
+        },
+        rewrite: {
+          type: 'string',
+          errorMessage: "The 'rewrite' field must be a string.",
+        },
+        setHeaders: {
+          type: 'array',
+          items: {
+            type: 'string',
+            errorMessage: "Each item in 'setHeaders' must be a string.",
+          },
+          errorMessage: {
+            type: "The 'setHeaders' field must be an array of strings.",
+          },
+        },
+        bypassCache: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'bypassCache' field must be a boolean or null.",
+        },
+        httpToHttps: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'httpToHttps' field must be a boolean or null.",
+        },
+        redirectTo301: {
+          type: ['string', 'null'],
+          errorMessage: "The 'redirectTo301' field must be a string or null.",
+        },
+        redirectTo302: {
+          type: ['string', 'null'],
+          errorMessage: "The 'redirectTo302' field must be a string or null.",
+        },
+        forwardCookies: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'forwardCookies' field must be a boolean or null.",
+        },
+        setCookie: {
+          type: ['string', 'null'],
+          errorMessage: "The 'setCookie' field must be a string or null.",
+        },
+        deliver: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'deliver' field must be a boolean or null.",
+        },
+        capture: {
+          type: 'object',
+          properties: {
+            match: {
+              type: 'string',
+              errorMessage: "The 'match' field must be a string.",
+            },
+            captured: {
+              type: 'string',
+              errorMessage: "The 'captured' field must be a string.",
+            },
+            subject: {
+              type: 'string',
+              errorMessage: "The 'subject' field must be a string.",
+            },
+          },
+          required: ['match', 'captured', 'subject'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'capture' object.",
+            required: "All properties ('match', 'captured', 'subject') are required in the 'capture' object.",
+          },
+        },
+        runFunction: {
+          type: 'object',
+          properties: {
+            path: {
+              type: 'string',
+              errorMessage: "The 'path' field must be a string.",
+            },
+            name: {
+              type: ['string', 'null'],
+              errorMessage: "The 'name' field can be a string or null.",
+            },
+          },
+          required: ['path'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'runFunction' object.",
+            required: "The 'path' field is required in the 'runFunction' object.",
+          },
+        },
+        setCache: {
+          oneOf: [
+            {
+              type: 'string',
+              errorMessage: "The 'setCache' field must be a string.",
+            },
+            {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  errorMessage: "The 'name' field must be a string.",
+                },
+                browser_cache_settings_maximum_ttl: {
+                  type: 'number',
+                  nullable: true,
+                  errorMessage: "The 'browser_cache_settings_maximum_ttl' field must be a number or null.",
+                },
+                cdn_cache_settings_maximum_ttl: {
+                  type: 'number',
+                  nullable: true,
+                  errorMessage: "The 'cdn_cache_settings_maximum_ttl' field must be a number or null.",
+                },
+              },
+              required: ['name'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: 'No additional properties are allowed in the cache object.',
+                required: "The 'name' field is required in the cache object.",
+              },
+            },
+          ],
+          errorMessage: "The 'cache' field must be either a string or an object with specified properties.",
+        },
+        filterCookie: {
+          type: ['string', 'null'],
+          errorMessage: "The 'filterCookie' field must be a string or null.",
+        },
+        filterHeader: {
+          type: ['string', 'null'],
+          errorMessage: "The 'filterHeader' field must be a string or null.",
+        },
+        enableGZIP: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'enableGZIP' field must be a boolean or null.",
+        },
+      },
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: "No additional properties are allowed in the 'behavior' object.",
+      },
+    },
+  },
+  required: ['name'],
+  oneOf: [
+    {
+      anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+      not: { required: ['criteria'] },
+      errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
+    },
+    {
+      required: ['criteria'],
+      not: {
+        anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+      },
+      errorMessage: "Cannot use 'criteria' together with 'match' or 'variable'.",
+    },
+  ],
+  errorMessage: {
+    oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
+  },
+};
+
 const azionConfigSchema = {
   type: 'object',
   properties: {
@@ -374,322 +640,17 @@ const azionConfigSchema = {
       properties: {
         request: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                errorMessage: "The 'name' field must be a string.",
-              },
-              description: {
-                type: 'string',
-                errorMessage: "The 'description' field must be a string.",
-              },
-              active: {
-                type: 'boolean',
-                default: true,
-                errorMessage: "The 'active' field must be a boolean.",
-              },
-              match: {
-                type: 'string',
-                errorMessage: "The 'match' field must be a string.",
-              },
-              variable: {
-                type: 'string',
-                errorMessage: "The 'variable' field must be a string.",
-              },
-              behavior: {
-                type: 'object',
-                properties: {
-                  setOrigin: {
-                    type: 'object',
-                    properties: {
-                      name: {
-                        type: 'string',
-                        errorMessage: "The 'name' field must be a string.",
-                      },
-                      type: {
-                        type: 'string',
-                        errorMessage: "The 'type' field must be a string.",
-                      },
-                    },
-                    required: ['name', 'type'],
-                    additionalProperties: false,
-                    errorMessage: {
-                      additionalProperties: "No additional properties are allowed in the 'setOrigin' object.",
-                      required: "The 'name or type' field is required in the 'setOrigin' object.",
-                    },
-                  },
-                  rewrite: {
-                    type: 'string',
-                    errorMessage: "The 'rewrite' field must be a string.",
-                  },
-                  setHeaders: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      errorMessage: "Each item in 'setHeaders' must be a string.",
-                    },
-                    errorMessage: {
-                      type: "The 'setHeaders' field must be an array of strings.",
-                    },
-                  },
-                  bypassCache: {
-                    type: ['boolean', 'null'],
-                    errorMessage: "The 'bypassCache' field must be a boolean or null.",
-                  },
-                  httpToHttps: {
-                    type: ['boolean', 'null'],
-                    errorMessage: "The 'httpToHttps' field must be a boolean or null.",
-                  },
-                  redirectTo301: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'redirectTo301' field must be a string or null.",
-                  },
-                  redirectTo302: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'redirectTo302' field must be a string or null.",
-                  },
-                  forwardCookies: {
-                    type: ['boolean', 'null'],
-                    errorMessage: "The 'forwardCookies' field must be a boolean or null.",
-                  },
-                  setCookie: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'setCookie' field must be a string or null.",
-                  },
-                  deliver: {
-                    type: ['boolean', 'null'],
-                    errorMessage: "The 'deliver' field must be a boolean or null.",
-                  },
-                  capture: {
-                    type: 'object',
-                    properties: {
-                      match: {
-                        type: 'string',
-                        errorMessage: "The 'match' field must be a string.",
-                      },
-                      captured: {
-                        type: 'string',
-                        errorMessage: "The 'captured' field must be a string.",
-                      },
-                      subject: {
-                        type: 'string',
-                        errorMessage: "The 'subject' field must be a string.",
-                      },
-                    },
-                    required: ['match', 'captured', 'subject'],
-                    additionalProperties: false,
-                    errorMessage: {
-                      additionalProperties: "No additional properties are allowed in the 'capture' object.",
-                      required: "All properties ('match', 'captured', 'subject') are required in the 'capture' object.",
-                    },
-                  },
-                  runFunction: {
-                    type: 'object',
-                    properties: {
-                      path: {
-                        type: 'string',
-                        errorMessage: "The 'path' field must be a string.",
-                      },
-                      name: {
-                        type: ['string', 'null'],
-                        errorMessage: "The 'name' field can be a string or null.",
-                      },
-                    },
-                    required: ['path'],
-                    additionalProperties: false,
-                    errorMessage: {
-                      additionalProperties: "No additional properties are allowed in the 'runFunction' object.",
-                      required: "The 'path' field is required in the 'runFunction' object.",
-                    },
-                  },
-                  setCache: {
-                    oneOf: [
-                      {
-                        type: 'string',
-                        errorMessage: "The 'setCache' field must be a string.",
-                      },
-                      {
-                        type: 'object',
-                        properties: {
-                          name: {
-                            type: 'string',
-                            errorMessage: "The 'name' field must be a string.",
-                          },
-                          browser_cache_settings_maximum_ttl: {
-                            type: 'number',
-                            nullable: true,
-                            errorMessage: "The 'browser_cache_settings_maximum_ttl' field must be a number or null.",
-                          },
-                          cdn_cache_settings_maximum_ttl: {
-                            type: 'number',
-                            nullable: true,
-                            errorMessage: "The 'cdn_cache_settings_maximum_ttl' field must be a number or null.",
-                          },
-                        },
-                        required: ['name'],
-                        additionalProperties: false,
-                        errorMessage: {
-                          additionalProperties: 'No additional properties are allowed in the cache object.',
-                          required: "The 'name' field is required in the cache object.",
-                        },
-                      },
-                    ],
-                    errorMessage: "The 'cache' field must be either a string or an object with specified properties.",
-                  },
-                },
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'behavior' object.",
-                },
-              },
-            },
-            required: ['name', 'match'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in request items.',
-              required: "The 'name' and 'match' fields are required in each request item.",
-            },
-          },
+          items: ruleSchema,
         },
         response: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                errorMessage: "The 'name' field must be a string.",
-              },
-              description: {
-                type: 'string',
-                errorMessage: "The 'description' field must be a string.",
-              },
-              active: {
-                type: 'boolean',
-                default: true,
-                errorMessage: "The 'active' field must be a boolean.",
-              },
-              match: {
-                type: 'string',
-                errorMessage: "The 'match' field must be a string.",
-              },
-              variable: {
-                type: 'string',
-                errorMessage: "The 'variable' field must be a string.",
-              },
-              behavior: {
-                type: 'object',
-                properties: {
-                  setCookie: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'setCookie' field must be a string or null.",
-                  },
-                  setHeaders: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      errorMessage: "Each item in 'setHeaders' must be a string.",
-                    },
-                    errorMessage: {
-                      type: "The 'setHeaders' field must be an array of strings.",
-                    },
-                  },
-                  deliver: {
-                    type: ['boolean', 'null'],
-                    errorMessage: "The 'deliver' field must be a boolean or null.",
-                  },
-                  capture: {
-                    type: 'object',
-                    properties: {
-                      match: {
-                        type: 'string',
-                        errorMessage: "The 'match' field must be a string.",
-                      },
-                      captured: {
-                        type: 'string',
-                        errorMessage: "The 'captured' field must be a string.",
-                      },
-                      subject: {
-                        type: 'string',
-                        errorMessage: "The 'subject' field must be a string.",
-                      },
-                    },
-                    required: ['match', 'captured', 'subject'],
-                    additionalProperties: false,
-                    errorMessage: {
-                      additionalProperties: "No additional properties are allowed in the 'capture' object.",
-                      required: "All properties ('match', 'captured', 'subject') are required in the 'capture' object.",
-                    },
-                  },
-                  enableGZIP: {
-                    type: ['boolean', 'null'],
-                    errorMessage: "The 'enableGZIP' field must be a boolean or null.",
-                  },
-                  filterCookie: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'filterCookie' field must be a string or null.",
-                  },
-                  filterHeader: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'filterHeader' field must be a string or null.",
-                  },
-                  runFunction: {
-                    type: 'object',
-                    properties: {
-                      path: {
-                        type: 'string',
-                        errorMessage: "The 'path' field must be a string.",
-                      },
-                      name: {
-                        type: ['string', 'null'],
-                        errorMessage: "The 'name' field can be a string or null.",
-                      },
-                    },
-                    required: ['path'],
-                    additionalProperties: false,
-                    errorMessage: {
-                      additionalProperties: "No additional properties are allowed in the 'runFunction' object.",
-                      required: "The 'path' field is required in the 'runFunction' object.",
-                    },
-                  },
-                  redirectTo301: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'redirectTo301' field must be a string or null.",
-                  },
-                  redirectTo302: {
-                    type: ['string', 'null'],
-                    errorMessage: "The 'redirectTo302' field must be a string or null.",
-                  },
-                },
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'behavior' object.",
-                },
-              },
-            },
-            required: ['name', 'match'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in response items.',
-              required: "The 'name' and 'match' fields are required in each response item.",
-            },
-          },
+          items: ruleSchema,
         },
       },
-      anyOf: [
-        {
-          required: ['request'],
-        },
-        {
-          required: ['response'],
-        },
-      ],
       additionalProperties: false,
       errorMessage: {
-        additionalProperties: "No additional properties are allowed in the 'rules' object.",
-        anyOf: "Either 'request' or 'response' must be provided.",
+        additionalProperties: "No additional properties are allowed in the 'rules' object",
+        anyOf: "Either 'request' or 'response' must be provided",
       },
     },
     networkList: {
