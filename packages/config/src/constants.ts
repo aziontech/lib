@@ -42,7 +42,46 @@ export const RULE_OPERATORS_WITHOUT_VALUE = ['exists', 'does_not_exist'] as cons
 
 export const RULE_CONDITIONALS = ['if', 'and', 'or'] as const;
 
+export const FIREWALL_BEHAVIOR_NAMES = [
+  'deny',
+  'drop',
+  'setRateLimit',
+  'setWafRuleset',
+  'runFunction',
+  'tagEvent',
+  'setCustomResponse',
+] as const;
+
+export const FIREWALL_RATE_LIMIT_TYPES = ['second', 'minute'] as const;
+
+export const FIREWALL_RATE_LIMIT_BY = ['clientIp', 'global'] as const;
+
+export const FIREWALL_WAF_MODES = ['learning', 'blocking'] as const;
+
+export const FIREWALL_VARIABLES = [
+  'header_accept',
+  'header_accept_encoding',
+  'header_accept_language',
+  'header_cookie',
+  'header_origin',
+  'header_referer',
+  'header_user_agent',
+  'host',
+  'network',
+  'request_args',
+  'request_method',
+  'request_uri',
+  'scheme',
+  'client_certificate_validation',
+  'ssl_verification_status',
+] as const;
+
 export type RuleVariable = (typeof RULE_VARIABLES)[number];
 export type RuleOperatorWithValue = (typeof RULE_OPERATORS_WITH_VALUE)[number];
 export type RuleOperatorWithoutValue = (typeof RULE_OPERATORS_WITHOUT_VALUE)[number];
 export type RuleConditional = (typeof RULE_CONDITIONALS)[number];
+export type FirewallBehaviorName = (typeof FIREWALL_BEHAVIOR_NAMES)[number];
+export type FirewallRateLimitType = (typeof FIREWALL_RATE_LIMIT_TYPES)[number];
+export type FirewallRateLimitBy = (typeof FIREWALL_RATE_LIMIT_BY)[number];
+export type FirewallWafMode = (typeof FIREWALL_WAF_MODES)[number];
+export type FirewallVariable = (typeof FIREWALL_VARIABLES)[number];
