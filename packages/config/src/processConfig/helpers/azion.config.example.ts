@@ -96,8 +96,7 @@ export default {
       },
       {
         name: 'staticContentRuleExample',
-        description:
-          'Handle static content by setting a specific origin and delivering directly.',
+        description: 'Handle static content by setting a specific origin and delivering directly.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/_statics/',
@@ -201,8 +200,7 @@ export default {
       },
       {
         name: 'bypassCacheRuleExample',
-        description:
-          'Ensures data is always fetched fresh, bypassing any cache.',
+        description: 'Ensures data is always fetched fresh, bypassing any cache.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/bypass',
@@ -240,8 +238,7 @@ export default {
     response: [
       {
         name: 'apiDataResponseRuleExample',
-        description:
-          'Manage headers, cookies, and GZIP compression for API data responses.',
+        description: 'Manage headers, cookies, and GZIP compression for API data responses.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/api/data',
@@ -255,8 +252,7 @@ export default {
       },
       {
         name: 'userProfileRedirectRuleExample',
-        description:
-          'Redirects user profile requests to a new profile page URL.',
+        description: 'Redirects user profile requests to a new profile page URL.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/user/profile',
@@ -266,8 +262,7 @@ export default {
       },
       {
         name: 'computeResultFunctionRuleExample',
-        description:
-          'Runs a function and captures full path from the URI for compute results.',
+        description: 'Runs a function and captures full path from the URI for compute results.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/compute-result',
@@ -298,8 +293,7 @@ export default {
       },
       {
         name: 'temporaryPageRedirectRuleExample',
-        description:
-          'Temporarily redirects an old page based on query parameters.',
+        description: 'Temporarily redirects an old page based on query parameters.',
         active: true,
         // eslint-disable-next-line no-template-curly-in-string
         variable: 'args', // All query parameters
@@ -323,6 +317,23 @@ export default {
     {
       type: 'wildcard',
       urls: ['http://www.example.com/*'],
+    },
+  ],
+  networkList: [
+    {
+      id: 1,
+      listType: 'ip_cidr',
+      listContent: ['10.0.0.1'],
+    },
+    {
+      id: 2,
+      listType: 'asn',
+      listContent: [123, 456, 789],
+    },
+    {
+      id: 3,
+      listType: 'countries',
+      listContent: ['US', 'BR', 'UK'],
     },
   ],
 };
