@@ -8,9 +8,6 @@
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest --clearCache && jest -c jest.config.js .",
-    "test:watch": "jest -c jest.config.js . --watch",
-    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check ."
   },

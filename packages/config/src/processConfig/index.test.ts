@@ -2493,8 +2493,14 @@ describe('generate', () => {
                 name: 'testRule',
                 description: 'This rule redirects all traffic.',
                 active: true,
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 behavior: {
                   redirectTo301: 'https://example.com',
                 },
@@ -2541,8 +2547,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule responds with a file from the origin storage.',
                 behavior: {
                   setOrigin: {
@@ -2585,8 +2597,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule rewrites the request path.',
                 behavior: {
                   rewrite: '/new',
@@ -2625,8 +2643,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule delivers the request.',
                 behavior: {
                   deliver: true,
@@ -2666,8 +2690,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule sets a cookie.',
                 behavior: {
                   setCookie: 'cookieName=cookieValue',
@@ -2707,8 +2737,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule sets a header.',
                 behavior: {
                   setHeaders: ['X-Header: value'],
@@ -2754,8 +2790,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule sets the cache.',
                 behavior: {
                   setCache: 'testCache',
@@ -2805,8 +2847,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule sets the cache.',
                 behavior: {
                   setCache: {
@@ -2850,8 +2898,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule forwards the cookie.',
                 behavior: {
                   forwardCookies: true,
@@ -2891,8 +2945,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule runs a function.',
                 behavior: {
                   runFunction: {
@@ -2933,8 +2993,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule enables GZIP compression.',
                 behavior: {
                   enableGZIP: true,
@@ -2973,8 +3039,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule bypasses the cache.',
                 behavior: {
                   bypassCache: true,
@@ -3014,8 +3086,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'scheme',
-                match: 'http',
+                criteria: [
+                  {
+                    variable: `\${scheme}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: 'http',
+                  },
+                ],
                 description: 'This rule redirects HTTP to HTTPS.',
                 behavior: {
                   httpToHttps: true,
@@ -3059,8 +3137,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 description: 'This rule captures the request.',
                 behavior: {
                   capture: {
@@ -3072,6 +3156,156 @@ describe('generate', () => {
               }),
             ]),
           );
+        });
+        it('should correctly process rules with criteria', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testCriteria',
+                  criteria: [
+                    {
+                      variable: '${uri}',
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '^/',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          const result = processConfig(azionConfig);
+          expect(result.rules[0].criteria).toEqual([
+            [
+              {
+                variable: '${uri}',
+                operator: 'matches',
+                conditional: 'if',
+                input_value: '^/',
+              },
+            ],
+          ]);
+        });
+
+        it('should throw error when using both match and criteria', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testInvalidRule',
+                  match: '^\\/',
+                  criteria: [
+                    {
+                      variable: '${uri}',
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '^/',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          expect(() => processConfig(azionConfig)).toThrow(
+            "Cannot use 'match' or 'variable' together with 'criteria'.",
+          );
+        });
+
+        it('should correctly process multiple criteria conditions', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testMultipleCriteria',
+                  criteria: [
+                    {
+                      variable: '${uri}',
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '^/',
+                    },
+                    {
+                      variable: '${device_group}',
+                      operator: 'is_equal',
+                      conditional: 'and',
+                      input_value: 'mobile',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          const result = processConfig(azionConfig);
+          expect(result.rules[0].criteria).toEqual([
+            [
+              {
+                variable: '${uri}',
+                operator: 'matches',
+                conditional: 'if',
+                input_value: '^/',
+              },
+              {
+                variable: '${device_group}',
+                operator: 'is_equal',
+                conditional: 'and',
+                input_value: 'mobile',
+              },
+            ],
+          ]);
+        });
+
+        it('should correctly process criteria with operator without value', () => {
+          const azionConfig: any = {
+            rules: {
+              request: [
+                {
+                  name: 'testCriteriaWithoutValue',
+                  criteria: [
+                    {
+                      variable: '${http_header}',
+                      operator: 'exists',
+                      conditional: 'if',
+                    },
+                  ],
+                  behavior: {
+                    runFunction: {
+                      path: '.edge/worker.js',
+                    },
+                  },
+                },
+              ],
+            },
+          };
+
+          const result = processConfig(azionConfig);
+          expect(result.rules[0].criteria).toEqual([
+            [
+              {
+                variable: '${http_header}',
+                operator: 'exists',
+                conditional: 'if',
+              },
+            ],
+          ]);
         });
       });
 
@@ -3107,8 +3341,14 @@ describe('generate', () => {
               expect.objectContaining({
                 name: 'testRule',
                 description: 'This rule redirects all traffic.',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 behavior: {
                   redirectTo301: 'https://example.com',
                 },
@@ -3147,8 +3387,14 @@ describe('generate', () => {
               expect.objectContaining({
                 name: 'testRule',
                 description: 'This rule redirects all traffic.',
-                variable: 'uri',
-                match: '/test',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
                 behavior: {
                   redirectTo302: 'https://example.com',
                 },
@@ -3186,8 +3432,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'status',
-                match: '200',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
                 description: 'This rule sets a cookie.',
                 behavior: {
                   setCookie: 'cookieName=cookieValue',
@@ -3226,8 +3478,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'status',
-                match: '200',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
                 description: 'This rule sets a header.',
                 behavior: {
                   setHeaders: ['X-Header: value'],
@@ -3265,8 +3523,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'status',
-                match: '200',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
                 description: 'This rule enables GZIP compression.',
                 behavior: {
                   enableGZIP: true,
@@ -3305,8 +3569,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'status',
-                match: '200',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
                 description: 'This rule filters the cookie.',
                 behavior: {
                   filterCookie: 'cookieName',
@@ -3345,8 +3615,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'status',
-                match: '200',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
                 description: 'This rule filters the header.',
                 behavior: {
                   filterHeader: 'X-Header',
@@ -3385,8 +3661,14 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
-                variable: 'status',
-                match: '200',
+                criteria: [
+                  {
+                    variable: `\${status}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    input_value: '200',
+                  },
+                ],
                 description: 'This rule runs a function.',
                 behavior: {
                   runFunction: {

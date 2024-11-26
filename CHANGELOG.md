@@ -1,3 +1,10 @@
+## [1.12.0-stage.1](https://github.com/aziontech/lib/compare/v1.11.1...v1.12.0-stage.1) (2024-11-25)
+
+
+### Features
+
+* azion.config 'criteria' prop ([3739d04](https://github.com/aziontech/lib/commit/3739d04531ab2363392c010c1f7caf89d92404b6))
+
 ### [1.11.1](https://github.com/aziontech/lib/compare/v1.11.0...v1.11.1) (2024-11-14)
 
 
