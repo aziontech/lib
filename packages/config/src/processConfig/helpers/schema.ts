@@ -1,6 +1,7 @@
 import {
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_VARIABLES,
   FIREWALL_WAF_MODES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
@@ -736,6 +737,11 @@ const azionConfigSchema = {
           type: 'boolean',
           errorMessage: "The firewall's 'active' field must be a boolean",
         },
+        variable: {
+          type: 'string',
+          enum: FIREWALL_VARIABLES,
+          errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
+        },
         rules: {
           type: 'array',
           items: {
@@ -822,6 +828,23 @@ const azionConfigSchema = {
               },
             },
             required: ['name', 'behavior'],
+            oneOf: [
+              {
+                anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                not: { required: ['criteria'] },
+                errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
+              },
+              {
+                required: ['criteria'],
+                not: {
+                  anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                },
+                errorMessage: "Cannot use 'criteria' together with 'match' or 'variable'.",
+              },
+            ],
+            errorMessage: {
+              oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
+            },
           },
         },
       },
