@@ -384,4 +384,21 @@ export default {
       },
     ],
   },
+  networkList: [
+    {
+      id: 1,
+      listType: 'ip_cidr',
+      listContent: ['10.0.0.1'],
+    },
+    {
+      id: 2,
+      listType: 'asn',
+      listContent: [123, 456, 789],
+    },
+    {
+      id: 3,
+      listType: 'countries',
+      listContent: ['US', 'BR', 'UK'],
+    },
+  ],
 };

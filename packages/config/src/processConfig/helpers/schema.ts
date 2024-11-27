@@ -589,13 +589,14 @@ const azionConfigSchema = {
           },
           listType: {
             type: 'string',
-            errorMessage: "The 'listType' field must be a string.",
+            enum: ['ip_cidr', 'asn', 'countries'],
+            errorMessage: "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
           },
           listContent: {
             type: 'array',
             items: {
-              type: 'string',
-              errorMessage: "The 'listContent' field must be an array of strings.",
+              type: ['string', 'number'],
+              errorMessage: "The 'listContent' field must be an array of strings or numbers.",
             },
           },
         },
