@@ -319,6 +319,71 @@ export default {
       urls: ['http://www.example.com/*'],
     },
   ],
+  firewall: {
+    name: 'my_edge_firewall',
+    domains: ['www.example.com', 'api.example.com'],
+    active: true,
+    edgeFunctions: true,
+    networkProtection: true,
+    waf: true,
+    rules: [
+      {
+        name: 'rateLimit_Then_Drop',
+        active: true,
+        match: '^/api/sensitive/',
+        behavior: {
+          setRateLimit: {
+            type: 'second',
+            limitBy: 'clientIp',
+            averageRateLimit: '10',
+            maximumBurstSize: '20',
+          },
+        },
+      },
+      {
+        name: 'customResponse_Only',
+        active: true,
+        match: '^/custom-error/',
+        behavior: {
+          setCustomResponse: {
+            // Behavior final - nada após isso será executado
+            statusCode: 403,
+            contentType: 'application/json',
+            contentBody: '{"error": "Custom error response"}',
+          },
+        },
+      },
+      {
+        name: 'setHeaders_Then_CustomResponse',
+        active: true,
+        match: '^/api/error/',
+        behavior: {
+          setCustomResponse: {
+            // Behavior final - nada após isso será executado
+            statusCode: 403,
+            contentType: 'application/json',
+            contentBody: '{"error": "Access denied"}',
+          },
+        },
+      },
+      {
+        name: 'run_edge_function_and_set_rate_limit',
+        active: true,
+        match: '^/api/',
+        behavior: {
+          runFunction: {
+            path: '.edge/security.js',
+          },
+          setRateLimit: {
+            type: 'second',
+            limitBy: 'clientIp',
+            averageRateLimit: '10',
+            maximumBurstSize: '20',
+          },
+        },
+      },
+    ],
+  },
   networkList: [
     {
       id: 1,
