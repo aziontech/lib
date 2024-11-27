@@ -387,6 +387,27 @@ export type AzionFirewallBehavior = {
   };
 };
 
+export type AzionFirewallCriteriaBase = {
+  /** Variable to be evaluated */
+  variable: RuleVariable;
+  /** Conditional type */
+  conditional: RuleConditional;
+};
+
+export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
+  /** Operator for comparison that requires input value */
+  operator: RuleOperatorWithValue;
+  /** Input value for comparison */
+  input_value: string;
+};
+
+export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
+  /** Operator for comparison that doesn't require input value */
+  operator: RuleOperatorWithoutValue;
+};
+
+export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewallCriteriaWithoutValue;
+
 /**
  * Firewall rule configuration for Azion.
  */
@@ -397,6 +418,10 @@ export type AzionFirewallRule = {
   active?: boolean;
   /** Match criteria for the rule */
   match?: string;
+  /** Variable to be used in the match */
+  variable?: RuleVariable;
+  /** Array of criteria for complex conditions */
+  criteria?: AzionFirewallCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior: AzionFirewallBehavior;
 };
@@ -411,6 +436,8 @@ export type AzionFirewall = {
   domains?: string[];
   /** Indicates if the firewall is active */
   active?: boolean;
+  /** Variable to be used in the match */
+  variable?: RuleVariable;
   /** List of firewall rules */
   rules?: AzionFirewallRule[];
 };
