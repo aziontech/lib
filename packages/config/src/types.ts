@@ -318,6 +318,18 @@ export type AzionBuild = {
 };
 
 /**
+ * Network list configuration for Azion.
+ */
+export type AzionNetworkList = {
+  /** Network list identifier */
+  id: number;
+  /** Network list type */
+  listType: 'ip_cidr' | 'asn' | 'countries';
+  /** List of networks */
+  listContent: string[] | number[];
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
@@ -333,4 +345,6 @@ export type AzionConfig = {
   rules?: AzionRules;
   /** Purge configurations */
   purge?: AzionPurge[];
+  /** Network list configurations */
+  networkList?: AzionNetworkList[];
 };
