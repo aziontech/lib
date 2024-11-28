@@ -18,6 +18,7 @@ import {
   AzionClientOptions,
   AzionDeletedBucket,
   AzionDeletedBucketObject,
+  AzionEnvironment,
   AzionObjectCollectionParams,
   AzionStorageClient,
   AzionStorageResponse,
@@ -28,11 +29,39 @@ import { InternalStorageClient, isInternalStorageAvailable } from './services/ru
 
 import { findBucketByName } from './utils/index';
 
-const envDebugFlag = process.env.AZION_DEBUG && process.env.AZION_DEBUG === 'true';
-const resolveToken = (token?: string) => {
-  return token ?? process.env.AZION_TOKEN ?? '';
+/**
+ * Determines if the code is running in a browser environment.
+ *
+ * @returns {boolean} True if running in a browser, false otherwise.
+ *
+ * @example
+ * if (isBrowserEnvironment()) {
+ *   console.log('Running in browser');
+ * } else {
+ *   console.log('Running in Node.js');
+ * }
+ */
+const isBrowserEnvironment = (): boolean => {
+  return typeof window !== 'undefined' && typeof window.document !== 'undefined';
 };
+
+const envDebugFlag = !isBrowserEnvironment() && process?.env.AZION_DEBUG === 'true';
+
+const resolveToken = (token?: string) => {
+  if (isBrowserEnvironment()) {
+    return token ?? '';
+  }
+  return token ?? process?.env.AZION_TOKEN ?? '';
+};
+
 const resolveDebug = (debug?: boolean) => debug ?? !!envDebugFlag;
+
+const resolveEnv = (env?: AzionEnvironment): AzionEnvironment => {
+  if (isBrowserEnvironment()) {
+    return env ?? 'production';
+  }
+  return env ?? (process?.env.AZION_ENV as AzionEnvironment) ?? 'production';
+};
 
 /**
  * Creates a method that can be executed internally or externally.
@@ -66,7 +95,13 @@ export const createBucketMethod = async (
   edge_access: string,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
-  const apiResponse = await postBucket(resolveToken(token), name, edge_access, resolveDebug(options?.debug));
+  const apiResponse = await postBucket(
+    resolveToken(token),
+    name,
+    edge_access,
+    resolveDebug(options?.debug),
+    resolveEnv(options?.env),
+  );
   if (apiResponse.data) {
     return {
       data: {
@@ -115,7 +150,12 @@ export const deleteBucketMethod = async (
   name: string,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionDeletedBucket>> => {
-  const apiResponse = await deleteBucket(resolveToken(token), name, resolveDebug(options?.debug));
+  const apiResponse = await deleteBucket(
+    resolveToken(token),
+    name,
+    resolveDebug(options?.debug),
+    resolveEnv(options?.env),
+  );
   if (apiResponse.data) {
     return { data: { name: apiResponse.data.name, state: apiResponse.state } };
   }
@@ -137,7 +177,12 @@ export const getBucketsMethod = async (
   params?: AzionBucketCollectionParams,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucketCollection>> => {
-  const apiResponse = await getBuckets(resolveToken(token), params, resolveDebug(options?.debug));
+  const apiResponse = await getBuckets(
+    resolveToken(token),
+    params,
+    resolveDebug(options?.debug),
+    resolveEnv(options?.env),
+  );
   if (apiResponse?.results && apiResponse.results.length > 0) {
     const buckets = apiResponse.results?.map((bucket) => ({
       ...bucket,
@@ -275,7 +320,13 @@ export const updateBucketMethod = async (
   edge_access: string,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
-  const apiResponse = await patchBucket(resolveToken(token), name, edge_access, resolveDebug(options?.debug));
+  const apiResponse = await patchBucket(
+    resolveToken(token),
+    name,
+    edge_access,
+    resolveDebug(options?.debug),
+    resolveEnv(options?.env),
+  );
   if (apiResponse?.data) {
     return {
       data: {
@@ -348,7 +399,7 @@ const getObjectsMethod = createInternalOrExternalMethod(
     params?: AzionObjectCollectionParams,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObjects>> => {
-    const apiResponse = await getObjects(resolveToken(token), bucket, params, options?.debug);
+    const apiResponse = await getObjects(resolveToken(token), bucket, params, options?.debug, options?.env);
     if (apiResponse.results) {
       return {
         data: {
@@ -400,7 +451,13 @@ const getObjectByKeyMethod = createInternalOrExternalMethod(
     key: string,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
-    const apiResponse = await getObjectByKey(resolveToken(token), bucket, key, resolveDebug(options?.debug));
+    const apiResponse = await getObjectByKey(
+      resolveToken(token),
+      bucket,
+      key,
+      resolveDebug(options?.debug),
+      resolveEnv(options?.env),
+    );
     if (apiResponse.data) {
       return {
         data: {
@@ -455,7 +512,14 @@ const createObjectMethod = createInternalOrExternalMethod(
     content: string,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
-    const apiResponse = await postObject(resolveToken(token), bucket, key, content, resolveDebug(options?.debug));
+    const apiResponse = await postObject(
+      resolveToken(token),
+      bucket,
+      key,
+      content,
+      resolveDebug(options?.debug),
+      resolveEnv(options?.env),
+    );
     if (apiResponse.data) {
       return {
         data: {
@@ -508,7 +572,14 @@ const updateObjectMethod = createInternalOrExternalMethod(
     content: string,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
-    const apiResponse = await putObject(resolveToken(token), bucket, key, content, resolveDebug(options?.debug));
+    const apiResponse = await putObject(
+      resolveToken(token),
+      bucket,
+      key,
+      content,
+      resolveDebug(options?.debug),
+      resolveEnv(options?.env),
+    );
     if (apiResponse.data) {
       return {
         data: {
@@ -558,7 +629,13 @@ const deleteObjectMethod = createInternalOrExternalMethod(
     key: string,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionDeletedBucketObject>> => {
-    const apiResponse = await deleteObject(resolveToken(token), bucket, key, resolveDebug(options?.debug));
+    const apiResponse = await deleteObject(
+      resolveToken(token),
+      bucket,
+      key,
+      resolveDebug(options?.debug),
+      resolveEnv(options?.env),
+    );
     if (apiResponse.data) {
       return {
         data: {
@@ -599,7 +676,11 @@ const createBucketWrapper = ({
   edge_access: string;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
-  createBucketMethod(resolveToken(), name, edge_access, { ...options, debug: resolveDebug(options?.debug) });
+  createBucketMethod(resolveToken(), name, edge_access, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Deletes a bucket by its name.
@@ -624,7 +705,11 @@ const deleteBucketWrapper = ({
   name: string;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionDeletedBucket>> =>
-  deleteBucketMethod(resolveToken(), name, { ...options, debug: resolveDebug(options?.debug) });
+  deleteBucketMethod(resolveToken(), name, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Retrieves a list of buckets with optional filtering and pagination.
@@ -649,7 +734,11 @@ const getBucketsWrapper = ({
   params?: AzionBucketCollectionParams;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketCollection>> =>
-  getBucketsMethod(resolveToken(), params, { ...options, debug: resolveDebug(options?.debug) });
+  getBucketsMethod(resolveToken(), params, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Retrieves a bucket by its name.
@@ -674,7 +763,11 @@ const getBucketWrapper = ({
   name: string;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
-  getBucketMethod(resolveToken(), name, { ...options, debug: resolveDebug(options?.debug) });
+  getBucketMethod(resolveToken(), name, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Updates an existing bucket.
@@ -702,7 +795,11 @@ const updateBucketWrapper = ({
   edge_access: string;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
-  updateBucketMethod(resolveToken(), name, edge_access, { ...options, debug: resolveDebug(options?.debug) });
+  updateBucketMethod(resolveToken(), name, edge_access, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Retrieves a list of objects in a specific bucket.
@@ -730,7 +827,12 @@ const getObjectsWrapper = ({
   bucket: string;
   params?: AzionObjectCollectionParams;
   options?: AzionClientOptions;
-}): Promise<AzionStorageResponse<AzionBucketObjects>> => getObjectsMethod(resolveToken(), bucket, params, options);
+}): Promise<AzionStorageResponse<AzionBucketObjects>> =>
+  getObjectsMethod(resolveToken(), bucket, params, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Creates a new object in a specific bucket.
@@ -762,7 +864,11 @@ const createObjectWrapper = ({
   content: string;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-  createObjectMethod(resolveToken(), bucket, key, content, { ...options, debug: resolveDebug(options?.debug) });
+  createObjectMethod(resolveToken(), bucket, key, content, {
+    ...options,
+    debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
+  });
 
 /**
  * Retrieves an object from a specific bucket by its key.
@@ -793,6 +899,7 @@ const getObjectByKeyWrapper = ({
   getObjectByKeyMethod(resolveToken(), bucket, key, {
     ...options,
     debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
   });
 
 /**
@@ -828,6 +935,7 @@ const updateObjectWrapper = ({
   updateObjectMethod(resolveToken(), bucket, key, content, {
     ...options,
     debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
   });
 
 /**
@@ -859,6 +967,7 @@ const deleteObjectWrapper = ({
   deleteObjectMethod(resolveToken(), bucket, key, {
     ...options,
     debug: resolveDebug(options?.debug),
+    env: resolveEnv(options?.env),
   });
 
 /**
@@ -884,12 +993,13 @@ const client: CreateAzionStorageClient = (
 ): AzionStorageClient => {
   const tokenValue = resolveToken(config?.token);
   const debugValue = resolveDebug(config?.options?.debug);
+  const envValue = resolveEnv(config?.options?.env);
 
   const client: AzionStorageClient = {
     getBuckets: (params?: {
       params?: AzionBucketCollectionParams;
     }): Promise<AzionStorageResponse<AzionBucketCollection>> =>
-      getBucketsMethod(tokenValue, params?.params, { ...config, debug: debugValue }),
+      getBucketsMethod(tokenValue, params?.params, { ...config, debug: debugValue, env: envValue }),
     createBucket: ({
       name,
       edge_access,
@@ -897,7 +1007,7 @@ const client: CreateAzionStorageClient = (
       name: string;
       edge_access: string;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
-      createBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue }),
+      createBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue, env: envValue }),
     updateBucket: ({
       name,
       edge_access,
@@ -905,11 +1015,11 @@ const client: CreateAzionStorageClient = (
       name: string;
       edge_access: string;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
-      updateBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue }),
+      updateBucketMethod(tokenValue, name, edge_access, { ...config, debug: debugValue, env: envValue }),
     deleteBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionDeletedBucket>> =>
-      deleteBucketMethod(tokenValue, name, { ...config, debug: debugValue }),
+      deleteBucketMethod(tokenValue, name, { ...config, debug: debugValue, env: envValue }),
     getBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionBucket>> =>
-      getBucketMethod(tokenValue, name, { ...config, debug: debugValue }),
+      getBucketMethod(tokenValue, name, { ...config, debug: debugValue, env: envValue }),
   } as const;
 
   return client;

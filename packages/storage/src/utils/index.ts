@@ -65,7 +65,7 @@ export const findBucketByName = async (
   options?: AzionClientOptions,
 ): Promise<ApiGetBucket> => {
   const PAGE_SIZE_TEMP = 1000000;
-  const apiResponse = await getBuckets(token, { page_size: PAGE_SIZE_TEMP }, options?.debug ?? false);
+  const apiResponse = await getBuckets(token, { page_size: PAGE_SIZE_TEMP }, options?.debug ?? false, options?.env);
   const buckets = apiResponse.results;
   if (apiResponse.error)
     return {
