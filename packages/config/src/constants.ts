@@ -85,3 +85,5 @@ export type FirewallRateLimitType = (typeof FIREWALL_RATE_LIMIT_TYPES)[number];
 export type FirewallRateLimitBy = (typeof FIREWALL_RATE_LIMIT_BY)[number];
 export type FirewallWafMode = (typeof FIREWALL_WAF_MODES)[number];
 export type FirewallVariable = (typeof FIREWALL_VARIABLES)[number];
+
+export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
