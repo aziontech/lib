@@ -1,4 +1,5 @@
 import {
+  DYNAMIC_VARIABLE_PATTERNS,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_VARIABLES,
@@ -7,6 +8,7 @@ import {
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_VARIABLES,
+  SPECIAL_VARIABLES,
 } from '../../constants';
 
 const criteriaBaseSchema = {
@@ -14,49 +16,92 @@ const criteriaBaseSchema = {
   properties: {
     variable: {
       type: 'string',
-      pattern: '^\\$\\{[^}]+\\}$',
-      errorMessage: "The 'variable' field must be wrapped in ${} and be one of the valid variables",
+      anyOf: [
+        {
+          // Validação para variáveis estáticas
+          type: 'string',
+          pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+        },
+        {
+          // Validação para padrões dinâmicos
+          type: 'string',
+          pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|').replace(/\$/g, '\\$') + ')\\}$',
+        },
+      ],
+      errorMessage:
+        "The 'variable' field must be wrapped in ${} and be either a valid static variable or follow the dynamic patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*)",
     },
     conditional: {
       type: 'string',
       enum: RULE_CONDITIONALS,
       errorMessage: `The 'conditional' field must be one of: ${RULE_CONDITIONALS.join(', ')}`,
     },
-  },
-  required: ['variable', 'conditional'],
-};
-
-const criteriaWithValueSchema = {
-  ...criteriaBaseSchema,
-  properties: {
-    ...criteriaBaseSchema.properties,
     operator: {
       type: 'string',
-      enum: RULE_OPERATORS_WITH_VALUE,
-      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITH_VALUE.join(', ')}`,
-    },
-    input_value: {
-      type: 'string',
-      errorMessage: "The 'input_value' field must be a string",
+      enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+      errorMessage: `The 'operator' field must be one of: ${[...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE].join(', ')}`,
     },
   },
-  required: [...criteriaBaseSchema.required, 'operator', 'input_value'],
-};
-
-const criteriaWithoutValueSchema = {
-  ...criteriaBaseSchema,
-  properties: {
-    ...criteriaBaseSchema.properties,
-    operator: {
-      type: 'string',
-      enum: RULE_OPERATORS_WITHOUT_VALUE,
-      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITHOUT_VALUE.join(', ')}`,
+  required: ['variable', 'conditional', 'operator'],
+  allOf: [
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITH_VALUE },
+        },
+      },
+      then: {
+        required: ['input_value'],
+        properties: {
+          input_value: {
+            type: 'string',
+            errorMessage: "The 'input_value' field must be a string",
+          },
+        },
+      },
     },
-  },
-  required: [...criteriaBaseSchema.required, 'operator'],
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITHOUT_VALUE },
+        },
+      },
+      then: {
+        not: {
+          required: ['input_value'],
+        },
+      },
+    },
+  ],
 };
 
-const ruleSchema = {
+const createVariableValidation = (isRequestPhase = false) => ({
+  type: 'string',
+  anyOf: [
+    {
+      // Validação para variáveis estáticas
+      type: 'string',
+      pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+    },
+    {
+      // Validação para padrões dinâmicos
+      type: 'string',
+      pattern: isRequestPhase
+        ? '^(arg_|cookie_|http_)[a-zA-Z0-9_]+$'
+        : '^(arg_|cookie_|http_|sent_http_|upstream_cookie_|upstream_http_)[a-zA-Z0-9_]+$',
+    },
+    {
+      // Validação para variáveis especiais com argumentos
+      type: 'string',
+      pattern: `^(${SPECIAL_VARIABLES.join('|')})\\([^)]+\\)$`,
+    },
+  ],
+  errorMessage: isRequestPhase
+    ? "The 'variable' field must be either a valid request phase variable, mTLS variable, follow the patterns (arg_*, cookie_*, http_*), or be a special function variable (cookie_time_offset, encode_base64)"
+    : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
+});
+
+const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
     name: {
@@ -75,23 +120,101 @@ const ruleSchema = {
       type: 'string',
       errorMessage: "The 'match' field must be a string",
     },
-    variable: {
-      type: 'string',
-      enum: RULE_VARIABLES,
-      errorMessage: `The 'variable' field must be one of: ${RULE_VARIABLES.join(', ')}`,
-    },
+    variable: createVariableValidation(isRequestPhase),
     criteria: {
       type: 'array',
-      items: {
-        oneOf: [criteriaWithValueSchema, criteriaWithoutValueSchema],
-      },
+      items: criteriaBaseSchema,
       errorMessage: {
-        oneOf: 'Each criteria item must follow either the with-value or without-value format',
+        type: 'Each criteria item must follow the criteria format',
       },
     },
     behavior: {
       type: 'object',
       properties: {
+        setOrigin: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: "The 'name' field must be a string.",
+            },
+            type: {
+              type: 'string',
+              errorMessage: "The 'type' field must be a string.",
+            },
+          },
+          required: ['name', 'type'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'setOrigin' object.",
+            required: "The 'name or type' field is required in the 'setOrigin' object.",
+          },
+        },
+        rewrite: {
+          type: 'string',
+          errorMessage: "The 'rewrite' field must be a string.",
+        },
+        setHeaders: {
+          type: 'array',
+          items: {
+            type: 'string',
+            errorMessage: "Each item in 'setHeaders' must be a string.",
+          },
+          errorMessage: {
+            type: "The 'setHeaders' field must be an array of strings.",
+          },
+        },
+        bypassCache: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'bypassCache' field must be a boolean or null.",
+        },
+        httpToHttps: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'httpToHttps' field must be a boolean or null.",
+        },
+        redirectTo301: {
+          type: ['string', 'null'],
+          errorMessage: "The 'redirectTo301' field must be a string or null.",
+        },
+        redirectTo302: {
+          type: ['string', 'null'],
+          errorMessage: "The 'redirectTo302' field must be a string or null.",
+        },
+        forwardCookies: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'forwardCookies' field must be a boolean or null.",
+        },
+        setCookie: {
+          type: ['string', 'null'],
+          errorMessage: "The 'setCookie' field must be a string or null.",
+        },
+        deliver: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'deliver' field must be a boolean or null.",
+        },
+        capture: {
+          type: 'object',
+          properties: {
+            match: {
+              type: 'string',
+              errorMessage: "The 'match' field must be a string.",
+            },
+            captured: {
+              type: 'string',
+              errorMessage: "The 'captured' field must be a string.",
+            },
+            subject: {
+              type: 'string',
+              errorMessage: "The 'subject' field must be a string.",
+            },
+          },
+          required: ['match', 'captured', 'subject'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'capture' object.",
+            required: "All properties ('match', 'captured', 'subject') are required in the 'capture' object.",
+          },
+        },
         runFunction: {
           type: 'object',
           properties: {
@@ -101,6 +224,7 @@ const ruleSchema = {
             },
           },
           required: ['path'],
+          additionalProperties: false,
         },
         setWafRuleset: {
           type: 'object',
@@ -116,6 +240,7 @@ const ruleSchema = {
             },
           },
           required: ['wafMode', 'wafId'],
+          additionalProperties: false,
         },
         setRateLimit: {
           type: 'object',
@@ -130,23 +255,106 @@ const ruleSchema = {
               enum: FIREWALL_RATE_LIMIT_BY,
               errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
             },
-            averageRateLimit: { type: 'string' },
-            maximumBurstSize: { type: 'string' },
+            averageRateLimit: {
+              type: 'string',
+              errorMessage: 'The averageRateLimit must be a string',
+            },
+            maximumBurstSize: {
+              type: 'string',
+              errorMessage: 'The maximumBurstSize must be a string',
+            },
           },
           required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+          additionalProperties: false,
         },
-        deny: { type: 'boolean' },
-        drop: { type: 'boolean' },
+        deny: {
+          type: 'boolean',
+          errorMessage: 'The deny behavior must be a boolean',
+        },
+        drop: {
+          type: 'boolean',
+          errorMessage: 'The drop behavior must be a boolean',
+        },
         setCustomResponse: {
           type: 'object',
           properties: {
-            statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
-            contentType: { type: 'string' },
-            contentBody: { type: 'string' },
+            statusCode: {
+              type: ['integer', 'string'],
+              minimum: 200,
+              maximum: 499,
+              errorMessage: 'The statusCode must be a number or string between 200 and 499',
+            },
+            contentType: {
+              type: 'string',
+              errorMessage: 'The contentType must be a string',
+            },
+            contentBody: {
+              type: 'string',
+              errorMessage: 'The contentBody must be a string',
+            },
           },
           required: ['statusCode', 'contentType', 'contentBody'],
+          additionalProperties: false,
+        },
+        tagEvent: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: 'The tagEvent name must be a string',
+            },
+          },
+          required: ['name'],
+          additionalProperties: false,
+        },
+        setCache: {
+          oneOf: [
+            {
+              type: 'string',
+              errorMessage: "The 'setCache' field must be a string.",
+            },
+            {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  errorMessage: "The 'name' field must be a string.",
+                },
+                browser_cache_settings_maximum_ttl: {
+                  type: 'number',
+                  nullable: true,
+                  errorMessage: "The 'browser_cache_settings_maximum_ttl' field must be a number or null.",
+                },
+                cdn_cache_settings_maximum_ttl: {
+                  type: 'number',
+                  nullable: true,
+                  errorMessage: "The 'cdn_cache_settings_maximum_ttl' field must be a number or null.",
+                },
+              },
+              required: ['name'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: 'No additional properties are allowed in the cache object.',
+                required: "The 'name' field is required in the cache object.",
+              },
+            },
+          ],
+          errorMessage: "The 'cache' field must be either a string or an object with specified properties.",
+        },
+        filterCookie: {
+          type: ['string', 'null'],
+          errorMessage: "The 'filterCookie' field must be a string or null.",
+        },
+        filterHeader: {
+          type: ['string', 'null'],
+          errorMessage: "The 'filterHeader' field must be a string or null.",
+        },
+        enableGZIP: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'enableGZIP' field must be a boolean or null.",
         },
       },
+      additionalProperties: false,
       allOf: [
         {
           not: {
@@ -160,11 +368,12 @@ const ruleSchema = {
             ],
           },
           errorMessage:
-            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
+            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset, tagEvent) with only one final behavior.',
         },
       ],
       minProperties: 1,
       errorMessage: {
+        additionalProperties: "No additional properties are allowed in the 'behavior' object.",
         minProperties: 'At least one behavior must be specified',
       },
     },
@@ -187,7 +396,7 @@ const ruleSchema = {
   errorMessage: {
     oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
   },
-};
+});
 
 const azionConfigSchema = {
   type: 'object',
@@ -565,11 +774,11 @@ const azionConfigSchema = {
       properties: {
         request: {
           type: 'array',
-          items: ruleSchema,
+          items: createRuleSchema(true),
         },
         response: {
           type: 'array',
-          items: ruleSchema,
+          items: createRuleSchema(false),
         },
       },
       additionalProperties: false,

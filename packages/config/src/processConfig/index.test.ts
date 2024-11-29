@@ -302,6 +302,9 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 match: '/default-forward',
+                behavior: {
+                  rewrite: '/',
+                },
                 // forwardCookies not specified
               },
             ],
@@ -1219,11 +1222,16 @@ describe('generate', () => {
                 match: '/',
                 description: 'This rule redirects all traffic.',
                 active: false,
+                behavior: {
+                  forwardCookies: true,
+                },
               },
               {
                 name: 'Second Rule',
                 match: '/api',
-                behavior: {},
+                behavior: {
+                  forwardCookies: true,
+                },
                 // description is not provided here
                 active: true,
               },
@@ -1231,7 +1239,7 @@ describe('generate', () => {
                 name: 'Third Rule',
                 match: '/home',
                 description: 'This rule handles home traffic.',
-                behavior: {},
+                behavior: { forwardCookies: true },
                 // active is not provided here
               },
             ],
@@ -1262,12 +1270,12 @@ describe('generate', () => {
         const azionConfig: any = {
           rules: {
             request: [
-              { name: 'First Request Rule', match: '/', behavior: {} },
-              { name: 'Second Request Rule', match: '/second', behavior: {} },
+              { name: 'First Request Rule', match: '/', behavior: { forwardCookies: true } },
+              { name: 'Second Request Rule', match: '/second', behavior: { forwardCookies: true } },
             ],
             response: [
-              { name: 'First Response Rule', match: '/', behavior: {} },
-              { name: 'Second Response Rule', match: '/second', behavior: {} },
+              { name: 'First Response Rule', match: '/', behavior: { filterHeader: 'test' } },
+              { name: 'Second Response Rule', match: '/second', behavior: { filterHeader: 'test' } },
             ],
           },
         };
@@ -3281,7 +3289,7 @@ describe('generate', () => {
                   name: 'testCriteriaWithoutValue',
                   criteria: [
                     {
-                      variable: '${http_header}',
+                      variable: '${cookie_test}',
                       operator: 'exists',
                       conditional: 'if',
                     },
@@ -3300,7 +3308,7 @@ describe('generate', () => {
           expect(result.rules[0].criteria).toEqual([
             [
               {
-                variable: '${http_header}',
+                variable: '${cookie_test}',
                 operator: 'exists',
                 conditional: 'if',
               },
