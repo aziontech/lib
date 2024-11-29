@@ -1,4 +1,12 @@
-import { RuleConditional, RuleOperatorWithValue, RuleOperatorWithoutValue, RuleVariable } from './constants';
+import {
+  FirewallRateLimitBy,
+  FirewallRateLimitType,
+  FirewallWafMode,
+  RuleConditional,
+  RuleOperatorWithValue,
+  RuleOperatorWithoutValue,
+  RuleVariable,
+} from './constants';
 
 /**
  * Domain configuration for Azion.
@@ -318,6 +326,18 @@ export type AzionBuild = {
 };
 
 /**
+ * Network list configuration for Azion.
+ */
+export type AzionNetworkList = {
+  /** Network list identifier */
+  id: number;
+  /** Network list type */
+  listType: 'ip_cidr' | 'asn' | 'countries';
+  /** List of networks */
+  listContent: string[] | number[];
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
@@ -333,4 +353,105 @@ export type AzionConfig = {
   rules?: AzionRules;
   /** Purge configurations */
   purge?: AzionPurge[];
+  /** Firewall configuration */
+  firewall?: AzionFirewall;
+  /** Network list configurations */
+  networkList?: AzionNetworkList[];
+};
+
+/**
+ * Firewall behavior configuration for Azion.
+ */
+export type AzionFirewallBehavior = {
+  /** Run a serverless function */
+  runFunction?: {
+    /** Function path */
+    path: string;
+  };
+  /** Set WAF ruleset */
+  setWafRuleset?: {
+    /** WAF mode */
+    wafMode: FirewallWafMode;
+    /** WAF ID */
+    wafId: string;
+  };
+  /** Set rate limit */
+  setRateLimit?: {
+    /** Rate limit type */
+    type: FirewallRateLimitType;
+    /** Rate limit by */
+    limitBy: FirewallRateLimitBy;
+    /** Average rate limit */
+    averageRateLimit: string;
+    /** Maximum burst size */
+    maximumBurstSize: string;
+  };
+  /** Deny the request */
+  deny?: boolean;
+  /** Drop the request */
+  drop?: boolean;
+  /** Set custom response */
+  setCustomResponse?: {
+    /** HTTP status code (200-499) */
+    statusCode: number | string;
+    /** Response content type */
+    contentType: string;
+    /** Response content body */
+    contentBody: string;
+  };
+};
+
+export type AzionFirewallCriteriaBase = {
+  /** Variable to be evaluated */
+  variable: RuleVariable;
+  /** Conditional type */
+  conditional: RuleConditional;
+};
+
+export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
+  /** Operator for comparison that requires input value */
+  operator: RuleOperatorWithValue;
+  /** Input value for comparison */
+  input_value: string;
+};
+
+export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
+  /** Operator for comparison that doesn't require input value */
+  operator: RuleOperatorWithoutValue;
+};
+
+export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewallCriteriaWithoutValue;
+
+/**
+ * Firewall rule configuration for Azion.
+ */
+export type AzionFirewallRule = {
+  /** Rule name */
+  name: string;
+  /** Indicates if the rule is active */
+  active?: boolean;
+  /** Match criteria for the rule */
+  match?: string;
+  /** Variable to be used in the match */
+  variable?: RuleVariable;
+  /** Array of criteria for complex conditions */
+  criteria?: AzionFirewallCriteria[];
+  /** Behavior to be applied when the rule matches */
+  behavior: AzionFirewallBehavior;
+};
+
+/**
+ * Firewall configuration for Azion.
+ */
+export type AzionFirewall = {
+  /** Firewall name */
+  name: string;
+  /** List of domains */
+  domains?: string[];
+  /** Indicates if the firewall is active */
+  active?: boolean;
+  /** Variable to be used in the match */
+  variable?: RuleVariable;
+  /** List of firewall rules */
+  rules?: AzionFirewallRule[];
 };
