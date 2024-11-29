@@ -1274,8 +1274,8 @@ describe('generate', () => {
               { name: 'Second Request Rule', match: '/second', behavior: { forwardCookies: true } },
             ],
             response: [
-              { name: 'First Response Rule', match: '/', behavior: { forwardCookies: true } },
-              { name: 'Second Response Rule', match: '/second', behavior: { forwardCookies: true } },
+              { name: 'First Response Rule', match: '/', behavior: { filterHeader: 'test' } },
+              { name: 'Second Response Rule', match: '/second', behavior: { filterHeader: 'test' } },
             ],
           },
         };

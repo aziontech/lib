@@ -1,4 +1,5 @@
 import {
+  DYNAMIC_VARIABLE_PATTERNS,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_VARIABLES,
@@ -130,6 +131,90 @@ const createRuleSchema = (isRequestPhase = false) => ({
     behavior: {
       type: 'object',
       properties: {
+        setOrigin: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: "The 'name' field must be a string.",
+            },
+            type: {
+              type: 'string',
+              errorMessage: "The 'type' field must be a string.",
+            },
+          },
+          required: ['name', 'type'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'setOrigin' object.",
+            required: "The 'name or type' field is required in the 'setOrigin' object.",
+          },
+        },
+        rewrite: {
+          type: 'string',
+          errorMessage: "The 'rewrite' field must be a string.",
+        },
+        setHeaders: {
+          type: 'array',
+          items: {
+            type: 'string',
+            errorMessage: "Each item in 'setHeaders' must be a string.",
+          },
+          errorMessage: {
+            type: "The 'setHeaders' field must be an array of strings.",
+          },
+        },
+        bypassCache: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'bypassCache' field must be a boolean or null.",
+        },
+        httpToHttps: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'httpToHttps' field must be a boolean or null.",
+        },
+        redirectTo301: {
+          type: ['string', 'null'],
+          errorMessage: "The 'redirectTo301' field must be a string or null.",
+        },
+        redirectTo302: {
+          type: ['string', 'null'],
+          errorMessage: "The 'redirectTo302' field must be a string or null.",
+        },
+        forwardCookies: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'forwardCookies' field must be a boolean or null.",
+        },
+        setCookie: {
+          type: ['string', 'null'],
+          errorMessage: "The 'setCookie' field must be a string or null.",
+        },
+        deliver: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'deliver' field must be a boolean or null.",
+        },
+        capture: {
+          type: 'object',
+          properties: {
+            match: {
+              type: 'string',
+              errorMessage: "The 'match' field must be a string.",
+            },
+            captured: {
+              type: 'string',
+              errorMessage: "The 'captured' field must be a string.",
+            },
+            subject: {
+              type: 'string',
+              errorMessage: "The 'subject' field must be a string.",
+            },
+          },
+          required: ['match', 'captured', 'subject'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'capture' object.",
+            required: "All properties ('match', 'captured', 'subject') are required in the 'capture' object.",
+          },
+        },
         runFunction: {
           type: 'object',
           properties: {
@@ -139,6 +224,7 @@ const createRuleSchema = (isRequestPhase = false) => ({
             },
           },
           required: ['path'],
+          additionalProperties: false,
         },
         setWafRuleset: {
           type: 'object',
@@ -154,6 +240,7 @@ const createRuleSchema = (isRequestPhase = false) => ({
             },
           },
           required: ['wafMode', 'wafId'],
+          additionalProperties: false,
         },
         setRateLimit: {
           type: 'object',
@@ -168,23 +255,106 @@ const createRuleSchema = (isRequestPhase = false) => ({
               enum: FIREWALL_RATE_LIMIT_BY,
               errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
             },
-            averageRateLimit: { type: 'string' },
-            maximumBurstSize: { type: 'string' },
+            averageRateLimit: {
+              type: 'string',
+              errorMessage: 'The averageRateLimit must be a string',
+            },
+            maximumBurstSize: {
+              type: 'string',
+              errorMessage: 'The maximumBurstSize must be a string',
+            },
           },
           required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+          additionalProperties: false,
         },
-        deny: { type: 'boolean' },
-        drop: { type: 'boolean' },
+        deny: {
+          type: 'boolean',
+          errorMessage: 'The deny behavior must be a boolean',
+        },
+        drop: {
+          type: 'boolean',
+          errorMessage: 'The drop behavior must be a boolean',
+        },
         setCustomResponse: {
           type: 'object',
           properties: {
-            statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
-            contentType: { type: 'string' },
-            contentBody: { type: 'string' },
+            statusCode: {
+              type: ['integer', 'string'],
+              minimum: 200,
+              maximum: 499,
+              errorMessage: 'The statusCode must be a number or string between 200 and 499',
+            },
+            contentType: {
+              type: 'string',
+              errorMessage: 'The contentType must be a string',
+            },
+            contentBody: {
+              type: 'string',
+              errorMessage: 'The contentBody must be a string',
+            },
           },
           required: ['statusCode', 'contentType', 'contentBody'],
+          additionalProperties: false,
+        },
+        tagEvent: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: 'The tagEvent name must be a string',
+            },
+          },
+          required: ['name'],
+          additionalProperties: false,
+        },
+        setCache: {
+          oneOf: [
+            {
+              type: 'string',
+              errorMessage: "The 'setCache' field must be a string.",
+            },
+            {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  errorMessage: "The 'name' field must be a string.",
+                },
+                browser_cache_settings_maximum_ttl: {
+                  type: 'number',
+                  nullable: true,
+                  errorMessage: "The 'browser_cache_settings_maximum_ttl' field must be a number or null.",
+                },
+                cdn_cache_settings_maximum_ttl: {
+                  type: 'number',
+                  nullable: true,
+                  errorMessage: "The 'cdn_cache_settings_maximum_ttl' field must be a number or null.",
+                },
+              },
+              required: ['name'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: 'No additional properties are allowed in the cache object.',
+                required: "The 'name' field is required in the cache object.",
+              },
+            },
+          ],
+          errorMessage: "The 'cache' field must be either a string or an object with specified properties.",
+        },
+        filterCookie: {
+          type: ['string', 'null'],
+          errorMessage: "The 'filterCookie' field must be a string or null.",
+        },
+        filterHeader: {
+          type: ['string', 'null'],
+          errorMessage: "The 'filterHeader' field must be a string or null.",
+        },
+        enableGZIP: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'enableGZIP' field must be a boolean or null.",
         },
       },
+      additionalProperties: false,
       allOf: [
         {
           not: {
@@ -198,11 +368,12 @@ const createRuleSchema = (isRequestPhase = false) => ({
             ],
           },
           errorMessage:
-            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
+            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset, tagEvent) with only one final behavior.',
         },
       ],
       minProperties: 1,
       errorMessage: {
+        additionalProperties: "No additional properties are allowed in the 'behavior' object.",
         minProperties: 'At least one behavior must be specified',
       },
     },

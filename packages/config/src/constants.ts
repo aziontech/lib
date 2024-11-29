@@ -77,6 +77,18 @@ export const RULE_OPERATORS_WITHOUT_VALUE = ['exists', 'does_not_exist'] as cons
 
 export const RULE_CONDITIONALS = ['if', 'and', 'or'] as const;
 
+export const DYNAMIC_VARIABLE_PATTERNS = [
+  'arg_[a-zA-Z0-9_]+',
+  'cookie_[a-zA-Z0-9_]+',
+  'http_[a-zA-Z0-9_]+',
+  'sent_http_[a-zA-Z0-9_]+',
+  'upstream_cookie_[a-zA-Z0-9_]+',
+  'upstream_http_[a-zA-Z0-9_]+',
+] as const;
+
+export const RULE_VARIABLES = [...ALL_REQUEST_VARIABLES, ...ALL_RESPONSE_VARIABLES] as const;
+
+// Adicionando as novas constantes do firewall
 export const FIREWALL_BEHAVIOR_NAMES = [
   'deny',
   'drop',
@@ -111,10 +123,13 @@ export const FIREWALL_VARIABLES = [
   'ssl_verification_status',
 ] as const;
 
-export type RuleVariable = (typeof RULE_VARIABLES)[number];
+export type CommonVariable = (typeof COMMON_VARIABLES)[number];
+export type RequestVariable = (typeof ALL_REQUEST_VARIABLES)[number];
+export type ResponseVariable = (typeof ALL_RESPONSE_VARIABLES)[number];
 export type RuleOperatorWithValue = (typeof RULE_OPERATORS_WITH_VALUE)[number];
 export type RuleOperatorWithoutValue = (typeof RULE_OPERATORS_WITHOUT_VALUE)[number];
 export type RuleConditional = (typeof RULE_CONDITIONALS)[number];
+export type RuleVariable = (typeof RULE_VARIABLES)[number];
 export type FirewallBehaviorName = (typeof FIREWALL_BEHAVIOR_NAMES)[number];
 export type FirewallRateLimitType = (typeof FIREWALL_RATE_LIMIT_TYPES)[number];
 export type FirewallRateLimitBy = (typeof FIREWALL_RATE_LIMIT_BY)[number];
