@@ -1,8 +1,10 @@
 import {
+  DYNAMIC_VARIABLE_PATTERNS,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_VARIABLES,
+  SPECIAL_VARIABLES,
 } from '../../constants';
 
 const criteriaBaseSchema = {
@@ -10,49 +12,92 @@ const criteriaBaseSchema = {
   properties: {
     variable: {
       type: 'string',
-      pattern: '^\\$\\{[^}]+\\}$',
-      errorMessage: "The 'variable' field must be wrapped in ${} and be one of the valid variables",
+      anyOf: [
+        {
+          // Validação para variáveis estáticas
+          type: 'string',
+          pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+        },
+        {
+          // Validação para padrões dinâmicos
+          type: 'string',
+          pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|').replace(/\$/g, '\\$') + ')\\}$',
+        },
+      ],
+      errorMessage:
+        "The 'variable' field must be wrapped in ${} and be either a valid static variable or follow the dynamic patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*)",
     },
     conditional: {
       type: 'string',
       enum: RULE_CONDITIONALS,
       errorMessage: `The 'conditional' field must be one of: ${RULE_CONDITIONALS.join(', ')}`,
     },
-  },
-  required: ['variable', 'conditional'],
-};
-
-const criteriaWithValueSchema = {
-  ...criteriaBaseSchema,
-  properties: {
-    ...criteriaBaseSchema.properties,
     operator: {
       type: 'string',
-      enum: RULE_OPERATORS_WITH_VALUE,
-      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITH_VALUE.join(', ')}`,
-    },
-    input_value: {
-      type: 'string',
-      errorMessage: "The 'input_value' field must be a string",
+      enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+      errorMessage: `The 'operator' field must be one of: ${[...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE].join(', ')}`,
     },
   },
-  required: [...criteriaBaseSchema.required, 'operator', 'input_value'],
-};
-
-const criteriaWithoutValueSchema = {
-  ...criteriaBaseSchema,
-  properties: {
-    ...criteriaBaseSchema.properties,
-    operator: {
-      type: 'string',
-      enum: RULE_OPERATORS_WITHOUT_VALUE,
-      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITHOUT_VALUE.join(', ')}`,
+  required: ['variable', 'conditional', 'operator'],
+  allOf: [
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITH_VALUE },
+        },
+      },
+      then: {
+        required: ['input_value'],
+        properties: {
+          input_value: {
+            type: 'string',
+            errorMessage: "The 'input_value' field must be a string",
+          },
+        },
+      },
     },
-  },
-  required: [...criteriaBaseSchema.required, 'operator'],
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITHOUT_VALUE },
+        },
+      },
+      then: {
+        not: {
+          required: ['input_value'],
+        },
+      },
+    },
+  ],
 };
 
-const ruleSchema = {
+const createVariableValidation = (isRequestPhase = false) => ({
+  type: 'string',
+  anyOf: [
+    {
+      // Validação para variáveis estáticas
+      type: 'string',
+      pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+    },
+    {
+      // Validação para padrões dinâmicos
+      type: 'string',
+      pattern: isRequestPhase
+        ? '^(arg_|cookie_|http_)[a-zA-Z0-9_]+$'
+        : '^(arg_|cookie_|http_|sent_http_|upstream_cookie_|upstream_http_)[a-zA-Z0-9_]+$',
+    },
+    {
+      // Validação para variáveis especiais com argumentos
+      type: 'string',
+      pattern: `^(${SPECIAL_VARIABLES.join('|')})\\([^)]+\\)$`,
+    },
+  ],
+  errorMessage: isRequestPhase
+    ? "The 'variable' field must be either a valid request phase variable, mTLS variable, follow the patterns (arg_*, cookie_*, http_*), or be a special function variable (cookie_time_offset, encode_base64)"
+    : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
+});
+
+const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
     name: {
@@ -71,18 +116,12 @@ const ruleSchema = {
       type: 'string',
       errorMessage: "The 'match' field must be a string",
     },
-    variable: {
-      type: 'string',
-      enum: RULE_VARIABLES,
-      errorMessage: `The 'variable' field must be one of: ${RULE_VARIABLES.join(', ')}`,
-    },
+    variable: createVariableValidation(isRequestPhase),
     criteria: {
       type: 'array',
-      items: {
-        oneOf: [criteriaWithValueSchema, criteriaWithoutValueSchema],
-      },
+      items: criteriaBaseSchema,
       errorMessage: {
-        oneOf: 'Each criteria item must follow either the with-value or without-value format',
+        type: 'Each criteria item must follow the criteria format',
       },
     },
     behavior: {
@@ -262,7 +301,7 @@ const ruleSchema = {
   errorMessage: {
     oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
   },
-};
+});
 
 const azionConfigSchema = {
   type: 'object',
@@ -640,11 +679,11 @@ const azionConfigSchema = {
       properties: {
         request: {
           type: 'array',
-          items: ruleSchema,
+          items: createRuleSchema(true),
         },
         response: {
           type: 'array',
-          items: ruleSchema,
+          items: createRuleSchema(false),
         },
       },
       additionalProperties: false,

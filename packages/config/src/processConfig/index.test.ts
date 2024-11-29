@@ -3281,7 +3281,7 @@ describe('generate', () => {
                   name: 'testCriteriaWithoutValue',
                   criteria: [
                     {
-                      variable: '${http_header}',
+                      variable: '${cookie_test}',
                       operator: 'exists',
                       conditional: 'if',
                     },
@@ -3300,7 +3300,7 @@ describe('generate', () => {
           expect(result.rules[0].criteria).toEqual([
             [
               {
-                variable: '${http_header}',
+                variable: '${cookie_test}',
                 operator: 'exists',
                 conditional: 'if',
               },
