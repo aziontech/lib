@@ -1,5 +1,8 @@
 import {
   DYNAMIC_VARIABLE_PATTERNS,
+  FIREWALL_RATE_LIMIT_BY,
+  FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_WAF_MODES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
@@ -216,19 +219,92 @@ const createRuleSchema = (isRequestPhase = false) => ({
           properties: {
             path: {
               type: 'string',
-              errorMessage: "The 'path' field must be a string.",
-            },
-            name: {
-              type: ['string', 'null'],
-              errorMessage: "The 'name' field can be a string or null.",
+              errorMessage: "The runFunction behavior must have a 'path' field of type string",
             },
           },
           required: ['path'],
           additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'runFunction' object.",
-            required: "The 'path' field is required in the 'runFunction' object.",
+        },
+        setWafRuleset: {
+          type: 'object',
+          properties: {
+            wafMode: {
+              type: 'string',
+              enum: FIREWALL_WAF_MODES,
+              errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
+            },
+            wafId: {
+              type: 'string',
+              errorMessage: 'The wafId must be a string',
+            },
           },
+          required: ['wafMode', 'wafId'],
+          additionalProperties: false,
+        },
+        setRateLimit: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: FIREWALL_RATE_LIMIT_TYPES,
+              errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
+            },
+            limitBy: {
+              type: 'string',
+              enum: FIREWALL_RATE_LIMIT_BY,
+              errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
+            },
+            averageRateLimit: {
+              type: 'string',
+              errorMessage: 'The averageRateLimit must be a string',
+            },
+            maximumBurstSize: {
+              type: 'string',
+              errorMessage: 'The maximumBurstSize must be a string',
+            },
+          },
+          required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+          additionalProperties: false,
+        },
+        deny: {
+          type: 'boolean',
+          errorMessage: 'The deny behavior must be a boolean',
+        },
+        drop: {
+          type: 'boolean',
+          errorMessage: 'The drop behavior must be a boolean',
+        },
+        setCustomResponse: {
+          type: 'object',
+          properties: {
+            statusCode: {
+              type: ['integer', 'string'],
+              minimum: 200,
+              maximum: 499,
+              errorMessage: 'The statusCode must be a number or string between 200 and 499',
+            },
+            contentType: {
+              type: 'string',
+              errorMessage: 'The contentType must be a string',
+            },
+            contentBody: {
+              type: 'string',
+              errorMessage: 'The contentBody must be a string',
+            },
+          },
+          required: ['statusCode', 'contentType', 'contentBody'],
+          additionalProperties: false,
+        },
+        tagEvent: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: 'The tagEvent name must be a string',
+            },
+          },
+          required: ['name'],
+          additionalProperties: false,
         },
         setCache: {
           oneOf: [
@@ -278,8 +354,26 @@ const createRuleSchema = (isRequestPhase = false) => ({
         },
       },
       additionalProperties: false,
+      allOf: [
+        {
+          not: {
+            anyOf: [
+              { required: ['deny', 'drop'] },
+              { required: ['deny', 'setCustomResponse'] },
+              { required: ['deny', 'setRateLimit'] },
+              { required: ['drop', 'setCustomResponse'] },
+              { required: ['drop', 'setRateLimit'] },
+              { required: ['setCustomResponse', 'setRateLimit'] },
+            ],
+          },
+          errorMessage:
+            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset, tagEvent) with only one final behavior.',
+        },
+      ],
+      minProperties: 1,
       errorMessage: {
         additionalProperties: "No additional properties are allowed in the 'behavior' object.",
+        minProperties: 'At least one behavior must be specified',
       },
     },
   },
