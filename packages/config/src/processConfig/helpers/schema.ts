@@ -4,6 +4,7 @@ import {
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_VARIABLES,
   FIREWALL_WAF_MODES,
+  NETWORK_LIST_TYPES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
@@ -798,7 +799,7 @@ const azionConfigSchema = {
           },
           listType: {
             type: 'string',
-            enum: ['ip_cidr', 'asn', 'countries'],
+            enum: NETWORK_LIST_TYPES,
             errorMessage: "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
           },
           listContent: {

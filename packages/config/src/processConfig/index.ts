@@ -5,26 +5,32 @@ import addKeywords from 'ajv-keywords';
 import { AzionConfig } from '../types';
 import convertLegacyConfig from './helpers/convertLegacyConfig';
 import azionConfigSchema from './helpers/schema';
+import { schemaManifest } from './helpers/schemaManifest';
 import BuildProcessConfigStrategy from './strategy/implementations/buildProcessConfigStrategy';
 import CacheProcessConfigStrategy from './strategy/implementations/cacheProcessConfigStrategy';
 import DomainProcessConfigStrategy from './strategy/implementations/domainProcessConfigStrategy';
 import OriginProcessConfigStrategy from './strategy/implementations/originProcessConfigStrategy';
 import PurgeProcessConfigStrategy from './strategy/implementations/purgeProcessConfigStrategy';
 import RulesProcessConfigStrategy from './strategy/implementations/rulesProcessConfigStrategy';
+import NetworkListProcessConfigStrategy from './strategy/implementations/secure/networkListProcessConfigStrategy';
 import ProcessConfigContext from './strategy/processConfigContext';
 
 /**
  * Validates the provided configuration against a JSON Schema.
  * This function uses AJV (Another JSON Schema Validator) to validate the configuration.
  * If the configuration is not valid, an exception is thrown with the error message of the first validation issue encountered.
- * @param {object} config - The configuration object to be validated.
+ * @param {AzionConfig | Record<string, unknown>} config - The configuration to be validated.
+ * @param {object} schema - The JSON Schema to be used for validation. Default is the Azion CDN configuration schema.
  * @throws {Error} Throws an error if the configuration fails validation.
  */
-function validateConfig(config: AzionConfig) {
+function validateConfig(
+  config: AzionConfig | Record<string, unknown>,
+  schema: Record<string, unknown> = azionConfigSchema,
+) {
   const ajv = new Ajv({ allErrors: true, $data: true, allowUnionTypes: true });
   ajvErrors(ajv);
   addKeywords(ajv, ['instanceof']);
-  const validate = ajv.compile(azionConfigSchema);
+  const validate = ajv.compile(schema);
   const valid = validate(config);
 
   if (!valid) {
@@ -43,6 +49,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('cache', new CacheProcessConfigStrategy());
   processConfigContext.setStrategy('domain', new DomainProcessConfigStrategy());
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
+  processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
   // Rules must be last to apply to behaviors (origin, cache...)
   processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
   return processConfigContext;
@@ -121,7 +128,7 @@ function convertJsonConfigToObject(config: string): AzionConfig {
   } catch (error) {
     throw new Error('Invalid JSON configuration.');
   }
-
+  validateConfig(configObject, schemaManifest);
   const payloadConfig: AzionConfig = {};
   const processConfigContext = factoryProcessContext();
 

@@ -1,3 +1,5 @@
+import { NETWORK_LIST_TYPES } from '../../constants';
+
 const schemaNetworkListManifest = {
   type: 'object',
   properties: {
@@ -7,7 +9,7 @@ const schemaNetworkListManifest = {
     },
     list_type: {
       type: 'string',
-      enum: ['ip_cidr', 'asn', 'countries'],
+      enum: NETWORK_LIST_TYPES,
       errorMessage: "The 'list_type' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
     },
     items_values: {

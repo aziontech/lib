@@ -2280,6 +2280,79 @@ describe('generate', () => {
         );
       });
     });
+    describe('Network List', () => {
+      it('should correctly process the config config when the network list is provided', () => {
+        const azionConfig: AzionConfig = {
+          networkList: [
+            {
+              id: 1,
+              listType: 'ip_cidr',
+              listContent: ['10.0.0.1'],
+            },
+            {
+              id: 2,
+              listType: 'asn',
+              listContent: [4569],
+            },
+            {
+              id: 3,
+              listType: 'countries',
+              listContent: ['BR'],
+            },
+          ],
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.networkList).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: 1,
+              list_type: 'ip_cidr',
+              items_values: ['10.0.0.1'],
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the network list id is not a number', () => {
+        const azionConfig: any = {
+          networkList: [
+            {
+              id: '1',
+              listType: 'ip_cidr',
+              listContent: ['10.0.0.1'],
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow("The 'id' field must be a number.");
+      });
+      it('should throw an error when the network list listType is invalid', () => {
+        const azionConfig: any = {
+          networkList: [
+            {
+              id: 1,
+              listType: 'invalid',
+              listContent: ['10.0.0.1'],
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow(
+          "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
+        );
+      });
+      it('should throw an error when the network list required fields are not provided', () => {
+        const azionConfig: any = {
+          networkList: [
+            {
+              id: 1,
+              listType: 'ip_cidr',
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow(
+          "The 'id, listType and listContent' fields are required in each network list item.",
+        );
+      });
+    });
   });
 
   describe('convertJsonConfigToObject', () => {
@@ -3687,6 +3760,82 @@ describe('generate', () => {
             ]),
           );
         });
+      });
+    });
+    describe('Network List', () => {
+      it('should correctly process the config network list', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: 1,
+              list_type: 'ip_cidr',
+              items_values: ['10.0.0.1'],
+            },
+            {
+              id: 2,
+              list_type: 'asn',
+              items_values: ['AS123'],
+            },
+            {
+              id: 3,
+              list_type: 'countries',
+              items_values: ['US'],
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.networkList).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: 1,
+              listType: 'ip_cidr',
+              listContent: ['10.0.0.1'],
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the network list id is not a number', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: '1',
+              list_type: 'ip_cidr',
+              items_values: ['10.0.0.1'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow("The 'id' field must be a number.");
+      });
+      it('should throw an error when the network list list_type is not valid', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: 1,
+              list_type: 'invalid',
+              items_values: ['10.0.0.1'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'list_type' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
+        );
+      });
+      it('should throw an error when the network list required fields are not provided', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: 1,
+              list_type: 'ip_cidr',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'id, list_type and items_values' fields are required in each network list item.",
+        );
       });
     });
   });
