@@ -8,9 +8,11 @@ This module provides a function to configure and validate options for the Azion 
 - [Usage](#usage)
   - [Example Configuration](#example-configuration)
   - [Example Process Configuration](#example-process-configuration)
+  - [Example Convert JSON Configuration to Object](#example-convert-json-configuration-to-object)
 - [API Reference](#api-reference)
   - [`defineConfig`](#defineconfig)
   - [`processConfig`](#processconfig)
+  - [`convertJsonConfigToObject`](#convertjsonconfigtoobject)
 - [Types](#types)
   - [`AzionBuild`](#azionbuild)
   - [`AzionConfig`](#azionconfig)
@@ -21,6 +23,7 @@ This module provides a function to configure and validate options for the Azion 
   - [`AzionResponseRule`](#azionresponserule)
   - [`AzionRules`](#azionrules)
   - [`AzionPurge`](#azionpurge)
+  - [`AzionNetworkList`](#azionnetworklist)
 
 ## Installation
 
@@ -115,6 +118,23 @@ const config = defineConfig({
       layer: 'edge_caching',
     },
   ],
+  networkLists: [
+    {
+      id: 12345,
+      listType: 'ip_cidr',
+      listContent: ['10.0.0.1'],
+    },
+    {
+      id: 67890,
+      listType: 'asn',
+      listContent: [12345],
+    },
+    {
+      id: 98765,
+      listType: 'countries',
+      listContent: ['US', 'CA'],
+    },
+  ],
 });
 ```
 
@@ -140,6 +160,56 @@ const manifest = processConfig(config);
 console.log(manifest);
 ```
 
+### Example Convert JSON Configuration to Object
+
+```javascript
+import { convertJsonConfigToObject } from 'azion';
+
+const manifestJson = {
+  origin: [
+    {
+      name: 'My Origin',
+      origin_type: 'single_origin',
+      addresses: [
+        {
+          address: 'origin.example.com',
+          weight: 100,
+        },
+      ],
+      origin_protocol_policy: 'https',
+    },
+  ],
+};
+
+const manifest = convertJsonConfigToObject(JSON.stringify(manifestJson));
+
+console.log(manifest);
+```
+
+```typescript
+import { AzionConfig, convertJsonConfigToObject } from 'azion';
+
+const manifestJson = {
+  origin: [
+    {
+      name: 'My Origin',
+      origin_type: 'single_origin',
+      addresses: [
+        {
+          address: 'origin.example.com',
+          weight: 100,
+        },
+      ],
+      origin_protocol_policy: 'https',
+    },
+  ],
+};
+
+const config: AzionConfig = convertJsonConfigToObject(JSON.stringify(manifestJson));
+
+console.log(config);
+```
+
 ## API Reference
 
 ### `defineConfig`
@@ -153,6 +223,14 @@ Configures and validates the options for the Azion Edge Application.
 ### `processConfig`
 
 Processes the configuration object and returns a manifest.
+
+### `convertJsonConfigToObject`
+
+Converts a Azion JSON configuration object to a AzionConfig object.
+
+**Parameters:**
+
+- `config: string` - The JSON configuration object.
 
 **Parameters:**
 
@@ -170,6 +248,7 @@ Processes the configuration object and returns a manifest.
 - `cache?: AzionCache[]` - List of cache settings.
 - `rules?: AzionRules[]` - List of edge rules.
 - `purge?: AzionPurge[]` - List of URLs or CacheKeys to purge.
+- `networkLists?: AzionNetworkList[]` - List of network lists.
 
 ### `AzionBuild`
 
@@ -317,3 +396,13 @@ Type definition for the response rule configuration.
   - `urls: string[]` - List of URLs or patterns to be purged.
   - `method?: 'delete'` - HTTP method for the purge request.
   - `layer?: 'edge_caching' | 'l2_caching'` - Cache layer to be purged.
+
+  ### `AzionNetworkList`
+
+  Type definition for the network list configuration.
+
+  **Properties:**
+
+  - `id: number` - ID of the network list.
+  - `listType: 'ip_cidr' | 'asn' | 'countries'` - Type of the network list.
+  - `listContent: string[] | number[]` - List of IP CIDRs, ASNs, or countries
