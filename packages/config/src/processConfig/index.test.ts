@@ -1743,6 +1743,154 @@ describe('generate', () => {
           }),
         );
       });
+      it('should correctly process rules with criteria', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testCriteria',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${uri}',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '^/',
+            },
+          ],
+        ]);
+      });
+
+      it('should throw error when using both match and criteria', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testInvalidRule',
+                match: '^\\/',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '^/',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        expect(() => processConfig(azionConfig)).toThrow("Cannot use 'match' or 'variable' together with 'criteria'.");
+      });
+
+      it('should correctly process multiple criteria conditions', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testMultipleCriteria',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                  {
+                    variable: '${device_group}',
+                    operator: 'is_equal',
+                    conditional: 'and',
+                    inputValue: 'mobile',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${uri}',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '^/',
+            },
+            {
+              variable: '${device_group}',
+              operator: 'is_equal',
+              conditional: 'and',
+              input_value: 'mobile',
+            },
+          ],
+        ]);
+      });
+
+      it('should correctly process criteria with operator without value', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testCriteriaWithoutValue',
+                criteria: [
+                  {
+                    variable: '${cookie_test}',
+                    operator: 'exists',
+                    conditional: 'if',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${cookie_test}',
+              operator: 'exists',
+              conditional: 'if',
+            },
+          ],
+        ]);
+      });
     });
     describe('Domain', () => {
       it('should throw process the config config when the domain name is not provided', () => {
@@ -3276,158 +3424,7 @@ describe('generate', () => {
             ]),
           );
         });
-        it('should correctly process rules with criteria', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testCriteria',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      inputValue: '^/',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${uri}',
-                operator: 'matches',
-                conditional: 'if',
-                input_value: '^/',
-              },
-            ],
-          ]);
-        });
-
-        it('should throw error when using both match and criteria', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testInvalidRule',
-                  match: '^\\/',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          expect(() => processConfig(azionConfig)).toThrow(
-            "Cannot use 'match' or 'variable' together with 'criteria'.",
-          );
-        });
-
-        it('should correctly process multiple criteria conditions', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testMultipleCriteria',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      inputValue: '^/',
-                    },
-                    {
-                      variable: '${device_group}',
-                      operator: 'is_equal',
-                      conditional: 'and',
-                      inputValue: 'mobile',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${uri}',
-                operator: 'matches',
-                conditional: 'if',
-                input_value: '^/',
-              },
-              {
-                variable: '${device_group}',
-                operator: 'is_equal',
-                conditional: 'and',
-                input_value: 'mobile',
-              },
-            ],
-          ]);
-        });
-
-        it('should correctly process criteria with operator without value', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testCriteriaWithoutValue',
-                  criteria: [
-                    {
-                      variable: '${cookie_test}',
-                      operator: 'exists',
-                      conditional: 'if',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${cookie_test}',
-                operator: 'exists',
-                conditional: 'if',
-              },
-            ],
-          ]);
-        });
       });
-
       describe('Response', () => {
         it('should correctly process the config rules with redirect_to_301', () => {
           const jsonConfig = {
