@@ -141,7 +141,7 @@ export type AzionRuleCriteriaWithValue = AzionRuleCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
-  input_value: string;
+  inputValue: string;
 };
 
 export type AzionRuleCriteriaWithoutValue = AzionRuleCriteriaBase & {
@@ -412,7 +412,7 @@ export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
-  input_value: string;
+  inputValue: string;
 };
 
 export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
@@ -428,6 +428,8 @@ export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewa
 export type AzionFirewallRule = {
   /** Rule name */
   name: string;
+  /** Rule description */
+  description?: string;
   /** Indicates if the rule is active */
   active?: boolean;
   /** Match criteria for the rule */
@@ -450,8 +452,16 @@ export type AzionFirewall = {
   domains?: string[];
   /** Indicates if the firewall is active */
   active?: boolean;
+  /** Indicates if Edge Functions are enabled */
+  edgeFunctions?: boolean;
+  /** Indicates if Network Protection is enabled */
+  networkProtection?: boolean;
+  /** Indicates if WAF is enabled */
+  waf?: boolean;
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** List of firewall rules */
   rules?: AzionFirewallRule[];
+  /** Debug mode */
+  debugRules?: boolean;
 };
