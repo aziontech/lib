@@ -52,11 +52,11 @@ const criteriaBaseSchema = {
         },
       },
       then: {
-        required: ['input_value'],
+        required: ['inputValue'],
         properties: {
-          input_value: {
+          inputValue: {
             type: 'string',
-            errorMessage: "The 'input_value' field must be a string",
+            errorMessage: "The 'inputValue' field must be a string",
           },
         },
       },
@@ -69,7 +69,7 @@ const criteriaBaseSchema = {
       },
       then: {
         not: {
-          required: ['input_value'],
+          required: ['inputValue'],
         },
       },
     },
@@ -948,6 +948,22 @@ const azionConfigSchema = {
           type: 'boolean',
           errorMessage: "The firewall's 'active' field must be a boolean",
         },
+        debugRules: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'debugRules' field must be a boolean",
+        },
+        edgeFunctions: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
+        },
+        networkProtection: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'networkProtection' field must be a boolean",
+        },
+        waf: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'waf' field must be a boolean",
+        },
         variable: {
           type: 'string',
           enum: FIREWALL_VARIABLES,
@@ -961,6 +977,10 @@ const azionConfigSchema = {
               name: {
                 type: 'string',
                 errorMessage: "Each firewall rule must have a 'name' field of type string",
+              },
+              description: {
+                type: 'string',
+                errorMessage: "The rule's 'description' field must be a string",
               },
               active: {
                 type: 'boolean',
@@ -1060,6 +1080,12 @@ const azionConfigSchema = {
         },
       },
       required: ['name'],
+      additionalProperties: false,
+      errorMessage: {
+        type: "The 'firewall' field must be an object",
+        additionalProperties: 'No additional properties are allowed in the firewall object',
+        required: "The 'name' field is required in the firewall object",
+      },
     },
   },
 };

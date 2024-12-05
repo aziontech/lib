@@ -1743,6 +1743,154 @@ describe('generate', () => {
           }),
         );
       });
+      it('should correctly process rules with criteria', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testCriteria',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${uri}',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '^/',
+            },
+          ],
+        ]);
+      });
+
+      it('should throw error when using both match and criteria', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testInvalidRule',
+                match: '^\\/',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '^/',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        expect(() => processConfig(azionConfig)).toThrow("Cannot use 'match' or 'variable' together with 'criteria'.");
+      });
+
+      it('should correctly process multiple criteria conditions', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testMultipleCriteria',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                  {
+                    variable: '${device_group}',
+                    operator: 'is_equal',
+                    conditional: 'and',
+                    inputValue: 'mobile',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${uri}',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '^/',
+            },
+            {
+              variable: '${device_group}',
+              operator: 'is_equal',
+              conditional: 'and',
+              input_value: 'mobile',
+            },
+          ],
+        ]);
+      });
+
+      it('should correctly process criteria with operator without value', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testCriteriaWithoutValue',
+                criteria: [
+                  {
+                    variable: '${cookie_test}',
+                    operator: 'exists',
+                    conditional: 'if',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${cookie_test}',
+              operator: 'exists',
+              conditional: 'if',
+            },
+          ],
+        ]);
+      });
     });
     describe('Domain', () => {
       it('should throw process the config config when the domain name is not provided', () => {
@@ -2550,12 +2698,14 @@ describe('generate', () => {
                 is_active: true,
                 description: 'This rule redirects all traffic.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2579,7 +2729,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 behavior: {
@@ -2598,12 +2748,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule responds with a file from the origin storage.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2633,7 +2785,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule responds with a file from the origin storage.',
@@ -2656,12 +2808,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule rewrites the request path.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2683,7 +2837,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule rewrites the request path.',
@@ -2703,12 +2857,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule delivers the request.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2729,7 +2885,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule delivers the request.',
@@ -2749,12 +2905,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets a cookie.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2776,7 +2934,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets a cookie.',
@@ -2796,12 +2954,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets a header.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2823,7 +2983,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets a header.',
@@ -2843,12 +3003,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets the cache.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2876,7 +3038,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets the cache.',
@@ -2896,12 +3058,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets the cache.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2933,7 +3097,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets the cache.',
@@ -2957,12 +3121,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule forwards the cookie.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2984,7 +3150,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule forwards the cookie.',
@@ -3003,13 +3169,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'request',
                 description: 'This rule runs a function.',
+                is_active: true,
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3026,12 +3195,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: true,
                 criteria: [
                   {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule runs a function.',
@@ -3052,13 +3222,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'request',
                 description: 'This rule enables GZIP compression.',
+                is_active: true,
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3079,10 +3252,11 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule enables GZIP compression.',
+                active: true,
                 behavior: {
                   enableGZIP: true,
                 },
@@ -3097,14 +3271,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
+                is_active: true,
                 description: 'This rule bypasses the cache.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3125,10 +3302,11 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule bypasses the cache.',
+                active: true,
                 behavior: {
                   bypassCache: true,
                 },
@@ -3143,14 +3321,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
+                is_active: false,
                 description: 'This rule redirects HTTP to HTTPS.',
                 criteria: [
-                  {
-                    variable: `\${scheme}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: 'http',
-                  },
+                  [
+                    {
+                      variable: `\${scheme}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: 'http',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3167,12 +3348,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: false,
                 criteria: [
                   {
                     variable: `\${scheme}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: 'http',
+                    inputValue: 'http',
                   },
                 ],
                 description: 'This rule redirects HTTP to HTTPS.',
@@ -3190,14 +3372,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
+                is_active: false,
                 description: 'This rule captures the request.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3223,10 +3408,11 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule captures the request.',
+                active: false,
                 behavior: {
                   capture: {
                     match: '^/user/(.*)',
@@ -3238,158 +3424,7 @@ describe('generate', () => {
             ]),
           );
         });
-        it('should correctly process rules with criteria', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testCriteria',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${uri}',
-                operator: 'matches',
-                conditional: 'if',
-                input_value: '^/',
-              },
-            ],
-          ]);
-        });
-
-        it('should throw error when using both match and criteria', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testInvalidRule',
-                  match: '^\\/',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          expect(() => processConfig(azionConfig)).toThrow(
-            "Cannot use 'match' or 'variable' together with 'criteria'.",
-          );
-        });
-
-        it('should correctly process multiple criteria conditions', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testMultipleCriteria',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                    {
-                      variable: '${device_group}',
-                      operator: 'is_equal',
-                      conditional: 'and',
-                      input_value: 'mobile',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${uri}',
-                operator: 'matches',
-                conditional: 'if',
-                input_value: '^/',
-              },
-              {
-                variable: '${device_group}',
-                operator: 'is_equal',
-                conditional: 'and',
-                input_value: 'mobile',
-              },
-            ],
-          ]);
-        });
-
-        it('should correctly process criteria with operator without value', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testCriteriaWithoutValue',
-                  criteria: [
-                    {
-                      variable: '${cookie_test}',
-                      operator: 'exists',
-                      conditional: 'if',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${cookie_test}',
-                operator: 'exists',
-                conditional: 'if',
-              },
-            ],
-          ]);
-        });
       });
-
       describe('Response', () => {
         it('should correctly process the config rules with redirect_to_301', () => {
           const jsonConfig = {
@@ -3397,14 +3432,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'response',
+                is_active: false,
                 description: 'This rule redirects all traffic.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3427,9 +3465,10 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
+                active: false,
                 behavior: {
                   redirectTo301: 'https://example.com',
                 },
@@ -3444,13 +3483,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'response',
                 description: 'This rule redirects all traffic.',
+                is_active: false,
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3468,12 +3510,13 @@ describe('generate', () => {
               expect.objectContaining({
                 name: 'testRule',
                 description: 'This rule redirects all traffic.',
+                active: false,
                 criteria: [
                   {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 behavior: {
@@ -3488,15 +3531,18 @@ describe('generate', () => {
             rules: [
               {
                 name: 'testRule',
+                is_active: false,
                 phase: 'response',
                 description: 'This rule sets a cookie.',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3518,9 +3564,10 @@ describe('generate', () => {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
+                active: false,
                 description: 'This rule sets a cookie.',
                 behavior: {
                   setCookie: 'cookieName=cookieValue',
@@ -3537,12 +3584,14 @@ describe('generate', () => {
                 phase: 'response',
                 description: 'This rule sets a header.',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3564,7 +3613,7 @@ describe('generate', () => {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
                 description: 'This rule sets a header.',
@@ -3583,12 +3632,14 @@ describe('generate', () => {
                 phase: 'response',
                 description: 'This rule enables GZIP compression.',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3609,7 +3660,7 @@ describe('generate', () => {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
                 description: 'This rule enables GZIP compression.',
@@ -3625,15 +3676,18 @@ describe('generate', () => {
             rules: [
               {
                 name: 'testRule',
-                phase: 'response',
                 description: 'This rule filters the cookie.',
+                is_active: false,
+                phase: 'response',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3650,12 +3704,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: false,
                 criteria: [
                   {
-                    variable: `\${status}`,
-                    operator: 'equals',
+                    variable: `\${uri}`,
+                    operator: 'matches',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule filters the cookie.',
@@ -3673,13 +3728,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'response',
                 description: 'This rule filters the header.',
+                is_active: false,
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3696,12 +3754,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: false,
                 criteria: [
                   {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
                 description: 'This rule filters the header.',
@@ -3719,13 +3778,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'response',
                 description: 'This rule runs a function.',
+                is_active: true,
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3744,13 +3806,14 @@ describe('generate', () => {
                 name: 'testRule',
                 criteria: [
                   {
-                    variable: `\${status}`,
-                    operator: 'equals',
+                    variable: `\${uri}`,
+                    operator: 'matches',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule runs a function.',
+                active: true,
                 behavior: {
                   runFunction: {
                     path: 'myFunction',
