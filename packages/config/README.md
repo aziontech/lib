@@ -24,6 +24,7 @@ This module provides a function to configure and validate options for the Azion 
   - [`AzionRules`](#azionrules)
   - [`AzionPurge`](#azionpurge)
   - [`AzionNetworkList`](#azionnetworklist)
+  - [`AzionFirewall`](#azionfirewall)
 
 ## Installation
 
@@ -105,6 +106,53 @@ const config = defineConfig({
           setOrigin: {
             name: 'My Origin',
             type: 'single_origin',
+          },
+        },
+      },
+    ],
+  },
+  firewall: {
+    name: 'My Edge Firewall',
+    domains: ['example.com', 'api.example.com'],
+    active: true,
+    edgeFunctions: true,
+    networkProtection: true,
+    waf: true,
+    rules: [
+      {
+        name: 'Block Suspicious IPs',
+        description: 'Block requests from suspicious IP addresses',
+        active: true,
+        criteria: [
+          {
+            variable: 'remote_addr',
+            operator: 'in',
+            conditional: 'if',
+            inputValue: 'suspicious_ips',
+          },
+        ],
+        behavior: {
+          deny: true,
+        },
+      },
+      {
+        name: 'Rate Limit API',
+        description: 'Rate limit for API endpoints',
+        active: true,
+        criteria: [
+          {
+            variable: 'uri',
+            operator: 'starts_with',
+            conditional: 'if',
+            inputValue: '/api/',
+          },
+        ],
+        behavior: {
+          setRateLimit: {
+            type: 'second',
+            limitBy: 'client_ip',
+            averageRateLimit: '10',
+            maximumBurstSize: '20',
           },
         },
       },
@@ -406,3 +454,64 @@ Type definition for the response rule configuration.
   - `id: number` - ID of the network list.
   - `listType: 'ip_cidr' | 'asn' | 'countries'` - Type of the network list.
   - `listContent: string[] | number[]` - List of IP CIDRs, ASNs, or countries
+
+  ### `AzionFirewall`
+
+  Type definition for the Edge Firewall configuration.
+
+  **Properties:**
+
+  - `name: string` - Name of the firewall.
+  - `domains?: string[]` - List of domains associated with the firewall.
+  - `active?: boolean` - Whether the firewall is active.
+  - `edgeFunctions?: boolean` - Whether Edge Functions are enabled.
+  - `networkProtection?: boolean` - Whether Network Protection is enabled.
+  - `waf?: boolean` - Whether WAF is enabled.
+  - `variable?: RuleVariable` - Variable to be used in matches.
+  - `rules?: AzionFirewallRule[]` - List of firewall rules.
+  - `debugRules?: boolean` - Whether debug mode is enabled for rules.
+
+  ### `AzionFirewallRule`
+
+  Type definition for firewall rules.
+
+  **Properties:**
+
+  - `name: string` - Name of the rule.
+  - `description?: string` - Description of the rule.
+  - `active?: boolean` - Whether the rule is active.
+  - `match?: string` - Match criteria for the rule.
+  - `variable?: RuleVariable` - Variable to be used in the match.
+  - `criteria?: AzionFirewallCriteria[]` - Array of criteria for complex conditions.
+  - `behavior: AzionFirewallBehavior` - Behavior to be applied when the rule matches.
+
+  ### `AzionFirewallBehavior`
+
+  Type definition for firewall rule behaviors.
+
+  **Properties:**
+
+  - `runFunction?: { path: string }` - Run a serverless function.
+  - `setWafRuleset?: { wafMode: FirewallWafMode; wafId: string }` - Set WAF ruleset.
+  - `setRateLimit?: {` - Set rate limit configuration.
+    - `type: FirewallRateLimitType` - Rate limit type (second, minute, hour).
+    - `limitBy: FirewallRateLimitBy` - Rate limit by (client_ip, global, token).
+    - `averageRateLimit: string` - Average rate limit.
+    - `maximumBurstSize: string` - Maximum burst size.
+  - `deny?: boolean` - Deny the request.
+  - `drop?: boolean` - Drop the request.
+  - `setCustomResponse?: {` - Set custom response.
+    - `statusCode: number | string` - HTTP status code (200-499).
+    - `contentType: string` - Response content type.
+    - `contentBody: string` - Response content body.
+
+  ### `AzionFirewallCriteria`
+
+  Type definition for firewall rule criteria.
+
+  **Properties:**
+
+  - `variable: RuleVariable` - Variable to be evaluated.
+  - `conditional: RuleConditional` - Conditional type.
+  - `operator: RuleOperatorWithValue | RuleOperatorWithoutValue` - Comparison operator.
+  - `inputValue?: string` - Input value for comparison (required for operators with value).
