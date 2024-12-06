@@ -138,3 +138,8 @@ export type FirewallVariable = (typeof FIREWALL_VARIABLES)[number];
 
 export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
 export type NetworkListType = (typeof NETWORK_LIST_TYPES)[number];
+
+export const WAF_MODE = ['learning', 'blocking', 'counting'] as const;
+export type WafMode = (typeof WAF_MODE)[number];
+export const WAF_SENSITIVITY = ['low', 'medium', 'high'] as const;
+export type WafSensitivity = (typeof WAF_SENSITIVITY)[number];
