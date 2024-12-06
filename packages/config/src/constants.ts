@@ -137,3 +137,4 @@ export type FirewallWafMode = (typeof FIREWALL_WAF_MODES)[number];
 export type FirewallVariable = (typeof FIREWALL_VARIABLES)[number];
 
 export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
+export type NetworkListType = (typeof NETWORK_LIST_TYPES)[number];
