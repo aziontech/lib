@@ -401,4 +401,44 @@ export default {
       listContent: ['US', 'BR', 'UK'],
     },
   ],
+  waf: [
+    {
+      name: 'my_waf', // Required for WAF configuration
+      active: true, // Required to enable the WAF or false to disable
+      mode: 'blocking', // 'learning', 'blocking' or 'counting'
+      sqlInjection: {
+        // sqlInjection is optional.
+        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      remoteFileInclusion: {
+        // remoteFileInclusion is optional.
+        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      directoryTraversal: {
+        // directoryTraversal is optional.
+        sensitivity: 'low', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      crossSiteScripting: {
+        // crossSiteScripting is optional.
+        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      evadingTricks: {
+        // evadingTricks is optional.
+        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      fileUpload: {
+        // fileUpload is optional.
+        sensitivity: 'low', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      unwantedAccess: {
+        // unwantedAccess is optional.
+        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      identityAttack: {
+        // identityAttack is optional.
+        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      bypassAddress: ['10.0.0.1'], // Optional. Define trusted IP/CIDR addresses
+    },
+  ],
 };
