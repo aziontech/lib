@@ -2,6 +2,7 @@ import {
   FirewallRateLimitBy,
   FirewallRateLimitType,
   FirewallWafMode,
+  NetworkListType,
   RuleConditional,
   RuleOperatorWithValue,
   RuleOperatorWithoutValue,
@@ -332,7 +333,7 @@ export type AzionNetworkList = {
   /** Network list identifier */
   id: number;
   /** Network list type */
-  listType: 'ip_cidr' | 'asn' | 'countries';
+  listType: NetworkListType;
   /** List of networks */
   listContent: string[] | number[];
 };

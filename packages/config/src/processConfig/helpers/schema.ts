@@ -10,6 +10,8 @@ import {
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_VARIABLES,
   SPECIAL_VARIABLES,
+  WAF_MODE,
+  WAF_SENSITIVITY,
 } from '../../constants';
 
 const criteriaBaseSchema = {
@@ -101,6 +103,12 @@ const createVariableValidation = (isRequestPhase = false) => ({
     ? "The 'variable' field must be either a valid request phase variable, mTLS variable, follow the patterns (arg_*, cookie_*, http_*), or be a special function variable (cookie_time_offset, encode_base64)"
     : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
 });
+
+const sensitivitySchema = {
+  type: 'string',
+  enum: WAF_SENSITIVITY,
+  errorMessage: `The 'sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
+};
 
 const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
@@ -1085,6 +1093,143 @@ const azionConfigSchema = {
         type: "The 'firewall' field must be an object",
         additionalProperties: 'No additional properties are allowed in the firewall object',
         required: "The 'name' field is required in the firewall object",
+      },
+    },
+    waf: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            errorMessage: "The WAF configuration must have a 'name' field of type string",
+          },
+          mode: {
+            type: 'string',
+            enum: WAF_MODE,
+            errorMessage: `The 'mode' field must be one of: ${WAF_MODE.join(', ')}`,
+          },
+          active: {
+            type: 'boolean',
+            errorMessage: "The WAF configuration's 'active' field must be a boolean",
+          },
+          sqlInjection: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the sqlInjection object',
+              required: "The 'sensitivity' field is required in the sqlInjection object",
+            },
+          },
+          remoteFileInclusion: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the remoteFileInclusion object',
+              required: "The 'sensitivity' field is required in the remoteFileInclusion object",
+            },
+          },
+          directoryTraversal: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the directoryTraversal object',
+              required: "The 'sensitivity' field is required in the directoryTraversal object",
+            },
+          },
+          crossSiteScripting: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the crossSiteScripting object',
+              required: "The 'sensitivity' field is required in the crossSiteScripting object",
+            },
+          },
+          evadingTricks: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the evadingTricks object',
+              required: "The 'sensitivity' field is required in the evadingTricks object",
+            },
+          },
+          fileUpload: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the fileUpload object',
+              required: "The 'sensitivity' field is required in the fileUpload object",
+            },
+          },
+          unwantedAccess: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the unwantedAccess object',
+              required: "The 'sensitivity' field is required in the unwantedAccess object",
+            },
+          },
+          identityAttack: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the identityAttack object',
+              required: "The 'sensitivity' field is required in the identityAttack object",
+            },
+          },
+          bypassAddress: {
+            type: 'array',
+            items: {
+              type: 'string',
+              errorMessage: 'Each item in the bypassAddress list must be a string',
+            },
+            errorMessage: {
+              type: "The 'bypassAddress' field must be an array of strings",
+            },
+          },
+        },
+        required: ['name', 'active', 'mode'],
+        additionalProperties: false,
+        errorMessage: {
+          type: "The 'waf' field must be an object",
+          additionalProperties: 'No additional properties are allowed in the WAF object',
+          required: "The 'name, active and mode' fields are required in the WAF object",
+        },
+      },
+      errorMessage: {
+        type: "The 'waf' field must be an array",
       },
     },
   },
