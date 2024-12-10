@@ -7,6 +7,8 @@ import {
   RuleOperatorWithValue,
   RuleOperatorWithoutValue,
   RuleVariable,
+  WafMode,
+  WafSensitivity,
 } from './constants';
 
 /**
@@ -358,6 +360,8 @@ export type AzionConfig = {
   firewall?: AzionFirewall;
   /** Network list configurations */
   networkList?: AzionNetworkList[];
+  /** WAF configuration */
+  waf?: AzionWaf[];
 };
 
 /**
@@ -465,4 +469,47 @@ export type AzionFirewall = {
   rules?: AzionFirewallRule[];
   /** Debug mode */
   debugRules?: boolean;
+};
+
+export type AzionWaf = {
+  /** WAF name */
+  name: string;
+  /** WAF mode */
+  mode: WafMode;
+  /** WAF active */
+  active: boolean;
+  /** WAF sqlInjection */
+  sqlInjection?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF remoteFileInclusion */
+  remoteFileInclusion?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF directoryTraversal */
+  directoryTraversal?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF crossSiteScripting */
+  crossSiteScripting?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF evadingTricks */
+  evadingTricks?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF fileUpload */
+  fileUpload?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF unwantedAccess */
+  unwantedAccess?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF identityAttack */
+  identityAttack?: {
+    sensitivity: WafSensitivity;
+  };
+  /** WAF bypassAddress */
+  bypassAddress?: string[];
 };
