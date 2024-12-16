@@ -2664,29 +2664,6 @@ describe('generate', () => {
         );
       });
     });
-    describe('Purge', () => {
-      it('should correctly process the config purge', () => {
-        const jsonConfig = {
-          purge: [
-            {
-              type: 'url',
-              urls: ['https://example.com'],
-            },
-          ],
-        };
-
-        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-        expect(result.purge).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              type: 'url',
-              urls: ['https://example.com'],
-              method: 'delete',
-            }),
-          ]),
-        );
-      });
-    });
     describe('Rules', () => {
       describe('Request', () => {
         it('should correctly process the config rules', () => {
@@ -3856,48 +3833,6 @@ describe('generate', () => {
               listContent: ['10.0.0.1'],
             }),
           ]),
-        );
-      });
-      it('should throw an error when the network list id is not a number', () => {
-        const jsonConfig = {
-          networkList: [
-            {
-              id: '1',
-              list_type: 'ip_cidr',
-              items_values: ['10.0.0.1'],
-            },
-          ],
-        };
-
-        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow("The 'id' field must be a number.");
-      });
-      it('should throw an error when the network list list_type is not valid', () => {
-        const jsonConfig = {
-          networkList: [
-            {
-              id: 1,
-              list_type: 'invalid',
-              items_values: ['10.0.0.1'],
-            },
-          ],
-        };
-
-        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
-          "The 'list_type' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
-        );
-      });
-      it('should throw an error when the network list required fields are not provided', () => {
-        const jsonConfig = {
-          networkList: [
-            {
-              id: 1,
-              list_type: 'ip_cidr',
-            },
-          ],
-        };
-
-        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
-          "The 'id, list_type and items_values' fields are required in each network list item.",
         );
       });
     });

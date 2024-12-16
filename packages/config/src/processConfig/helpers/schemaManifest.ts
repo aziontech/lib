@@ -1,171 +1,547 @@
-import { NETWORK_LIST_TYPES, WAF_MODE, WAF_SENSITIVITY } from '../../constants';
+import {
+  DYNAMIC_VARIABLE_PATTERNS,
+  FIREWALL_BEHAVIOR_NAMES,
+  FIREWALL_BEHAVIORS_REQUIRING_ARGUMENT,
+  FIREWALL_RATE_LIMIT_BY,
+  FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_VARIABLES,
+  FIREWALL_WAF_MODES,
+  NETWORK_LIST_TYPES,
+  RULE_CONDITIONALS,
+  RULE_OPERATORS_WITH_VALUE,
+  RULE_OPERATORS_WITHOUT_VALUE,
+  RULE_VARIABLES,
+  RULES_ENGINE_BEHAVIORS,
+  RULES_ENGINE_BEHAVIORS_REQUIRING_TARGET,
+} from '../../constants';
 
-const schemaNetworkListManifest = {
-  type: 'object',
-  properties: {
-    id: {
-      type: 'number',
-      errorMessage: "The 'id' field must be a number.",
-    },
-    list_type: {
-      type: 'string',
-      enum: NETWORK_LIST_TYPES,
-      errorMessage: "The 'list_type' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
-    },
-    items_values: {
-      type: 'array',
-      items: {
-        type: ['string', 'number'],
-        errorMessage: "The 'items_values' field must be an array of strings or numbers.",
-      },
-    },
-  },
-  required: ['id', 'list_type', 'items_values'],
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: 'No additional properties are allowed in network list items.',
-    required: "The 'id, list_type and items_values' fields are required in each network list item.",
-  },
-};
-
-const schemaWafManifest = {
+const firewallBehaviorSchema = {
   type: 'object',
   properties: {
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string.",
+      enum: FIREWALL_BEHAVIOR_NAMES,
     },
-    mode: {
-      type: 'string',
-      enum: WAF_MODE,
-      errorMessage: `The 'mode' field must be one of: ${WAF_MODE.join(', ')}`,
+    argument: {
+      oneOf: [
+        {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: FIREWALL_RATE_LIMIT_TYPES,
+            },
+            limit_by: {
+              type: 'string',
+              enum: FIREWALL_RATE_LIMIT_BY,
+            },
+            mode: {
+              type: 'string',
+              enum: FIREWALL_WAF_MODES,
+            },
+          },
+        },
+        { type: 'string' },
+        { type: 'null' },
+      ],
     },
-    active: {
+  },
+  required: ['name'],
+  allOf: [
+    {
+      if: {
+        properties: {
+          name: { enum: FIREWALL_BEHAVIORS_REQUIRING_ARGUMENT },
+        },
+      },
+      then: {
+        required: ['argument'],
+      },
+    },
+  ],
+};
+
+const purgeSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      urls: {
+        type: 'array',
+        items: { type: 'string' },
+        maxItems: 50,
+      },
+      method: {
+        type: 'string',
+        enum: ['delete'],
+      },
+      type: {
+        type: 'string',
+        enum: ['urls', 'cachekey', 'wildcard'],
+      },
+      layer: {
+        type: 'string',
+        enum: ['edge_caching', 'l2_caching'],
+      },
+    },
+    required: ['urls', 'method', 'type'],
+  },
+};
+
+const domainSchema = {
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    cname_access_only: {
       type: 'boolean',
-      errorMessage: "The 'active' field must be a boolean.",
+      default: false,
     },
-    sql_injection: {
+    cnames: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    digital_certificate_id: {
+      oneOf: [{ type: 'string', enum: ['lets_encrypt'] }, { type: 'number' }, { type: 'null' }],
+    },
+    edge_application_id: { type: 'number' },
+    edge_firewall_id: { type: 'number' },
+    is_active: {
       type: 'boolean',
-      errorMessage: "The 'sql_injection' field must be a boolean.",
+      default: true,
     },
-    sql_injection_sensitivity: {
+    is_mtls_enabled: { type: 'boolean' },
+    mtls_verification: {
       type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'sql_injection_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
+      enum: ['enforce', 'permissive'],
     },
-    remote_file_inclusion: {
+    mtls_trusted_ca_certificate_id: { type: 'number' },
+    crl_list: {
+      type: 'array',
+      items: { type: 'number' },
+    },
+  },
+  required: ['name', 'edge_application_id', 'cnames', 'cname_access_only'],
+  allOf: [
+    {
+      if: {
+        properties: { is_mtls_enabled: { const: true } },
+      },
+      then: {
+        required: ['mtls_verification', 'mtls_trusted_ca_certificate_id'],
+      },
+    },
+  ],
+};
+
+const cacheSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+    },
+    browser_cache_settings: {
+      type: 'string',
+      enum: ['honor', 'override'],
+      default: 'honor',
+    },
+    browser_cache_settings_maximum_ttl: {
+      type: 'integer',
+      minimum: 0,
+      maximum: 31536000,
+      default: 0,
+    },
+    cdn_cache_settings: {
+      type: 'string',
+      enum: ['honor', 'override'],
+      default: 'honor',
+    },
+    cdn_cache_settings_maximum_ttl: {
+      type: 'integer',
+      minimum: 60,
+      maximum: 31536000,
+      default: 60,
+    },
+    cache_by_query_string: {
+      type: 'string',
+      enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+      default: 'ignore',
+    },
+    query_string_fields: {
+      type: 'array',
+      items: { type: 'integer' },
+    },
+    enable_query_string_sort: {
       type: 'boolean',
-      errorMessage: "The 'remote_file_inclusion' field must be a boolean.",
+      default: false,
     },
-    remote_file_inclusion_sensitivity: {
+    cache_by_cookie: {
       type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'remote_file_inclusion_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
+      enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+      default: 'ignore',
     },
-    directory_traversal: {
+    cookie_names: {
+      type: 'array',
+      items: { type: 'integer' },
+    },
+    adaptive_delivery_action: {
+      type: 'string',
+      enum: ['ignore', 'whitelist'],
+      default: 'ignore',
+    },
+    device_group: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    l2_caching_enabled: {
       type: 'boolean',
-      errorMessage: "The 'directory_traversal' field must be a boolean.",
+      default: false,
     },
-    directory_traversal_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'directory_traversal_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
+    l2_region: {
+      type: ['string', 'null'],
+      enum: [null, 'sa-brazil', 'na-united-states'],
+      default: null,
     },
-    cross_site_scripting: {
+    is_slice_configuration_enabled: {
       type: 'boolean',
-      errorMessage: "The 'cross_site_scripting' field must be a boolean.",
+      default: false,
     },
-    cross_site_scripting_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'cross_site_scripting_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    evading_tricks: {
+    is_slice_edge_caching_enabled: {
       type: 'boolean',
-      errorMessage: "The 'evading_tricks' field must be a boolean.",
+      default: false,
     },
-    evading_tricks_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'evading_tricks_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    file_upload: {
+    is_slice_l2_caching_enabled: {
       type: 'boolean',
-      errorMessage: "The 'file_upload' field must be a boolean.",
+      default: false,
     },
-    file_upload_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'file_upload_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
+    slice_configuration_range: {
+      type: 'integer',
+      default: 1024,
     },
-    unwanted_access: {
+    enable_stale_cache: {
       type: 'boolean',
-      errorMessage: "The 'unwanted_access' field must be a boolean.",
+      default: true,
     },
-    unwanted_access_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'unwanted_access_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    identified_attack: {
+    enable_caching_for_post: {
       type: 'boolean',
-      errorMessage: "The 'identified_attack' field must be a boolean.",
+      default: false,
     },
-    identified_attack_sensitivity: {
+    enable_caching_for_options: {
+      type: 'boolean',
+      default: false,
+    },
+  },
+  required: ['name'],
+};
+
+const originSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+      },
+      origin_type: {
+        type: 'string',
+        enum: ['single_origin', 'load_balancer', 'live_ingest', 'object_storage'],
+        default: 'single_origin',
+      },
+      origin_path: {
+        type: 'string',
+      },
+      addresses: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            address: { type: 'string' },
+            weight: {
+              type: 'number',
+              minimum: 0,
+              maximum: 10,
+            },
+            server_role: { type: 'string' },
+          },
+          required: ['address'],
+        },
+      },
+      host_header: {
+        type: 'string',
+        default: '${host}',
+      },
+      origin_protocol_policy: {
+        type: 'string',
+        enum: ['preserve', 'http', 'https'],
+        default: 'preserve',
+      },
+      is_origin_redirection_enabled: {
+        type: 'boolean',
+        default: false,
+      },
+      method: {
+        type: 'string',
+        enum: ['ip_hash', 'least_connections', 'round_robin'],
+        default: 'ip_hash',
+      },
+      connection_timeout: {
+        type: 'number',
+        minimum: 60,
+        maximum: 75,
+        default: 60,
+      },
+      timeout_between_bytes: {
+        type: 'number',
+        default: 120,
+      },
+      bucket: {
+        type: 'string',
+      },
+      prefix: {
+        type: 'string',
+        default: '/',
+      },
+      hmac_authentication: {
+        type: 'boolean',
+        default: false,
+      },
+      hmac_region_name: {
+        type: 'string',
+      },
+      hmac_access_key: {
+        type: 'string',
+      },
+      hmac_secret_key: {
+        type: 'string',
+      },
+    },
+    required: ['name', 'origin_type'],
+    allOf: [
+      {
+        if: {
+          properties: {
+            origin_type: {
+              enum: ['single_origin', 'load_balancer', 'live_ingest'],
+            },
+          },
+        },
+        then: {
+          required: ['addresses', 'host_header'],
+        },
+      },
+      {
+        if: {
+          properties: {
+            origin_type: { const: 'object_storage' },
+          },
+        },
+        then: {
+          required: ['bucket'],
+        },
+      },
+    ],
+  },
+};
+
+const rulesEngineBehaviorSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        enum: RULES_ENGINE_BEHAVIORS,
+      },
+      target: {
+        oneOf: [{ type: 'string' }, { type: 'object' }, { type: 'null' }],
+      },
+    },
+    required: ['name'],
+    allOf: [
+      {
+        if: {
+          properties: {
+            name: { enum: RULES_ENGINE_BEHAVIORS_REQUIRING_TARGET },
+          },
+        },
+        then: {
+          required: ['target'],
+        },
+      },
+    ],
+  },
+};
+
+const rulesEngineSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+      },
+      phase: {
+        type: 'string',
+        enum: ['request', 'response'],
+      },
+      behaviors: {
+        type: 'array',
+        items: rulesEngineBehaviorSchema,
+      },
+      criteria: {
+        type: 'array',
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              variable: {
+                type: 'string',
+                pattern:
+                  '^\\$\\{(' +
+                  [...RULE_VARIABLES, ...DYNAMIC_VARIABLE_PATTERNS].join('|').replace(/\$/g, '\\$') +
+                  ')\\}$',
+              },
+              operator: {
+                type: 'string',
+                enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+              },
+              conditional: {
+                type: 'string',
+                enum: RULE_CONDITIONALS,
+              },
+              input_value: {
+                type: 'string',
+              },
+            },
+            required: ['variable', 'operator', 'conditional'],
+          },
+        },
+      },
+      is_active: {
+        type: 'boolean',
+        default: true,
+      },
+      description: {
+        type: 'string',
+        maxLength: 1000,
+      },
+    },
+    required: ['name', 'phase'],
+  },
+};
+
+const firewallSchema = {
+  type: 'object',
+  properties: {
+    name: {
       type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'identified_attack_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
     },
-    bypass_addresses: {
+    is_active: {
+      type: 'boolean',
+      default: true,
+    },
+    edge_functions_enabled: {
+      type: 'boolean',
+      default: false,
+    },
+    network_protection_enabled: {
+      type: 'boolean',
+      default: false,
+    },
+    waf_enabled: {
+      type: 'boolean',
+      default: false,
+    },
+    debug_rules: {
+      type: 'boolean',
+      default: false,
+    },
+    domains: {
+      type: 'array',
+      items: { type: 'number' },
+    },
+    rules_engine: {
       type: 'array',
       items: {
-        type: 'string',
-        errorMessage: "The 'bypass_addresses' field must be an array of strings.",
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+          },
+          is_active: {
+            type: 'boolean',
+            default: true,
+          },
+          behaviors: {
+            type: 'array',
+            items: firewallBehaviorSchema,
+          },
+          criteria: {
+            type: 'array',
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  variable: {
+                    type: 'string',
+                    pattern: '^\\$\\{(' + FIREWALL_VARIABLES.join('|').replace(/\$/g, '\\$') + ')\\}$',
+                  },
+                  operator: {
+                    type: 'string',
+                    enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+                  },
+                  conditional: {
+                    type: 'string',
+                    enum: RULE_CONDITIONALS,
+                  },
+                  input_value: {
+                    type: 'string',
+                  },
+                },
+                required: ['variable', 'operator', 'conditional'],
+              },
+            },
+          },
+        },
+        required: ['name'],
       },
     },
   },
-  required: [
-    'name',
-    'mode',
-    'active',
-    'sql_injection',
-    'sql_injection_sensitivity',
-    'remote_file_inclusion',
-    'remote_file_inclusion_sensitivity',
-    'directory_traversal',
-    'directory_traversal_sensitivity',
-    'cross_site_scripting',
-    'cross_site_scripting_sensitivity',
-    'evading_tricks',
-    'evading_tricks_sensitivity',
-    'file_upload',
-    'file_upload_sensitivity',
-    'unwanted_access',
-    'unwanted_access_sensitivity',
-    'identified_attack',
-    'identified_attack_sensitivity',
-    'bypass_addresses',
-  ],
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: 'No additional properties are allowed in waf items.',
-    required:
-      "The 'name, mode, active, sql_injection, sql_injection_sensitivity, remote_file_inclusion, remote_file_inclusion_sensitivity, directory_traversal, directory_traversal_sensitivity, cross_site_scripting, cross_site_scripting_sensitivity, evading_tricks, evading_tricks_sensitivity, file_upload, file_upload_sensitivity, unwanted_access, unwanted_access_sensitivity, identified_attack, identified_attack_sensitivity and bypass_addresses' fields are required in each waf item.",
-  },
+  required: ['name'],
 };
 
 const schemaManifest = {
   type: 'object',
   properties: {
-    networkList: {
+    domain: domainSchema,
+    origin: originSchema,
+    rules_engine: rulesEngineSchema,
+    firewall: firewallSchema,
+    network_list: {
       type: 'array',
-      items: schemaNetworkListManifest,
-      errorMessage: "The 'networkList' field must be an array of network list items.",
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          list_type: {
+            type: 'string',
+            enum: NETWORK_LIST_TYPES,
+          },
+          items_values: {
+            type: 'array',
+            items: {
+              oneOf: [{ type: 'string' }, { type: 'number' }],
+            },
+          },
+        },
+        required: ['id', 'list_type', 'items_values'],
+      },
     },
-    waf: {
+    purge: purgeSchema,
+    cache_settings: {
       type: 'array',
-      items: schemaWafManifest,
-      errorMessage: "The 'waf' field must be an array of waf items.",
+      items: cacheSchema,
     },
   },
 };
