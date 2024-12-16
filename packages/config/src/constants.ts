@@ -88,7 +88,32 @@ export const DYNAMIC_VARIABLE_PATTERNS = [
 
 export const RULE_VARIABLES = [...ALL_REQUEST_VARIABLES, ...ALL_RESPONSE_VARIABLES] as const;
 
-// Adicionando as novas constantes do firewall
+export const RULES_ENGINE_BEHAVIORS = [
+  'set_origin',
+  'rewrite_request',
+  'deliver',
+  'add_request_cookie',
+  'add_request_header',
+  'add_response_header',
+  'bypass_cache_phase',
+  'capture_match_groups',
+  'deny',
+  'enable_gzip',
+  'filter_request_cookie',
+  'filter_response_cookie',
+  'filter_request_header',
+  'filter_response_header',
+  'forward_cookies',
+  'no_content',
+  'optimize_images',
+  'redirect_http_to_https',
+  'redirect_to_301',
+  'redirect_to_302',
+  'run_function',
+  'set_cache_policy',
+  'set_cookie',
+] as const;
+
 export const FIREWALL_BEHAVIOR_NAMES = [
   'deny',
   'drop',
@@ -99,11 +124,80 @@ export const FIREWALL_BEHAVIOR_NAMES = [
   'setCustomResponse',
 ] as const;
 
-export const FIREWALL_RATE_LIMIT_TYPES = ['second', 'minute'] as const;
+export const FIREWALL_RATE_LIMIT_BY = ['ip', 'global', 'cookie', 'header', 'query_string'] as const;
 
-export const FIREWALL_RATE_LIMIT_BY = ['clientIp', 'global'] as const;
+export const FIREWALL_RATE_LIMIT_TYPES = ['rpm', 'rps'] as const;
 
-export const FIREWALL_WAF_MODES = ['learning', 'blocking'] as const;
+export const FIREWALL_WAF_MODES = ['learning', 'blocking', 'counting'] as const;
+
+export const RULES_ENGINE_REQUEST_BEHAVIORS = [
+  'add_request_cookie',
+  'add_request_header',
+  'add_response_header',
+  'bypass_cache_phase',
+  'capture_match_groups',
+  'deliver',
+  'deny',
+  'enable_gzip',
+  'filter_request_cookie',
+  'filter_request_header',
+  'forward_cookies',
+  'no_content',
+  'optimize_images',
+  'redirect_http_to_https',
+  'redirect_to_301',
+  'redirect_to_302',
+  'rewrite_request',
+  'run_function',
+  'set_cache_policy',
+  'set_origin',
+] as const;
+
+export const RULES_ENGINE_RESPONSE_BEHAVIORS = [
+  'deliver',
+  'enable_gzip',
+  'filter_response_cookie',
+  'filter_response_header',
+  'redirect_to_301',
+  'redirect_to_302',
+  'run_function',
+  'set_cookie',
+] as const;
+
+export const RULES_ENGINE_BEHAVIORS_REQUIRING_TARGET = [
+  'add_request_cookie',
+  'add_request_header',
+  'add_response_header',
+  'capture_match_groups',
+  'filter_request_cookie',
+  'filter_response_cookie',
+  'filter_request_header',
+  'filter_response_header',
+  'redirect_to_301',
+  'redirect_to_302',
+  'rewrite_request',
+  'run_function',
+  'set_cache_policy',
+  'set_cookie',
+  'set_origin',
+] as const;
+
+export const FIREWALL_BEHAVIORS_REQUIRING_ARGUMENT = ['setRateLimit', 'setWafRuleset'] as const;
+
+export type RulesEngineBehavior = (typeof RULES_ENGINE_BEHAVIORS)[number];
+export type FirewallBehavior = (typeof FIREWALL_BEHAVIOR_NAMES)[number];
+export type RulesEngineRequestBehavior = (typeof RULES_ENGINE_REQUEST_BEHAVIORS)[number];
+export type RulesEngineResponseBehavior = (typeof RULES_ENGINE_RESPONSE_BEHAVIORS)[number];
+export type RulesEngineBehaviorRequiringTarget = (typeof RULES_ENGINE_BEHAVIORS_REQUIRING_TARGET)[number];
+export type FirewallBehaviorRequiringArgument = (typeof FIREWALL_BEHAVIORS_REQUIRING_ARGUMENT)[number];
+
+export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
+export type NetworkListType = (typeof NETWORK_LIST_TYPES)[number];
+
+export const WAF_MODE = ['learning', 'blocking', 'counting'] as const;
+export type WafMode = (typeof WAF_MODE)[number];
+export const WAF_SENSITIVITY = ['low', 'medium', 'high'] as const;
+export type WafSensitivity = (typeof WAF_SENSITIVITY)[number];
 
 export const FIREWALL_VARIABLES = [
   'header_accept',
@@ -123,23 +217,4 @@ export const FIREWALL_VARIABLES = [
   'ssl_verification_status',
 ] as const;
 
-export type CommonVariable = (typeof COMMON_VARIABLES)[number];
-export type RequestVariable = (typeof ALL_REQUEST_VARIABLES)[number];
-export type ResponseVariable = (typeof ALL_RESPONSE_VARIABLES)[number];
-export type RuleOperatorWithValue = (typeof RULE_OPERATORS_WITH_VALUE)[number];
-export type RuleOperatorWithoutValue = (typeof RULE_OPERATORS_WITHOUT_VALUE)[number];
-export type RuleConditional = (typeof RULE_CONDITIONALS)[number];
-export type RuleVariable = (typeof RULE_VARIABLES)[number];
-export type FirewallBehaviorName = (typeof FIREWALL_BEHAVIOR_NAMES)[number];
-export type FirewallRateLimitType = (typeof FIREWALL_RATE_LIMIT_TYPES)[number];
-export type FirewallRateLimitBy = (typeof FIREWALL_RATE_LIMIT_BY)[number];
-export type FirewallWafMode = (typeof FIREWALL_WAF_MODES)[number];
 export type FirewallVariable = (typeof FIREWALL_VARIABLES)[number];
-
-export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
-export type NetworkListType = (typeof NETWORK_LIST_TYPES)[number];
-
-export const WAF_MODE = ['learning', 'blocking', 'counting'] as const;
-export type WafMode = (typeof WAF_MODE)[number];
-export const WAF_SENSITIVITY = ['low', 'medium', 'high'] as const;
-export type WafSensitivity = (typeof WAF_SENSITIVITY)[number];
