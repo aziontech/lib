@@ -13,6 +13,7 @@ import OriginProcessConfigStrategy from './strategy/implementations/originProces
 import PurgeProcessConfigStrategy from './strategy/implementations/purgeProcessConfigStrategy';
 import RulesProcessConfigStrategy from './strategy/implementations/rulesProcessConfigStrategy';
 import NetworkListProcessConfigStrategy from './strategy/implementations/secure/networkListProcessConfigStrategy';
+import WafProcessConfigStrategy from './strategy/implementations/secure/wafProcessConfigStrategy';
 import ProcessConfigContext from './strategy/processConfigContext';
 
 /**
@@ -50,6 +51,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('domain', new DomainProcessConfigStrategy());
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
   processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
+  processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
   // Rules must be last to apply to behaviors (origin, cache...)
   processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
   return processConfigContext;

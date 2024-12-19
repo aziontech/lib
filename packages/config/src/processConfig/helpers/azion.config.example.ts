@@ -403,6 +403,7 @@ export default {
   ],
   waf: [
     {
+      id: 123, // Optional. ID of your WAF. Obtain this value via GET request. Cannot be changed via API.
       name: 'my_waf', // Required for WAF configuration
       active: true, // Required to enable the WAF or false to disable
       mode: 'blocking', // 'learning', 'blocking' or 'counting'
@@ -434,11 +435,11 @@ export default {
         // unwantedAccess is optional.
         sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
       },
-      identityAttack: {
-        // identityAttack is optional.
+      identifiedAttack: {
+        // identifiedAttack is optional.
         sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
       },
-      bypassAddress: ['10.0.0.1'], // Optional. Define trusted IP/CIDR addresses
+      bypassAddresses: ['10.0.0.1'], // Optional. Define trusted IP/CIDR addresses
     },
   ],
 };

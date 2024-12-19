@@ -472,6 +472,8 @@ export type AzionFirewall = {
 };
 
 export type AzionWaf = {
+  /** WAF ID */
+  id?: number;
   /** WAF name */
   name: string;
   /** WAF mode */
@@ -506,10 +508,10 @@ export type AzionWaf = {
   unwantedAccess?: {
     sensitivity: WafSensitivity;
   };
-  /** WAF identityAttack */
-  identityAttack?: {
+  /** WAF identifiedAttack */
+  identifiedAttack?: {
     sensitivity: WafSensitivity;
   };
   /** WAF bypassAddress */
-  bypassAddress?: string[];
+  bypassAddresses?: string[];
 };
