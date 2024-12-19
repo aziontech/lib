@@ -2501,6 +2501,155 @@ describe('generate', () => {
         );
       });
     });
+
+    describe('WAF', () => {
+      let defaultConfig: any;
+
+      beforeEach(() => {
+        defaultConfig = {
+          id: 123,
+          name: 'mywaf',
+          mode: 'counting',
+          active: true,
+          bypassAddresses: ['10.0.0.1'],
+          crossSiteScripting: {
+            sensitivity: 'medium',
+          },
+          directoryTraversal: {
+            sensitivity: 'low',
+          },
+          sqlInjection: {
+            sensitivity: 'low',
+          },
+          remoteFileInclusion: {
+            sensitivity: 'low',
+          },
+          evadingTricks: {
+            sensitivity: 'low',
+          },
+          fileUpload: {
+            sensitivity: 'low',
+          },
+          unwantedAccess: {
+            sensitivity: 'low',
+          },
+          identifiedAttack: {
+            sensitivity: 'low',
+          },
+        };
+      });
+
+      it('should correctly process the config config when the waf all fields is provided', () => {
+        const azionConfig: AzionConfig = {
+          waf: [defaultConfig],
+        };
+
+        const result = processConfig(azionConfig);
+
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypass_addresses: ['10.0.0.1'],
+              cross_site_scripting: true,
+              cross_site_scripting_sensitivity: 'medium',
+              directory_traversal: true,
+              directory_traversal_sensitivity: 'low',
+            }),
+          ]),
+        );
+      });
+      it('should correctly process the config config when the waf one field is provided', () => {
+        const azionConfig: AzionConfig = {
+          waf: [
+            {
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: ['10.0.0.1'],
+            },
+          ],
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypass_addresses: ['10.0.0.1'],
+              cross_site_scripting: false,
+              cross_site_scripting_sensitivity: 'low',
+              directory_traversal: false,
+              directory_traversal_sensitivity: 'low',
+              sql_injection: false,
+              sql_injection_sensitivity: 'low',
+              remote_file_inclusion: false,
+              remote_file_inclusion_sensitivity: 'low',
+              evading_tricks: false,
+              evading_tricks_sensitivity: 'low',
+              file_upload: false,
+              file_upload_sensitivity: 'low',
+              unwanted_access: false,
+              unwanted_access_sensitivity: 'low',
+              identified_attack: false,
+              identified_attack_sensitivity: 'low',
+            }),
+          ]),
+        );
+      });
+
+      it('should correctly process the config config when the waf bypassAddresses is provided', () => {
+        const azionConfig: AzionConfig = {
+          waf: [
+            {
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: ['10.0.0.1'],
+              crossSiteScripting: {
+                sensitivity: 'medium',
+              },
+            },
+          ],
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypass_addresses: ['10.0.0.1'],
+              cross_site_scripting: true,
+              cross_site_scripting_sensitivity: 'medium',
+              identified_attack: false,
+              identified_attack_sensitivity: 'low',
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the waf crossSiteScripting sensitivity is invalid', () => {
+        const azionConfig: any = {
+          waf: [
+            {
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: [],
+              crossSiteScripting: {
+                sensitivity: 'invalid',
+              },
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow("The 'sensitivity' field must be one of: low, medium, high");
+      });
+    });
   });
 
   describe('convertJsonConfigToObject', () => {
@@ -3898,6 +4047,131 @@ describe('generate', () => {
 
         expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
           "The 'id, list_type and items_values' fields are required in each network list item.",
+        );
+      });
+    });
+
+    describe('WAF', () => {
+      let defaultConfig: any;
+
+      beforeEach(() => {
+        defaultConfig = {
+          id: 123,
+          name: 'mywaf',
+          mode: 'counting',
+          active: true,
+          bypass_addresses: [],
+          sql_injection: true,
+          sql_injection_sensitivity: 'medium',
+          remote_file_inclusion: true,
+          remote_file_inclusion_sensitivity: 'medium',
+          directory_traversal: true,
+          directory_traversal_sensitivity: 'medium',
+          cross_site_scripting: true,
+          cross_site_scripting_sensitivity: 'medium',
+          evading_tricks: true,
+          evading_tricks_sensitivity: 'medium',
+          file_upload: true,
+          file_upload_sensitivity: 'medium',
+          unwanted_access: true,
+          unwanted_access_sensitivity: 'medium',
+          identified_attack: true,
+          identified_attack_sensitivity: 'medium',
+        };
+      });
+
+      it('should correctly process the config waf', () => {
+        const jsonConfig = {
+          waf: [defaultConfig],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: [],
+              crossSiteScripting: {
+                sensitivity: 'medium',
+              },
+              sqlInjection: {
+                sensitivity: 'medium',
+              },
+              remoteFileInclusion: {
+                sensitivity: 'medium',
+              },
+              directoryTraversal: {
+                sensitivity: 'medium',
+              },
+              evadingTricks: {
+                sensitivity: 'medium',
+              },
+              fileUpload: {
+                sensitivity: 'medium',
+              },
+              unwantedAccess: {
+                sensitivity: 'medium',
+              },
+              identifiedAttack: {
+                sensitivity: 'medium',
+              },
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the waf mode is not valid', () => {
+        const jsonConfig = {
+          waf: [
+            {
+              ...defaultConfig,
+              mode: 'invalid',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'mode' field must be one of: learning, blocking, counting",
+        );
+      });
+      it('should throw an error when the waf bypassAddresses is not an array', () => {
+        const jsonConfig = {
+          waf: [
+            {
+              ...defaultConfig,
+              bypass_addresses: 'invalid',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'bypass_addresses' field must be an array of strings.",
+        );
+      });
+      it('should correctly process the config waf with cross_site_scripting sensitivity low', () => {
+        const jsonConfig = {
+          waf: [
+            {
+              ...defaultConfig,
+              cross_site_scripting_sensitivity: 'low',
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: [],
+              crossSiteScripting: {
+                sensitivity: 'low',
+              },
+            }),
+          ]),
         );
       });
     });
