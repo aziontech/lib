@@ -31,6 +31,10 @@ const schemaNetworkListManifest = {
 const schemaWafManifest = {
   type: 'object',
   properties: {
+    id: {
+      type: 'number',
+      errorMessage: "The WAF configuration must have an 'id' field of type number",
+    },
     name: {
       type: 'string',
       errorMessage: "The 'name' field must be a string.",
@@ -122,6 +126,7 @@ const schemaWafManifest = {
         type: 'string',
         errorMessage: "The 'bypass_addresses' field must be an array of strings.",
       },
+      errorMessage: "The 'bypass_addresses' field must be an array of strings.",
     },
   },
   required: [
@@ -165,7 +170,9 @@ const schemaManifest = {
     waf: {
       type: 'array',
       items: schemaWafManifest,
-      errorMessage: "The 'waf' field must be an array of waf items.",
+      errorMessage: {
+        type: "The 'waf' field must be an array",
+      },
     },
   },
 };

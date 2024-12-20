@@ -1100,6 +1100,10 @@ const azionConfigSchema = {
       items: {
         type: 'object',
         properties: {
+          id: {
+            type: 'number',
+            errorMessage: "The WAF configuration must have an 'id' field of type number",
+          },
           name: {
             type: 'string',
             errorMessage: "The WAF configuration must have a 'name' field of type string",
@@ -1197,7 +1201,7 @@ const azionConfigSchema = {
               required: "The 'sensitivity' field is required in the unwantedAccess object",
             },
           },
-          identityAttack: {
+          identifiedAttack: {
             type: 'object',
             properties: {
               sensitivity: sensitivitySchema,
@@ -1205,18 +1209,18 @@ const azionConfigSchema = {
             required: ['sensitivity'],
             additionalProperties: false,
             errorMessage: {
-              additionalProperties: 'No additional properties are allowed in the identityAttack object',
-              required: "The 'sensitivity' field is required in the identityAttack object",
+              additionalProperties: 'No additional properties are allowed in the identifiedAttack object',
+              required: "The 'sensitivity' field is required in the identifiedAttack object",
             },
           },
-          bypassAddress: {
+          bypassAddresses: {
             type: 'array',
             items: {
               type: 'string',
-              errorMessage: 'Each item in the bypassAddress list must be a string',
+              errorMessage: 'Each item in the bypassAddresses list must be a string',
             },
             errorMessage: {
-              type: "The 'bypassAddress' field must be an array of strings",
+              type: "The 'bypassAddresses' field must be an array of strings",
             },
           },
         },
