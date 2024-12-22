@@ -1,11 +1,31 @@
 import {
+  APPLICATION_DELIVERY_PROTOCOLS,
+  APPLICATION_HTTP_PORTS,
+  APPLICATION_HTTPS_PORTS,
+  APPLICATION_SUPPORTED_CIPHERS,
+  APPLICATION_TLS_VERSIONS,
+  CACHE_ADAPTIVE_DELIVERY,
+  CACHE_BROWSER_SETTINGS,
+  CACHE_BY_COOKIE,
+  CACHE_BY_QUERY_STRING,
+  CACHE_CDN_SETTINGS,
+  CACHE_L2_REGION,
   FIREWALL_BEHAVIOR_NAMES,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_RULE_CONDITIONALS,
   FIREWALL_RULE_OPERATORS,
   FIREWALL_VARIABLES,
+  LOAD_BALANCER_METHODS,
   NETWORK_LIST_TYPES,
+  ORIGIN_PROTOCOL_POLICIES,
+  ORIGIN_TYPES,
+  RULE_BEHAVIOR_NAMES,
+  RULE_CONDITIONALS,
+  RULE_OPERATORS_WITH_VALUE,
+  RULE_OPERATORS_WITHOUT_VALUE,
+  RULE_PHASES,
+  RULE_VARIABLES,
   WAF_MODE,
   WAF_SENSITIVITY,
 } from '../../constants';
@@ -452,6 +472,299 @@ const schemaFirewallManifest = {
   },
 };
 
+const schemaApplicationCacheSettings = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    browser_cache_settings: {
+      type: 'string',
+      enum: CACHE_BROWSER_SETTINGS,
+      errorMessage: "The 'browser_cache_settings' must be either 'honor' or 'override'.",
+    },
+    cdn_cache_settings: {
+      type: 'string',
+      enum: CACHE_CDN_SETTINGS,
+      errorMessage: "The 'cdn_cache_settings' must be either 'honor' or 'override'.",
+    },
+    cache_by_query_string: {
+      type: 'string',
+      enum: CACHE_BY_QUERY_STRING,
+      errorMessage: "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
+    },
+    cache_by_cookie: {
+      type: 'string',
+      enum: CACHE_BY_COOKIE,
+      errorMessage: "The 'cache_by_cookie' must be one of: ignore, whitelist, blacklist, all.",
+    },
+    adaptive_delivery_action: {
+      type: 'string',
+      enum: CACHE_ADAPTIVE_DELIVERY,
+      errorMessage: "The 'adaptive_delivery_action' must be either 'ignore' or 'whitelist'.",
+    },
+    l2_caching_enabled: {
+      type: 'boolean',
+      errorMessage: "The 'l2_caching_enabled' field must be a boolean.",
+    },
+    l2_region: {
+      type: ['string', 'null'],
+      enum: CACHE_L2_REGION,
+      errorMessage: "The 'l2_region' must be either null, 'sa-brazil' or 'na-united-states'.",
+    },
+  },
+  required: ['name'],
+  additionalProperties: false,
+};
+
+const schemaApplicationOrigins = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    origin_type: {
+      type: 'string',
+      enum: ORIGIN_TYPES,
+      errorMessage:
+        "The 'origin_type' field must be one of: single_origin, load_balancer, live_ingest, object_storage.",
+    },
+    origin_protocol_policy: {
+      type: 'string',
+      enum: ORIGIN_PROTOCOL_POLICIES,
+      errorMessage: "The 'origin_protocol_policy' must be one of: preserve, http, https.",
+    },
+    host_header: {
+      type: 'string',
+      errorMessage: "The 'host_header' field must be a string.",
+    },
+    bucket: {
+      type: 'string',
+      errorMessage: "The 'bucket' field must be a string.",
+    },
+    addresses: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          address: {
+            type: 'string',
+            errorMessage: "The 'address' field must be a string.",
+          },
+          weight: {
+            type: 'number',
+            minimum: 0,
+            maximum: 100,
+            errorMessage: "The 'weight' field must be a number between 0 and 100.",
+          },
+          server_role: {
+            type: 'string',
+            enum: ['primary', 'backup'],
+            errorMessage: "The 'server_role' field must be either 'primary' or 'backup'.",
+          },
+        },
+        required: ['address'],
+        additionalProperties: false,
+      },
+    },
+    load_balancer: {
+      type: 'object',
+      properties: {
+        method: {
+          type: 'string',
+          enum: LOAD_BALANCER_METHODS,
+          errorMessage: "The 'method' field must be one of: ip_hash, least_connections, round_robin.",
+        },
+      },
+      required: ['method'],
+      additionalProperties: false,
+    },
+  },
+  required: ['name', 'origin_type', 'addresses'],
+  allOf: [
+    {
+      if: {
+        properties: { origin_type: { const: 'object_storage' } },
+      },
+      then: {
+        required: ['bucket'],
+        errorMessage: "When origin_type is 'object_storage', the 'bucket' field is required.",
+      },
+    },
+  ],
+  additionalProperties: false,
+};
+
+const schemaApplicationRules = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    phase: {
+      type: 'string',
+      enum: RULE_PHASES,
+      errorMessage: "The 'phase' field must be either 'request' or 'response'.",
+    },
+    behaviors: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            enum: RULE_BEHAVIOR_NAMES,
+            errorMessage: "The 'name' field must be a valid behavior name.",
+          },
+          target: {
+            oneOf: [{ type: 'string' }, { type: 'null' }],
+            errorMessage: "The 'target' must be a string or null.",
+          },
+        },
+        required: ['name'],
+        additionalProperties: false,
+      },
+    },
+    criteria: {
+      type: 'array',
+      items: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            variable: {
+              type: 'string',
+              enum: Array.from(new Set(RULE_VARIABLES)),
+              errorMessage: "The 'variable' field must be a valid variable name.",
+            },
+            operator: {
+              type: 'string',
+              enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+              errorMessage: "The 'operator' field must be a valid operator.",
+            },
+            conditional: {
+              type: 'string',
+              enum: RULE_CONDITIONALS,
+              errorMessage: "The 'conditional' field must be one of: if, and, or.",
+            },
+            input_value: {
+              type: 'string',
+              errorMessage: "The 'input_value' field must be a string.",
+            },
+          },
+          required: ['variable', 'operator', 'conditional'],
+          dependencies: {
+            operator: {
+              oneOf: [
+                {
+                  properties: {
+                    operator: { enum: RULE_OPERATORS_WITH_VALUE },
+                  },
+                  required: ['input_value'],
+                  errorMessage: "The operator 'matches' requires an input_value.",
+                },
+              ],
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    },
+  },
+  required: ['name', 'behaviors', 'criteria'],
+  additionalProperties: false,
+};
+
+// ... resto do arquivo mantido como está ...
+
+const schemaApplicationManifest = {
+  type: 'object',
+  properties: {
+    main_settings: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          errorMessage: "The 'name' field must be a string.",
+        },
+        delivery_protocol: {
+          type: 'string',
+          enum: APPLICATION_DELIVERY_PROTOCOLS,
+          default: 'http',
+          errorMessage: "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
+        },
+        http3: {
+          type: 'boolean',
+          errorMessage: "The 'http3' field must be a boolean.",
+        },
+        http_port: {
+          type: 'array',
+          items: {
+            type: 'integer',
+            enum: APPLICATION_HTTP_PORTS,
+          },
+          errorMessage: {
+            enum: "The 'http_port' field must be an array of valid HTTP ports.",
+            type: "The 'http_port' field must be an array",
+          },
+        },
+        https_port: {
+          type: 'array',
+          items: {
+            type: 'integer',
+            enum: APPLICATION_HTTPS_PORTS,
+          },
+          default: [443],
+          errorMessage: "The 'https_port' field must be an array of valid HTTPS ports.",
+        },
+        minimum_tls_version: {
+          type: 'string',
+          enum: APPLICATION_TLS_VERSIONS,
+          default: '',
+          errorMessage: "The 'minimum_tls_version' field must be a valid TLS version.",
+        },
+        supported_ciphers: {
+          type: 'string',
+          enum: APPLICATION_SUPPORTED_CIPHERS,
+          default: 'all',
+          errorMessage: "The 'supported_ciphers' field must be a valid cipher suite.",
+        },
+        active: {
+          type: 'boolean',
+          default: true,
+          errorMessage: "The 'active' field must be a boolean.",
+        },
+      },
+      additionalProperties: false,
+      required: ['name'],
+    },
+    cache_settings: {
+      type: 'array',
+      items: schemaApplicationCacheSettings,
+      errorMessage: "The 'cache_settings' field must be an array of cache setting items.",
+    },
+    origins: {
+      type: 'array',
+      items: schemaApplicationOrigins,
+      errorMessage: "The 'origins' field must be an array of origin items.",
+    },
+    rules: {
+      type: 'array',
+      items: schemaApplicationRules,
+      errorMessage: "The 'rules' field must be an array of application rule items.",
+    },
+  },
+  required: ['main_settings'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in application items.',
+    required: "The 'name' and 'main_settings' fields are required.",
+  },
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -477,7 +790,11 @@ const schemaManifest = {
       items: schemaFirewallManifest,
       errorMessage: "The 'firewall' field must be an array of firewall items.",
     },
+    application: {
+      type: 'array',
+      items: schemaApplicationManifest,
+      errorMessage: "The 'application' field must be an array of application items.",
+    },
   },
 };
-
 export { schemaManifest };
