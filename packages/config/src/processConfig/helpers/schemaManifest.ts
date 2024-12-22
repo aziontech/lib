@@ -431,32 +431,43 @@ const schemaFirewallRule = {
 const schemaFirewallManifest = {
   type: 'object',
   properties: {
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    domains: {
-      type: 'array',
-      items: {
-        type: 'number',
+    main_settings: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          errorMessage: "The 'name' field must be a string.",
+        },
+        domains: {
+          type: 'array',
+          items: {
+            type: 'number',
+          },
+          errorMessage: "The 'domains' field must be an array of numbers.",
+        },
+        is_active: {
+          type: 'boolean',
+          errorMessage: "The 'is_active' field must be a boolean.",
+        },
+        edge_functions_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+        },
+        network_protection_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'network_protection_enabled' field must be a boolean.",
+        },
+        waf_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'waf_enabled' field must be a boolean.",
+        },
       },
-      errorMessage: "The 'domains' field must be an array of numbers.",
-    },
-    is_active: {
-      type: 'boolean',
-      errorMessage: "The 'is_active' field must be a boolean.",
-    },
-    edge_functions_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
-    },
-    network_protection_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'network_protection_enabled' field must be a boolean.",
-    },
-    waf_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'waf_enabled' field must be a boolean.",
+      required: ['name'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in firewall main settings.',
+        required: "The 'name' field is required in firewall main settings.",
+      },
     },
     rules: {
       type: 'array',
@@ -464,11 +475,11 @@ const schemaFirewallManifest = {
       errorMessage: "The 'rules' field must be an array of firewall rules.",
     },
   },
-  required: ['name'],
+  required: ['main_settings'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in firewall items.',
-    required: "The 'name' field is required in each firewall item.",
+    required: "The 'main_settings' field is required in each firewall item.",
   },
 };
 

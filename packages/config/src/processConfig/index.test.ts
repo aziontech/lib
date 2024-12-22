@@ -4227,8 +4227,11 @@ describe('generate', () => {
         const jsonConfig = {
           firewall: [
             {
-              // missing name field
-              is_active: true,
+              main_settings: {
+                // missing name field
+                is_active: true,
+              },
+              rules: [],
             },
           ],
         };
@@ -4240,7 +4243,10 @@ describe('generate', () => {
         const jsonConfig = {
           firewall: [
             {
-              name: 'my-firewall',
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
               rules: [
                 {
                   name: 'invalid-rule',
@@ -4263,7 +4269,10 @@ describe('generate', () => {
         const jsonConfig = {
           firewall: [
             {
-              name: 'my-firewall',
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
               rules: [
                 {
                   name: 'invalid-behavior',
@@ -4290,7 +4299,10 @@ describe('generate', () => {
         const jsonConfig = {
           firewall: [
             {
-              name: 'my-firewall',
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
               rules: [
                 {
                   name: 'invalid-rate-limit',
