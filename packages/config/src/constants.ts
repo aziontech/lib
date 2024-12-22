@@ -143,3 +143,26 @@ export const WAF_MODE = ['learning', 'blocking', 'counting'] as const;
 export type WafMode = (typeof WAF_MODE)[number];
 export const WAF_SENSITIVITY = ['low', 'medium', 'high'] as const;
 export type WafSensitivity = (typeof WAF_SENSITIVITY)[number];
+
+export const FIREWALL_RULE_OPERATORS = [
+  'is_equal',
+  'is_not_equal',
+  'starts_with',
+  'does_not_start_with',
+  'matches',
+  'does_not_match',
+  'exists',
+  'does_not_exist',
+  'is_in_list',
+  'is_not_in_list',
+] as const;
+
+export const FIREWALL_RULE_CONDITIONALS = ['if', 'and', 'or'] as const;
+
+export const FIREWALL_RATE_LIMIT_ARGUMENTS = {
+  type: ['second', 'minute'],
+  limit_by: ['client_ip', 'global'],
+} as const;
+
+export type FirewallRuleOperator = (typeof FIREWALL_RULE_OPERATORS)[number];
+export type FirewallRuleConditional = (typeof FIREWALL_RULE_CONDITIONALS)[number];

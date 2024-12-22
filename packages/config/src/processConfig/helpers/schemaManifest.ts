@@ -1,4 +1,14 @@
-import { NETWORK_LIST_TYPES, WAF_MODE, WAF_SENSITIVITY } from '../../constants';
+import {
+  FIREWALL_BEHAVIOR_NAMES,
+  FIREWALL_RATE_LIMIT_BY,
+  FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_RULE_CONDITIONALS,
+  FIREWALL_RULE_OPERATORS,
+  FIREWALL_VARIABLES,
+  NETWORK_LIST_TYPES,
+  WAF_MODE,
+  WAF_SENSITIVITY,
+} from '../../constants';
 
 const schemaNetworkListManifest = {
   type: 'object',
@@ -252,6 +262,196 @@ const schemaDomainsManifest = {
   },
 };
 
+const schemaFirewallRuleCriteria = {
+  type: 'object',
+  properties: {
+    variable: {
+      type: 'string',
+      enum: FIREWALL_VARIABLES,
+      errorMessage: "The 'variable' field must be a valid firewall variable.",
+    },
+    operator: {
+      type: 'string',
+      enum: FIREWALL_RULE_OPERATORS,
+      errorMessage: "The 'operator' field must be a valid operator.",
+    },
+    conditional: {
+      type: 'string',
+      enum: FIREWALL_RULE_CONDITIONALS,
+      errorMessage: "The 'conditional' field must be one of: if, and, or",
+    },
+    input_value: {
+      type: 'string',
+      errorMessage: "The 'input_value' field must be a string.",
+    },
+  },
+  required: ['variable', 'operator', 'conditional'],
+  additionalProperties: false,
+  errorMessage: {
+    required: "The 'variable', 'operator' and 'conditional' fields are required in criteria.",
+  },
+};
+
+const schemaFirewallRuleBehaviorArguments = {
+  set_rate_limit: {
+    type: 'object',
+    properties: {
+      type: {
+        type: 'string',
+        enum: FIREWALL_RATE_LIMIT_TYPES,
+        errorMessage: "The rate limit 'type' must be either 'second' or 'minute'.",
+      },
+      limit_by: {
+        type: 'string',
+        enum: FIREWALL_RATE_LIMIT_BY,
+        errorMessage: "The 'limit_by' field must be either 'client_ip' or 'global'.",
+      },
+      average_rate_limit: {
+        type: 'string',
+        pattern: '^[0-9]+$',
+        errorMessage: "The 'average_rate_limit' must be a string containing a number.",
+      },
+      maximum_burst_size: {
+        type: 'string',
+        pattern: '^[0-9]+$',
+        errorMessage: "The 'maximum_burst_size' must be a string containing a number.",
+      },
+    },
+    required: ['type', 'limit_by', 'average_rate_limit'],
+    additionalProperties: false,
+  },
+  set_waf_ruleset: {
+    type: 'object',
+    properties: {
+      waf_id: { type: 'integer' },
+      mode: {
+        type: 'string',
+        enum: WAF_MODE,
+      },
+    },
+    required: ['waf_id', 'mode'],
+    additionalProperties: false,
+  },
+  set_custom_response: {
+    type: 'object',
+    properties: {
+      status_code: {
+        oneOf: [
+          { type: 'integer', minimum: 200, maximum: 499 },
+          { type: 'string', pattern: '^[2-4][0-9]{2}$' },
+        ],
+      },
+      content_body: {
+        type: 'string',
+        maxLength: 500,
+      },
+      content_type: { type: 'string' },
+    },
+    required: ['status_code', 'content_body', 'content_type'],
+    additionalProperties: false,
+  },
+};
+
+const schemaFirewallRuleBehavior = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      enum: FIREWALL_BEHAVIOR_NAMES,
+      errorMessage: "The behavior 'name' must be a valid firewall behavior.",
+    },
+    target: {
+      oneOf: [
+        { type: 'null' },
+        { type: 'string' },
+        schemaFirewallRuleBehaviorArguments.set_rate_limit,
+        schemaFirewallRuleBehaviorArguments.set_waf_ruleset,
+        schemaFirewallRuleBehaviorArguments.set_custom_response,
+      ],
+      errorMessage: "The 'target' must be a string, object, or null depending on the behavior.",
+    },
+  },
+  required: ['name'],
+  additionalProperties: false,
+};
+
+const schemaFirewallRule = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'integer',
+      errorMessage: "The 'id' field must be an integer.",
+    },
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    criteria: schemaFirewallRuleCriteria,
+    behavior: schemaFirewallRuleBehavior,
+    description: {
+      type: 'string',
+      maxLength: 1000,
+      pattern: '^[\\u0000-\\uFFFF]*$',
+      errorMessage: "The 'description' must not exceed 1000 characters and must not contain 4-byte unicode characters.",
+    },
+    is_active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'is_active' field must be a boolean.",
+    },
+    order: {
+      type: 'integer',
+      errorMessage: "The 'order' field must be an integer.",
+    },
+  },
+  required: ['name', 'criteria', 'behavior'],
+  additionalProperties: false,
+};
+
+const schemaFirewallManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'number',
+      },
+      errorMessage: "The 'domains' field must be an array of numbers.",
+    },
+    is_active: {
+      type: 'boolean',
+      errorMessage: "The 'is_active' field must be a boolean.",
+    },
+    edge_functions_enabled: {
+      type: 'boolean',
+      errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+    },
+    network_protection_enabled: {
+      type: 'boolean',
+      errorMessage: "The 'network_protection_enabled' field must be a boolean.",
+    },
+    waf_enabled: {
+      type: 'boolean',
+      errorMessage: "The 'waf_enabled' field must be a boolean.",
+    },
+    rules: {
+      type: 'array',
+      items: schemaFirewallRule,
+      errorMessage: "The 'rules' field must be an array of firewall rules.",
+    },
+  },
+  required: ['name'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in firewall items.',
+    required: "The 'name' field is required in each firewall item.",
+  },
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -271,6 +471,11 @@ const schemaManifest = {
       type: 'array',
       items: schemaDomainsManifest,
       errorMessage: "The 'domains' field must be an array of domain items.",
+    },
+    firewall: {
+      type: 'array',
+      items: schemaFirewallManifest,
+      errorMessage: "The 'firewall' field must be an array of firewall items.",
     },
   },
 };

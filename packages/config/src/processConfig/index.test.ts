@@ -4175,9 +4175,6 @@ describe('generate', () => {
         );
       });
     });
-  });
-
-  describe('Schema Validation', () => {
     describe('Domains', () => {
       it('should throw error when required fields are missing', () => {
         const jsonConfig = {
@@ -4218,6 +4215,101 @@ describe('generate', () => {
               cname_access_only: false,
               digital_certificate_id: 'lets_encrypt',
               crl_list: ['invalid', 'values'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+    });
+    describe('Firewall', () => {
+      it('should throw error when required fields are missing', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              // missing name field
+              is_active: true,
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when rule criteria is invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              name: 'my-firewall',
+              rules: [
+                {
+                  name: 'invalid-rule',
+                  criteria: {
+                    variable: 'invalid_variable',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: 'test',
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when behavior name is invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              name: 'my-firewall',
+              rules: [
+                {
+                  name: 'invalid-behavior',
+                  criteria: {
+                    variable: 'request_uri',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                  behavior: {
+                    name: 'invalid_behavior',
+                    target: 'test',
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when rate limit arguments are invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              name: 'my-firewall',
+              rules: [
+                {
+                  name: 'invalid-rate-limit',
+                  criteria: {
+                    variable: 'request_uri',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                  behavior: {
+                    name: 'set_rate_limit',
+                    target: {
+                      type: 'invalid',
+                      limit_by: 'invalid',
+                      average_rate_limit: 'not_a_number',
+                    },
+                  },
+                },
+              ],
             },
           ],
         };
