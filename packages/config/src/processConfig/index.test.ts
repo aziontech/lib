@@ -4175,5 +4175,402 @@ describe('generate', () => {
         );
       });
     });
+    describe('Domains', () => {
+      it('should throw error when required fields are missing', () => {
+        const jsonConfig = {
+          domains: [
+            {
+              name: 'mydomain.com',
+              // missing required fields
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error for invalid digital_certificate_id value', () => {
+        const jsonConfig = {
+          domains: [
+            {
+              name: 'mydomain.com',
+              edge_application_id: 123,
+              cnames: ['www.mydomain.com'],
+              cname_access_only: false,
+              digital_certificate_id: 'invalid_value',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error for invalid crl_list values', () => {
+        const jsonConfig = {
+          domains: [
+            {
+              name: 'mydomain.com',
+              edge_application_id: 123,
+              cnames: ['www.mydomain.com'],
+              cname_access_only: false,
+              digital_certificate_id: 'lets_encrypt',
+              crl_list: ['invalid', 'values'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+    });
+    describe('Firewall', () => {
+      it('should throw error when required fields are missing', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                // missing name field
+                is_active: true,
+              },
+              rules: [],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when rule criteria is invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
+              rules: [
+                {
+                  name: 'invalid-rule',
+                  criteria: {
+                    variable: 'invalid_variable',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: 'test',
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when behavior name is invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
+              rules: [
+                {
+                  name: 'invalid-behavior',
+                  criteria: {
+                    variable: 'request_uri',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                  behavior: {
+                    name: 'invalid_behavior',
+                    target: 'test',
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when rate limit arguments are invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
+              rules: [
+                {
+                  name: 'invalid-rate-limit',
+                  criteria: {
+                    variable: 'request_uri',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                  behavior: {
+                    name: 'set_rate_limit',
+                    target: {
+                      type: 'invalid',
+                      limit_by: 'invalid',
+                      average_rate_limit: 'not_a_number',
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+    });
+    describe('Application', () => {
+      describe('Main Settings', () => {
+        it('should throw an error when delivery_protocol is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                  delivery_protocol: 'invalid',
+                },
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
+          );
+        });
+
+        it('should throw an error when http_port is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                  http_port: 'invalid',
+                },
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'http_port' field must be an array",
+          );
+        });
+      });
+
+      describe('Cache Settings', () => {
+        it('should throw an error when browser_cache_settings is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                cache_settings: [
+                  {
+                    name: 'test',
+                    browser_cache_settings: 'invalid',
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'browser_cache_settings' must be either 'honor' or 'override'.",
+          );
+        });
+
+        it('should throw an error when cache_by_query_string is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                cache_settings: [
+                  {
+                    name: 'test',
+                    cache_by_query_string: 'invalid',
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
+          );
+        });
+      });
+
+      describe('Origins', () => {
+        it('should throw an error when origin_type is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                origins: [
+                  {
+                    name: 'test',
+                    origin_type: 'invalid',
+                    addresses: [{ address: 'example.com' }],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'origin_type' field must be one of: single_origin, load_balancer, live_ingest, object_storage.",
+          );
+        });
+
+        it('should throw an error when bucket is missing for object_storage type', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                origins: [
+                  {
+                    name: 'test',
+                    origin_type: 'object_storage',
+                    addresses: [{ address: 'example.com' }],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "When origin_type is 'object_storage', the 'bucket' field is required.",
+          );
+        });
+      });
+
+      describe('Rules', () => {
+        it('should throw an error when criteria variable is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                rules: [
+                  {
+                    name: 'test',
+                    criteria: [
+                      [
+                        {
+                          variable: 'invalid_variable',
+                          operator: 'matches',
+                          conditional: 'if',
+                          input_value: '/test',
+                        },
+                      ],
+                    ],
+                    behaviors: [
+                      {
+                        name: 'deliver',
+                        target: null,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'variable' field must be a valid variable name.",
+          );
+        });
+
+        it('should throw an error when behavior name is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                rules: [
+                  {
+                    name: 'test',
+                    criteria: [
+                      [
+                        {
+                          variable: 'request_uri',
+                          operator: 'matches',
+                          conditional: 'if',
+                          input_value: '/test',
+                        },
+                      ],
+                    ],
+                    behaviors: [
+                      {
+                        name: 'invalid_behavior',
+                        target: null,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'name' field must be a valid behavior name.",
+          );
+        });
+
+        it('should throw an error when input_value is missing for operator that requires it', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                rules: [
+                  {
+                    name: 'test',
+                    criteria: [
+                      [
+                        {
+                          variable: 'request_uri',
+                          operator: 'matches',
+                          conditional: 'if',
+                        },
+                      ],
+                    ],
+                    behaviors: [
+                      {
+                        name: 'deliver',
+                        target: null,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The operator 'matches' requires an input_value.",
+          );
+        });
+      });
+    });
   });
 });
