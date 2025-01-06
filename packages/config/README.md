@@ -25,6 +25,7 @@ This module provides a function to configure and validate options for the Azion 
   - [`AzionPurge`](#azionpurge)
   - [`AzionNetworkList`](#azionnetworklist)
   - [`AzionFirewall`](#azionfirewall)
+  - [`AzionWaf`](#azionwaf)
 
 ## Installation
 
@@ -297,6 +298,7 @@ Converts a Azion JSON configuration object to a AzionConfig object.
 - `rules?: AzionRules[]` - List of edge rules.
 - `purge?: AzionPurge[]` - List of URLs or CacheKeys to purge.
 - `networkLists?: AzionNetworkList[]` - List of network lists.
+- `waf?: AzionWaf[]` - List of WAF configurations.
 
 ### `AzionBuild`
 
@@ -515,3 +517,31 @@ Type definition for the response rule configuration.
   - `conditional: RuleConditional` - Conditional type.
   - `operator: RuleOperatorWithValue | RuleOperatorWithoutValue` - Comparison operator.
   - `inputValue?: string` - Input value for comparison (required for operators with value).
+
+  ### `AzionWaf`
+
+  Type definition for the Web Application Firewall (WAF) configuration.
+
+  **Properties:**
+
+  - `id?: number` - ID of the WAF.
+  - `name: string` - Name of the WAF.
+  - `active: boolean` - Whether the WAF is active.
+  - `mode: WafMode` - WAF mode (learning, blocking and counting).
+  - `sqlInjection?: object` - SQL Injection settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `remoteFileInclusion?: object` - Remote File Inclusion settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `directoryTraversal?: object` - Directory Traversal settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `crossSiteScripting?: object` - Cross-Site Scripting settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `evadingTricks?: object` - Evading Tricks settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `fileUpload?: object` - File Upload settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `unwantedAccess?: object` - Unwanted Access settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `identifiedAttack?: object` - Identified Attack settings.
+    - `sensitivity: string` - Sensitivity level (low, medium, high).
+  - `bypassAdresses?: string[]` - List of IP addresses to bypass the WAF.

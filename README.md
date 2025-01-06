@@ -201,6 +201,8 @@ const config = {
   cache: [],
   rules: [],
   purge: [],
+  networkList: [],
+  waf: [],
 };
 
 export default config;
@@ -218,6 +220,8 @@ const config = defineConfig({
   cache: [],
   rules: [],
   purge: [],
+  networkList: [],
+  waf: [],
 });
 
 export default config;
