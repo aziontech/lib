@@ -1,3 +1,27 @@
+## [1.12.0-stage.2](https://github.com/aziontech/lib/compare/v1.12.0-stage.1...v1.12.0-stage.2) (2025-01-07)
+
+
+### Features
+
+*  firewall, domains and applications manifest schema (#84) ([29394b5](https://github.com/aziontech/lib/commit/29394b5c6be234ea37e6589078fca100b9d1c952))
+* add AzionNetworkList type ([8c5bc32](https://github.com/aziontech/lib/commit/8c5bc32b5e8b193ec4d3bb06102b6e3de507b6b4))
+* add network list types and implement processing strategy ([bae3a58](https://github.com/aziontech/lib/commit/bae3a58dcdb7acec2d08aead75fae4b5539a408e))
+* add WAF configuration options and schema validation ([bbe8383](https://github.com/aziontech/lib/commit/bbe8383ba903d0442e9baf6fcd1b4bd96e621ce6))
+* add WAF configuration type and properties to AzionConfig ([6e5ea54](https://github.com/aziontech/lib/commit/6e5ea54010273833ee676f6c0eac429d075d7839))
+* all rules engine vars ([7b5a09d](https://github.com/aziontech/lib/commit/7b5a09d8ae305a9c438ff23c049302064a2d11f8))
+* firewall schema ([e5c5ce9](https://github.com/aziontech/lib/commit/e5c5ce90668d3b74c52f860cca54ec70cda8a841))
+* firewall types ([620589b](https://github.com/aziontech/lib/commit/620589b6342503e9face5f20cf1f00114740fc88))
+* implement WAF configuration processing ([c730fe0](https://github.com/aziontech/lib/commit/c730fe05c995a942e45252e4e2164dfec264c4f3))
+* storage client env option ([ef5234b](https://github.com/aziontech/lib/commit/ef5234b0a155b2695b65275f2462ca01e3c33f37))
+* update azion.config.example.ts and schema to include networkList ([049819f](https://github.com/aziontech/lib/commit/049819fd5034c7392a62842f15240ac648b38a7a))
+
+
+### Bug Fixes
+
+* firewall types ([3ee0d51](https://github.com/aziontech/lib/commit/3ee0d5132d34ca692a5f0e15a4f5bb551aa29f80))
+* improve error handling for API responses ([c524637](https://github.com/aziontech/lib/commit/c5246378a2c8c84d6d8113fdb51d5032a8bac7a3))
+* variable field validation ([8332053](https://github.com/aziontech/lib/commit/83320534d0deba01b7db3ebcae976f0a5cff1b9a))
+
 ## [1.12.0-stage.1](https://github.com/aziontech/lib/compare/v1.11.1...v1.12.0-stage.1) (2024-11-25)
 
 
