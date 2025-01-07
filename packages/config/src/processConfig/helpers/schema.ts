@@ -1,8 +1,17 @@
 import {
+  DYNAMIC_VARIABLE_PATTERNS,
+  FIREWALL_RATE_LIMIT_BY,
+  FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_VARIABLES,
+  FIREWALL_WAF_MODES,
+  NETWORK_LIST_TYPES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_VARIABLES,
+  SPECIAL_VARIABLES,
+  WAF_MODE,
+  WAF_SENSITIVITY,
 } from '../../constants';
 
 const criteriaBaseSchema = {
@@ -10,49 +19,98 @@ const criteriaBaseSchema = {
   properties: {
     variable: {
       type: 'string',
-      pattern: '^\\$\\{[^}]+\\}$',
-      errorMessage: "The 'variable' field must be wrapped in ${} and be one of the valid variables",
+      anyOf: [
+        {
+          // Validação para variáveis estáticas
+          type: 'string',
+          pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+        },
+        {
+          // Validação para padrões dinâmicos
+          type: 'string',
+          pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|').replace(/\$/g, '\\$') + ')\\}$',
+        },
+      ],
+      errorMessage:
+        "The 'variable' field must be wrapped in ${} and be either a valid static variable or follow the dynamic patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*)",
     },
     conditional: {
       type: 'string',
       enum: RULE_CONDITIONALS,
       errorMessage: `The 'conditional' field must be one of: ${RULE_CONDITIONALS.join(', ')}`,
     },
-  },
-  required: ['variable', 'conditional'],
-};
-
-const criteriaWithValueSchema = {
-  ...criteriaBaseSchema,
-  properties: {
-    ...criteriaBaseSchema.properties,
     operator: {
       type: 'string',
-      enum: RULE_OPERATORS_WITH_VALUE,
-      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITH_VALUE.join(', ')}`,
-    },
-    input_value: {
-      type: 'string',
-      errorMessage: "The 'input_value' field must be a string",
+      enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+      errorMessage: `The 'operator' field must be one of: ${[...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE].join(', ')}`,
     },
   },
-  required: [...criteriaBaseSchema.required, 'operator', 'input_value'],
-};
-
-const criteriaWithoutValueSchema = {
-  ...criteriaBaseSchema,
-  properties: {
-    ...criteriaBaseSchema.properties,
-    operator: {
-      type: 'string',
-      enum: RULE_OPERATORS_WITHOUT_VALUE,
-      errorMessage: `The 'operator' field must be one of: ${RULE_OPERATORS_WITHOUT_VALUE.join(', ')}`,
+  required: ['variable', 'conditional', 'operator'],
+  allOf: [
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITH_VALUE },
+        },
+      },
+      then: {
+        required: ['inputValue'],
+        properties: {
+          inputValue: {
+            type: 'string',
+            errorMessage: "The 'inputValue' field must be a string",
+          },
+        },
+      },
     },
-  },
-  required: [...criteriaBaseSchema.required, 'operator'],
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITHOUT_VALUE },
+        },
+      },
+      then: {
+        not: {
+          required: ['inputValue'],
+        },
+      },
+    },
+  ],
 };
 
-const ruleSchema = {
+const createVariableValidation = (isRequestPhase = false) => ({
+  type: 'string',
+  anyOf: [
+    {
+      // Validação para variáveis estáticas
+      type: 'string',
+      pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+    },
+    {
+      // Validação para padrões dinâmicos
+      type: 'string',
+      pattern: isRequestPhase
+        ? '^(arg_|cookie_|http_)[a-zA-Z0-9_]+$'
+        : '^(arg_|cookie_|http_|sent_http_|upstream_cookie_|upstream_http_)[a-zA-Z0-9_]+$',
+    },
+    {
+      // Validação para variáveis especiais com argumentos
+      type: 'string',
+      pattern: `^(${SPECIAL_VARIABLES.join('|')})\\([^)]+\\)$`,
+    },
+  ],
+  errorMessage: isRequestPhase
+    ? "The 'variable' field must be either a valid request phase variable, mTLS variable, follow the patterns (arg_*, cookie_*, http_*), or be a special function variable (cookie_time_offset, encode_base64)"
+    : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
+});
+
+const sensitivitySchema = {
+  type: 'string',
+  enum: WAF_SENSITIVITY,
+  errorMessage: `The 'sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
+};
+
+const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
     name: {
@@ -71,18 +129,12 @@ const ruleSchema = {
       type: 'string',
       errorMessage: "The 'match' field must be a string",
     },
-    variable: {
-      type: 'string',
-      enum: RULE_VARIABLES,
-      errorMessage: `The 'variable' field must be one of: ${RULE_VARIABLES.join(', ')}`,
-    },
+    variable: createVariableValidation(isRequestPhase),
     criteria: {
       type: 'array',
-      items: {
-        oneOf: [criteriaWithValueSchema, criteriaWithoutValueSchema],
-      },
+      items: criteriaBaseSchema,
       errorMessage: {
-        oneOf: 'Each criteria item must follow either the with-value or without-value format',
+        type: 'Each criteria item must follow the criteria format',
       },
     },
     behavior: {
@@ -177,19 +229,92 @@ const ruleSchema = {
           properties: {
             path: {
               type: 'string',
-              errorMessage: "The 'path' field must be a string.",
-            },
-            name: {
-              type: ['string', 'null'],
-              errorMessage: "The 'name' field can be a string or null.",
+              errorMessage: "The runFunction behavior must have a 'path' field of type string",
             },
           },
           required: ['path'],
           additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'runFunction' object.",
-            required: "The 'path' field is required in the 'runFunction' object.",
+        },
+        setWafRuleset: {
+          type: 'object',
+          properties: {
+            wafMode: {
+              type: 'string',
+              enum: FIREWALL_WAF_MODES,
+              errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
+            },
+            wafId: {
+              type: 'string',
+              errorMessage: 'The wafId must be a string',
+            },
           },
+          required: ['wafMode', 'wafId'],
+          additionalProperties: false,
+        },
+        setRateLimit: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: FIREWALL_RATE_LIMIT_TYPES,
+              errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
+            },
+            limitBy: {
+              type: 'string',
+              enum: FIREWALL_RATE_LIMIT_BY,
+              errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
+            },
+            averageRateLimit: {
+              type: 'string',
+              errorMessage: 'The averageRateLimit must be a string',
+            },
+            maximumBurstSize: {
+              type: 'string',
+              errorMessage: 'The maximumBurstSize must be a string',
+            },
+          },
+          required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+          additionalProperties: false,
+        },
+        deny: {
+          type: 'boolean',
+          errorMessage: 'The deny behavior must be a boolean',
+        },
+        drop: {
+          type: 'boolean',
+          errorMessage: 'The drop behavior must be a boolean',
+        },
+        setCustomResponse: {
+          type: 'object',
+          properties: {
+            statusCode: {
+              type: ['integer', 'string'],
+              minimum: 200,
+              maximum: 499,
+              errorMessage: 'The statusCode must be a number or string between 200 and 499',
+            },
+            contentType: {
+              type: 'string',
+              errorMessage: 'The contentType must be a string',
+            },
+            contentBody: {
+              type: 'string',
+              errorMessage: 'The contentBody must be a string',
+            },
+          },
+          required: ['statusCode', 'contentType', 'contentBody'],
+          additionalProperties: false,
+        },
+        tagEvent: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: 'The tagEvent name must be a string',
+            },
+          },
+          required: ['name'],
+          additionalProperties: false,
         },
         setCache: {
           oneOf: [
@@ -239,8 +364,26 @@ const ruleSchema = {
         },
       },
       additionalProperties: false,
+      allOf: [
+        {
+          not: {
+            anyOf: [
+              { required: ['deny', 'drop'] },
+              { required: ['deny', 'setCustomResponse'] },
+              { required: ['deny', 'setRateLimit'] },
+              { required: ['drop', 'setCustomResponse'] },
+              { required: ['drop', 'setRateLimit'] },
+              { required: ['setCustomResponse', 'setRateLimit'] },
+            ],
+          },
+          errorMessage:
+            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset, tagEvent) with only one final behavior.',
+        },
+      ],
+      minProperties: 1,
       errorMessage: {
         additionalProperties: "No additional properties are allowed in the 'behavior' object.",
+        minProperties: 'At least one behavior must be specified',
       },
     },
   },
@@ -262,7 +405,7 @@ const ruleSchema = {
   errorMessage: {
     oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
   },
-};
+});
 
 const azionConfigSchema = {
   type: 'object',
@@ -640,11 +783,11 @@ const azionConfigSchema = {
       properties: {
         request: {
           type: 'array',
-          items: ruleSchema,
+          items: createRuleSchema(true),
         },
         response: {
           type: 'array',
-          items: ruleSchema,
+          items: createRuleSchema(false),
         },
       },
       additionalProperties: false,
@@ -664,13 +807,14 @@ const azionConfigSchema = {
           },
           listType: {
             type: 'string',
-            errorMessage: "The 'listType' field must be a string.",
+            enum: NETWORK_LIST_TYPES,
+            errorMessage: "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
           },
           listContent: {
             type: 'array',
             items: {
-              type: 'string',
-              errorMessage: "The 'listContent' field must be an array of strings.",
+              type: ['string', 'number'],
+              errorMessage: "The 'listContent' field must be an array of strings or numbers.",
             },
           },
         },
@@ -794,12 +938,304 @@ const azionConfigSchema = {
         },
       },
     },
-  },
-  required: [],
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: 'No additional properties are allowed in the configuration object.',
-    required: "The 'rules' section is required in the configuration object.",
+    firewall: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          errorMessage: "The firewall configuration must have a 'name' field of type string",
+        },
+        domains: {
+          type: 'array',
+          items: {
+            type: 'string',
+            errorMessage: "Each domain in the firewall's domains list must be a string",
+          },
+        },
+        active: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'active' field must be a boolean",
+        },
+        debugRules: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'debugRules' field must be a boolean",
+        },
+        edgeFunctions: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
+        },
+        networkProtection: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'networkProtection' field must be a boolean",
+        },
+        waf: {
+          type: 'boolean',
+          errorMessage: "The firewall's 'waf' field must be a boolean",
+        },
+        variable: {
+          type: 'string',
+          enum: FIREWALL_VARIABLES,
+          errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
+        },
+        rules: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                errorMessage: "Each firewall rule must have a 'name' field of type string",
+              },
+              description: {
+                type: 'string',
+                errorMessage: "The rule's 'description' field must be a string",
+              },
+              active: {
+                type: 'boolean',
+                errorMessage: "The rule's 'active' field must be a boolean",
+              },
+              match: {
+                type: 'string',
+                errorMessage: "The rule's 'match' field must be a string containing a valid regex pattern",
+              },
+              behavior: {
+                type: 'object',
+                properties: {
+                  runFunction: {
+                    type: 'object',
+                    properties: {
+                      path: {
+                        type: 'string',
+                        errorMessage: "The runFunction behavior must have a 'path' field of type string",
+                      },
+                    },
+                    required: ['path'],
+                  },
+                  setWafRuleset: {
+                    type: 'object',
+                    properties: {
+                      wafMode: {
+                        type: 'string',
+                        enum: FIREWALL_WAF_MODES,
+                      },
+                      wafId: { type: 'string' },
+                    },
+                    required: ['wafMode', 'wafId'],
+                  },
+                  setRateLimit: {
+                    type: 'object',
+                    properties: {
+                      type: {
+                        type: 'string',
+                        enum: FIREWALL_RATE_LIMIT_TYPES,
+                      },
+                      limitBy: {
+                        type: 'string',
+                        enum: FIREWALL_RATE_LIMIT_BY,
+                      },
+                      averageRateLimit: { type: 'string' },
+                      maximumBurstSize: { type: 'string' },
+                    },
+                    required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+                  },
+                  deny: { type: 'boolean' },
+                  drop: { type: 'boolean' },
+                  setCustomResponse: {
+                    type: 'object',
+                    properties: {
+                      statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
+                      contentType: { type: 'string' },
+                      contentBody: { type: 'string' },
+                    },
+                    required: ['statusCode', 'contentType', 'contentBody'],
+                  },
+                },
+                not: {
+                  anyOf: [
+                    { required: ['deny', 'drop'] },
+                    { required: ['deny', 'setCustomResponse'] },
+                    { required: ['deny', 'setRateLimit'] },
+                    { required: ['drop', 'setCustomResponse'] },
+                    { required: ['drop', 'setRateLimit'] },
+                    { required: ['setCustomResponse', 'setRateLimit'] },
+                  ],
+                },
+                errorMessage: {
+                  not: 'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
+                },
+                additionalProperties: false,
+              },
+            },
+            required: ['name', 'behavior'],
+            oneOf: [
+              {
+                anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                not: { required: ['criteria'] },
+                errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
+              },
+              {
+                required: ['criteria'],
+                not: {
+                  anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                },
+                errorMessage: "Cannot use 'criteria' together with 'match' or 'variable'.",
+              },
+            ],
+            errorMessage: {
+              oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
+            },
+          },
+        },
+      },
+      required: ['name'],
+      additionalProperties: false,
+      errorMessage: {
+        type: "The 'firewall' field must be an object",
+        additionalProperties: 'No additional properties are allowed in the firewall object',
+        required: "The 'name' field is required in the firewall object",
+      },
+    },
+    waf: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+            errorMessage: "The WAF configuration must have an 'id' field of type number",
+          },
+          name: {
+            type: 'string',
+            errorMessage: "The WAF configuration must have a 'name' field of type string",
+          },
+          mode: {
+            type: 'string',
+            enum: WAF_MODE,
+            errorMessage: `The 'mode' field must be one of: ${WAF_MODE.join(', ')}`,
+          },
+          active: {
+            type: 'boolean',
+            errorMessage: "The WAF configuration's 'active' field must be a boolean",
+          },
+          sqlInjection: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the sqlInjection object',
+              required: "The 'sensitivity' field is required in the sqlInjection object",
+            },
+          },
+          remoteFileInclusion: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the remoteFileInclusion object',
+              required: "The 'sensitivity' field is required in the remoteFileInclusion object",
+            },
+          },
+          directoryTraversal: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the directoryTraversal object',
+              required: "The 'sensitivity' field is required in the directoryTraversal object",
+            },
+          },
+          crossSiteScripting: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the crossSiteScripting object',
+              required: "The 'sensitivity' field is required in the crossSiteScripting object",
+            },
+          },
+          evadingTricks: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the evadingTricks object',
+              required: "The 'sensitivity' field is required in the evadingTricks object",
+            },
+          },
+          fileUpload: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the fileUpload object',
+              required: "The 'sensitivity' field is required in the fileUpload object",
+            },
+          },
+          unwantedAccess: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the unwantedAccess object',
+              required: "The 'sensitivity' field is required in the unwantedAccess object",
+            },
+          },
+          identifiedAttack: {
+            type: 'object',
+            properties: {
+              sensitivity: sensitivitySchema,
+            },
+            required: ['sensitivity'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the identifiedAttack object',
+              required: "The 'sensitivity' field is required in the identifiedAttack object",
+            },
+          },
+          bypassAddresses: {
+            type: 'array',
+            items: {
+              type: 'string',
+              errorMessage: 'Each item in the bypassAddresses list must be a string',
+            },
+            errorMessage: {
+              type: "The 'bypassAddresses' field must be an array of strings",
+            },
+          },
+        },
+        required: ['name', 'active', 'mode'],
+        additionalProperties: false,
+        errorMessage: {
+          type: "The 'waf' field must be an object",
+          additionalProperties: 'No additional properties are allowed in the WAF object',
+          required: "The 'name, active and mode' fields are required in the WAF object",
+        },
+      },
+      errorMessage: {
+        type: "The 'waf' field must be an array",
+      },
+    },
   },
 };
 

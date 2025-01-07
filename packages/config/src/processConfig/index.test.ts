@@ -302,6 +302,9 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 match: '/default-forward',
+                behavior: {
+                  rewrite: '/',
+                },
                 // forwardCookies not specified
               },
             ],
@@ -1219,11 +1222,16 @@ describe('generate', () => {
                 match: '/',
                 description: 'This rule redirects all traffic.',
                 active: false,
+                behavior: {
+                  forwardCookies: true,
+                },
               },
               {
                 name: 'Second Rule',
                 match: '/api',
-                behavior: {},
+                behavior: {
+                  forwardCookies: true,
+                },
                 // description is not provided here
                 active: true,
               },
@@ -1231,7 +1239,7 @@ describe('generate', () => {
                 name: 'Third Rule',
                 match: '/home',
                 description: 'This rule handles home traffic.',
-                behavior: {},
+                behavior: { forwardCookies: true },
                 // active is not provided here
               },
             ],
@@ -1262,12 +1270,12 @@ describe('generate', () => {
         const azionConfig: any = {
           rules: {
             request: [
-              { name: 'First Request Rule', match: '/', behavior: {} },
-              { name: 'Second Request Rule', match: '/second', behavior: {} },
+              { name: 'First Request Rule', match: '/', behavior: { forwardCookies: true } },
+              { name: 'Second Request Rule', match: '/second', behavior: { forwardCookies: true } },
             ],
             response: [
-              { name: 'First Response Rule', match: '/', behavior: {} },
-              { name: 'Second Response Rule', match: '/second', behavior: {} },
+              { name: 'First Response Rule', match: '/', behavior: { filterHeader: 'test' } },
+              { name: 'Second Response Rule', match: '/second', behavior: { filterHeader: 'test' } },
             ],
           },
         };
@@ -1734,6 +1742,154 @@ describe('generate', () => {
             cookie_names: [],
           }),
         );
+      });
+      it('should correctly process rules with criteria', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testCriteria',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${uri}',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '^/',
+            },
+          ],
+        ]);
+      });
+
+      it('should throw error when using both match and criteria', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testInvalidRule',
+                match: '^\\/',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '^/',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        expect(() => processConfig(azionConfig)).toThrow("Cannot use 'match' or 'variable' together with 'criteria'.");
+      });
+
+      it('should correctly process multiple criteria conditions', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testMultipleCriteria',
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                  {
+                    variable: '${device_group}',
+                    operator: 'is_equal',
+                    conditional: 'and',
+                    inputValue: 'mobile',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${uri}',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '^/',
+            },
+            {
+              variable: '${device_group}',
+              operator: 'is_equal',
+              conditional: 'and',
+              input_value: 'mobile',
+            },
+          ],
+        ]);
+      });
+
+      it('should correctly process criteria with operator without value', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testCriteriaWithoutValue',
+                criteria: [
+                  {
+                    variable: '${cookie_test}',
+                    operator: 'exists',
+                    conditional: 'if',
+                  },
+                ],
+                behavior: {
+                  runFunction: {
+                    path: '.edge/worker.js',
+                  },
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].criteria).toEqual([
+          [
+            {
+              variable: '${cookie_test}',
+              operator: 'exists',
+              conditional: 'if',
+            },
+          ],
+        ]);
       });
     });
     describe('Domain', () => {
@@ -2272,6 +2428,228 @@ describe('generate', () => {
         );
       });
     });
+    describe('Network List', () => {
+      it('should correctly process the config config when the network list is provided', () => {
+        const azionConfig: AzionConfig = {
+          networkList: [
+            {
+              id: 1,
+              listType: 'ip_cidr',
+              listContent: ['10.0.0.1'],
+            },
+            {
+              id: 2,
+              listType: 'asn',
+              listContent: [4569],
+            },
+            {
+              id: 3,
+              listType: 'countries',
+              listContent: ['BR'],
+            },
+          ],
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.networkList).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: 1,
+              list_type: 'ip_cidr',
+              items_values: ['10.0.0.1'],
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the network list id is not a number', () => {
+        const azionConfig: any = {
+          networkList: [
+            {
+              id: '1',
+              listType: 'ip_cidr',
+              listContent: ['10.0.0.1'],
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow("The 'id' field must be a number.");
+      });
+      it('should throw an error when the network list listType is invalid', () => {
+        const azionConfig: any = {
+          networkList: [
+            {
+              id: 1,
+              listType: 'invalid',
+              listContent: ['10.0.0.1'],
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow(
+          "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
+        );
+      });
+      it('should throw an error when the network list required fields are not provided', () => {
+        const azionConfig: any = {
+          networkList: [
+            {
+              id: 1,
+              listType: 'ip_cidr',
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow(
+          "The 'id, listType and listContent' fields are required in each network list item.",
+        );
+      });
+    });
+
+    describe('WAF', () => {
+      let defaultConfig: any;
+
+      beforeEach(() => {
+        defaultConfig = {
+          id: 123,
+          name: 'mywaf',
+          mode: 'counting',
+          active: true,
+          bypassAddresses: ['10.0.0.1'],
+          crossSiteScripting: {
+            sensitivity: 'medium',
+          },
+          directoryTraversal: {
+            sensitivity: 'low',
+          },
+          sqlInjection: {
+            sensitivity: 'low',
+          },
+          remoteFileInclusion: {
+            sensitivity: 'low',
+          },
+          evadingTricks: {
+            sensitivity: 'low',
+          },
+          fileUpload: {
+            sensitivity: 'low',
+          },
+          unwantedAccess: {
+            sensitivity: 'low',
+          },
+          identifiedAttack: {
+            sensitivity: 'low',
+          },
+        };
+      });
+
+      it('should correctly process the config config when the waf all fields is provided', () => {
+        const azionConfig: AzionConfig = {
+          waf: [defaultConfig],
+        };
+
+        const result = processConfig(azionConfig);
+
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypass_addresses: ['10.0.0.1'],
+              cross_site_scripting: true,
+              cross_site_scripting_sensitivity: 'medium',
+              directory_traversal: true,
+              directory_traversal_sensitivity: 'low',
+            }),
+          ]),
+        );
+      });
+      it('should correctly process the config config when the waf one field is provided', () => {
+        const azionConfig: AzionConfig = {
+          waf: [
+            {
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: ['10.0.0.1'],
+            },
+          ],
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypass_addresses: ['10.0.0.1'],
+              cross_site_scripting: false,
+              cross_site_scripting_sensitivity: 'low',
+              directory_traversal: false,
+              directory_traversal_sensitivity: 'low',
+              sql_injection: false,
+              sql_injection_sensitivity: 'low',
+              remote_file_inclusion: false,
+              remote_file_inclusion_sensitivity: 'low',
+              evading_tricks: false,
+              evading_tricks_sensitivity: 'low',
+              file_upload: false,
+              file_upload_sensitivity: 'low',
+              unwanted_access: false,
+              unwanted_access_sensitivity: 'low',
+              identified_attack: false,
+              identified_attack_sensitivity: 'low',
+            }),
+          ]),
+        );
+      });
+
+      it('should correctly process the config config when the waf bypassAddresses is provided', () => {
+        const azionConfig: AzionConfig = {
+          waf: [
+            {
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: ['10.0.0.1'],
+              crossSiteScripting: {
+                sensitivity: 'medium',
+              },
+            },
+          ],
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypass_addresses: ['10.0.0.1'],
+              cross_site_scripting: true,
+              cross_site_scripting_sensitivity: 'medium',
+              identified_attack: false,
+              identified_attack_sensitivity: 'low',
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the waf crossSiteScripting sensitivity is invalid', () => {
+        const azionConfig: any = {
+          waf: [
+            {
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: [],
+              crossSiteScripting: {
+                sensitivity: 'invalid',
+              },
+            },
+          ],
+        };
+        expect(() => processConfig(azionConfig)).toThrow("The 'sensitivity' field must be one of: low, medium, high");
+      });
+    });
   });
 
   describe('convertJsonConfigToObject', () => {
@@ -2469,12 +2847,14 @@ describe('generate', () => {
                 is_active: true,
                 description: 'This rule redirects all traffic.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2498,7 +2878,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 behavior: {
@@ -2517,12 +2897,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule responds with a file from the origin storage.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2552,7 +2934,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule responds with a file from the origin storage.',
@@ -2575,12 +2957,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule rewrites the request path.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2602,7 +2986,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule rewrites the request path.',
@@ -2622,12 +3006,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule delivers the request.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2648,7 +3034,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule delivers the request.',
@@ -2668,12 +3054,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets a cookie.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2695,7 +3083,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets a cookie.',
@@ -2715,12 +3103,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets a header.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2742,7 +3132,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets a header.',
@@ -2762,12 +3152,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets the cache.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2795,7 +3187,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets the cache.',
@@ -2815,12 +3207,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule sets the cache.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2852,7 +3246,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule sets the cache.',
@@ -2876,12 +3270,14 @@ describe('generate', () => {
                 phase: 'request',
                 description: 'This rule forwards the cookie.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2903,7 +3299,7 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule forwards the cookie.',
@@ -2922,13 +3318,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'request',
                 description: 'This rule runs a function.',
+                is_active: true,
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2945,12 +3344,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: true,
                 criteria: [
                   {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule runs a function.',
@@ -2971,13 +3371,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'request',
                 description: 'This rule enables GZIP compression.',
+                is_active: true,
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -2998,10 +3401,11 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule enables GZIP compression.',
+                active: true,
                 behavior: {
                   enableGZIP: true,
                 },
@@ -3016,14 +3420,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
+                is_active: true,
                 description: 'This rule bypasses the cache.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3044,10 +3451,11 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule bypasses the cache.',
+                active: true,
                 behavior: {
                   bypassCache: true,
                 },
@@ -3062,14 +3470,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
+                is_active: false,
                 description: 'This rule redirects HTTP to HTTPS.',
                 criteria: [
-                  {
-                    variable: `\${scheme}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: 'http',
-                  },
+                  [
+                    {
+                      variable: `\${scheme}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: 'http',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3086,12 +3497,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: false,
                 criteria: [
                   {
                     variable: `\${scheme}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: 'http',
+                    inputValue: 'http',
                   },
                 ],
                 description: 'This rule redirects HTTP to HTTPS.',
@@ -3109,14 +3521,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
+                is_active: false,
                 description: 'This rule captures the request.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3142,10 +3557,11 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule captures the request.',
+                active: false,
                 behavior: {
                   capture: {
                     match: '^/user/(.*)',
@@ -3157,158 +3573,7 @@ describe('generate', () => {
             ]),
           );
         });
-        it('should correctly process rules with criteria', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testCriteria',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${uri}',
-                operator: 'matches',
-                conditional: 'if',
-                input_value: '^/',
-              },
-            ],
-          ]);
-        });
-
-        it('should throw error when using both match and criteria', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testInvalidRule',
-                  match: '^\\/',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          expect(() => processConfig(azionConfig)).toThrow(
-            "Cannot use 'match' or 'variable' together with 'criteria'.",
-          );
-        });
-
-        it('should correctly process multiple criteria conditions', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testMultipleCriteria',
-                  criteria: [
-                    {
-                      variable: '${uri}',
-                      operator: 'matches',
-                      conditional: 'if',
-                      input_value: '^/',
-                    },
-                    {
-                      variable: '${device_group}',
-                      operator: 'is_equal',
-                      conditional: 'and',
-                      input_value: 'mobile',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${uri}',
-                operator: 'matches',
-                conditional: 'if',
-                input_value: '^/',
-              },
-              {
-                variable: '${device_group}',
-                operator: 'is_equal',
-                conditional: 'and',
-                input_value: 'mobile',
-              },
-            ],
-          ]);
-        });
-
-        it('should correctly process criteria with operator without value', () => {
-          const azionConfig: any = {
-            rules: {
-              request: [
-                {
-                  name: 'testCriteriaWithoutValue',
-                  criteria: [
-                    {
-                      variable: '${http_header}',
-                      operator: 'exists',
-                      conditional: 'if',
-                    },
-                  ],
-                  behavior: {
-                    runFunction: {
-                      path: '.edge/worker.js',
-                    },
-                  },
-                },
-              ],
-            },
-          };
-
-          const result = processConfig(azionConfig);
-          expect(result.rules[0].criteria).toEqual([
-            [
-              {
-                variable: '${http_header}',
-                operator: 'exists',
-                conditional: 'if',
-              },
-            ],
-          ]);
-        });
       });
-
       describe('Response', () => {
         it('should correctly process the config rules with redirect_to_301', () => {
           const jsonConfig = {
@@ -3316,14 +3581,17 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'response',
+                is_active: false,
                 description: 'This rule redirects all traffic.',
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3346,9 +3614,10 @@ describe('generate', () => {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
+                active: false,
                 behavior: {
                   redirectTo301: 'https://example.com',
                 },
@@ -3363,13 +3632,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'response',
                 description: 'This rule redirects all traffic.',
+                is_active: false,
                 criteria: [
-                  {
-                    variable: `\${uri}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    input_value: '/test',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3387,12 +3659,13 @@ describe('generate', () => {
               expect.objectContaining({
                 name: 'testRule',
                 description: 'This rule redirects all traffic.',
+                active: false,
                 criteria: [
                   {
                     variable: `\${uri}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: '/test',
+                    inputValue: '/test',
                   },
                 ],
                 behavior: {
@@ -3407,15 +3680,18 @@ describe('generate', () => {
             rules: [
               {
                 name: 'testRule',
+                is_active: false,
                 phase: 'response',
                 description: 'This rule sets a cookie.',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3437,9 +3713,10 @@ describe('generate', () => {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
+                active: false,
                 description: 'This rule sets a cookie.',
                 behavior: {
                   setCookie: 'cookieName=cookieValue',
@@ -3456,12 +3733,14 @@ describe('generate', () => {
                 phase: 'response',
                 description: 'This rule sets a header.',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3483,7 +3762,7 @@ describe('generate', () => {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
                 description: 'This rule sets a header.',
@@ -3502,12 +3781,14 @@ describe('generate', () => {
                 phase: 'response',
                 description: 'This rule enables GZIP compression.',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3528,7 +3809,7 @@ describe('generate', () => {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
                 description: 'This rule enables GZIP compression.',
@@ -3544,15 +3825,18 @@ describe('generate', () => {
             rules: [
               {
                 name: 'testRule',
-                phase: 'response',
                 description: 'This rule filters the cookie.',
+                is_active: false,
+                phase: 'response',
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3569,12 +3853,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: false,
                 criteria: [
                   {
-                    variable: `\${status}`,
-                    operator: 'equals',
+                    variable: `\${uri}`,
+                    operator: 'matches',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule filters the cookie.',
@@ -3592,13 +3877,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'response',
                 description: 'This rule filters the header.',
+                is_active: false,
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${status}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '200',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3615,12 +3903,13 @@ describe('generate', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 name: 'testRule',
+                active: false,
                 criteria: [
                   {
                     variable: `\${status}`,
                     operator: 'equals',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '200',
                   },
                 ],
                 description: 'This rule filters the header.',
@@ -3638,13 +3927,16 @@ describe('generate', () => {
                 name: 'testRule',
                 phase: 'response',
                 description: 'This rule runs a function.',
+                is_active: true,
                 criteria: [
-                  {
-                    variable: `\${status}`,
-                    operator: 'equals',
-                    conditional: 'if',
-                    input_value: '200',
-                  },
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
                 ],
                 behaviors: [
                   {
@@ -3663,13 +3955,14 @@ describe('generate', () => {
                 name: 'testRule',
                 criteria: [
                   {
-                    variable: `\${status}`,
-                    operator: 'equals',
+                    variable: `\${uri}`,
+                    operator: 'matches',
                     conditional: 'if',
-                    input_value: '200',
+                    inputValue: '/test',
                   },
                 ],
                 description: 'This rule runs a function.',
+                active: true,
                 behavior: {
                   runFunction: {
                     path: 'myFunction',
@@ -3677,6 +3970,604 @@ describe('generate', () => {
                 },
               }),
             ]),
+          );
+        });
+      });
+    });
+    describe('Network List', () => {
+      it('should correctly process the config network list', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: 1,
+              list_type: 'ip_cidr',
+              items_values: ['10.0.0.1'],
+            },
+            {
+              id: 2,
+              list_type: 'asn',
+              items_values: ['AS123'],
+            },
+            {
+              id: 3,
+              list_type: 'countries',
+              items_values: ['US'],
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.networkList).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: 1,
+              listType: 'ip_cidr',
+              listContent: ['10.0.0.1'],
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the network list id is not a number', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: '1',
+              list_type: 'ip_cidr',
+              items_values: ['10.0.0.1'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow("The 'id' field must be a number.");
+      });
+      it('should throw an error when the network list list_type is not valid', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: 1,
+              list_type: 'invalid',
+              items_values: ['10.0.0.1'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'list_type' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
+        );
+      });
+      it('should throw an error when the network list required fields are not provided', () => {
+        const jsonConfig = {
+          networkList: [
+            {
+              id: 1,
+              list_type: 'ip_cidr',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'id, list_type and items_values' fields are required in each network list item.",
+        );
+      });
+    });
+
+    describe('WAF', () => {
+      let defaultConfig: any;
+
+      beforeEach(() => {
+        defaultConfig = {
+          id: 123,
+          name: 'mywaf',
+          mode: 'counting',
+          active: true,
+          bypass_addresses: [],
+          sql_injection: true,
+          sql_injection_sensitivity: 'medium',
+          remote_file_inclusion: true,
+          remote_file_inclusion_sensitivity: 'medium',
+          directory_traversal: true,
+          directory_traversal_sensitivity: 'medium',
+          cross_site_scripting: true,
+          cross_site_scripting_sensitivity: 'medium',
+          evading_tricks: true,
+          evading_tricks_sensitivity: 'medium',
+          file_upload: true,
+          file_upload_sensitivity: 'medium',
+          unwanted_access: true,
+          unwanted_access_sensitivity: 'medium',
+          identified_attack: true,
+          identified_attack_sensitivity: 'medium',
+        };
+      });
+
+      it('should correctly process the config waf', () => {
+        const jsonConfig = {
+          waf: [defaultConfig],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: [],
+              crossSiteScripting: {
+                sensitivity: 'medium',
+              },
+              sqlInjection: {
+                sensitivity: 'medium',
+              },
+              remoteFileInclusion: {
+                sensitivity: 'medium',
+              },
+              directoryTraversal: {
+                sensitivity: 'medium',
+              },
+              evadingTricks: {
+                sensitivity: 'medium',
+              },
+              fileUpload: {
+                sensitivity: 'medium',
+              },
+              unwantedAccess: {
+                sensitivity: 'medium',
+              },
+              identifiedAttack: {
+                sensitivity: 'medium',
+              },
+            }),
+          ]),
+        );
+      });
+      it('should throw an error when the waf mode is not valid', () => {
+        const jsonConfig = {
+          waf: [
+            {
+              ...defaultConfig,
+              mode: 'invalid',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'mode' field must be one of: learning, blocking, counting",
+        );
+      });
+      it('should throw an error when the waf bypassAddresses is not an array', () => {
+        const jsonConfig = {
+          waf: [
+            {
+              ...defaultConfig,
+              bypass_addresses: 'invalid',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+          "The 'bypass_addresses' field must be an array of strings.",
+        );
+      });
+      it('should correctly process the config waf with cross_site_scripting sensitivity low', () => {
+        const jsonConfig = {
+          waf: [
+            {
+              ...defaultConfig,
+              cross_site_scripting_sensitivity: 'low',
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.waf).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'mywaf',
+              mode: 'counting',
+              active: true,
+              bypassAddresses: [],
+              crossSiteScripting: {
+                sensitivity: 'low',
+              },
+            }),
+          ]),
+        );
+      });
+    });
+    describe('Domains', () => {
+      it('should throw error when required fields are missing', () => {
+        const jsonConfig = {
+          domains: [
+            {
+              name: 'mydomain.com',
+              // missing required fields
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error for invalid digital_certificate_id value', () => {
+        const jsonConfig = {
+          domains: [
+            {
+              name: 'mydomain.com',
+              edge_application_id: 123,
+              cnames: ['www.mydomain.com'],
+              cname_access_only: false,
+              digital_certificate_id: 'invalid_value',
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error for invalid crl_list values', () => {
+        const jsonConfig = {
+          domains: [
+            {
+              name: 'mydomain.com',
+              edge_application_id: 123,
+              cnames: ['www.mydomain.com'],
+              cname_access_only: false,
+              digital_certificate_id: 'lets_encrypt',
+              crl_list: ['invalid', 'values'],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+    });
+    describe('Firewall', () => {
+      it('should throw error when required fields are missing', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                // missing name field
+                is_active: true,
+              },
+              rules: [],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when rule criteria is invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
+              rules: [
+                {
+                  name: 'invalid-rule',
+                  criteria: {
+                    variable: 'invalid_variable',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: 'test',
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when behavior name is invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
+              rules: [
+                {
+                  name: 'invalid-behavior',
+                  criteria: {
+                    variable: 'request_uri',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                  behavior: {
+                    name: 'invalid_behavior',
+                    target: 'test',
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+
+      it('should throw error when rate limit arguments are invalid', () => {
+        const jsonConfig = {
+          firewall: [
+            {
+              main_settings: {
+                name: 'my-firewall',
+                is_active: true,
+              },
+              rules: [
+                {
+                  name: 'invalid-rate-limit',
+                  criteria: {
+                    variable: 'request_uri',
+                    operator: 'is_equal',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                  behavior: {
+                    name: 'set_rate_limit',
+                    target: {
+                      type: 'invalid',
+                      limit_by: 'invalid',
+                      average_rate_limit: 'not_a_number',
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
+      });
+    });
+    describe('Application', () => {
+      describe('Main Settings', () => {
+        it('should throw an error when delivery_protocol is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                  delivery_protocol: 'invalid',
+                },
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
+          );
+        });
+
+        it('should throw an error when http_port is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                  http_port: 'invalid',
+                },
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'http_port' field must be an array",
+          );
+        });
+      });
+
+      describe('Cache Settings', () => {
+        it('should throw an error when browser_cache_settings is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                cache_settings: [
+                  {
+                    name: 'test',
+                    browser_cache_settings: 'invalid',
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'browser_cache_settings' must be either 'honor' or 'override'.",
+          );
+        });
+
+        it('should throw an error when cache_by_query_string is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                cache_settings: [
+                  {
+                    name: 'test',
+                    cache_by_query_string: 'invalid',
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
+          );
+        });
+      });
+
+      describe('Origins', () => {
+        it('should throw an error when origin_type is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                origins: [
+                  {
+                    name: 'test',
+                    origin_type: 'invalid',
+                    addresses: [{ address: 'example.com' }],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'origin_type' field must be one of: single_origin, load_balancer, live_ingest, object_storage.",
+          );
+        });
+
+        it('should throw an error when bucket is missing for object_storage type', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                origins: [
+                  {
+                    name: 'test',
+                    origin_type: 'object_storage',
+                    addresses: [{ address: 'example.com' }],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "When origin_type is 'object_storage', the 'bucket' field is required.",
+          );
+        });
+      });
+
+      describe('Rules', () => {
+        it('should throw an error when criteria variable is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                rules: [
+                  {
+                    name: 'test',
+                    criteria: [
+                      [
+                        {
+                          variable: 'invalid_variable',
+                          operator: 'matches',
+                          conditional: 'if',
+                          input_value: '/test',
+                        },
+                      ],
+                    ],
+                    behaviors: [
+                      {
+                        name: 'deliver',
+                        target: null,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'variable' field must be a valid variable name.",
+          );
+        });
+
+        it('should throw an error when behavior name is invalid', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                rules: [
+                  {
+                    name: 'test',
+                    criteria: [
+                      [
+                        {
+                          variable: 'request_uri',
+                          operator: 'matches',
+                          conditional: 'if',
+                          input_value: '/test',
+                        },
+                      ],
+                    ],
+                    behaviors: [
+                      {
+                        name: 'invalid_behavior',
+                        target: null,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The 'name' field must be a valid behavior name.",
+          );
+        });
+
+        it('should throw an error when input_value is missing for operator that requires it', () => {
+          const jsonConfig = {
+            application: [
+              {
+                main_settings: {
+                  name: 'test',
+                },
+                rules: [
+                  {
+                    name: 'test',
+                    criteria: [
+                      [
+                        {
+                          variable: 'request_uri',
+                          operator: 'matches',
+                          conditional: 'if',
+                        },
+                      ],
+                    ],
+                    behaviors: [
+                      {
+                        name: 'deliver',
+                        target: null,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          };
+
+          expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow(
+            "The operator 'matches' requires an input_value.",
           );
         });
       });

@@ -13,10 +13,57 @@ import {
   ApiListObjectsResponse,
 } from './types';
 
-const BASE_URL =
-  process.env.AZION_ENV === 'stage'
-    ? 'https://stage-api.azion.com/v4/storage/buckets'
-    : 'https://api.azion.com/v4/storage/buckets';
+import { AzionEnvironment } from '../../types';
+
+/**
+ * Gets base URL based on environment
+ */
+const getBaseUrl = (env: AzionEnvironment = 'production'): string => {
+  const urls: Record<AzionEnvironment, string> = {
+    production: 'https://api.azion.com/v4/storage/buckets',
+    development: '/v4/storage/buckets',
+    staging: 'https://stage-api.azion.com/v4/storage/buckets',
+  };
+  return urls[env];
+};
+
+/**
+ * Builds request headers based on token and additional headers
+ * @param token Optional authentication token
+ * @param additionalHeaders Additional request-specific headers
+ */
+const buildHeaders = (token?: string, additionalHeaders = {}) => {
+  const baseHeaders = {
+    Accept: 'application/json',
+    ...additionalHeaders,
+  };
+
+  if (token) {
+    return {
+      ...baseHeaders,
+      Authorization: `Token ${token}`,
+    };
+  }
+
+  return baseHeaders;
+};
+
+/**
+ * Builds fetch request options
+ */
+const buildFetchOptions = (method: string, headers: Record<string, string>, body?: string) => {
+  const options: RequestInit = {
+    method,
+    headers,
+    credentials: 'include',
+  };
+
+  if (body) {
+    options.body = body;
+  }
+
+  return options;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleApiError = (fields: string[], data: any, operation: string) => {
@@ -39,24 +86,23 @@ const handleApiError = (fields: string[], data: any, operation: string) => {
  * @param {string} token - Authentication token for Azion API.
  * @param {ApiListBucketsParams} [params] - Optional parameters for filtering and pagination.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiListBucketsResponse>} Array of buckets or an error if retrieval failed.
  */
 const getBuckets = async (
-  token: string,
+  token?: string,
   params?: ApiListBucketsParams,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiListBucketsResponse> => {
   try {
     const { page_size = 10, page = 1 } = params || {};
     const queryParams = new URLSearchParams({ page_size: String(page_size), page: String(page) });
-    const data = await fetchWithErrorHandling(
-      `${BASE_URL}?${queryParams.toString()}`,
-      {
-        method: 'GET',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
-      },
-      debug,
-    );
+    const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
+    const options = buildFetchOptions('GET', headers);
+    const baseUrl = getBaseUrl(env);
+    const data = await fetchWithErrorHandling(`${baseUrl}?${queryParams.toString()}`, options, debug);
+
     if (!data.results) {
       data.error = handleApiError(['detail'], data, 'get all buckets');
       return {
@@ -80,6 +126,7 @@ const getBuckets = async (
  * @param {string} name - Name of the bucket to create.
  * @param {string} edge_access - Edge access configuration for the bucket.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateBucketResponse>} The created bucket or an error if creation failed.
  */
 const postBucket = async (
@@ -87,10 +134,12 @@ const postBucket = async (
   name: string,
   edge_access: string,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiCreateBucketResponse> => {
   try {
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      BASE_URL,
+      baseUrl,
       {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
@@ -121,6 +170,7 @@ const postBucket = async (
  * @param {string} name - Name of the bucket to update.
  * @param {string} edge_access - New edge access configuration for the bucket.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiEditBucketResponse>} The updated bucket or an error if update failed.
  */
 const patchBucket = async (
@@ -128,10 +178,12 @@ const patchBucket = async (
   name: string,
   edge_access: string,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiEditBucketResponse> => {
   try {
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${name}`,
+      `${baseUrl}/${name}`,
       {
         method: 'PATCH',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
@@ -161,12 +213,19 @@ const patchBucket = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiDeleteBucketResponse>} Confirmation of deletion or an error if deletion failed.
  */
-const deleteBucket = async (token: string, name: string, debug?: boolean): Promise<ApiDeleteBucketResponse> => {
+const deleteBucket = async (
+  token: string,
+  name: string,
+  debug?: boolean,
+  env: AzionEnvironment = 'production',
+): Promise<ApiDeleteBucketResponse> => {
   try {
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${name}`,
+      `${baseUrl}/${name}`,
       {
         method: 'DELETE',
         headers: { Accept: 'application/json', Authorization: `Token ${token}` },
@@ -196,6 +255,7 @@ const deleteBucket = async (token: string, name: string, debug?: boolean): Promi
  * @param {string} bucketName - Name of the bucket.
  * @param {ApiListObjectsParams} [params] - Optional parameters for filtering.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiListObjectsResponse>} Array of objects or an error if retrieval failed.
  */
 const getObjects = async (
@@ -203,12 +263,14 @@ const getObjects = async (
   bucketName: string,
   params?: ApiListObjectsParams,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiListObjectsResponse> => {
   try {
     const { max_object_count = 10000 } = params || {};
     const queryParams = new URLSearchParams({ max_object_count: String(max_object_count) });
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${bucketName}/objects?${queryParams.toString()}`,
+      `${baseUrl}/${bucketName}/objects?${queryParams.toString()}`,
       {
         method: 'GET',
         headers: { Accept: 'application/json', Authorization: `Token ${token}` },
@@ -239,6 +301,7 @@ const getObjects = async (
  * @param {string} key - Key of the object to create.
  * @param {string} file - Content of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The created object or an error if creation failed.
  */
 const postObject = async (
@@ -247,10 +310,12 @@ const postObject = async (
   key: string,
   file: string,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
   try {
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${bucketName}/objects/${key}`,
+      `${baseUrl}/${bucketName}/objects/${key}`,
       {
         method: 'POST',
         headers: {
@@ -282,34 +347,33 @@ const postObject = async (
  * Retrieves an object by its key.
  *
  * @param {string} token - Authentication token for Azion API.
- * @param {string} bucketName - Name of the bucket.
+ * @param {string} bucketName - Name of the bucket containing the object.
  * @param {string} key - Key of the object to retrieve.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
- * @returns {Promise<{ data?: string; error?: ApiError }>} The content of the object or an error if retrieval failed.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
+ * @returns {Promise<{ data?: string; error?: ApiError }>} The retrieved object or an error if retrieval failed.
  */
 const getObjectByKey = async (
   token: string,
   bucketName: string,
   key: string,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<{ data?: string; error?: ApiError }> => {
   try {
-    const response = await fetch(`${BASE_URL}/${bucketName}/objects/${key}`, {
-      method: 'GET',
-      headers: { Accept: 'application/json', Authorization: `Token ${token}` },
-    });
-    if (response.headers.get('content-type') === 'application/json') {
-      const data = await response.json();
+    const baseUrl = getBaseUrl(env);
+    const headers = buildHeaders(token);
+    const options = buildFetchOptions('GET', headers);
+
+    const data = await fetchWithErrorHandling(`${baseUrl}/${bucketName}/objects/${key}`, options, debug);
+
+    if (data.error) {
       const error = handleApiError(['detail'], data, 'get object by key');
-      return {
-        error: error ?? JSON.stringify(data),
-      };
+      return { error };
     }
-    const data = await response.text();
+
     if (debug) console.log('Response:', data);
-    return {
-      data,
-    };
+    return { data };
   } catch (error: any) {
     if (debug) console.error('Error getting object by name:', error);
     return {
@@ -326,6 +390,7 @@ const getObjectByKey = async (
  * @param {string} key - Key of the object to update.
  * @param {string} file - New content of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The updated object or an error if update failed.
  */
 const putObject = async (
@@ -334,10 +399,12 @@ const putObject = async (
   key: string,
   file: string,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
   try {
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${bucketName}/objects/${key}`,
+      `${baseUrl}/${bucketName}/objects/${key}`,
       {
         method: 'PUT',
         headers: {
@@ -366,6 +433,7 @@ const putObject = async (
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to delete.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiDeleteObjectResponse>} Confirmation of deletion or an error if deletion failed.
  */
 const deleteObject = async (
@@ -373,10 +441,12 @@ const deleteObject = async (
   bucketName: string,
   key: string,
   debug?: boolean,
+  env: AzionEnvironment = 'production',
 ): Promise<ApiDeleteObjectResponse> => {
   try {
+    const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${bucketName}/objects/${key}`,
+      `${baseUrl}/${bucketName}/objects/${key}`,
       {
         method: 'DELETE',
         headers: { Accept: 'application/json', Authorization: `Token ${token}` },

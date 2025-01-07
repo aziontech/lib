@@ -65,7 +65,7 @@ export const findBucketByName = async (
   options?: AzionClientOptions,
 ): Promise<ApiGetBucket> => {
   const PAGE_SIZE_TEMP = 1000000;
-  const apiResponse = await getBuckets(token, { page_size: PAGE_SIZE_TEMP }, options?.debug ?? false);
+  const apiResponse = await getBuckets(token, { page_size: PAGE_SIZE_TEMP }, options?.debug ?? false, options?.env);
   const buckets = apiResponse.results;
   if (apiResponse.error)
     return {
@@ -95,11 +95,24 @@ export async function fetchWithErrorHandling(
   const response = await fetch(url, options);
 
   if (!response.ok) {
-    const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+    try {
+      const errorBody = await response.json();
 
-    if (debug) console.log(`Error in fetch: ${msg}`);
+      if (debug) {
+        console.log('Error response body:', errorBody);
+      }
 
-    throw new Error(msg);
+      if (errorBody.detail || errorBody.message) {
+        return errorBody;
+      }
+      const errorMessage = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+      if (debug) console.log(`Error in fetch: ${errorMessage}`);
+      throw new Error(errorMessage);
+    } catch (parseError) {
+      const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+      if (debug) console.log(`Error in fetch: ${msg}`);
+      throw new Error(msg);
+    }
   }
 
   if (jsonResponse) {
@@ -107,9 +120,7 @@ export async function fetchWithErrorHandling(
     if (!contentType || !contentType.includes('application/json')) {
       const textResponse = await response.text();
       const msg = `Expected JSON response, but got: ${textResponse}`;
-
       if (debug) console.log(`Error in fetch: ${msg}`);
-
       throw new Error(msg);
     }
 
