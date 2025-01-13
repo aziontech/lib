@@ -128,17 +128,27 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     const addBehaviorsObject = (behaviors: any, behaviorDefinitions: any, context: any) => {
       if (behaviors && Array.isArray(behaviors)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return behaviors.map((behavior: any) => {
+        const transformedBehaviors = behaviors.map((behavior: any) => {
           const behaviorName = behavior.name;
-          if (behaviorDefinitions[behaviorName as keyof typeof behaviorDefinitions]) {
-            return behaviorDefinitions[behaviorName as keyof typeof behaviorDefinitions].transform(
-              behavior.target,
-              context,
-            );
+          if (behaviorDefinitions[behaviorName]) {
+            const transformed = behaviorDefinitions[behaviorName].transform(behavior.target, context);
+            return transformed;
           }
           console.warn(`Unknown behavior: ${behaviorName}`);
           return {};
-        })[0];
+        });
+
+        const result = transformedBehaviors.reduce((acc, curr) => {
+          if (curr.setHeaders) {
+            return {
+              ...acc,
+              setHeaders: [...(acc.setHeaders || []), ...curr.setHeaders],
+            };
+          }
+          return { ...acc, ...curr };
+        }, {});
+
+        return result;
       }
       return undefined;
     };

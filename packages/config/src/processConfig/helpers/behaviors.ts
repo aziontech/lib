@@ -244,7 +244,7 @@ export const revertRequestBehaviors = {
   },
   add_request_header: {
     transform: (value: any) => ({
-      setHeaders: value.split(','),
+      setHeaders: [value],
     }),
   },
   set_cache_policy: {
@@ -330,7 +330,7 @@ export const revertResponseBehaviors = {
   },
   add_response_header: {
     transform: (value: any) => ({
-      setHeaders: value.split(','),
+      setHeaders: [value],
     }),
   },
   enable_gzip: {
