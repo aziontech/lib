@@ -585,6 +585,63 @@ describe('generate', () => {
           ]),
         );
       });
+
+      it('should correctly process the config rules with set_headers behavior', () => {
+        const jsonConfig = {
+          rules: [
+            {
+              name: 'testRule',
+              phase: 'request',
+              description: 'This rule sets multiple headers.',
+              criteria: [
+                [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/test',
+                  },
+                ],
+              ],
+              behaviors: [
+                {
+                  name: 'add_request_header',
+                  target: 'X-Header: value1',
+                },
+                {
+                  name: 'add_request_header',
+                  target: 'X-Another-Header: value2',
+                },
+                {
+                  name: 'add_request_header',
+                  target: 'X-Third-Header: value3, value4',
+                },
+              ],
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.rules?.request).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'testRule',
+              criteria: [
+                {
+                  variable: `\${uri}`,
+                  operator: 'matches',
+                  conditional: 'if',
+                  inputValue: '/test',
+                },
+              ],
+              description: 'This rule sets multiple headers.',
+              behavior: {
+                setHeaders: ['X-Header: value1', 'X-Another-Header: value2', 'X-Third-Header: value3, value4'],
+              },
+            }),
+          ]),
+        );
+      });
     });
     describe('Origin', () => {
       it('should process the config config when the origin is single_origin and all fields', () => {
@@ -3101,7 +3158,7 @@ describe('generate', () => {
               {
                 name: 'testRule',
                 phase: 'request',
-                description: 'This rule sets a header.',
+                description: 'This rule sets multiple headers.',
                 criteria: [
                   [
                     {
@@ -3115,7 +3172,15 @@ describe('generate', () => {
                 behaviors: [
                   {
                     name: 'add_request_header',
-                    target: 'X-Header: value',
+                    target: 'X-Header: value1',
+                  },
+                  {
+                    name: 'add_request_header',
+                    target: 'X-Another-Header: value2',
+                  },
+                  {
+                    name: 'add_request_header',
+                    target: 'X-Third-Header: value3, value4',
                   },
                 ],
               },
@@ -3135,9 +3200,9 @@ describe('generate', () => {
                     inputValue: '/test',
                   },
                 ],
-                description: 'This rule sets a header.',
+                description: 'This rule sets multiple headers.',
                 behavior: {
-                  setHeaders: ['X-Header: value'],
+                  setHeaders: ['X-Header: value1', 'X-Another-Header: value2', 'X-Third-Header: value3, value4'],
                 },
               }),
             ]),
