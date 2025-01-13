@@ -1,3 +1,10 @@
+## [1.12.0-stage.3](https://github.com/aziontech/lib/compare/v1.12.0-stage.2...v1.12.0-stage.3) (2025-01-13)
+
+
+### Bug Fixes
+
+* ensure multiple headers are preserved in manifest conversion (#87) ([66b648f](https://github.com/aziontech/lib/commit/66b648fa8fa0d4aff46cc39a60d443870d2eef3b))
+
 ## [1.12.0-stage.2](https://github.com/aziontech/lib/compare/v1.12.0-stage.1...v1.12.0-stage.2) (2025-01-07)
 
 
