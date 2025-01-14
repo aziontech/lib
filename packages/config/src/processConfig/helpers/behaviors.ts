@@ -139,13 +139,45 @@ export const requestBehaviors = {
       },
     }),
   },
-  // Adicione mais comportamentos conforme necessário
+  filterCookie: {
+    transform: (value: any) => ({
+      name: 'filter_request_cookie',
+      target: value,
+    }),
+  },
+  filterHeader: {
+    transform: (value: any) => ({
+      name: 'filter_request_header',
+      target: value,
+    }),
+  },
+  noContent: {
+    transform: (value: any) => {
+      if (value) {
+        return {
+          name: 'no_content',
+          target: null,
+        };
+      }
+      return undefined;
+    },
+  },
+  optimizeImages: {
+    transform: (value: any) => {
+      if (value) {
+        return {
+          name: 'optimize_images',
+          target: null,
+        };
+      }
+      return undefined;
+    },
+  },
 };
-
 export const responseBehaviors = {
   setCookie: {
     transform: (value: any) => ({
-      name: 'set_cookie',
+      name: 'add_response_cookie',
       target: value,
     }),
   },
@@ -207,7 +239,17 @@ export const responseBehaviors = {
       },
     }),
   },
-  // Adicione mais comportamentos conforme necessário
+  deliver: {
+    transform: (value: any) => {
+      if (value) {
+        return {
+          name: 'deliver',
+          target: null,
+        };
+      }
+      return undefined;
+    },
+  },
 };
 
 export const revertRequestBehaviors = {
@@ -320,10 +362,34 @@ export const revertRequestBehaviors = {
       },
     }),
   },
+  filter_request_cookie: {
+    transform: (value: any) => ({
+      filterCookie: value,
+    }),
+  },
+  filter_request_header: {
+    transform: (value: any) => ({
+      filterHeader: value,
+    }),
+  },
+  no_content: {
+    transform: () => {
+      return {
+        noContent: true,
+      };
+    },
+  },
+  optimize_images: {
+    transform: () => {
+      return {
+        optimizeImages: true,
+      };
+    },
+  },
 };
 
 export const revertResponseBehaviors = {
-  set_cookie: {
+  add_response_cookie: {
     transform: (value: any) => ({
       setCookie: value,
     }),
@@ -365,6 +431,11 @@ export const revertResponseBehaviors = {
   redirect_to_302: {
     transform: (value: any) => ({
       redirectTo302: value,
+    }),
+  },
+  deliver: {
+    transform: () => ({
+      deliver: true,
     }),
   },
 };

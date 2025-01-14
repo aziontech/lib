@@ -1948,6 +1948,151 @@ describe('generate', () => {
           ],
         ]);
       });
+
+      it('should correctly process rules request with behaviors filterHeader and filterCookie', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testFilterHeaderAndCookie',
+                description: 'Filters out a specific cookie from the request.',
+                active: true,
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                ],
+                behavior: {
+                  filterHeader: 'X-Test-Header',
+                  filterCookie: '_cookie',
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].behaviors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'filter_request_header',
+              target: 'X-Test-Header',
+            }),
+            expect.objectContaining({
+              name: 'filter_request_cookie',
+              target: '_cookie',
+            }),
+          ]),
+        );
+      });
+
+      it('should correctly process rules request with behavior noContent', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'testNoContent',
+                description: 'Returns a 204 No Content response.',
+                active: true,
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                ],
+                behavior: {
+                  noContent: true,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].behaviors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'no_content',
+              target: null,
+            }),
+          ]),
+        );
+      });
+
+      it('should correctly process rules response with behavior deliver', () => {
+        const azionConfig: any = {
+          rules: {
+            response: [
+              {
+                name: 'testDeliver',
+                description: 'Delivers the response to the client.',
+                active: true,
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/',
+                  },
+                ],
+                behavior: {
+                  deliver: true,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].behaviors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'deliver',
+              target: null,
+            }),
+          ]),
+        );
+      });
+
+      it('should correctly process rules request with behavior optimize images', () => {
+        const azionConfig: any = {
+          rules: {
+            request: [
+              {
+                name: 'test Optimize Images',
+                description: 'Returns optimized images.',
+                active: true,
+                criteria: [
+                  {
+                    variable: '${uri}',
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '^/images',
+                  },
+                ],
+                behavior: {
+                  optimizeImages: true,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = processConfig(azionConfig);
+        expect(result.rules[0].behaviors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'optimize_images',
+              target: null,
+            }),
+          ]),
+        );
+      });
     });
     describe('Domain', () => {
       it('should throw process the config config when the domain name is not provided', () => {
@@ -3638,6 +3783,164 @@ describe('generate', () => {
             ]),
           );
         });
+
+        it('should correctly process the config rules request with behaviors filterCookie and filterHeader', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'test Filter Cookie and Filter Header',
+                phase: 'request',
+                is_active: true,
+                description: 'This rule captures the request.',
+                criteria: [
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
+                ],
+                behaviors: [
+                  {
+                    name: 'filter_request_cookie',
+                    target: 'cookieName',
+                  },
+                  {
+                    name: 'filter_request_header',
+                    target: 'X-Header',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'test Filter Cookie and Filter Header',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '/test',
+                  },
+                ],
+                description: 'This rule captures the request.',
+                active: true,
+                behavior: {
+                  filterCookie: 'cookieName',
+                  filterHeader: 'X-Header',
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules request with behavior noContent', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'test No Content',
+                phase: 'request',
+                is_active: true,
+                description: 'This rule the request.',
+                criteria: [
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/test',
+                    },
+                  ],
+                ],
+                behaviors: [
+                  {
+                    name: 'no_content',
+                    target: null,
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'test No Content',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '/test',
+                  },
+                ],
+                description: 'This rule the request.',
+                active: true,
+                behavior: {
+                  noContent: true,
+                },
+              }),
+            ]),
+          );
+        });
+
+        it('should correctly process the config rules request with behavior optimizeImages', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'test Optimize Images',
+                phase: 'request',
+                is_active: true,
+                description: 'This rule the request.',
+                criteria: [
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'matches',
+                      conditional: 'if',
+                      input_value: '/images',
+                    },
+                  ],
+                ],
+                behaviors: [
+                  {
+                    name: 'optimize_images',
+                    target: null,
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.request).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'test Optimize Images',
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    inputValue: '/images',
+                  },
+                ],
+                description: 'This rule the request.',
+                active: true,
+                behavior: {
+                  optimizeImages: true,
+                },
+              }),
+            ]),
+          );
+        });
       });
       describe('Response', () => {
         it('should correctly process the config rules with redirect_to_301', () => {
@@ -3760,7 +4063,7 @@ describe('generate', () => {
                 ],
                 behaviors: [
                   {
-                    name: 'set_cookie',
+                    name: 'add_response_cookie',
                     target: 'cookieName=cookieValue',
                   },
                 ],
@@ -4032,6 +4335,56 @@ describe('generate', () => {
                   runFunction: {
                     path: 'myFunction',
                   },
+                },
+              }),
+            ]),
+          );
+        });
+        it('should correctly process the config rules with behavior deliver', () => {
+          const jsonConfig = {
+            rules: [
+              {
+                name: 'testRule Deliver',
+                phase: 'response',
+                description: 'This rule delivers the response.',
+                is_active: true,
+                criteria: [
+                  [
+                    {
+                      variable: `\${uri}`,
+                      operator: 'equals',
+                      conditional: 'if',
+                      input_value: '/',
+                    },
+                  ],
+                ],
+                behaviors: [
+                  {
+                    name: 'deliver',
+                    target: 'null',
+                  },
+                ],
+              },
+            ],
+          };
+
+          const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+          expect(result.rules?.response).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: 'testRule Deliver',
+                active: true,
+                criteria: [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'equals',
+                    conditional: 'if',
+                    inputValue: '/',
+                  },
+                ],
+                description: 'This rule delivers the response.',
+                behavior: {
+                  deliver: true,
                 },
               }),
             ]),
