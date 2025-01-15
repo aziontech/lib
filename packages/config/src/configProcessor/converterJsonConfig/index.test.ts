@@ -1128,6 +1128,56 @@ describe('convertJsonConfigToObject', () => {
           ]),
         );
       });
+      it('should correctly process the config rules request with behavior deny', () => {
+        const jsonConfig = {
+          rules: [
+            {
+              name: 'Test Deny',
+              phase: 'request',
+              is_active: true,
+              description: 'This rule the request.',
+              criteria: [
+                [
+                  {
+                    variable: `\${uri}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: '/login',
+                  },
+                ],
+              ],
+              behaviors: [
+                {
+                  name: 'deny',
+                  target: null,
+                },
+              ],
+            },
+          ],
+        };
+
+        const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
+        expect(result.rules?.request).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              name: 'Test Deny',
+              criteria: [
+                {
+                  variable: `\${uri}`,
+                  operator: 'matches',
+                  conditional: 'if',
+                  inputValue: '/login',
+                },
+              ],
+              description: 'This rule the request.',
+              active: true,
+              behavior: {
+                deny: true,
+              },
+            }),
+          ]),
+        );
+      });
     });
     describe('Response', () => {
       it('should correctly process the config rules with redirect_to_301', () => {

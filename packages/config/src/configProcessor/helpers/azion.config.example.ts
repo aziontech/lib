@@ -267,6 +267,22 @@ export default {
           noContent: true,
         },
       },
+      {
+        name: 'Example Deny',
+        active: true,
+        description: 'Test behavior deny',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/login',
+          },
+        ],
+        behavior: {
+          deny: true,
+        },
+      },
     ],
     response: [
       {

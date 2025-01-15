@@ -173,6 +173,17 @@ export const requestBehaviors = {
       return undefined;
     },
   },
+  deny: {
+    transform: (value: any) => {
+      if (value) {
+        return {
+          name: 'deny',
+          target: null,
+        };
+      }
+      return undefined;
+    },
+  },
 };
 export const responseBehaviors = {
   setCookie: {
@@ -383,6 +394,13 @@ export const revertRequestBehaviors = {
     transform: () => {
       return {
         optimizeImages: true,
+      };
+    },
+  },
+  deny: {
+    transform: () => {
+      return {
+        deny: true,
       };
     },
   },

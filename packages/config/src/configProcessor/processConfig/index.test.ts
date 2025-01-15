@@ -2004,6 +2004,41 @@ describe('processConfig', () => {
         ]),
       );
     });
+
+    it('should correctly process rules request with behavior deny', () => {
+      const azionConfig: any = {
+        rules: {
+          request: [
+            {
+              name: 'Test Deny',
+              description: 'Denies access to the resource.',
+              active: true,
+              criteria: [
+                {
+                  variable: '${uri}',
+                  operator: 'matches',
+                  conditional: 'if',
+                  inputValue: '^/login',
+                },
+              ],
+              behavior: {
+                deny: true,
+              },
+            },
+          ],
+        },
+      };
+
+      const result = processConfig(azionConfig);
+      expect(result.rules[0].behaviors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: 'deny',
+            target: null,
+          }),
+        ]),
+      );
+    });
   });
   describe('Domain', () => {
     it('should throw process the config config when the domain name is not provided', () => {
