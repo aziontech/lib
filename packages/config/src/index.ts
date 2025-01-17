@@ -1,4 +1,4 @@
-import { convertJsonConfigToObject, processConfig, validateConfig } from './processConfig/index';
+import { convertJsonConfigToObject, processConfig, validateConfig } from './configProcessor';
 import { AzionConfig } from './types';
 
 /**

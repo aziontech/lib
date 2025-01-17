@@ -234,6 +234,55 @@ export default {
           filterCookie: 'original_uri_cookie', // Removes the original cookie to avoid conflicts or duplicate information
         },
       },
+      {
+        name: 'FilterCookieRuleExample and FilterHeaderRuleExample',
+        description: 'Filters out a specific cookie from the request.',
+        active: true,
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          filterCookie: 'cookie_name',
+          filterHeader: 'header_name',
+        },
+      },
+      {
+        name: 'Test behavior noContent',
+        active: true,
+        description: 'Test behavior noContent',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          noContent: true,
+        },
+      },
+      {
+        name: 'Example Deny',
+        active: true,
+        description: 'Test behavior deny',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/login',
+          },
+        ],
+        behavior: {
+          deny: true,
+        },
+      },
     ],
     response: [
       {
@@ -300,6 +349,38 @@ export default {
         match: '^old-page$', // Matches based on the presence of specific query parameters
         behavior: {
           redirectTo302: 'https://newsite.com/new-page',
+        },
+      },
+      {
+        name: 'Test behavior noContent',
+        active: true,
+        description: 'Test behavior noContent',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          noContent: true,
+        },
+      },
+      {
+        name: 'Test behavior deliver',
+        active: true,
+        description: 'Test behavior deliver',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          deliver: true,
         },
       },
     ],

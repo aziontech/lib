@@ -197,6 +197,18 @@ export type AzionRequestRule = {
     setCookie?: string | null;
     /** Deliver the content */
     deliver?: boolean | null;
+    /** Deny */
+    deny?: boolean | null;
+    /** No content */
+    noContent?: boolean | null;
+    /** enable GZIP compression */
+    enableGZIP?: boolean | null;
+    /** Filter cookie */
+    filterCookie?: string | null;
+    /** Filter header */
+    filterHeader?: string | null;
+    /** Optimize images */
+    optimizeImages?: boolean | null;
     /** Capture configuration */
     capture?: {
       /** Match pattern */

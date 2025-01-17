@@ -362,6 +362,14 @@ const createRuleSchema = (isRequestPhase = false) => ({
           type: ['boolean', 'null'],
           errorMessage: "The 'enableGZIP' field must be a boolean or null.",
         },
+        noContent: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'noContent' field must be a boolean or null.",
+        },
+        optimizeImages: {
+          type: ['boolean', 'null'],
+          errorMessage: "The 'optimizeImages' field must be a boolean or null.",
+        },
       },
       additionalProperties: false,
       allOf: [
