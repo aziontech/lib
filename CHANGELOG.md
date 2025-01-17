@@ -1,3 +1,10 @@
+## [1.12.0-stage.4](https://github.com/aziontech/lib/compare/v1.12.0-stage.3...v1.12.0-stage.4) (2025-01-17)
+
+
+### Features
+
+* add new behaviors and schema fields to rules engine (iac) (#88) ([c0755c5](https://github.com/aziontech/lib/commit/c0755c5a79c759d40642f1c2e1dc3a1715dafff5))
+
 ## [1.12.0-stage.3](https://github.com/aziontech/lib/compare/v1.12.0-stage.2...v1.12.0-stage.3) (2025-01-13)
 
 
