@@ -1,4 +1,4 @@
-import { AzionConfig } from '../../../types';
+import { AzionConfig, AzionFirewallCriteriaWithValue } from '../../../types';
 import {
   requestBehaviors,
   responseBehaviors,
@@ -52,16 +52,28 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           description: rule.description ?? '',
           is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           order: index + 2, // index starts at 2, because the default rule is index 1
-          criteria: [
-            [
-              {
-                variable: `\${${rule.variable ?? 'uri'}}`,
-                operator: 'matches',
-                conditional: 'if',
-                input_value: rule.match,
-              },
-            ],
-          ],
+          criteria: rule.criteria
+            ? [
+                rule.criteria.map((criterion) => {
+                  const isWithValue = 'inputValue' in criterion;
+                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  return {
+                    ...rest,
+                    variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
+                    ...(isWithValue && { input_value: inputValue }),
+                  };
+                }),
+              ]
+            : [
+                [
+                  {
+                    variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: rule.match,
+                  },
+                ],
+              ],
           behaviors: [],
         };
         this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, context);
@@ -78,16 +90,28 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           description: rule.description ?? '',
           is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           order: index + 2, // index starts at 2, because the default rule is index 1
-          criteria: [
-            [
-              {
-                variable: `\${${rule.variable ?? 'uri'}}`,
-                operator: 'matches',
-                conditional: 'if',
-                input_value: rule.match,
-              },
-            ],
-          ],
+          criteria: rule.criteria
+            ? [
+                rule.criteria.map((criterion) => {
+                  const isWithValue = 'inputValue' in criterion;
+                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  return {
+                    ...rest,
+                    variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
+                    ...(isWithValue && { input_value: inputValue }),
+                  };
+                }),
+              ]
+            : [
+                [
+                  {
+                    variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
+                    operator: 'matches',
+                    conditional: 'if',
+                    input_value: rule.match,
+                  },
+                ],
+              ],
           behaviors: [],
         };
         this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, context);
@@ -104,17 +128,27 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     const addBehaviorsObject = (behaviors: any, behaviorDefinitions: any, context: any) => {
       if (behaviors && Array.isArray(behaviors)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return behaviors.map((behavior: any) => {
+        const transformedBehaviors = behaviors.map((behavior: any) => {
           const behaviorName = behavior.name;
-          if (behaviorDefinitions[behaviorName as keyof typeof behaviorDefinitions]) {
-            return behaviorDefinitions[behaviorName as keyof typeof behaviorDefinitions].transform(
-              behavior.target,
-              context,
-            );
+          if (behaviorDefinitions[behaviorName]) {
+            const transformed = behaviorDefinitions[behaviorName].transform(behavior.target, context);
+            return transformed;
           }
           console.warn(`Unknown behavior: ${behaviorName}`);
           return {};
-        })[0];
+        });
+
+        const result = transformedBehaviors.reduce((acc, curr) => {
+          if (curr.setHeaders) {
+            return {
+              ...acc,
+              setHeaders: [...(acc.setHeaders || []), ...curr.setHeaders],
+            };
+          }
+          return { ...acc, ...curr };
+        }, {});
+
+        return result;
       }
       return undefined;
     };
@@ -136,8 +170,19 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           description: rule.description,
           active: rule.is_active,
-          variable: rule.criteria[0].variable.replace('${', '').replace('}', ''),
-          match: rule.criteria[0].input_value,
+          criteria:
+            // Verifica se criteria existe e é um array de arrays
+            Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                rule.criteria[0].map((criterion: any) => {
+                  const isWithValue = 'input_value' in criterion;
+                  const { input_value, ...rest } = criterion;
+                  return {
+                    ...rest,
+                    ...(isWithValue && { inputValue: input_value }),
+                  };
+                })
+              : [],
           behavior: addBehaviorsObject(rule.behaviors, revertRequestBehaviors, transformedPayload),
         });
       } else if (rule.phase === 'response') {
@@ -145,8 +190,18 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           description: rule.description,
           active: rule.is_active,
-          variable: rule.criteria[0].variable.replace('${', '').replace('}', ''),
-          match: rule.criteria[0].input_value,
+          criteria:
+            Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                rule.criteria[0].map((criterion: any) => {
+                  const isWithValue = 'input_value' in criterion;
+                  const { input_value, ...rest } = criterion;
+                  return {
+                    ...rest,
+                    ...(isWithValue && { inputValue: input_value }),
+                  };
+                })
+              : [],
           behavior: addBehaviorsObject(rule.behaviors, revertResponseBehaviors, transformedPayload),
         });
       }

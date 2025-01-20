@@ -96,8 +96,7 @@ export default {
       },
       {
         name: 'staticContentRuleExample',
-        description:
-          'Handle static content by setting a specific origin and delivering directly.',
+        description: 'Handle static content by setting a specific origin and delivering directly.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/_statics/',
@@ -201,8 +200,7 @@ export default {
       },
       {
         name: 'bypassCacheRuleExample',
-        description:
-          'Ensures data is always fetched fresh, bypassing any cache.',
+        description: 'Ensures data is always fetched fresh, bypassing any cache.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/bypass',
@@ -236,12 +234,60 @@ export default {
           filterCookie: 'original_uri_cookie', // Removes the original cookie to avoid conflicts or duplicate information
         },
       },
+      {
+        name: 'FilterCookieRuleExample and FilterHeaderRuleExample',
+        description: 'Filters out a specific cookie from the request.',
+        active: true,
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          filterCookie: 'cookie_name',
+          filterHeader: 'header_name',
+        },
+      },
+      {
+        name: 'Test behavior noContent',
+        active: true,
+        description: 'Test behavior noContent',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          noContent: true,
+        },
+      },
+      {
+        name: 'Example Deny',
+        active: true,
+        description: 'Test behavior deny',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/login',
+          },
+        ],
+        behavior: {
+          deny: true,
+        },
+      },
     ],
     response: [
       {
         name: 'apiDataResponseRuleExample',
-        description:
-          'Manage headers, cookies, and GZIP compression for API data responses.',
+        description: 'Manage headers, cookies, and GZIP compression for API data responses.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/api/data',
@@ -255,8 +301,7 @@ export default {
       },
       {
         name: 'userProfileRedirectRuleExample',
-        description:
-          'Redirects user profile requests to a new profile page URL.',
+        description: 'Redirects user profile requests to a new profile page URL.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/user/profile',
@@ -266,8 +311,7 @@ export default {
       },
       {
         name: 'computeResultFunctionRuleExample',
-        description:
-          'Runs a function and captures full path from the URI for compute results.',
+        description: 'Runs a function and captures full path from the URI for compute results.',
         active: true,
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/compute-result',
@@ -298,14 +342,45 @@ export default {
       },
       {
         name: 'temporaryPageRedirectRuleExample',
-        description:
-          'Temporarily redirects an old page based on query parameters.',
+        description: 'Temporarily redirects an old page based on query parameters.',
         active: true,
         // eslint-disable-next-line no-template-curly-in-string
         variable: 'args', // All query parameters
         match: '^old-page$', // Matches based on the presence of specific query parameters
         behavior: {
           redirectTo302: 'https://newsite.com/new-page',
+        },
+      },
+      {
+        name: 'Test behavior noContent',
+        active: true,
+        description: 'Test behavior noContent',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          noContent: true,
+        },
+      },
+      {
+        name: 'Test behavior deliver',
+        active: true,
+        description: 'Test behavior deliver',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'matches',
+            conditional: 'if',
+            inputValue: '^/',
+          },
+        ],
+        behavior: {
+          deliver: true,
         },
       },
     ],
@@ -323,6 +398,129 @@ export default {
     {
       type: 'wildcard',
       urls: ['http://www.example.com/*'],
+    },
+  ],
+  firewall: {
+    name: 'my_edge_firewall',
+    domains: ['www.example.com', 'api.example.com'],
+    active: true,
+    edgeFunctions: true,
+    networkProtection: true,
+    waf: true,
+    rules: [
+      {
+        name: 'rateLimit_Then_Drop',
+        active: true,
+        match: '^/api/sensitive/',
+        behavior: {
+          setRateLimit: {
+            type: 'second',
+            limitBy: 'clientIp',
+            averageRateLimit: '10',
+            maximumBurstSize: '20',
+          },
+        },
+      },
+      {
+        name: 'customResponse_Only',
+        active: true,
+        match: '^/custom-error/',
+        behavior: {
+          setCustomResponse: {
+            // Behavior final - nada após isso será executado
+            statusCode: 403,
+            contentType: 'application/json',
+            contentBody: '{"error": "Custom error response"}',
+          },
+        },
+      },
+      {
+        name: 'setHeaders_Then_CustomResponse',
+        active: true,
+        match: '^/api/error/',
+        behavior: {
+          setCustomResponse: {
+            // Behavior final - nada após isso será executado
+            statusCode: 403,
+            contentType: 'application/json',
+            contentBody: '{"error": "Access denied"}',
+          },
+        },
+      },
+      {
+        name: 'run_edge_function_and_set_rate_limit',
+        active: true,
+        match: '^/api/',
+        behavior: {
+          runFunction: {
+            path: '.edge/security.js',
+          },
+          setRateLimit: {
+            type: 'second',
+            limitBy: 'clientIp',
+            averageRateLimit: '10',
+            maximumBurstSize: '20',
+          },
+        },
+      },
+    ],
+  },
+  networkList: [
+    {
+      id: 1,
+      listType: 'ip_cidr',
+      listContent: ['10.0.0.1'],
+    },
+    {
+      id: 2,
+      listType: 'asn',
+      listContent: [123, 456, 789],
+    },
+    {
+      id: 3,
+      listType: 'countries',
+      listContent: ['US', 'BR', 'UK'],
+    },
+  ],
+  waf: [
+    {
+      id: 123, // Optional. ID of your WAF. Obtain this value via GET request. Cannot be changed via API.
+      name: 'my_waf', // Required for WAF configuration
+      active: true, // Required to enable the WAF or false to disable
+      mode: 'blocking', // 'learning', 'blocking' or 'counting'
+      sqlInjection: {
+        // sqlInjection is optional.
+        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      remoteFileInclusion: {
+        // remoteFileInclusion is optional.
+        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      directoryTraversal: {
+        // directoryTraversal is optional.
+        sensitivity: 'low', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      crossSiteScripting: {
+        // crossSiteScripting is optional.
+        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      evadingTricks: {
+        // evadingTricks is optional.
+        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      fileUpload: {
+        // fileUpload is optional.
+        sensitivity: 'low', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      unwantedAccess: {
+        // unwantedAccess is optional.
+        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      identifiedAttack: {
+        // identifiedAttack is optional.
+        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+      },
+      bypassAddresses: ['10.0.0.1'], // Optional. Define trusted IP/CIDR addresses
     },
   ],
 };
