@@ -1,4 +1,6 @@
 import {
+  ALL_REQUEST_VARIABLES,
+  ALL_RESPONSE_VARIABLES,
   DYNAMIC_VARIABLE_PATTERNS,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
@@ -21,12 +23,12 @@ const criteriaBaseSchema = {
       type: 'string',
       anyOf: [
         {
-          // Validação para variáveis estáticas
+          // static variables validation
           type: 'string',
           pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
         },
         {
-          // Validação para padrões dinâmicos
+          // dynamic variables validation
           type: 'string',
           pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|').replace(/\$/g, '\\$') + ')\\}$',
         },
@@ -82,19 +84,33 @@ const createVariableValidation = (isRequestPhase = false) => ({
   type: 'string',
   anyOf: [
     {
-      // Validação para variáveis estáticas
-      type: 'string',
-      pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
+      // static variables
+      enum: [...new Set(isRequestPhase ? ALL_REQUEST_VARIABLES : ALL_RESPONSE_VARIABLES)],
+      errorMessage: "The 'variable' field must be a valid variable",
     },
     {
-      // Validação para padrões dinâmicos
+      // variables with ${}
+      type: 'string',
+      pattern:
+        '^\\$\\{(' + [...new Set(isRequestPhase ? ALL_REQUEST_VARIABLES : ALL_RESPONSE_VARIABLES)].join('|') + ')\\}$',
+      errorMessage: "The 'variable' field must be a valid variable wrapped in ${}",
+    },
+    {
+      // dynamic pattern
       type: 'string',
       pattern: isRequestPhase
         ? '^(arg_|cookie_|http_)[a-zA-Z0-9_]+$'
         : '^(arg_|cookie_|http_|sent_http_|upstream_cookie_|upstream_http_)[a-zA-Z0-9_]+$',
     },
     {
-      // Validação para variáveis especiais com argumentos
+      // dynamic pattern with ${}
+      type: 'string',
+      pattern: isRequestPhase
+        ? '^\\$\\{(arg_|cookie_|http_)[a-zA-Z0-9_]+\\}$'
+        : '^\\$\\{(arg_|cookie_|http_|sent_http_|upstream_cookie_|upstream_http_)[a-zA-Z0-9_]+\\}$',
+    },
+    {
+      // special variables with arguments
       type: 'string',
       pattern: `^(${SPECIAL_VARIABLES.join('|')})\\([^)]+\\)$`,
     },
@@ -450,7 +466,7 @@ const azionConfigSchema = {
           additionalProperties: false,
           errorMessage: {
             additionalProperties: "No additional properties are allowed in the 'preset' object.",
-            required: "The 'name' and 'mode' fields are required in the 'preset' object.",
+            required: "The 'name and mode' fields are required in the 'preset' object.",
           },
         },
         memoryFS: {

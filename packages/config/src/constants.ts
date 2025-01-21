@@ -86,7 +86,7 @@ export const DYNAMIC_VARIABLE_PATTERNS = [
   'upstream_http_[a-zA-Z0-9_]+',
 ] as const;
 
-export const RULE_VARIABLES = [...ALL_REQUEST_VARIABLES, ...ALL_RESPONSE_VARIABLES] as const;
+export const RULE_VARIABLES = [...new Set([...ALL_REQUEST_VARIABLES, ...ALL_RESPONSE_VARIABLES])] as const;
 
 // Adicionando as novas constantes do firewall
 export const FIREWALL_BEHAVIOR_NAMES = [
@@ -129,7 +129,25 @@ export type ResponseVariable = (typeof ALL_RESPONSE_VARIABLES)[number];
 export type RuleOperatorWithValue = (typeof RULE_OPERATORS_WITH_VALUE)[number];
 export type RuleOperatorWithoutValue = (typeof RULE_OPERATORS_WITHOUT_VALUE)[number];
 export type RuleConditional = (typeof RULE_CONDITIONALS)[number];
-export type RuleVariable = (typeof RULE_VARIABLES)[number];
+
+// Criar um tipo utilitário para gerar as versões com ${}
+type WithDollarBraces<T extends string> = `\${${T}}` | T;
+
+// Criar um tipo para variáveis dinâmicas
+type DynamicVariable =
+  | `arg_${string}`
+  | `cookie_${string}`
+  | `http_${string}`
+  | `sent_http_${string}`
+  | `upstream_cookie_${string}`
+  | `upstream_http_${string}`;
+
+// Modificar a definição do tipo RuleVariable para incluir variáveis dinâmicas
+export type RuleVariable =
+  | WithDollarBraces<(typeof RULE_VARIABLES)[number]>
+  | DynamicVariable
+  | WithDollarBraces<DynamicVariable>;
+
 export type FirewallBehaviorName = (typeof FIREWALL_BEHAVIOR_NAMES)[number];
 export type FirewallRateLimitType = (typeof FIREWALL_RATE_LIMIT_TYPES)[number];
 export type FirewallRateLimitBy = (typeof FIREWALL_RATE_LIMIT_BY)[number];

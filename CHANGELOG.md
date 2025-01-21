@@ -1,3 +1,10 @@
+### [1.12.1-stage.1](https://github.com/aziontech/lib/compare/v1.12.0...v1.12.1-stage.1) (2025-01-21)
+
+
+### Bug Fixes
+
+* criteria variables validation (#89) ([2a11fef](https://github.com/aziontech/lib/commit/2a11fefee92bfe8312f67a4335ed1cb39a1a3dad))
+
 ## [1.12.0](https://github.com/aziontech/lib/compare/v1.11.1...v1.12.0) (2025-01-20)
 
 
