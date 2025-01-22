@@ -11,6 +11,7 @@ import JavaScript from './presets/javascript/index';
 import Jekyll from './presets/jekyll/index';
 import Next from './presets/next/index';
 import Nuxt from './presets/nuxt/index';
+import Qwik from './presets/qwik/index';
 import React from './presets/react/index';
 import RustWasm from './presets/rustwasm/index';
 import Svelte from './presets/svelte/index';
@@ -32,6 +33,7 @@ const presets = {
   Jekyll,
   Next,
   Nuxt,
+  Qwik,
   React,
   RustWasm,
   Svelte,
@@ -54,6 +56,7 @@ export {
   Jekyll,
   Next,
   Nuxt,
+  Qwik,
   React,
   RustWasm,
   Svelte,
