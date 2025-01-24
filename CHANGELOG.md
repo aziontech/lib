@@ -1,3 +1,10 @@
+## [1.13.0-stage.1](https://github.com/aziontech/lib/compare/v1.12.1...v1.13.0-stage.1) (2025-01-24)
+
+
+### Features
+
+* add preset qwik ([cd77b0f](https://github.com/aziontech/lib/commit/cd77b0fa83de2021236199ed744ab2cac21e6a1d))
+
 ### [1.12.1](https://github.com/aziontech/lib/compare/v1.12.0...v1.12.1) (2025-01-21)
 
 
