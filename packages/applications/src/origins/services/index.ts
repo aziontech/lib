@@ -28,19 +28,33 @@ const listOrigins = async (
   debug?: boolean,
 ): Promise<ApiListOriginsResponse> => {
   try {
-    const { page = 1, page_size = 10, sort = 'name', order = 'asc', filter = '' } = params || {};
-    const queryParams = new URLSearchParams({
-      page: String(page),
-      page_size: String(page_size),
-      sort,
-      order,
-      filter,
-    });
+    const { page = 1, page_size = 10, sort, order, filter } = params || {};
+    const queryParams = new URLSearchParams();
+
+    if (page) queryParams.append('page', String(page));
+    if (page_size) queryParams.append('page_size', String(page_size));
+    if (sort) queryParams.append('sort', sort);
+    if (order) queryParams.append('order', order);
+    if (filter) queryParams.append('filter', filter);
+
+    const url = `${BASE_URL}/${Id}/origins${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        Authorization: `Token ${token}`,
+      });
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/origins?${queryParams.toString()}`,
+      url,
       {
         method: 'GET',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+        headers: {
+          Accept: 'application/json; version=3',
+          Authorization: `Token ${token}`,
+        },
       },
       debug,
     );
@@ -67,11 +81,24 @@ const getOriginByKey = async (
   debug?: boolean,
 ): Promise<ApiGetOriginResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/origins/${originKey}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        Authorization: `Token ${token}`,
+      });
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/origins/${originKey}`,
+      url,
       {
         method: 'GET',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+        headers: {
+          Accept: 'application/json; version=3',
+          Authorization: `Token ${token}`,
+        },
       },
       debug,
     );
@@ -98,8 +125,20 @@ const createOrigin = async (
   debug?: boolean,
 ): Promise<ApiCreateOriginResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/origins`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      });
+      console.log('Request body:', originData);
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/origins`,
+      url,
       {
         method: 'POST',
         headers: {
@@ -136,8 +175,20 @@ const updateOrigin = async (
   debug?: boolean,
 ): Promise<ApiUpdateOriginResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/origins/${originKey}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      });
+      console.log('Request body:', originData);
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/origins/${originKey}`,
+      url,
       {
         method: 'PATCH',
         headers: {
@@ -172,11 +223,24 @@ const deleteOrigin = async (
   debug?: boolean,
 ): Promise<ApiDeleteOriginResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/origins/${originKey}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        Authorization: `Token ${token}`,
+      });
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/origins/${originKey}`,
+      url,
       {
         method: 'DELETE',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+        headers: {
+          Accept: 'application/json; version=3',
+          Authorization: `Token ${token}`,
+        },
       },
       debug,
     );
