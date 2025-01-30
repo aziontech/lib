@@ -28,16 +28,17 @@ const listFunctionInstances = async (
   debug?: boolean,
 ): Promise<ApiListFunctionInstancesResponse> => {
   try {
-    const { page = 1, page_size = 10, sort = 'asc', order_by = 'name', filter = '' } = params || {};
-    const queryParams = new URLSearchParams({
-      page: String(page),
-      page_size: String(page_size),
-      sort,
-      order_by,
-      filter,
-    });
+    const { page = 1, page_size = 10, sort, order_by, filter } = params || {};
+    const queryParams = new URLSearchParams();
+
+    if (page) queryParams.append('page', String(page));
+    if (page_size) queryParams.append('page_size', String(page_size));
+    if (sort) queryParams.append('sort', sort);
+    if (order_by) queryParams.append('order_by', order_by);
+    if (filter) queryParams.append('filter', filter);
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/functions_instances?${queryParams.toString()}`,
+      `${BASE_URL}/${Id}/functions_instances${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
       {
         method: 'GET',
         headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
