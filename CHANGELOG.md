@@ -1,3 +1,10 @@
+### [1.13.1](https://github.com/aziontech/lib/compare/v1.13.0...v1.13.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* **manifest:** set response cookie ([ddb98a0](https://github.com/aziontech/lib/commit/ddb98a0b9ebc283f88d1e34044b62f85af907770))
+
 ### [1.13.1-stage.1](https://github.com/aziontech/lib/compare/v1.13.0...v1.13.1-stage.1) (2025-01-30)
 
 
