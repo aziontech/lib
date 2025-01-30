@@ -27,18 +27,34 @@ export const listRules = async (
   debug?: boolean,
 ): Promise<ApiListRulesResponse> => {
   try {
-    const { page = 1, page_size = 10, sort = 'name', order = 'asc' } = params || {};
-    const queryParams = new URLSearchParams({
-      page: String(page),
-      page_size: String(page_size),
-      sort,
-      order,
-    });
+    const { page = 1, page_size = 10, sort, order } = params || {};
+    const queryParams = new URLSearchParams();
+
+    if (page) queryParams.append('page', String(page));
+    if (page_size) queryParams.append('page_size', String(page_size));
+    if (sort) queryParams.append('sort', sort);
+    if (order) queryParams.append('order', order);
+
+    const url = `${BASE_URL}/${Id}/rules_engine/${phase}/rules${
+      queryParams.toString() ? `?${queryParams.toString()}` : ''
+    }`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        Authorization: `Token ${token}`,
+      });
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/rules_engine/${phase}/rules?${queryParams.toString()}`,
+      url,
       {
         method: 'GET',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+        headers: {
+          Accept: 'application/json; version=3',
+          Authorization: `Token ${token}`,
+        },
       },
       debug,
     );
@@ -66,11 +82,24 @@ export const getRuleById = async (
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        Authorization: `Token ${token}`,
+      });
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`,
+      url,
       {
         method: 'GET',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+        headers: {
+          Accept: 'application/json; version=3',
+          Authorization: `Token ${token}`,
+        },
       },
       debug,
     );
@@ -99,8 +128,20 @@ export const createRule = async (
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/rules_engine/${phase}/rules`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      });
+      console.log('Request body:', ruleData);
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/rules_engine/${phase}/rules`,
+      url,
       {
         method: 'POST',
         headers: {
@@ -138,8 +179,20 @@ export const updateRule = async (
   debug?: boolean,
 ): Promise<ApiRuleResponse> => {
   try {
+    const url = `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      });
+      console.log('Request body:', ruleData);
+    }
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`,
+      url,
       {
         method: 'PATCH',
         headers: {
@@ -175,11 +228,24 @@ export const deleteRule = async (
   debug?: boolean,
 ): Promise<void> => {
   try {
+    const url = `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`;
+
+    if (debug) {
+      console.log('Request URL:', url);
+      console.log('Request headers:', {
+        Accept: 'application/json; version=3',
+        Authorization: `Token ${token}`,
+      });
+    }
+
     await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/rules_engine/${phase}/rules/${ruleId}`,
+      url,
       {
         method: 'DELETE',
-        headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
+        headers: {
+          Accept: 'application/json; version=3',
+          Authorization: `Token ${token}`,
+        },
       },
       debug,
     );

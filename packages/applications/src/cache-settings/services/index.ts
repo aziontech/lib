@@ -19,15 +19,16 @@ export const getCacheSettings = async (
   debug?: boolean,
 ): Promise<ApiListCacheSettingsResponse> => {
   try {
-    const { page = 1, page_size = 10, sort = 'name', order = 'asc' } = params || {};
-    const queryParams = new URLSearchParams({
-      page: String(page),
-      page_size: String(page_size),
-      sort,
-      order,
-    });
+    const { page = 1, page_size = 10, sort, order } = params || {};
+    const queryParams = new URLSearchParams();
+
+    if (page) queryParams.append('page', String(page));
+    if (page_size) queryParams.append('page_size', String(page_size));
+    if (sort) queryParams.append('sort', sort);
+    if (order) queryParams.append('order', order);
+
     const data = await fetchWithErrorHandling(
-      `${BASE_URL}/${Id}/cache_settings?${queryParams.toString()}`,
+      `${BASE_URL}/${Id}/cache_settings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`,
       {
         method: 'GET',
         headers: { Accept: 'application/json; version=3', Authorization: `Token ${token}` },
