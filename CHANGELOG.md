@@ -1,3 +1,15 @@
+## [1.13.0](https://github.com/aziontech/lib/compare/v1.12.1...v1.13.0) (2025-01-30)
+
+
+### Features
+
+* add preset qwik ([cd77b0f](https://github.com/aziontech/lib/commit/cd77b0fa83de2021236199ed744ab2cac21e6a1d))
+
+
+### Bug Fixes
+
+* sdk search params (#92) ([3d36aa0](https://github.com/aziontech/lib/commit/3d36aa03f8cfbd00c9e6b3647e66ccd6dd4ce7a0))
+
 ## [1.13.0-stage.2](https://github.com/aziontech/lib/compare/v1.13.0-stage.1...v1.13.0-stage.2) (2025-01-30)
 
 
