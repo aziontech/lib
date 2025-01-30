@@ -1300,7 +1300,7 @@ describe('convertJsonConfigToObject', () => {
               ],
               behaviors: [
                 {
-                  name: 'add_response_cookie',
+                  name: 'set_cookie',
                   target: 'cookieName=cookieValue',
                 },
               ],

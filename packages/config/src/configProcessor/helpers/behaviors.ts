@@ -188,7 +188,7 @@ export const requestBehaviors = {
 export const responseBehaviors = {
   setCookie: {
     transform: (value: any) => ({
-      name: 'add_response_cookie',
+      name: 'set_cookie',
       target: value,
     }),
   },
@@ -407,7 +407,7 @@ export const revertRequestBehaviors = {
 };
 
 export const revertResponseBehaviors = {
-  add_response_cookie: {
+  set_cookie: {
     transform: (value: any) => ({
       setCookie: value,
     }),
