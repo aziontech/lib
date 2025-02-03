@@ -1,21 +1,29 @@
-const nextNodePresetPath = `./polyfills/node/frameworks/next`;
-const nodePolyfillsPath = `./polyfills/node`;
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const getAbsolutePath = () => path.resolve(__dirname, '../', 'src');
+
+const nextNodePresetPath = `${getAbsolutePath()}/polyfills/node/frameworks/next`;
+const polyfillsPath = `${getAbsolutePath()}/polyfills`;
 
 export default {
   inject: {
-    __dirname: `${nodePolyfillsPath}/node/globals/path-dirname.js`,
-    __filename: `${nodePolyfillsPath}/node/globals/path-filename.js`,
-    process: `${nodePolyfillsPath}/node/globals/process.cjs`,
+    __dirname: `${polyfillsPath}/node/globals/path-dirname.js`,
+    __filename: `${polyfillsPath}/node/globals/path-filename.js`,
+    process: `${polyfillsPath}/node/globals/process.cjs`,
   },
   alias: {
     'azion/utils': 'azion/utils',
     '@fastly/http-compute-js': '@fastly/http-compute-js',
     'next/dist/compiled/etag': `${nextNodePresetPath}/custom-server/12.3.x/util/etag.js`,
     accepts: 'accepts',
-    crypto: `${nodePolyfillsPath}/node/crypto.js`,
+    crypto: `${polyfillsPath}/node/crypto.js`,
     events: 'events/events.js',
     http: 'stream-http',
-    module: `${nodePolyfillsPath}/node/module.js`,
+    module: `${polyfillsPath}/node/module.js`,
     stream: 'stream-browserify/',
     string_decoder: 'string_decoder/lib/string_decoder.js',
     url: 'url/url.js',

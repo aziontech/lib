@@ -74,7 +74,8 @@
     "README.md",
     "package.json",
     "packages/**/dist/**/*",
-    "cli/**/*"
+    "cli/**/*",
+    "packages/unenv-preset/src/polyfills/*"
   ],
   "exports": {
     ".": {
