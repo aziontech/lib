@@ -74,7 +74,8 @@
     "README.md",
     "package.json",
     "packages/**/dist/**/*",
-    "cli/**/*"
+    "cli/**/*",
+    "packages/unenv-preset/src/polyfills/*"
   ],
   "exports": {
     ".": {
@@ -86,6 +87,11 @@
       "require": "./packages/presets/dist/index.js",
       "import": "./packages/presets/dist/index.mjs",
       "types": "./packages/presets/dist/index.d.ts"
+    },
+    "./unenv-preset": {
+      "require": "./packages/unenv-preset/dist/index.js",
+      "import": "./packages/unenv-preset/dist/index.mjs",
+      "types": "./packages/unenv-preset/dist/index.d.ts"
     },
     "./ai": {
       "require": "./packages/ai/dist/index.js",
@@ -160,6 +166,9 @@
       ],
       "presets": [
         "./packages/presets/dist/index.d.ts"
+      ],
+      "unenv-preset": [
+        "./packages/unenv-preset/dist/index.d.ts"
       ],
       "application": [
         "./packages/application/dist/index.d.ts"
