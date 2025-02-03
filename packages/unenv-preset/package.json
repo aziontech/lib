@@ -22,6 +22,6 @@
     "src/polyfills/*"
   ],
   "dependencies": {
-
+    "crypto-browserify": "^3.12.1"
   }
 }
