@@ -1,3 +1,10 @@
+## [1.14.0-stage.3](https://github.com/aziontech/lib/compare/v1.14.0-stage.2...v1.14.0-stage.3) (2025-02-03)
+
+
+### Bug Fixes
+
+* export polyfills path for unenv-preset package (#98) ([8df8a7a](https://github.com/aziontech/lib/commit/8df8a7a44f7471b2de3ea18898fec433fbf8d59f))
+
 ## [1.14.0-stage.2](https://github.com/aziontech/lib/compare/v1.14.0-stage.1...v1.14.0-stage.2) (2025-02-03)
 
 
