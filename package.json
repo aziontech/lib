@@ -93,6 +93,7 @@
       "import": "./packages/unenv-preset/dist/index.mjs",
       "types": "./packages/unenv-preset/dist/index.d.ts"
     },
+    "./unenv-preset/src/polyfills/*": "./packages/unenv-preset/src/polyfills/*",
     "./ai": {
       "require": "./packages/ai/dist/index.js",
       "import": "./packages/ai/dist/index.mjs",
