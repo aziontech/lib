@@ -1,3 +1,10 @@
+## [1.14.0-stage.2](https://github.com/aziontech/lib/compare/v1.14.0-stage.1...v1.14.0-stage.2) (2025-02-03)
+
+
+### Bug Fixes
+
+* add crypto-browserify as a dependency (#97) ([f6b146f](https://github.com/aziontech/lib/commit/f6b146f6df56710705017558fc06ee2e0a0042a3))
+
 ## [1.14.0-stage.1](https://github.com/aziontech/lib/compare/v1.13.1...v1.14.0-stage.1) (2025-02-03)
 
 
