@@ -14,6 +14,8 @@ export default {
     __dirname: `${polyfillsPath}/node/globals/path-dirname.js`,
     __filename: `${polyfillsPath}/node/globals/path-filename.js`,
     process: `${polyfillsPath}/node/globals/process.cjs`,
+    performance: `${polyfillsPath}/node/globals/performance.js`,
+    navigator: `${polyfillsPath}/node/globals/navigator.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',
