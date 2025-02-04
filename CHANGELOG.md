@@ -1,3 +1,10 @@
+## [1.14.0-stage.4](https://github.com/aziontech/lib/compare/v1.14.0-stage.3...v1.14.0-stage.4) (2025-02-04)
+
+
+### Features
+
+* add temporary polyfills for performance and navigator in unenv-preset (#99) ([919bdf4](https://github.com/aziontech/lib/commit/919bdf42cdd36f00e4e7357129523d472e28a38e))
+
 ## [1.14.0-stage.3](https://github.com/aziontech/lib/compare/v1.14.0-stage.2...v1.14.0-stage.3) (2025-02-03)
 
 
