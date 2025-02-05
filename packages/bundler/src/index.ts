@@ -1,8 +1,4 @@
-const run = () => {
-  console.log('This is a module router!');
-};
-const router = {
-  run,
-};
+import { createAzionESBuildConfig } from './bundlers/esbuild/esbuild';
+import { createAzionWebpackConfig } from './bundlers/webpack/webpack';
 
-export { router as default, run };
+export { createAzionESBuildConfig, createAzionWebpackConfig };

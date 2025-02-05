@@ -1,5 +1,5 @@
 {
-  "name": "@lib/router",
+  "name": "@lib/bundler",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
@@ -24,5 +24,12 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "dependencies": {
+    "@lib/unenv-preset": "workspace:*",
+    "mock-fs": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/mock-fs": "^4.13.4"
+  }
 }
