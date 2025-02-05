@@ -121,8 +121,8 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
     const firewall = payload.firewall;
-    if (!firewall) {
-      return;
+    if (!firewall || Object.keys(firewall).length === 0) {
+      return {};
     }
 
     const firewallConfig: AzionFirewall = {
