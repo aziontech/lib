@@ -1,0 +1,28 @@
+{
+  "name": "@lib/router",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "compile": "tsup --config ../../tsup.config.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "aziontech",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ]
+}
