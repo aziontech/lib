@@ -1,3 +1,10 @@
+### [1.14.1](https://github.com/aziontech/lib/compare/v1.14.0...v1.14.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* adjustments in the domain and firewall processing transform config (#101) ([a455143](https://github.com/aziontech/lib/commit/a455143bf0bc5836ad7de65d67a6fab7c0f4fe7b))
+
 ### [1.14.1-stage.1](https://github.com/aziontech/lib/compare/v1.14.0...v1.14.1-stage.1) (2025-02-06)
 
 
