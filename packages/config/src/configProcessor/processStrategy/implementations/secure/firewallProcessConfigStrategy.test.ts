@@ -96,7 +96,7 @@ describe('FirewallProcessConfigStrategy', () => {
     it('should return empty object when no firewall config is provided', () => {
       const config: AzionConfig = {};
       const manifest = strategy.transformToManifest(config);
-      expect(manifest).toEqual({});
+      expect(manifest).toBeUndefined();
     });
 
     it('should transform all behavior types correctly', () => {

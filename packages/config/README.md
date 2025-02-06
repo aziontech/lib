@@ -327,6 +327,7 @@ Type definition for the domain configuration.
 - `edgeApplicationId?: number` - ID of the edge application.
 - `edgeFirewallId?: number` - ID of the edge firewall.
 - `digitalCertificateId?: string | number | null` - ID of the digital certificate.
+- `active?: boolean` - Whether the domain is active.
 - `mtls?: MTLSConfig` - Configuration for mTLS.
   - `verification: 'enforce' | 'permissive'` - mTLS verification mode.
   - `trustedCaCertificateId: number` - ID of the trusted CA certificate.

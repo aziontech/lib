@@ -9,8 +9,8 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
     const firewall = config?.firewall;
-    if (!firewall) {
-      return {};
+    if (!firewall || Object.keys(firewall).length === 0) {
+      return;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,7 +122,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
     const firewall = payload.firewall;
     if (!firewall || Object.keys(firewall).length === 0) {
-      return {};
+      return;
     }
 
     const firewallConfig: AzionFirewall = {

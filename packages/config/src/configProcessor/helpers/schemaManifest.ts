@@ -190,7 +190,7 @@ const schemaWafManifest = {
 };
 
 const schemaDomainsManifest = {
-  type: 'object',
+  type: ['object', 'null'],
   properties: {
     id: {
       type: 'number',
@@ -253,7 +253,7 @@ const schemaDomainsManifest = {
       errorMessage: "The 'crl_list' field must be an array of numbers.",
     },
   },
-  required: ['name', 'edge_application_id', 'cnames', 'cname_access_only', 'digital_certificate_id'],
+  required: ['name'],
   dependencies: {
     is_mtls_enabled: {
       oneOf: [
@@ -429,7 +429,7 @@ const schemaFirewallRule = {
 };
 
 const schemaFirewallManifest = {
-  type: 'object',
+  type: ['object', 'null'],
   properties: {
     main_settings: {
       type: 'object',
@@ -789,13 +789,17 @@ const schemaManifest = {
         type: "The 'waf' field must be an array",
       },
     },
-    domains: {
-      type: 'array',
-      items: schemaDomainsManifest,
-      errorMessage: "The 'domains' field must be an array of domain items.",
+    domain: {
+      ...schemaDomainsManifest,
+      errorMessage: {
+        type: "The 'domain' field must be an object",
+      },
     },
     firewall: {
       ...schemaFirewallManifest,
+      errorMessage: {
+        type: "The 'firewall' field must be an object",
+      },
     },
     application: {
       type: 'array',

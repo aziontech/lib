@@ -141,7 +141,7 @@ describe('processConfig', () => {
       };
 
       const result = processConfig(azionConfig);
-      expect(result.cache).toEqual([]);
+      expect(result.cache).toBeUndefined();
     });
 
     it('should correctly convert request rules', () => {

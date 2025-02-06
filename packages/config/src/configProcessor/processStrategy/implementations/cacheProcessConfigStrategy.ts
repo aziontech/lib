@@ -26,7 +26,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
     if (!Array.isArray(config?.cache) || config?.cache.length === 0) {
-      return payload;
+      return;
     }
     config?.cache.forEach((cache) => {
       const maxAgeSecondsBrowser = cache?.browser ? this.evaluateMathExpression(cache.browser.maxAgeSeconds) : 0;
