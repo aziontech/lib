@@ -63,11 +63,13 @@ class DomainProcessConfigStrategy extends ProcessConfigStrategy {
       digitalCertificateId: domain.digital_certificate_id,
       edgeApplicationId: domain.edge_application_id,
       edgeFirewallId: domain.edge_firewall_id,
-      mtls: {
-        verification: domain.mtls_verification,
-        trustedCaCertificateId: domain.mtls_trusted_ca_certificate_id,
-        crlList: domain.crl_list,
-      },
+      mtls: domain.mtls_verification
+        ? {
+            verification: domain.mtls_verification,
+            trustedCaCertificateId: domain.mtls_trusted_ca_certificate_id,
+            crlList: domain.crl_list,
+          }
+        : undefined,
     };
     return transformedPayload.domain;
   }

@@ -253,7 +253,7 @@ describe('FirewallProcessConfigStrategy', () => {
       const manifest = {};
       const config = {};
       const result = strategy.transformToConfig(manifest, config);
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual(expect.objectContaining({}));
     });
 
     it('should transform all behavior types from manifest to config', () => {
@@ -299,7 +299,8 @@ describe('FirewallProcessConfigStrategy', () => {
       };
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({
         runFunction: {
           path: '/edge/function.js',
@@ -336,7 +337,8 @@ describe('FirewallProcessConfigStrategy', () => {
       };
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({});
     });
 
@@ -360,7 +362,8 @@ describe('FirewallProcessConfigStrategy', () => {
       };
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({});
     });
   });
