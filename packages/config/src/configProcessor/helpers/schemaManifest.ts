@@ -475,11 +475,9 @@ const schemaFirewallManifest = {
       errorMessage: "The 'rules' field must be an array of firewall rules.",
     },
   },
-  required: ['main_settings'],
   additionalProperties: false,
   errorMessage: {
-    additionalProperties: 'No additional properties are allowed in firewall items.',
-    required: "The 'main_settings' field is required in each firewall item.",
+    additionalProperties: 'No additional properties are allowed in firewall object.',
   },
 };
 
@@ -797,9 +795,7 @@ const schemaManifest = {
       errorMessage: "The 'domains' field must be an array of domain items.",
     },
     firewall: {
-      type: 'array',
-      items: schemaFirewallManifest,
-      errorMessage: "The 'firewall' field must be an array of firewall items.",
+      ...schemaFirewallManifest,
     },
     application: {
       type: 'array',
