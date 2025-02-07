@@ -92,11 +92,11 @@ export const RULE_VARIABLES = [...new Set([...ALL_REQUEST_VARIABLES, ...ALL_RESP
 export const FIREWALL_BEHAVIOR_NAMES = [
   'deny',
   'drop',
-  'setRateLimit',
-  'setWafRuleset',
-  'runFunction',
-  'tagEvent',
-  'setCustomResponse',
+  'set_rate_limit',
+  'set_waf_ruleset',
+  'run_function',
+  'tag_event',
+  'set_custom_response',
 ] as const;
 
 export const FIREWALL_RATE_LIMIT_TYPES = ['second', 'minute'] as const;

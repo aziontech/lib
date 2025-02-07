@@ -1,3 +1,10 @@
+### [1.14.2-stage.1](https://github.com/aziontech/lib/compare/v1.14.1...v1.14.2-stage.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* update schemas and return empty config (#103) ([40d0bce](https://github.com/aziontech/lib/commit/40d0bcecb7b42cd4a3f75bb36047c429ea630783))
+
 ### [1.14.1](https://github.com/aziontech/lib/compare/v1.14.0...v1.14.1) (2025-02-06)
 
 
