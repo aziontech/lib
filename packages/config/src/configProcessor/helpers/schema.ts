@@ -884,6 +884,10 @@ const azionConfigSchema = {
           errorMessage:
             "The 'digitalCertificateId' field must be a string, number or null. If string, it must be 'lets_encrypt'.",
         },
+        active: {
+          type: 'boolean',
+          errorMessage: "The 'active' field must be a boolean.",
+        },
         mtls: {
           type: 'object',
           properties: {

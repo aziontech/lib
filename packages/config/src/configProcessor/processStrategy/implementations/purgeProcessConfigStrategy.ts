@@ -11,7 +11,7 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const payload: any[] = [];
     if (!Array.isArray(config?.purge) || config?.purge.length === 0) {
-      return payload;
+      return;
     }
     config?.purge.forEach((purge) => {
       purge?.urls.forEach((value) => {

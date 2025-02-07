@@ -10,7 +10,7 @@ class BuildProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
     const build = config?.build;
     if (!build) {
-      return {};
+      return;
     }
     const payload: AzionBuild = build;
     return payload;

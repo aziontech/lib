@@ -1832,12 +1832,9 @@ describe('convertJsonConfigToObject', () => {
   describe('Domains', () => {
     it('should throw error when required fields are missing', () => {
       const jsonConfig = {
-        domains: [
-          {
-            name: 'mydomain.com',
-            // missing required fields
-          },
-        ],
+        domain: {
+          // missing required fields
+        },
       };
 
       expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
@@ -1845,15 +1842,13 @@ describe('convertJsonConfigToObject', () => {
 
     it('should throw error for invalid digital_certificate_id value', () => {
       const jsonConfig = {
-        domains: [
-          {
-            name: 'mydomain.com',
-            edge_application_id: 123,
-            cnames: ['www.mydomain.com'],
-            cname_access_only: false,
-            digital_certificate_id: 'invalid_value',
-          },
-        ],
+        domain: {
+          name: 'mydomain.com',
+          edge_application_id: 123,
+          cnames: ['www.mydomain.com'],
+          cname_access_only: false,
+          digital_certificate_id: 'invalid_value',
+        },
       };
 
       expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
@@ -1861,16 +1856,14 @@ describe('convertJsonConfigToObject', () => {
 
     it('should throw error for invalid crl_list values', () => {
       const jsonConfig = {
-        domains: [
-          {
-            name: 'mydomain.com',
-            edge_application_id: 123,
-            cnames: ['www.mydomain.com'],
-            cname_access_only: false,
-            digital_certificate_id: 'lets_encrypt',
-            crl_list: ['invalid', 'values'],
-          },
-        ],
+        domain: {
+          name: 'mydomain.com',
+          edge_application_id: 123,
+          cnames: ['www.mydomain.com'],
+          cname_access_only: false,
+          digital_certificate_id: 'lets_encrypt',
+          crl_list: ['invalid', 'values'],
+        },
       };
 
       expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();

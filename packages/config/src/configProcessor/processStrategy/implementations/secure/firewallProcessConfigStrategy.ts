@@ -9,19 +9,21 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
     const firewall = config?.firewall;
-    if (!firewall) {
-      return {};
+    if (!firewall || Object.keys(firewall).length === 0) {
+      return;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any = {
-      name: firewall.name,
-      domains: firewall.domains || [],
-      is_active: firewall.active ?? true,
-      edge_functions_enabled: firewall.edgeFunctions ?? false,
-      network_protection_enabled: firewall.networkProtection ?? false,
-      waf_enabled: firewall.waf ?? false,
-      debug_rules: firewall.debugRules ?? false,
+      main_settings: {
+        name: firewall.name,
+        domains: firewall.domains || [],
+        is_active: firewall.active ?? true,
+        edge_functions_enabled: firewall.edgeFunctions ?? false,
+        network_protection_enabled: firewall.networkProtection ?? false,
+        waf_enabled: firewall.waf ?? false,
+        debug_rules: firewall.debugRules ?? false,
+      },
     };
 
     if (firewall.rules && firewall.rules.length > 0) {
@@ -37,7 +39,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
                 const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
                 return {
                   ...rest,
-                  variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
+                  variable: criterion.variable,
                   ...(isWithValue && { input_value: inputValue }),
                 };
               }),
@@ -45,7 +47,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           : [
               [
                 {
-                  variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
+                  variable: rule.variable,
                   operator: 'matches',
                   conditional: 'if',
                   input_value: rule.match,
@@ -65,14 +67,14 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     if (behavior.runFunction) {
       behaviors.push({
         name: 'run_function',
-        argument: behavior.runFunction.path,
+        target: behavior.runFunction.path,
       });
     }
 
     if (behavior.setWafRuleset) {
       behaviors.push({
         name: 'set_waf_ruleset',
-        argument: {
+        target: {
           mode: behavior.setWafRuleset.wafMode,
           waf_id: behavior.setWafRuleset.wafId,
         },
@@ -82,7 +84,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     if (behavior.setRateLimit) {
       behaviors.push({
         name: 'set_rate_limit',
-        argument: {
+        target: {
           type: behavior.setRateLimit.type,
           value: behavior.setRateLimit.value,
           limit_by: behavior.setRateLimit.limitBy,
@@ -93,21 +95,21 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     if (behavior.deny) {
       behaviors.push({
         name: 'deny',
-        argument: '',
+        target: '',
       });
     }
 
     if (behavior.drop) {
       behaviors.push({
         name: 'drop',
-        argument: '',
+        target: '',
       });
     }
 
     if (behavior.setCustomResponse) {
       behaviors.push({
         name: 'set_custom_response',
-        argument: {
+        target: {
           status_code: behavior.setCustomResponse.statusCode,
           content_type: behavior.setCustomResponse.contentType,
           content_body: behavior.setCustomResponse.contentBody,
@@ -122,17 +124,17 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
     const firewall = payload.firewall;
     if (!firewall || Object.keys(firewall).length === 0) {
-      return {};
+      return;
     }
 
     const firewallConfig: AzionFirewall = {
-      name: firewall.name,
-      domains: firewall.domains || [],
-      active: firewall.is_active ?? true,
-      edgeFunctions: firewall.edge_functions_enabled ?? false,
-      networkProtection: firewall.network_protection_enabled ?? false,
-      waf: firewall.waf_enabled ?? false,
-      debugRules: firewall.debug_rules ?? false,
+      name: firewall.main_settings?.name,
+      domains: firewall?.main_settings?.domains || [],
+      active: firewall?.main_settings?.is_active ?? true,
+      edgeFunctions: firewall?.main_settings?.edge_functions_enabled ?? false,
+      networkProtection: firewall?.main_settings?.network_protection_enabled ?? false,
+      waf: firewall?.main_settings?.waf_enabled ?? false,
+      debugRules: firewall?.main_settings?.debug_rules ?? false,
     };
 
     if (firewall.rules_engine && firewall.rules_engine.length > 0) {
@@ -171,20 +173,20 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
       switch (b.name) {
         case 'run_function':
           behavior.runFunction = {
-            path: b.argument,
+            path: b.target,
           };
           break;
         case 'set_waf_ruleset':
           behavior.setWafRuleset = {
-            wafMode: b.argument.mode,
-            wafId: b.argument.waf_id,
+            wafMode: b.target.mode,
+            wafId: b.target.waf_id,
           };
           break;
         case 'set_rate_limit':
           behavior.setRateLimit = {
-            type: b.argument.type,
-            value: b.argument.value,
-            limitBy: b.argument.limit_by,
+            type: b.target.type,
+            value: b.target.value,
+            limitBy: b.target.limit_by,
           };
           break;
         case 'deny':
@@ -195,9 +197,9 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           break;
         case 'set_custom_response':
           behavior.setCustomResponse = {
-            statusCode: b.argument.status_code,
-            contentType: b.argument.content_type,
-            contentBody: b.argument.content_body,
+            statusCode: b.target.status_code,
+            contentType: b.target.content_type,
+            contentBody: b.target.content_body,
           };
           break;
       }

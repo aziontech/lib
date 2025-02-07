@@ -29,6 +29,8 @@ export type AzionDomain = {
   edgeFirewallId?: number;
   /** Digital certificate ID */
   digitalCertificateId?: string | number | null;
+  /** Indicates if the domain is active */
+  active?: boolean;
   /** Mutual TLS configuration */
   mtls?: {
     /** Verification mode for MTLS */
