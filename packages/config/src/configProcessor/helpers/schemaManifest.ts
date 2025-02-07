@@ -309,6 +309,7 @@ const schemaFirewallRuleCriteria = {
   additionalProperties: false,
   errorMessage: {
     required: "The 'variable', 'operator' and 'conditional' fields are required in criteria.",
+    additionalProperties: 'No additional properties are allowed in criteria.',
   },
 };
 
@@ -393,6 +394,10 @@ const schemaFirewallRuleBehavior = {
   },
   required: ['name'],
   additionalProperties: false,
+  errorMessage: {
+    required: "The 'name' field is required in firewall behaviors.",
+    additionalProperties: 'No additional properties are allowed in firewall behaviors.',
+  },
 };
 
 const schemaFirewallRule = {
@@ -406,8 +411,20 @@ const schemaFirewallRule = {
       type: 'string',
       errorMessage: "The 'name' field must be a string.",
     },
-    criteria: schemaFirewallRuleCriteria,
-    behavior: schemaFirewallRuleBehavior,
+    criteria: {
+      type: 'array',
+      items: {
+        type: 'array',
+        items: schemaFirewallRuleCriteria,
+        errorMessage: "The 'criteria' field must be an array of criteria objects.",
+      },
+      errorMessage: "The 'criteria' field must be an array of criteria objects.",
+    },
+    behaviors: {
+      type: 'array',
+      items: schemaFirewallRuleBehavior,
+      errorMessage: "The 'behaviors' field must be an array of behavior objects.",
+    },
     description: {
       type: 'string',
       maxLength: 1000,
@@ -424,8 +441,13 @@ const schemaFirewallRule = {
       errorMessage: "The 'order' field must be an integer.",
     },
   },
-  required: ['name', 'criteria', 'behavior'],
+  required: ['name', 'criteria', 'behaviors'],
   additionalProperties: false,
+  errorMessage: {
+    type: "The 'firewall' field must be an object",
+    required: "The 'name', 'criteria' and 'behaviors' fields are required in firewall rules.",
+    additionalProperties: 'No additional properties are allowed in firewall rules.',
+  },
 };
 
 const schemaFirewallManifest = {
@@ -441,9 +463,9 @@ const schemaFirewallManifest = {
         domains: {
           type: 'array',
           items: {
-            type: 'number',
+            type: 'string',
+            errorMessage: "Each domain in the firewall's domains list must be a string",
           },
-          errorMessage: "The 'domains' field must be an array of numbers.",
         },
         is_active: {
           type: 'boolean',
@@ -461,6 +483,10 @@ const schemaFirewallManifest = {
           type: 'boolean',
           errorMessage: "The 'waf_enabled' field must be a boolean.",
         },
+        debug_rules: {
+          type: 'boolean',
+          errorMessage: "The 'debug_rules' field must be a boolean.",
+        },
       },
       required: ['name'],
       additionalProperties: false,
@@ -469,15 +495,21 @@ const schemaFirewallManifest = {
         required: "The 'name' field is required in firewall main settings.",
       },
     },
-    rules: {
+    rules_engine: {
       type: 'array',
       items: schemaFirewallRule,
-      errorMessage: "The 'rules' field must be an array of firewall rules.",
+      errorMessage: {
+        type: "The 'rules_engine' field must be an array",
+        required: "The 'rules_engine' field must be an array of firewall rules.",
+        additionalProperties: 'No additional properties are allowed in firewall rules.',
+      },
     },
   },
+  required: ['main_settings'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in firewall object.',
+    required: "The 'main_settings' field is required in firewall object.",
   },
 };
 
