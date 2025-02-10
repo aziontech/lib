@@ -1,3 +1,10 @@
+## [1.16.0-stage.1](https://github.com/aziontech/lib/compare/v1.15.0...v1.16.0-stage.1) (2025-02-10)
+
+
+### Features
+
+* new preset for preact ssg ([fa9acf2](https://github.com/aziontech/lib/commit/fa9acf24d9c3f4075d911b32ec109ece113f86df))
+
 ## [1.15.0](https://github.com/aziontech/lib/compare/v1.14.2...v1.15.0) (2025-02-10)
 
 
