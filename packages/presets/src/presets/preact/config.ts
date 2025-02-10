@@ -3,7 +3,7 @@ import { defineConfig } from 'azion/config';
 export default defineConfig({
   build: {
     preset: {
-      name: 'react',
+      name: 'preact',
     },
   },
   origin: [
