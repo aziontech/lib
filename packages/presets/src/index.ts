@@ -11,7 +11,6 @@ import JavaScript from './presets/javascript/index';
 import Jekyll from './presets/jekyll/index';
 import Next from './presets/next/index';
 import Nuxt from './presets/nuxt/index';
-import Preact from './presets/preact/index';
 import Qwik from './presets/qwik/index';
 import React from './presets/react/index';
 import RustWasm from './presets/rustwasm/index';
@@ -34,7 +33,6 @@ const presets = {
   Jekyll,
   Next,
   Nuxt,
-  Preact,
   Qwik,
   React,
   RustWasm,
@@ -58,7 +56,6 @@ export {
   Jekyll,
   Next,
   Nuxt,
-  Preact,
   Qwik,
   React,
   RustWasm,
