@@ -46,10 +46,7 @@ function runTimeout(fun) {
     return setTimeout(fun, 0);
   }
   // if setTimeout wasn't available but was latter defined
-  if (
-    (cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) &&
-    setTimeout
-  ) {
+  if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
     cachedSetTimeout = setTimeout;
     return setTimeout(fun, 0);
   }
@@ -72,10 +69,7 @@ function runClearTimeout(marker) {
     return clearTimeout(marker);
   }
   // if clearTimeout wasn't available but was latter defined
-  if (
-    (cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) &&
-    clearTimeout
-  ) {
+  if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
     cachedClearTimeout = clearTimeout;
     return clearTimeout(marker);
   }
@@ -161,9 +155,7 @@ Item.prototype.run = function () {
 processShim.title = 'browser';
 processShim.browser = true;
 processShim.env = processShim.env =
-  typeof globalThis.process !== 'undefined' && globalThis.process.env
-    ? globalThis.process.env
-    : {};
+  typeof globalThis.process !== 'undefined' && globalThis.process.env ? globalThis.process.env : {};
 processShim.argv = [];
 processShim.version = ''; // empty string to avoid regexp issues
 processShim.versions = { node: '18.3.1' };
