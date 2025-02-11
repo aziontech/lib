@@ -25,6 +25,8 @@
     "dist",
     "package.json"
   ],
+  "dependencies": {
+  },
   "devDependencies": {
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",

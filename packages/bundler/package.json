@@ -26,7 +26,8 @@
     "package.json"
   ],
   "dependencies": {
-    "@lib/unenv-preset": "workspace:*",
+    "@lib/unenv-preset": "*",
+    "@swc/core": "^1.10.15",
     "mock-fs": "^5.5.0"
   },
   "devDependencies": {

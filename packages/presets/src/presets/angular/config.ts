@@ -1,10 +1,9 @@
 import { defineConfig } from 'azion/config';
-
 const config = defineConfig({
   build: {
-    preset: {
-      name: 'angular',
-    },
+    bundler: 'webpack',
+    preset: 'angular',
+    polyfills: false,
   },
   origin: [
     {

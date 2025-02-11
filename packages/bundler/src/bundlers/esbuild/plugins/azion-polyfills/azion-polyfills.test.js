@@ -1,7 +1,7 @@
 import * as esbuild from 'esbuild';
 import ESBuildAzionModulePlugin from './azion-polyfills.plugins.js';
 
-globalThis.vulcan = { buildProd: true };
+globalThis.vulcan = { isProduction: true };
 
 describe('Esbuild Azion Plugin', () => {
   it('should resolve the azion module: as external', async () => {
@@ -19,9 +19,7 @@ describe('Esbuild Azion Plugin', () => {
       plugins: [ESBuildAzionModulePlugin(true)],
     });
 
-    expect(results.outputFiles.at(0)?.text.trim()).toContain(
-      'import storage from "azion:storage";',
-    );
+    expect(results.outputFiles.at(0)?.text.trim()).toContain('import storage from "azion:storage";');
   });
 
   it('should resolve the azion module: for local execution', async () => {
@@ -39,8 +37,6 @@ describe('Esbuild Azion Plugin', () => {
       plugins: [ESBuildAzionModulePlugin(false)],
     });
 
-    expect(results.outputFiles.at(0)?.text.trim()).toContain(
-      'bundler-azion-modules-polyfills',
-    );
+    expect(results.outputFiles.at(0)?.text.trim()).toContain('bundler-azion-modules-polyfills');
   });
 });

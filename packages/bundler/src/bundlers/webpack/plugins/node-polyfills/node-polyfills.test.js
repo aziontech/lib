@@ -1,10 +1,10 @@
-import { promisify } from 'util';
-import webpack from 'webpack';
 import fs from 'fs';
 import tmp from 'tmp';
+import { promisify } from 'util';
+import webpack from 'webpack';
 import NodePolyfillPlugin from './node-polyfills.plugins.js';
 
-globalThis.vulcan = { buildProd: true };
+globalThis.vulcan = { isProduction: true };
 
 describe('Webpack Node Plugin', () => {
   let tmpDir;

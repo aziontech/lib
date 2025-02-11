@@ -1,10 +1,10 @@
-import { promisify } from 'util';
-import webpack from 'webpack';
 import fs from 'fs';
 import tmp from 'tmp';
+import { promisify } from 'util';
+import webpack from 'webpack';
 import AzionPolyfillPlugin from './azion-polyfills.plugins.js';
 
-globalThis.vulcan = { buildProd: true };
+globalThis.vulcan = { isProduction: true };
 
 describe('Webpack Azion Plugin', () => {
   let tmpDir;
@@ -51,9 +51,7 @@ describe('Webpack Azion Plugin', () => {
       plugins: [new AzionPolyfillPlugin(false)],
     });
     const bundle = fs.readFileSync(tmpOutput.name, 'utf-8');
-    expect(bundle).toContain(
-      './lib/env/polyfills/azion/storage/storage.polyfills.js',
-    );
+    expect(bundle).toContain('./lib/env/polyfills/azion/storage/storage.polyfills.js');
   }, 20000);
 
   it('should resolve the azion module: as external', async () => {

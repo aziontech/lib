@@ -1,5 +1,5 @@
 import { BuildOptions, Plugin as ESBuildPlugin } from 'esbuild';
-import { Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
+import { Configuration, Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
 
 export type ConfigObject = WebpackConfig & {
   [key: string]: unknown;
@@ -73,8 +73,8 @@ export interface Bundler extends BundlerConfig {
   baseConfig: ConfigObject;
 }
 
-export interface WebpackBundler extends WebpackConfiguration {
-  baseConfig: WebpackConfiguration;
-  mergeConfig: (config: WebpackConfiguration) => WebpackConfiguration;
-  applyConfig: (config: WebpackConfiguration) => WebpackConfiguration;
+export interface WebpackBundler extends Configuration {
+  baseConfig: Configuration;
+  mergeConfig: (config: Configuration) => Configuration;
+  applyConfig: (config: Configuration) => Configuration;
 }

@@ -1,7 +1,7 @@
 import * as esbuild from 'esbuild';
 import ESBuildNodeModulePlugin from './node-polyfills.plugins.js';
 
-globalThis.vulcan = { buildProd: true };
+globalThis.vulcan = { isProduction: true };
 
 describe('Esbuild Node Plugin', () => {
   it('should check the env (NODE_ENV) in define options', async () => {
@@ -13,9 +13,7 @@ describe('Esbuild Node Plugin', () => {
       plugins: [ESBuildNodeModulePlugin()],
     });
 
-    expect(results.outputFiles.at(0)?.text.trim()).toContain(
-      'console.log("production");',
-    );
+    expect(results.outputFiles.at(0)?.text.trim()).toContain('console.log("production");');
   });
 
   it('should resolve global crypto polyfill', async () => {
@@ -33,8 +31,6 @@ describe('Esbuild Node Plugin', () => {
       plugins: [ESBuildNodeModulePlugin()],
     });
 
-    expect(results.outputFiles.at(0)?.text.trim()).toContain(
-      'node-built-in-modules:unenv/runtime/node/crypto/index',
-    );
+    expect(results.outputFiles.at(0)?.text.trim()).toContain('node-built-in-modules:unenv/runtime/node/crypto/index');
   });
 });

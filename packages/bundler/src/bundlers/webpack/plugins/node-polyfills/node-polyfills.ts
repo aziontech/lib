@@ -22,11 +22,11 @@ const POLYFILL_PREFIX_PROD = 'azionprd:';
 const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
 
 class NodePolyfillPlugin implements WebpackPluginInstance {
-  private buildProd: boolean;
+  private isProduction: boolean;
   private prefix: string;
 
-  constructor(buildProd: boolean) {
-    this.buildProd = buildProd;
+  constructor(isProduction: boolean) {
+    this.isProduction = isProduction;
     this.prefix = 'node:';
   }
 
@@ -83,7 +83,7 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
 
     compiler.options.plugins.push(new compiler.webpack.EnvironmentPlugin(envsNext));
 
-    if (this.buildProd) {
+    if (this.isProduction) {
       compiler.options.externals = {
         ...(typeof compiler.options.externals === 'object' ? compiler.options.externals : {}),
         ...Object.fromEntries(
@@ -109,7 +109,7 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
     };
 
     // change alias and fallback to polyfill path
-    if (this.buildProd) {
+    if (this.isProduction) {
       compiler.options.resolve.alias = {
         ...Object.fromEntries(
           Object.entries(compiler.options.resolve.alias).map(([key, value]) => {

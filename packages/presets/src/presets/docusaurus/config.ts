@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   build: {
-    preset: {
-      name: 'docusaurus',
-    },
+    bundler: 'webpack',
+    preset: 'docusaurus',
+    polyfills: false,
   },
   origin: [
     {

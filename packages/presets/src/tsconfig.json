@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "ESNext",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "azion": ["../../client/src/index.ts"],
+      "azion/config": ["../../config/src/index.ts"],
+      "azion/bundler": ["../../bundler/src/index.ts"],
+      "azion/presets": ["./index.ts"]
+    }
+  }
+}

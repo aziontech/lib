@@ -272,10 +272,10 @@ function defineNextJsRuntime(options: BuildOptions) {
 
 /**
  * ESBuild Node Module Plugin for polyfilling node modules.
- * @param {boolean} buildProd Parameter to identify whether the build is dev or prod
+ * @param {boolean} isProduction Parameter to identify whether the build is dev or prod
  * @returns {object} - ESBuild plugin object.
  */
-const ESBuildNodeModulePlugin = (buildProd: boolean) => {
+const ESBuildNodeModulePlugin = (isProduction: boolean) => {
   const NAME = 'bundler-node-modules-polyfills';
 
   return {
@@ -310,7 +310,7 @@ const ESBuildNodeModulePlugin = (buildProd: boolean) => {
       };
 
       // resolve modules
-      nodeBuiltInModules(build, buildProd);
+      nodeBuiltInModules(build, isProduction);
       handleAliasUnenv(build);
       handleNodeJSGlobals(build);
       handleInternalPolyfillEnvDev(build);
