@@ -1,25 +1,19 @@
 import * as esbuild from 'esbuild';
 import { Plugin as ESBuildPlugin } from 'esbuild';
-import { pipe } from 'lodash/fp';
+import { flow } from 'lodash-es';
 import {
   applyDefineVars,
   createBundlerPlugins,
+  extendConfig,
   getBannerContent,
   getOutputFilename,
 } from '../../helpers/bundler-utils';
-import { BuildEnv, bundlerConfig, ESBuildConfiguration } from '../../types/bundler';
+import { BuildEnv, BundlerConfig, ESBuildConfiguration } from '../../types/bundler';
 import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 
-interface ESBuildConfig extends esbuild.BuildOptions {
-  banner?: {
-    js?: string;
-  };
-  loader?: {
-    [ext: string]: esbuild.Loader;
-  };
-}
+interface ESBuildConfig extends esbuild.BuildOptions {}
 
 interface ESBuildBundler {
   baseConfig: ESBuildConfiguration;
@@ -46,19 +40,16 @@ const applyContentInjection =
   (content: string | undefined): ESBuildConfig => {
     if (!content) return config;
 
-    return {
-      ...config,
-      banner: {
-        ...config.banner,
-        js: config.banner?.js ? `${config.banner.js} ${content}` : content,
-      },
-    };
+    config.banner = config.banner || {};
+    config.banner.js = config.banner.js ? `${config.banner.js} ${content}` : content;
+
+    return config;
   };
 
 /**
  * Creates ESBuild bundler instance
  */
-export const createAzionESBuildConfig = (bundlerConfig: bundlerConfig, ctx: BuildEnv): ESBuildBundler => {
+export const createAzionESBuildConfig = (bundlerConfig: BundlerConfig, ctx: BuildEnv): ESBuildBundler => {
   const baseConfig: ESBuildConfiguration = {
     ...AzionEsbuildConfig,
     entryPoints: [bundlerConfig.entry],
@@ -73,11 +64,12 @@ export const createAzionESBuildConfig = (bundlerConfig: bundlerConfig, ctx: Buil
   return {
     baseConfig,
     mergeConfig: (config: ESBuildConfiguration) =>
-      pipe([
+      flow([
         () => bundlerPlugins.applyPolyfills(ctx)(config)(bundlerConfig),
         () => bundlerPlugins.applyAzionModule(ctx)(config),
         () => applyContentInjection(config)(bundlerConfig.contentToInject),
         () => applyDefineVars(config)(bundlerConfig.defineVars),
+        () => extendConfig(config)(bundlerConfig.extend as (config: ESBuildConfiguration) => ESBuildConfiguration),
       ])(config),
     applyConfig: (config: ESBuildConfiguration) => config,
   };

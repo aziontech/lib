@@ -1,9 +1,9 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const getAbsolutePath = () => path.resolve(__dirname, '../', 'src');
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+const getAbsolutePath = () => path.resolve(dirname, '../', 'src');
 
 const externalPolyfillsPath = `${getAbsolutePath()}/polyfills/azion`;
 

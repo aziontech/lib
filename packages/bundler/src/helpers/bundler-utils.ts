@@ -1,10 +1,10 @@
 import { Plugin as ESBuildPlugin } from 'esbuild';
-import { pipe } from 'lodash/fp';
+import { flow } from 'lodash-es';
 import webpack, { WebpackPluginInstance } from 'webpack';
 import { bannerCli, bannerDevelopment } from '../constants/banners';
 import {
   BuildEnv,
-  bundlerConfig as BuilderConfig,
+  BundlerConfig as BuilderConfig,
   BundlerConfiguration,
   BundlerPluginFunctions,
   ESBuildPluginClasses,
@@ -29,20 +29,16 @@ export const createBundlerPlugins = <
     (buildEnv: BuildEnv) =>
     (config: C) =>
     (builderConfig: BuilderConfig): C => {
-      const polyfills =
-        builderConfig.polyfills || builderConfig.custom?.polyfills || builderConfig.localCustom?.polyfills;
+      const polyfills = builderConfig.polyfills;
 
       if (!polyfills) return config;
-
-      return {
-        ...config,
-        plugins: [
-          ...(config.plugins || []),
-          isWebpackPlugin(NodePolyfillsPlugin)
-            ? new NodePolyfillsPlugin(buildEnv.production)
-            : NodePolyfillsPlugin(buildEnv.production),
-        ],
-      };
+      config.plugins = [
+        ...(config.plugins || []),
+        isWebpackPlugin(NodePolyfillsPlugin)
+          ? new NodePolyfillsPlugin(buildEnv.production)
+          : NodePolyfillsPlugin(buildEnv.production),
+      ] as unknown as typeof config.plugins;
+      return config;
     };
 
   /**
@@ -50,15 +46,15 @@ export const createBundlerPlugins = <
    */
   const applyAzionModule =
     (buildEnv: BuildEnv) =>
-    (config: C): C => ({
-      ...config,
-      plugins: [
+    (config: C): C => {
+      config.plugins = [
         ...(config.plugins || []),
         isWebpackPlugin(AzionPolyfillsPlugin)
           ? new AzionPolyfillsPlugin(buildEnv.production)
           : AzionPolyfillsPlugin(buildEnv.production),
-      ],
-    });
+      ] as unknown as typeof config.plugins;
+      return config;
+    };
 
   return {
     applyPolyfills,
@@ -80,10 +76,12 @@ export const applyDefineVars =
   (defineVars: Record<string, string> = {}): T => {
     if (!defineVars) return config;
 
-    return {
-      ...config,
-      plugins: [...(config.plugins || []), new webpack.DefinePlugin(defineVars)],
-    } as T;
+    config.plugins = [
+      ...(config.plugins || []),
+      new webpack.DefinePlugin(defineVars),
+    ] as unknown as typeof config.plugins;
+
+    return config as T;
   };
 
 /**
@@ -112,7 +110,7 @@ export const createBaseBundler = <T extends BundlerConfiguration>(
   plugins: ((config: T) => T)[] = [],
 ) => {
   const mergeConfig = (baseConfig: T): T => {
-    const customConfig = builderConfig.custom || builderConfig.localCustom;
+    const customConfig = builderConfig.extend?.(baseConfig).plugins;
     if (!customConfig) return baseConfig;
 
     return {
@@ -123,7 +121,7 @@ export const createBaseBundler = <T extends BundlerConfiguration>(
 
   const applyConfig = (baseConfig: T): T => {
     if (!plugins.length) return baseConfig;
-    return pipe(...plugins)(baseConfig);
+    return flow(...plugins)(baseConfig);
   };
 
   return {
@@ -131,6 +129,15 @@ export const createBaseBundler = <T extends BundlerConfiguration>(
     applyConfig,
   };
 };
+
+export const extendConfig =
+  <T extends BundlerConfiguration>(config: T) =>
+  (extendFn: (config: T) => T): T => {
+    if (extendFn === undefined) {
+      return config;
+    }
+    return extendFn(config);
+  };
 
 export const applyContentInjection =
   <T extends BundlerConfiguration>(config: T) =>

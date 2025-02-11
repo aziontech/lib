@@ -1,12 +1,12 @@
-import { Format, Loader, Platform } from 'esbuild';
+import type { BuildOptions } from 'esbuild';
 
 export default {
   bundle: true,
-  format: 'esm' as Format,
-  platform: 'browser' as Platform,
+  format: 'esm',
+  platform: 'browser',
   mainFields: ['browser', 'module', 'main'],
   target: 'es2022',
   loader: {
-    '.js': 'js' as Loader,
+    '.js': 'js',
   },
-};
+} as BuildOptions;
