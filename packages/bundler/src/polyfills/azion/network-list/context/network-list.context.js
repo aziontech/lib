@@ -1,7 +1,7 @@
 import ipLib from 'ip';
-import nodePath from 'node:path';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import nodePath from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
@@ -41,8 +41,7 @@ class NetworkListContext {
    */
   contains(networkListId, value) {
     const network = this.#networkList.find(
-      (networkItem) =>
-        parseInt(networkItem.id, 10) === parseInt(networkListId, 10),
+      (networkItem) => parseInt(networkItem.id, 10) === parseInt(networkListId, 10),
     );
     return this.#containsType(network, value);
   }
@@ -104,27 +103,13 @@ class NetworkListContext {
   async #loadConfigFile() {
     const { configFilePath, rootPath } = this.#getConfigFilePath();
 
-    const {
-      type: typeImport,
-      changed,
-      currentConfigPath,
-      matchPaths,
-    } = this.#checkFileImportType(configFilePath);
+    const { type: typeImport, changed, currentConfigPath, matchPaths } = this.#checkFileImportType(configFilePath);
 
     let config;
     if (typeImport === 'esm') {
-      config = await this.#importEsmModule(
-        rootPath,
-        currentConfigPath,
-        changed,
-      );
+      config = await this.#importEsmModule(rootPath, currentConfigPath, changed);
     } else {
-      config = await this.#importCjsModule(
-        rootPath,
-        currentConfigPath,
-        changed,
-        matchPaths,
-      );
+      config = await this.#importCjsModule(rootPath, currentConfigPath, changed, matchPaths);
     }
 
     return config?.default || config;
@@ -167,7 +152,6 @@ class NetworkListContext {
       }
     }
     return new Promise((resolve) => {
-      // eslint-disable-next-line import/no-dynamic-require
       resolve(require(configFilePath));
     });
   }
@@ -176,10 +160,7 @@ class NetworkListContext {
   #checkFileImportType(originalConfigPath) {
     const file = readFileSync(originalConfigPath, 'utf8');
     if (file?.includes('export default')) {
-      const { changed, currentConfigPath } = this.#changeEsmImports(
-        originalConfigPath,
-        file,
-      );
+      const { changed, currentConfigPath } = this.#changeEsmImports(originalConfigPath, file);
       return { type: 'esm', changed, currentConfigPath };
     }
     const { changed, matchPaths } = this.#changeCjsImports(file);
@@ -198,16 +179,9 @@ class NetworkListContext {
     let fileUpdated = file;
     if (file.match(regex)) {
       changed = true;
-      fileUpdated = file.replace(
-        regex,
-        `import $1 from "..$2?u=${Date.now()}"`,
-      );
+      fileUpdated = file.replace(regex, `import $1 from "..$2?u=${Date.now()}"`);
       const tmpFile = this.#configFile.replace('.js', '.temp.js');
-      const tmpConfigPath = nodePath.join(
-        process.cwd(),
-        this.#workDir,
-        tmpFile,
-      );
+      const tmpConfigPath = nodePath.join(process.cwd(), this.#workDir, tmpFile);
       writeFileSync(tmpConfigPath, fileUpdated, 'utf8');
       return { changed, currentConfigPath: tmpConfigPath };
     }

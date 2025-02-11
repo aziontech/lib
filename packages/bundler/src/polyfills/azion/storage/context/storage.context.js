@@ -34,11 +34,7 @@ class StorageContext {
   async get(key) {
     const item = await fs.promises.readFile(`${this.#pathBucket}/${key}`);
 
-    const responseMetadata = await StorageContext.getMetadata(
-      this.#pathBucket,
-      key,
-      this.#metadataPrefix,
-    );
+    const responseMetadata = await StorageContext.getMetadata(this.#pathBucket, key, this.#metadataPrefix);
 
     return StorageContext.responseAsset(item, responseMetadata);
   }
@@ -64,12 +60,7 @@ class StorageContext {
       await fs.promises.writeFile(`${this.#pathBucket}/${key}`, value);
     }
 
-    const responseMetadata = await StorageContext.putMetadata(
-      this.#pathBucket,
-      key,
-      options,
-      this.#metadataPrefix,
-    );
+    const responseMetadata = await StorageContext.putMetadata(this.#pathBucket, key, options, this.#metadataPrefix);
 
     return StorageContext.responseAsset(value, responseMetadata);
   }
@@ -98,9 +89,7 @@ class StorageContext {
       recursive: true,
     });
     const files = entries
-      .filter(
-        (entry) => entry.isFile() && !entry.name.includes(this.#metadataPrefix),
-      )
+      .filter((entry) => entry.isFile() && !entry.name.includes(this.#metadataPrefix))
       .map((file) => {
         const pathFile = file.path?.split(pathBucketRoot)?.[1];
         const key = pathFile ? `${pathFile}/${file.name}` : file.name;
@@ -146,10 +135,7 @@ class StorageContext {
       contentLength,
       metadata: options?.metadata,
     };
-    await fs.promises.writeFile(
-      `${pathBucket}/${key}${metadataPrefix}`,
-      JSON.stringify(bodyMetadata, undefined, 2),
-    );
+    await fs.promises.writeFile(`${pathBucket}/${key}${metadataPrefix}`, JSON.stringify(bodyMetadata, undefined, 2));
     return bodyMetadata;
   }
 
@@ -164,9 +150,7 @@ class StorageContext {
    */
   static async getMetadata(pathBucket, key, metadataPrefix) {
     try {
-      let data = await fs.promises.readFile(
-        `${pathBucket}/${key}${metadataPrefix}`,
-      );
+      let data = await fs.promises.readFile(`${pathBucket}/${key}${metadataPrefix}`);
       data = JSON.parse(data.toString());
       return {
         contentType: data?.contentType,

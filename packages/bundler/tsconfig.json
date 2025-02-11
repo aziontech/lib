@@ -10,7 +10,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "azion/unenv-preset": ["../unenv-preset/src/index.ts"]
+      "azion/unenv-preset": ["../unenv-preset/src/"],
+      "azion/utils": ["../utils/src/"]
     }
   },
   "exclude": ["node_modules"]

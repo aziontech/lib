@@ -72,9 +72,17 @@ function isWebpackPlugin(
  * Common define variables configuration
  */
 export const applyDefineVars =
-  <T extends BundlerConfiguration>(config: T) =>
+  <T extends BundlerConfiguration>(config: T, provider: 'esbuild' | 'webpack') =>
   (defineVars: Record<string, string> = {}): T => {
     if (!defineVars) return config;
+
+    if (provider === 'esbuild') {
+      config.define = {
+        ...config.define,
+        ...defineVars,
+      } as unknown as typeof config.define;
+      return config as T;
+    }
 
     config.plugins = [
       ...(config.plugins || []),

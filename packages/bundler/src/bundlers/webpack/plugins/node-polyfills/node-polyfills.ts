@@ -3,10 +3,11 @@ import fs from 'fs';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
-const getAbsolutePath = () => path.resolve(__dirname, '../', 'src');
+const getAbsolutePath = () => path.resolve(dirname, '../../../', '../');
+const unenvPackagePath = () => path.resolve(dirname, '../../../../', '../../unenv-preset');
 
 import path from 'path';
 import { env, nodeless } from 'unenv';
@@ -14,8 +15,8 @@ import { Compiler, WebpackPluginInstance } from 'webpack';
 
 const require = createRequire(import.meta.url);
 
-const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/env/polyfills`;
-const INTERNAL_POLYFILL_PATH_PROD = `azion/unenv-preset/src/polyfills/node`;
+const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/polyfills`;
+const INTERNAL_POLYFILL_PATH_PROD = `${unenvPackagePath()}/src/polyfills/node`;
 const POLYFILL_PREFIX_DEV = 'aziondev:';
 const POLYFILL_PREFIX_PROD = 'azionprd:';
 

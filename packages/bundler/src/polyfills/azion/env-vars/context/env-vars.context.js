@@ -18,14 +18,9 @@ class EnvVarsContext {
   constructor() {
     const projectRoot = process.cwd();
     const isWindows = process.platform === 'win32';
-    const outputPath = isWindows
-      ? fileURLToPath(new URL(`file:///${join(projectRoot, '.')}`))
-      : join(projectRoot, '.');
+    const outputPath = isWindows ? fileURLToPath(new URL(`file:///${join(projectRoot, '.')}`)) : join(projectRoot, '.');
     const envFilePathRoot = join(outputPath, this.#envFile);
-    const envFilePathEdge = join(
-      outputPath,
-      `${this.#pathDefaultEdge}/${this.#envFile}`,
-    );
+    const envFilePathEdge = join(outputPath, `${this.#pathDefaultEdge}/${this.#envFile}`);
 
     // Load .env file
     dotenv.config({ path: [envFilePathRoot, envFilePathEdge] });
@@ -44,10 +39,7 @@ class EnvVarsContext {
     const envFilePathRoot = join(outputPath, this.#envFile);
     if (!existsSync(envFilePathRoot)) return;
     const envFileBuffer = await fs.promises.readFile(envFilePathRoot);
-    const envFilePath = join(
-      outputPath,
-      `${this.#pathDefaultEdge}/${this.#envFile}`,
-    );
+    const envFilePath = join(outputPath, `${this.#pathDefaultEdge}/${this.#envFile}`);
     await fs.promises.mkdir(join(outputPath, this.#pathDefaultEdge), {
       recursive: true,
     });

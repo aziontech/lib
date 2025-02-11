@@ -20,6 +20,7 @@ const config: JestConfigWithTsJest = {
     ],
   },
   extensionsToTreatAsEsm: ['.ts'],
+  transformIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/packages/unenv-preset/'],
 };
 
 export default config;

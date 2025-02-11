@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import fs from 'fs';
 import tmp from 'tmp';
 import { BuildEnv, BundlerConfig } from '../../types/bundler';
 import { createAzionWebpackConfig } from './webpack';
@@ -7,6 +8,7 @@ describe('Webpack Bundler', () => {
   let tmpDir: tmp.DirResult;
   let tmpEntry: tmp.FileResult;
   let tmpOutput: tmp.FileResult;
+  let tmpOutputDev: tmp.FileResult;
 
   beforeEach(async () => {
     tmpDir = tmp.dirSync();
@@ -20,11 +22,17 @@ describe('Webpack Bundler', () => {
       dir: tmpDir.name,
       name: 'output.js',
     });
+    tmpOutputDev = tmp.fileSync({
+      postfix: '.js',
+      dir: tmpDir.name,
+      name: 'output.dev.js',
+    });
   });
 
   afterEach(async () => {
     tmpEntry.removeCallback();
     tmpOutput.removeCallback();
+    tmpOutputDev.removeCallback();
     tmpDir.removeCallback();
   });
 
@@ -130,5 +138,73 @@ describe('Webpack Bundler', () => {
         ]),
       );
     });
+  });
+
+  describe('createAzionWebpackConfig.executeBuild', () => {
+    it('should execute webpack build process when env production false ', async () => {
+      const code = `console.log(process.env.NODE_ENV);`;
+      await fs.promises.writeFile(tmpEntry.name, code);
+
+      const bundlerConfig: BundlerConfig = {
+        entry: tmpEntry.name,
+        polyfills: true,
+        contentToInject: 'console.log("Hello World")',
+        preset: {
+          name: 'javascript',
+        },
+        defineVars: {
+          NODE_ENV: 'production',
+        },
+      };
+
+      const ctx: BuildEnv = {
+        production: false,
+        output: tmpOutput.name,
+      };
+
+      const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
+      await webpackConfig.executeBuild(webpackConfig);
+      const result = fs.readFileSync(tmpOutputDev.name, 'utf-8');
+
+      expect(result).toEqual(expect.stringContaining('production'));
+
+      expect(webpackConfig.baseConfig.entry).toEqual(tmpEntry.name);
+      expect(webpackConfig.baseConfig.output?.filename).toEqual(expect.stringContaining('output.dev.js'));
+      expect(webpackConfig.baseConfig.optimization?.minimize).toEqual(false);
+    });
+
+    it('should execute webpack build process when node polyfills and env production true', async () => {
+      const code = `import crypto from 'node:crypto';const id = crypto.randomUUID();`;
+      await fs.promises.writeFile(tmpEntry.name, code);
+
+      const bundlerConfig: BundlerConfig = {
+        entry: tmpEntry.name,
+        polyfills: true,
+        contentToInject: 'console.log("Hello World")',
+        preset: {
+          name: 'javascript',
+        },
+        defineVars: {
+          NODE_ENV: 'production',
+        },
+      };
+
+      const ctx: BuildEnv = {
+        production: true,
+        output: tmpOutput.name,
+      };
+
+      const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
+      await webpackConfig.executeBuild(webpackConfig);
+      const result = fs.readFileSync(tmpOutput.name, 'utf-8');
+      // remove file output.LICENSE.txt
+      fs.rmSync(`${tmpOutput.name}.LICENSE.txt`);
+
+      expect(result).toEqual(expect.stringContaining('randomUUID()'));
+
+      expect(webpackConfig.baseConfig.entry).toEqual(tmpEntry.name);
+      expect(webpackConfig.baseConfig.output?.filename).toEqual(expect.stringContaining('output.js'));
+      expect(webpackConfig.baseConfig.optimization?.minimize).toEqual(true);
+    }, 10000);
   });
 });

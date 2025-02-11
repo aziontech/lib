@@ -19,6 +19,7 @@ interface ESBuildBundler {
   baseConfig: ESBuildConfiguration;
   mergeConfig: (config: ESBuildConfiguration) => ESBuildConfiguration;
   applyConfig: (config: ESBuildConfiguration) => ESBuildConfiguration;
+  executeBuild: (config: ESBuildBundler) => Promise<void>;
 }
 
 interface ESBuildPluginClasses {
@@ -68,18 +69,23 @@ export const createAzionESBuildConfig = (bundlerConfig: BundlerConfig, ctx: Buil
         () => bundlerPlugins.applyPolyfills(ctx)(config)(bundlerConfig),
         () => bundlerPlugins.applyAzionModule(ctx)(config),
         () => applyContentInjection(config)(bundlerConfig.contentToInject),
-        () => applyDefineVars(config)(bundlerConfig.defineVars),
+        () => applyDefineVars<ESBuildConfiguration>(config, 'esbuild')(bundlerConfig.defineVars),
         () => extendConfig(config)(bundlerConfig.extend as (config: ESBuildConfiguration) => ESBuildConfiguration),
       ])(config),
     applyConfig: (config: ESBuildConfiguration) => config,
+    executeBuild: executeESBuildBuild,
   };
 };
 
 /**
  * Executes the esbuild build process
  */
-export const executeESBuildBuild = async (config: ESBuildConfig): Promise<void> => {
-  await esbuild.build(config);
+export const executeESBuildBuild = async (bundler: ESBuildBundler): Promise<void> => {
+  const configBuild: ESBuildConfig = flow([
+    () => bundler.mergeConfig(bundler.baseConfig),
+    () => bundler.applyConfig(bundler.baseConfig),
+  ])(bundler.baseConfig);
+  await esbuild.build(configBuild);
 };
 
 export default createAzionESBuildConfig;

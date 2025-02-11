@@ -56,10 +56,7 @@ describe('StorageContext', () => {
         metadata: { someMetadata: 'value' },
       };
 
-      await fs.promises.writeFile(
-        `${tmpDir.tmpDirBucket.name}/${key}`,
-        Buffer.from(content),
-      );
+      await fs.promises.writeFile(`${tmpDir.tmpDirBucket.name}/${key}`, Buffer.from(content));
       await fs.promises.writeFile(
         `${tmpDir.tmpDirBucket.name}/${key}${metadataPrefix}`,
         Buffer.from(JSON.stringify(metadata)),
@@ -126,10 +123,7 @@ describe('StorageContext', () => {
         metadata: { someMetadata: 'value' },
       };
 
-      await fs.promises.writeFile(
-        `${tmpDir.tmpDirBucket.name}/${key}`,
-        Buffer.from(content),
-      );
+      await fs.promises.writeFile(`${tmpDir.tmpDirBucket.name}/${key}`, Buffer.from(content));
       await fs.promises.writeFile(
         `${tmpDir.tmpDirBucket.name}/${key}${metadataPrefix}`,
         Buffer.from(JSON.stringify(metadata)),
@@ -150,10 +144,7 @@ describe('StorageContext', () => {
     it('should list objects in the storage', async () => {
       const objects = ['object1.txt', 'object2.txt', 'object3.txt'];
       for (const objectKey of objects) {
-        await fs.promises.writeFile(
-          `${tmpDir.tmpDirBucket.name}/${objectKey}`,
-          'Hello, Storage!',
-        );
+        await fs.promises.writeFile(`${tmpDir.tmpDirBucket.name}/${objectKey}`, 'Hello, Storage!');
         await fs.promises.writeFile(
           `${tmpDir.tmpDirBucket.name}/${objectKey}${metadataPrefix}`,
           Buffer.from(JSON.stringify({ contentType: 'text/plain' })),
@@ -174,10 +165,7 @@ describe('StorageContext', () => {
         await fs.promises.mkdir(`${tmpDir.tmpDirBucket.name}/${subdir}`, {
           recursive: true,
         });
-        await fs.promises.writeFile(
-          `${tmpDir.tmpDirBucket.name}/${subdir}/${objectKey}`,
-          'Hello, Storage!',
-        );
+        await fs.promises.writeFile(`${tmpDir.tmpDirBucket.name}/${subdir}/${objectKey}`, 'Hello, Storage!');
         await fs.promises.writeFile(
           `${tmpDir.tmpDirBucket.name}/${objectKey}${metadataPrefix}`,
           Buffer.from(JSON.stringify({ contentType: 'text/plain' })),

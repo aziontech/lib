@@ -35,10 +35,12 @@ export interface WebpackConfiguration extends WebpackConfig {
   banner?: {
     js?: string;
   };
+  define?: Record<string, string>;
 }
 
 export type ESBuildConfiguration = {
   plugins?: ESBuildPlugin[];
+  define?: Record<string, string>;
 } & BuildOptions & {
     banner?: {
       js?: string;

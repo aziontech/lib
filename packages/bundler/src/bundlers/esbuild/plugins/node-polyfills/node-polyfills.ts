@@ -12,7 +12,8 @@ const requireCustom = createRequire(import.meta.url);
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-const getAbsolutePath = () => path.resolve(dirname, '../', 'src');
+const getAbsolutePath = () => path.resolve(dirname, '../../../', '../');
+const unenvPackagePath = () => path.resolve(dirname, '../../../../', '../../unenv-preset');
 
 const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
 
@@ -23,7 +24,7 @@ interface BuildOptions {
 const INTERNAL_POLYFILL_DEV = 'internal-env-dev';
 const INTERNAL_POLYFILL_PROD = 'internal-env-prod';
 const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/polyfills`;
-const INTERNAL_POLYFILL_PATH_PROD = `azion/unenv-preset/src/polyfills/node`;
+const INTERNAL_POLYFILL_PATH_PROD = `${unenvPackagePath()}/src/polyfills/node`;
 const POLYFILL_PREFIX_DEV = 'aziondev:';
 const POLYFILL_PREFIX_PROD = 'azionprd:';
 
@@ -125,6 +126,7 @@ function nodeBuiltInModules(build: PluginBuild, isProd: boolean) {
         return ext === nameModule || ext === args.path || `node:${nameModule}` === ext;
       });
       const polyfillResult = findModulePolyfill(prefix, nameModule);
+
       // if polyfill is not found, check if the module is external
       if (!polyfillResult && externalModule) {
         return {
@@ -244,6 +246,7 @@ function handleInternalPolyfillEnvProd(build: PluginBuild) {
         polyfillPath.replace(`${POLYFILL_PREFIX_PROD}${args.path}:/`, ''),
       );
       const resolved = requireCustom.resolve(internalPolyfillsPath);
+
       const contents = await fs.promises.readFile(resolved, 'utf8');
       const resolveDir = path.dirname(resolved);
       return {

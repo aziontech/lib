@@ -56,6 +56,7 @@ interface WebpackBundler {
   baseConfig: WebpackConfiguration;
   mergeConfig: (config: WebpackConfiguration) => WebpackConfiguration;
   applyConfig: (config: WebpackConfiguration) => WebpackConfiguration;
+  executeBuild: (config: WebpackBundler) => Promise<void>;
 }
 
 /**
@@ -94,10 +95,11 @@ export const createAzionWebpackConfig = (bundlerConfig: BundlerConfig, ctx: Buil
         () => bundlerPlugins.applyPolyfills(ctx)(config)(bundlerConfig),
         () => bundlerPlugins.applyAzionModule(ctx)(config),
         () => applyContentInjection(config)(bundlerConfig.contentToInject),
-        () => applyDefineVars(config)(bundlerConfig.defineVars),
+        () => applyDefineVars(config, 'webpack')(bundlerConfig.defineVars),
         () => extendConfig(config)(bundlerConfig.extend as (config: WebpackConfiguration) => WebpackConfiguration),
       ])(config),
     applyConfig: (config: WebpackConfiguration) => config,
+    executeBuild: executeWebpackBuild,
   };
 };
 
@@ -106,12 +108,17 @@ export const createAzionWebpackConfig = (bundlerConfig: BundlerConfig, ctx: Buil
  */
 export const executeWebpackBuild = async (bundler: WebpackBundler): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
-    const config: Configuration = flow(bundler.mergeConfig, bundler.applyConfig)(bundler.baseConfig);
+    const config: Configuration = flow([
+      () => bundler.mergeConfig(bundler.baseConfig),
+      () => bundler.applyConfig(bundler.baseConfig),
+    ])(bundler.baseConfig);
 
     webpack(config, (err, stats) => {
       if (err || stats?.hasErrors()) {
         const info = stats?.toJson();
         const errors = info?.errors?.map((error) => error.message).join('\n');
+        console.log(err);
+
         reject(new Error(errors));
         return;
       }
