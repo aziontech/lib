@@ -1,3 +1,10 @@
+## [1.16.0-stage.2](https://github.com/aziontech/lib/compare/v1.16.0-stage.1...v1.16.0-stage.2) (2025-02-11)
+
+
+### Bug Fixes
+
+* preact config name ([facd7b5](https://github.com/aziontech/lib/commit/facd7b543a01df9fe96fe93b95011b61eceaa9f9))
+
 ## [1.16.0-stage.1](https://github.com/aziontech/lib/compare/v1.15.0...v1.16.0-stage.1) (2025-02-10)
 
 
