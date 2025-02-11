@@ -58,13 +58,14 @@
     "@semantic-release/release-notes-generator": "^11.0.4",
     "@types/eslint__js": "^8.42.3",
     "@types/lodash": "^4.17.15",
+    "@types/lodash-es": "^4.17.12",
     "conventional-changelog-conventionalcommits": "^4.6.0",
     "eslint": "^8.57.0",
     "globals": "^15.7.0",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
     "semantic-release": "^21.0.7",
-    "tsup": "^8.0.2",
+    "tsup": "^8.3.6",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.16.0"
   },
@@ -204,6 +205,11 @@
   "dependencies": {
     "chalk": "^5.3.0",
     "crypto-browserify": "^3.12.1",
-    "progress": "^2.0.3"
+    "esbuild": "^0.25.0",
+    "lodash-es": "^4.17.21",
+    "progress": "^2.0.3",
+    "ts-loader": "^9.5.2",
+    "unenv": "^1.10.0",
+    "webpack": "^5.97.1"
   }
 }

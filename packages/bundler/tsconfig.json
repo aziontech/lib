@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "ESNext",
     "module": "ESNext",
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -8,8 +8,10 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "paths": {
       "azion/unenv-preset": ["../unenv-preset/src/index.ts"]
     }
-  }
+  },
+  "exclude": ["node_modules"]
 }
