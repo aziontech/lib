@@ -7,7 +7,7 @@ import {
   getBannerContent,
   getOutputFilename,
 } from '../../helpers/bundler-utils';
-import { BuildEnv, bundlerConfig, WebpackConfiguration, WebpackPluginClasses } from '../../types/bundler';
+import { BuildEnv, bundlerConfig, WebpackConfiguration, WebpackPluginClasses } from '../../types';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import BabelCustomLoaderPlugin from './plugins/babel-custom/babel-custom-loader';
 import NodePolyfillPlugin from './plugins/node-polyfills';
