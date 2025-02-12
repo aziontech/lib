@@ -1,3 +1,3 @@
-import NodePolyfillPlugin from './node-polyfills.js';
+import NodePolyfillPlugin from './node-polyfills';
 
 export default NodePolyfillPlugin;

@@ -1,29 +1,18 @@
 import { BuildOptions, Plugin as ESBuildPlugin } from 'esbuild';
-import { Configuration, Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
+import { Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
 
-export type ConfigObject = WebpackConfig & {
-  [key: string]: unknown;
-  plugins?: unknown[];
-  entry?: string | string[];
-};
+export type BundlerProviderCtx = WebpackConfig | BuildOptions;
 
-export interface bundlerConfig {
+export interface BundlerConfig {
   entry: string;
   polyfills?: boolean;
   worker?: boolean;
-  custom?: ConfigObject;
-  localCustom?: ConfigObject;
+  extend?: <T extends BundlerProviderCtx>(context: T) => T;
   preset: {
     name: string;
   };
   contentToInject?: string;
   defineVars?: Record<string, string>;
-}
-
-export interface BundlerConfig {
-  bundlerConfig: bundlerConfig;
-  customConfigPreset: ConfigObject;
-  customConfigLocal: ConfigObject;
 }
 
 export interface BuildEnv {
@@ -46,10 +35,12 @@ export interface WebpackConfiguration extends WebpackConfig {
   banner?: {
     js?: string;
   };
+  define?: Record<string, string>;
 }
 
 export type ESBuildConfiguration = {
   plugins?: ESBuildPlugin[];
+  define?: Record<string, string>;
 } & BuildOptions & {
     banner?: {
       js?: string;
@@ -59,7 +50,7 @@ export type ESBuildConfiguration = {
 export type BundlerConfiguration = WebpackConfiguration | ESBuildConfiguration;
 
 export interface BundlerPluginFunctions<C extends BundlerConfiguration> {
-  applyPolyfills: (ctx: BuildEnv) => (config: C) => (bundlerConfig: bundlerConfig) => C;
+  applyPolyfills: (ctx: BuildEnv) => (config: C) => (bundlerConfig: BundlerConfig) => C;
   applyAzionModule: (ctx: BuildEnv) => (config: C) => C;
 }
 
@@ -68,13 +59,13 @@ export interface Plugin {
 }
 
 export interface Bundler extends BundlerConfig {
-  applyConfig: (baseConfig: ConfigObject) => ConfigObject;
-  mergeConfig: (baseConfig?: ConfigObject) => ConfigObject;
-  baseConfig: ConfigObject;
+  applyConfig: (baseConfig: BundlerProviderCtx) => BundlerProviderCtx;
+  mergeConfig: (baseConfig?: BundlerProviderCtx) => BundlerProviderCtx;
+  baseConfig: BundlerProviderCtx;
 }
 
-export interface WebpackBundler extends Configuration {
-  baseConfig: Configuration;
-  mergeConfig: (config: Configuration) => Configuration;
-  applyConfig: (config: Configuration) => Configuration;
+export interface WebpackBundler extends WebpackConfiguration {
+  baseConfig: WebpackConfiguration;
+  mergeConfig: (config: WebpackConfiguration) => WebpackConfiguration;
+  applyConfig: (config: WebpackConfiguration) => WebpackConfiguration;
 }

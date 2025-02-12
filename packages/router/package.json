@@ -4,6 +4,7 @@
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
@@ -11,12 +12,10 @@
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check ."
   },
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.mjs"
     }
   },
   "author": "aziontech",

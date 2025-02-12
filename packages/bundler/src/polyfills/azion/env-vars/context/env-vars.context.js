@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import fs, { existsSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 /**
  * This class is a VM context (ENV_VARS_CONTEXT) to handle with environment variables
@@ -16,7 +17,8 @@ class EnvVarsContext {
 
   constructor() {
     const projectRoot = process.cwd();
-    const outputPath = join(projectRoot, '.');
+    const isWindows = process.platform === 'win32';
+    const outputPath = isWindows ? fileURLToPath(new URL(`file:///${join(projectRoot, '.')}`)) : join(projectRoot, '.');
     const envFilePathRoot = join(outputPath, this.#envFile);
     const envFilePathEdge = join(outputPath, `${this.#pathDefaultEdge}/${this.#envFile}`);
 

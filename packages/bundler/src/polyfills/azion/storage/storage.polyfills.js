@@ -57,11 +57,7 @@ export default class Storage {
    * @returns {Promise<StorageObject>} A promise that resolves to a StorageObject representing the stored object.
    */
   async put(key, value, options) {
-    const asset = await new STORAGE_CONTEXT(this.#bucketName).put(
-      key,
-      value,
-      options,
-    );
+    const asset = await new STORAGE_CONTEXT(this.#bucketName).put(key, value, options);
     return new StorageObject(asset, PRIVATE_CONSTRUCTOR);
   }
 
@@ -126,10 +122,7 @@ export class StorageObject {
      * @private
      * @type {Map<string, any>}
      */
-    this.#metadata =
-      asset.metadata === null
-        ? new Map()
-        : new Map(Object.entries(asset.metadata));
+    this.#metadata = asset.metadata === null ? new Map() : new Map(Object.entries(asset.metadata));
 
     /**
      * The content type of the storage object.

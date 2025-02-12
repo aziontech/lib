@@ -6,11 +6,11 @@ import { generateWebpackBanner } from './../../helpers';
 type ExternalsType = { [key: string]: string };
 
 class AzionPolyfillPlugin implements WebpackPluginInstance {
-  private isProduction: boolean;
+  private buildProd: boolean;
   private prefix: string;
 
-  constructor(isProduction: boolean) {
-    this.isProduction = isProduction;
+  constructor(buildProd: boolean) {
+    this.buildProd = buildProd;
     this.prefix = 'azion:';
   }
 
@@ -35,7 +35,7 @@ class AzionPolyfillPlugin implements WebpackPluginInstance {
     );
 
     // build inject prefix (azion:) is not present and the polyfill is Azion
-    if (!this.isProduction) {
+    if (!this.buildProd) {
       [...AzionLocalPolyfills.external].forEach(([key]) => {
         const hasPrefix = /^[^:]+:/.test(key);
         if (!hasPrefix && key?.toLowerCase()?.includes(this.prefix.replace(':', ''))) {
@@ -53,7 +53,7 @@ class AzionPolyfillPlugin implements WebpackPluginInstance {
       });
     }
 
-    if (this.isProduction) {
+    if (this.buildProd) {
       compiler.options.externals = {
         ...Object.fromEntries(
           [...filteredExternal].flatMap(([key]) => {

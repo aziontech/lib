@@ -2,7 +2,7 @@
 import { PluginBuild } from 'esbuild';
 import fs from 'fs';
 import path from 'path';
-import azionLibs from '../../../../helpers/azion-local-polyfills.js';
+import azionLibs from '../../../../helpers/azion-local-polyfills';
 
 /**
  * ESBuild Azion Module Plugin for polyfilling node modules.

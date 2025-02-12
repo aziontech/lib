@@ -4,6 +4,7 @@
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
@@ -13,12 +14,10 @@
     "test:watch": "jest -c jest.config.js . --watch",
     "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
   },
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.mjs"
     }
   },
   "author": "aziontech",
