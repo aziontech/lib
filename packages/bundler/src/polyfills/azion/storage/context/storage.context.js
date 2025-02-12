@@ -1,6 +1,6 @@
 import fs from 'fs';
-import path from 'path';
 import mime from 'mime-types';
+import path from 'path';
 import { pipeline } from 'stream/promises';
 
 /**

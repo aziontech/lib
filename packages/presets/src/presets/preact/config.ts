@@ -1,9 +1,9 @@
 import { defineConfig } from 'azion/config';
-const config = defineConfig({
+export default defineConfig({
   build: {
-    bundler: 'webpack',
-    preset: 'angular',
-    polyfills: false,
+    preset: {
+      name: 'preact',
+    },
   },
   origin: [
     {
@@ -11,7 +11,6 @@ const config = defineConfig({
       type: 'object_storage',
     },
   ],
-
   rules: {
     request: [
       {
@@ -45,5 +44,3 @@ const config = defineConfig({
     ],
   },
 });
-
-export default config;

@@ -2,7 +2,7 @@
 export const requestBehaviors = {
   setOrigin: {
     transform: (value: any, payloadCDN: any) => {
-      const origin = payloadCDN.origin.find((o: any) => o.name === value.name && o.origin_type === value.type);
+      const origin = payloadCDN.origin?.find((o: any) => o.name === value.name && o.origin_type === value.type);
 
       if (!origin) {
         throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
@@ -54,6 +54,7 @@ export const requestBehaviors = {
         };
       }
       if (typeof value === 'object') {
+        payloadCDN.cache = payloadCDN.cache || [];
         const cacheSetting = {
           name: value.name,
           ...value,
@@ -266,7 +267,7 @@ export const responseBehaviors = {
 export const revertRequestBehaviors = {
   set_origin: {
     transform: (value: any, payloadCDN: any) => {
-      const origin = payloadCDN.origin.find((o: any) => o.name === value);
+      const origin = payloadCDN.origin?.find((o: any) => o.name === value);
       if (!origin) {
         throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
       }

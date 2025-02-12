@@ -104,7 +104,7 @@ const constants = {
   X_OK: 1,
 };
 
-export { open, stat, lstat, readFile, readdir, mkdir, rmdir, copyFile, cp, constants, writeFile, rename, realpath };
+export { constants, copyFile, cp, lstat, mkdir, open, readdir, readFile, realpath, rename, rmdir, stat, writeFile };
 
 localFsPromises.open = open;
 localFsPromises.stat = stat;

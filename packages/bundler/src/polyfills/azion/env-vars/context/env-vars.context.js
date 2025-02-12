@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
+import fs, { existsSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
-import fs, { existsSync } from 'fs';
 
 /**
  * This class is a VM context (ENV_VARS_CONTEXT) to handle with environment variables

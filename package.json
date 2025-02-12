@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.14.0-stage.4",
+  "version": "1.16.0-stage.2",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
     "azion": "./bin/azion",
@@ -56,6 +56,7 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^9.2.6",
     "@semantic-release/release-notes-generator": "^11.0.4",
+    "@swc/core": "^1.10.15",
     "@types/eslint__js": "^8.42.3",
     "@types/lodash": "^4.17.15",
     "@types/lodash-es": "^4.17.12",

@@ -2,9 +2,9 @@ import { defineConfig } from 'azion';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'vue',
-    },
+    preset: 'vue',
+    bundler: 'webpack',
+    polyfills: false,
   },
   origin: [
     {

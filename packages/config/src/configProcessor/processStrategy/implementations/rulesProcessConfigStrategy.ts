@@ -43,6 +43,9 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig, context: any) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
+    if (config?.rules === undefined || Object.keys(config.rules).length === 0) {
+      return;
+    }
     // request
     if (Array.isArray(config?.rules?.request)) {
       config?.rules?.request?.forEach((rule, index) => {
@@ -154,7 +157,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     };
 
     const rulesConfig = payload.rules;
-    if (!rulesConfig) {
+    if (!rulesConfig || Object.keys(rulesConfig).length === 0) {
       return;
     }
 

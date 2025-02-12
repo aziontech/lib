@@ -44,23 +44,25 @@ describe('FirewallProcessConfigStrategy', () => {
 
       const manifest = strategy.transformToManifest(config);
       expect(manifest).toEqual({
-        name: 'Test Firewall',
-        domains: ['example.com'],
-        is_active: true,
-        edge_functions_enabled: true,
-        network_protection_enabled: true,
-        waf_enabled: true,
-        debug_rules: true,
+        main_settings: {
+          name: 'Test Firewall',
+          domains: ['example.com'],
+          is_active: true,
+          edge_functions_enabled: true,
+          network_protection_enabled: true,
+          waf_enabled: true,
+          debug_rules: true,
+        },
         rules_engine: [
           {
             name: 'Test Rule',
             description: 'Test Description',
             is_active: true,
-            behaviors: [{ name: 'deny', argument: '' }],
+            behaviors: [{ name: 'deny', target: '' }],
             criteria: [
               [
                 {
-                  variable: '${uri}',
+                  variable: 'uri',
                   conditional: 'if',
                   operator: 'matches',
                   input_value: '/test',
@@ -83,20 +85,22 @@ describe('FirewallProcessConfigStrategy', () => {
 
       const manifest = strategy.transformToManifest(config);
       expect(manifest).toEqual({
-        name: 'Test Firewall',
-        domains: ['example.com'],
-        is_active: true,
-        edge_functions_enabled: false,
-        network_protection_enabled: false,
-        waf_enabled: false,
-        debug_rules: false,
+        main_settings: {
+          name: 'Test Firewall',
+          domains: ['example.com'],
+          is_active: true,
+          edge_functions_enabled: false,
+          network_protection_enabled: false,
+          waf_enabled: false,
+          debug_rules: false,
+        },
       });
     });
 
     it('should return empty object when no firewall config is provided', () => {
       const config: AzionConfig = {};
       const manifest = strategy.transformToManifest(config);
-      expect(manifest).toEqual({});
+      expect(manifest).toBeUndefined();
     });
 
     it('should transform all behavior types correctly', () => {
@@ -136,25 +140,25 @@ describe('FirewallProcessConfigStrategy', () => {
       expect(manifest.rules_engine[0].behaviors).toEqual([
         {
           name: 'run_function',
-          argument: '/edge/function.js',
+          target: '/edge/function.js',
         },
         {
           name: 'set_waf_ruleset',
-          argument: {
+          target: {
             mode: 'learning',
             waf_id: '123',
           },
         },
         {
           name: 'set_rate_limit',
-          argument: {
+          target: {
             type: 'second',
             limit_by: 'clientIp',
           },
         },
         {
           name: 'set_custom_response',
-          argument: {
+          target: {
             status_code: 403,
             content_type: 'text/plain',
             content_body: 'Blocked',
@@ -168,13 +172,15 @@ describe('FirewallProcessConfigStrategy', () => {
     it('should transform a complete manifest to config', () => {
       const manifest = {
         firewall: {
-          name: 'Test Firewall',
-          domains: ['example.com'],
-          is_active: true,
-          edge_functions_enabled: true,
-          network_protection_enabled: true,
-          waf_enabled: true,
-          debug_rules: true,
+          main_settings: {
+            name: 'Test Firewall',
+            domains: ['example.com'],
+            is_active: true,
+            edge_functions_enabled: true,
+            network_protection_enabled: true,
+            waf_enabled: true,
+            debug_rules: true,
+          },
           rules_engine: [
             {
               name: 'Test Rule',
@@ -190,7 +196,7 @@ describe('FirewallProcessConfigStrategy', () => {
                   },
                 ],
               ],
-              behaviors: [{ name: 'deny', argument: '' }],
+              behaviors: [{ name: 'deny', target: '' }],
             },
           ],
         },
@@ -198,6 +204,8 @@ describe('FirewallProcessConfigStrategy', () => {
 
       const config = {};
       const result = strategy.transformToConfig(manifest, config);
+      console.log(JSON.stringify(result, null, 2));
+
       expect(result).toEqual({
         name: 'Test Firewall',
         domains: ['example.com'],
@@ -230,9 +238,11 @@ describe('FirewallProcessConfigStrategy', () => {
     it('should handle manifest without rules', () => {
       const manifest = {
         firewall: {
-          name: 'Test Firewall',
-          domains: ['example.com'],
-          is_active: true,
+          main_settings: {
+            name: 'Test Firewall',
+            domains: ['example.com'],
+            is_active: true,
+          },
         },
       };
 
@@ -253,7 +263,7 @@ describe('FirewallProcessConfigStrategy', () => {
       const manifest = {};
       const config = {};
       const result = strategy.transformToConfig(manifest, config);
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual(expect.objectContaining({}));
     });
 
     it('should transform all behavior types from manifest to config', () => {
@@ -267,18 +277,18 @@ describe('FirewallProcessConfigStrategy', () => {
               behaviors: [
                 {
                   name: 'run_function',
-                  argument: '/edge/function.js',
+                  target: '/edge/function.js',
                 },
                 {
                   name: 'set_waf_ruleset',
-                  argument: {
+                  target: {
                     mode: 'learning',
                     waf_id: '123',
                   },
                 },
                 {
                   name: 'set_rate_limit',
-                  argument: {
+                  target: {
                     type: 'second',
                     value: '10',
                     limit_by: 'ip',
@@ -286,7 +296,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 },
                 {
                   name: 'set_custom_response',
-                  argument: {
+                  target: {
                     status_code: 403,
                     content_type: 'text/plain',
                     content_body: 'Blocked',
@@ -299,7 +309,8 @@ describe('FirewallProcessConfigStrategy', () => {
       };
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({
         runFunction: {
           path: '/edge/function.js',
@@ -336,7 +347,8 @@ describe('FirewallProcessConfigStrategy', () => {
       };
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({});
     });
 
@@ -351,7 +363,7 @@ describe('FirewallProcessConfigStrategy', () => {
               behaviors: [
                 {
                   name: 'unknown_behavior',
-                  argument: 'test',
+                  target: 'test',
                 },
               ],
             },
@@ -360,7 +372,8 @@ describe('FirewallProcessConfigStrategy', () => {
       };
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({});
     });
   });

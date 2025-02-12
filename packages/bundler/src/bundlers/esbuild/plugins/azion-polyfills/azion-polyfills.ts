@@ -6,10 +6,10 @@ import azionLibs from '../../../../helpers/azion-local-polyfills';
 
 /**
  * ESBuild Azion Module Plugin for polyfilling node modules.
- * @param {boolean} buildProd Parameter to identify whether the build is dev or prod
+ * @param {boolean} isProduction Parameter to identify whether the build is dev or prod
  * @returns {object} - ESBuild plugin object.
  */
-const ESBuildAzionModulePlugin = (buildProd: boolean) => {
+const ESBuildAzionModulePlugin = (isProduction: boolean) => {
   const NAME = 'bundler-azion-modules-polyfills';
   const NAMESPACE = NAME;
   const filter = /^azion:/;
@@ -25,7 +25,7 @@ const ESBuildAzionModulePlugin = (buildProd: boolean) => {
       const options = build.initialOptions;
 
       // external
-      if (buildProd) {
+      if (isProduction) {
         options.external = options.external || [];
         [...azionLibs.external].forEach(([key]) => {
           options.external = options.external || [];
@@ -35,7 +35,7 @@ const ESBuildAzionModulePlugin = (buildProd: boolean) => {
         });
       }
 
-      if (!buildProd) {
+      if (!isProduction) {
         // build inject prefix (azion:) is not present and the polyfill is Azion
         options.inject = options.inject || [];
         if (azionLibs.external) {
@@ -55,7 +55,7 @@ const ESBuildAzionModulePlugin = (buildProd: boolean) => {
        * @returns {object|undefined} - Object with path and namespace or undefined.
        */
       build.onResolve({ filter }, async (args) => {
-        if (!buildProd && azionLibs.external.has(args.path)) {
+        if (!isProduction && azionLibs.external.has(args.path)) {
           return {
             path: args.path,
             namespace: NAMESPACE,

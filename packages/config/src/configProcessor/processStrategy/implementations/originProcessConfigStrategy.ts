@@ -10,7 +10,7 @@ class OriginProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
     const payload: AzionOrigin[] = [];
     if (!Array.isArray(config?.origin) || config?.origin.length === 0) {
-      return payload;
+      return;
     }
     const originsType = ['single_origin', 'object_storage', 'load_balancer', 'live_ingest'];
     config?.origin.forEach((origin) => {
@@ -32,7 +32,7 @@ class OriginProcessConfigStrategy extends ProcessConfigStrategy {
         originSetting.origin_path = origin.path || '';
         originSetting.origin_protocol_policy = origin.protocolPolicy || 'preserve';
         originSetting.method = origin.method || 'ip_hash';
-        originSetting.is_origin_redirection_enabled = origin.redirection || false;
+        originSetting.is_origin_redirection_enabled = origin.redirection ?? false;
         originSetting.connection_timeout = origin.connectionTimeout || 60;
         originSetting.timeout_between_bytes = origin.timeoutBetweenBytes || 120;
 
@@ -100,7 +100,7 @@ class OriginProcessConfigStrategy extends ProcessConfigStrategy {
         originSetting.path = origin.origin_path;
         originSetting.protocolPolicy = origin.origin_protocol_policy;
         originSetting.method = origin.method;
-        originSetting.redirection = origin.is_origin_redirection_enabled;
+        originSetting.redirection = origin.is_origin_redirection_enabled ?? false;
         originSetting.connectionTimeout = origin.connection_timeout;
         originSetting.timeoutBetweenBytes = origin.timeout_between_bytes;
         originSetting.addresses = origin.addresses;

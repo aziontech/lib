@@ -126,7 +126,6 @@ function nodeBuiltInModules(build: PluginBuild, isProd: boolean) {
         return ext === nameModule || ext === args.path || `node:${nameModule}` === ext;
       });
       const polyfillResult = findModulePolyfill(prefix, nameModule);
-
       // if polyfill is not found, check if the module is external
       if (!polyfillResult && externalModule) {
         return {

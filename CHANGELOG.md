@@ -1,3 +1,66 @@
+## [1.16.0-stage.2](https://github.com/aziontech/lib/compare/v1.16.0-stage.1...v1.16.0-stage.2) (2025-02-11)
+
+
+### Bug Fixes
+
+* preact config name ([facd7b5](https://github.com/aziontech/lib/commit/facd7b543a01df9fe96fe93b95011b61eceaa9f9))
+
+## [1.16.0-stage.1](https://github.com/aziontech/lib/compare/v1.15.0...v1.16.0-stage.1) (2025-02-10)
+
+
+### Features
+
+* new preset for preact ssg ([fa9acf2](https://github.com/aziontech/lib/commit/fa9acf24d9c3f4075d911b32ec109ece113f86df))
+
+## [1.15.0](https://github.com/aziontech/lib/compare/v1.14.2...v1.15.0) (2025-02-10)
+
+
+### Features
+
+* new preset for preact ssg ([1769277](https://github.com/aziontech/lib/commit/1769277053bf6d8c1acd6780fdb08929662cac07))
+
+### [1.14.2](https://github.com/aziontech/lib/compare/v1.14.1...v1.14.2) (2025-02-07)
+
+
+### Bug Fixes
+
+* update schemas and return empty config (#103) ([40d0bce](https://github.com/aziontech/lib/commit/40d0bcecb7b42cd4a3f75bb36047c429ea630783))
+
+### [1.14.2-stage.1](https://github.com/aziontech/lib/compare/v1.14.1...v1.14.2-stage.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* update schemas and return empty config (#103) ([40d0bce](https://github.com/aziontech/lib/commit/40d0bcecb7b42cd4a3f75bb36047c429ea630783))
+
+### [1.14.1](https://github.com/aziontech/lib/compare/v1.14.0...v1.14.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* adjustments in the domain and firewall processing transform config (#101) ([a455143](https://github.com/aziontech/lib/commit/a455143bf0bc5836ad7de65d67a6fab7c0f4fe7b))
+
+### [1.14.1-stage.1](https://github.com/aziontech/lib/compare/v1.14.0...v1.14.1-stage.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* adjustments in the domain and firewall processing transform config (#101) ([a455143](https://github.com/aziontech/lib/commit/a455143bf0bc5836ad7de65d67a6fab7c0f4fe7b))
+
+## [1.14.0](https://github.com/aziontech/lib/compare/v1.13.1...v1.14.0) (2025-02-05)
+
+
+### Features
+
+* add temporary polyfills for performance and navigator in unenv-preset (#99) ([919bdf4](https://github.com/aziontech/lib/commit/919bdf42cdd36f00e4e7357129523d472e28a38e))
+* create unenv-preset package (#96) ([ddcf7fc](https://github.com/aziontech/lib/commit/ddcf7fc4e0138c814597e8bf37bdcc220bafe054))
+
+
+### Bug Fixes
+
+* add crypto-browserify as a dependency (#97) ([f6b146f](https://github.com/aziontech/lib/commit/f6b146f6df56710705017558fc06ee2e0a0042a3))
+* export polyfills path for unenv-preset package (#98) ([8df8a7a](https://github.com/aziontech/lib/commit/8df8a7a44f7471b2de3ea18898fec433fbf8d59f))
+
 ## [1.14.0-stage.4](https://github.com/aziontech/lib/compare/v1.14.0-stage.3...v1.14.0-stage.4) (2025-02-04)
 
 
