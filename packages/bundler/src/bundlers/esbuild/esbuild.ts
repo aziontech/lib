@@ -8,7 +8,7 @@ import {
   getBannerContent,
   getOutputFilename,
 } from '../../helpers/bundler-utils';
-import { BuildEnv, BundlerConfig, ESBuildConfiguration } from '../../types/bundler';
+import { BuildEnv, BundlerConfig, ESBuildConfiguration } from '../../types';
 import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import NodePolyfillPlugin from './plugins/node-polyfills';

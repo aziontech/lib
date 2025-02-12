@@ -11,6 +11,8 @@ import {
   WafSensitivity,
 } from './constants';
 
+import type { AzionBuildPreset } from 'azion/presets';
+
 /**
  * Domain configuration for Azion.
  */
@@ -315,15 +317,6 @@ export type AzionPurge = {
   method?: 'delete';
   /** Cache layer to be purged */
   layer?: 'edge_caching' | 'l2_caching';
-};
-
-export type AzionBuildPreset = {
-  handler: string;
-  prebuild?: string;
-  postbuild?: string;
-  meta: {
-    name: string;
-  };
 };
 
 export type PresetInput = string | AzionBuildPreset;

@@ -1,5 +1,7 @@
 import type { PresetMetadata } from 'azion/presets';
 
-export const metadata: PresetMetadata = {
+const metadata: PresetMetadata = {
   name: 'vue',
 };
+
+export default metadata;

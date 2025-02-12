@@ -2,9 +2,8 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'typescript',
-    },
+    preset: 'typescript',
+    polyfills: true,
   },
   rules: {
     request: [

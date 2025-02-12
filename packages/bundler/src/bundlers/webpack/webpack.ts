@@ -7,7 +7,7 @@ import {
   getBannerContent,
   getOutputFilename,
 } from '../../helpers/bundler-utils';
-import { BuildEnv, BundlerConfig, WebpackConfiguration, WebpackPluginClasses } from '../../types/bundler';
+import { BuildEnv, BundlerConfig, WebpackConfiguration, WebpackPluginClasses } from '../../types';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 import AzionWebpackConfig from './webpack.config';
