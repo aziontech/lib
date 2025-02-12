@@ -8,7 +8,12 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "isolatedModules": true,
-    "resolveJsonModule": true
+    "baseUrl": ".",
+    "paths": {
+      "azion": ["../client/src/index.ts"],
+      "azion/presets": ["../presets/src/index.ts"]
+    }
   }
 }
