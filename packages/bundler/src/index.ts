@@ -3,5 +3,4 @@ import { createAzionWebpackConfig, executeWebpackBuild } from './bundlers/webpac
 
 export { createAzionESBuildConfig, createAzionWebpackConfig, executeESBuildBuild, executeWebpackBuild };
 
-export * from './types/build';
 export * from './types/bundler';
