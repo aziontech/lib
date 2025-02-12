@@ -1,0 +1,36 @@
+{
+  "name": "@lib/bundler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "compile": "tsup --config ../../tsup.config.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "author": "aziontech",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "dependencies": {
+    "@lib/unenv-preset": "*",
+    "@swc/core": "^1.10.15",
+    "mock-fs": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/mock-fs": "^4.13.4"
+  }
+}

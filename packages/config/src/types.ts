@@ -317,30 +317,29 @@ export type AzionPurge = {
   layer?: 'edge_caching' | 'l2_caching';
 };
 
-export type AzionBuild = {
-  /** JavaScript bundler to be used for building the application */
-  builder?: 'webpack' | 'esbuild';
-  /** Entry file for the build */
-  entry?: string;
-  /** Preset configuration e.g next */
-  preset?: {
+export type AzionBuildPreset = {
+  handler: string;
+  prebuild?: string;
+  postbuild?: string;
+  meta: {
     name: string;
   };
-  /** MemoryFS configuration */
+};
+
+export type PresetInput = string | AzionBuildPreset;
+
+export interface AzionBuild {
+  bundler?: 'webpack' | 'esbuild';
+  entry?: string;
+  preset?: PresetInput;
+  polyfills?: boolean;
+  worker?: boolean;
   memoryFS?: {
-    /** List of directories to be injected */
     injectionDirs: string[];
-    /** Remove path prefix */
     removePathPrefix: string;
   };
-  /** Polyfills enabled */
-  polyfills?: boolean;
-  /** if true will use the owner worker with addEventListener */
-  worker?: boolean;
-  /** Custom configuration to bundlers e.g minify: true */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  custom?: Record<string, any>;
-};
+  custom?: Record<string, unknown>;
+}
 
 /**
  * Network list configuration for Azion.

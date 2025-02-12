@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "ESNext",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "paths": {
+      "azion/unenv-preset": ["../unenv-preset/src/index.ts"],
+      "azion/config": ["../config/src/index.ts"],
+      "azion/presets": ["../presets/src/index.ts"]
+    }
+  }
+}

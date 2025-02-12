@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   build: {
-    preset: {
-      name: 'astro',
-    },
+    bundler: 'webpack',
+    preset: 'astro',
+    polyfills: false,
   },
   origin: [
     {

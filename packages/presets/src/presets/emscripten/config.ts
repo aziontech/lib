@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   build: {
-    preset: {
-      name: 'emscripten',
-    },
+    bundler: 'webpack',
+    preset: 'emscripten',
+    polyfills: false,
   },
   rules: {
     request: [

@@ -455,19 +455,47 @@ const azionConfigSchema = {
           errorMessage: "The 'worker' field must be a boolean.",
         },
         preset: {
-          type: 'object',
-          properties: {
-            name: {
+          oneOf: [
+            {
               type: 'string',
-              errorMessage: "The 'preset.name' field must be a string.",
+              errorMessage: "When using a string, the 'preset' must be a valid preset name",
             },
-          },
-          required: ['name'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'preset' object.",
-            required: "The 'name and mode' fields are required in the 'preset' object.",
-          },
+            {
+              type: 'object',
+              properties: {
+                handler: {
+                  type: 'string',
+                  errorMessage: "The 'preset.handler' field must be a string.",
+                },
+                prebuild: {
+                  type: 'string',
+                  errorMessage: "The 'preset.prebuild' field must be a string.",
+                },
+                postbuild: {
+                  type: 'string',
+                  errorMessage: "The 'preset.postbuild' field must be a string.",
+                },
+                meta: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string',
+                      errorMessage: "The 'preset.meta.name' field must be a string.",
+                    },
+                  },
+                  required: ['name'],
+                  additionalProperties: false,
+                },
+              },
+              required: ['handler', 'meta'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'preset' object.",
+                required: "The 'handler' and 'meta' fields are required in the 'preset' object.",
+              },
+            },
+          ],
+          errorMessage: "The 'preset' must be either a string (preset name) or an object with required fields",
         },
         memoryFS: {
           type: 'object',
