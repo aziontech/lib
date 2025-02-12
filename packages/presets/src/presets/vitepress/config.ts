@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'vitepress',
-    },
+    bundler: 'webpack',
+    preset: 'vitepress',
+    polyfills: false,
   },
   origin: [
     {

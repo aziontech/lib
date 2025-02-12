@@ -21,5 +21,6 @@
       "azion/applications": ["../applications/src/index.ts"],
       "azion/ai": ["../ai/src/index.ts"]
     }
-  }
+  },
+  "exclude": ["src/presets/**/handler.ts"]
 }
