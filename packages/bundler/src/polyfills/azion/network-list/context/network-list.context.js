@@ -2,6 +2,7 @@ import ipLib from 'ip';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import nodePath from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 
@@ -117,7 +118,10 @@ class NetworkListContext {
   // eslint-disable-next-line class-methods-use-this
   #getConfigFilePath() {
     const projectRoot = process.cwd();
-    const rootPath = nodePath.resolve(projectRoot, '.');
+    const isWindows = process.platform === 'win32';
+    const rootPath = isWindows
+      ? fileURLToPath(new URL(`file:///${nodePath.resolve(projectRoot, '.')}`))
+      : nodePath.resolve(projectRoot, '.');
     return {
       configFilePath: nodePath.resolve(rootPath, this.#configFile),
       rootPath,

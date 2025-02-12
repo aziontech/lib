@@ -8,11 +8,12 @@ import path from 'path';
 import { env, nodeless } from 'unenv';
 import { fileURLToPath } from 'url';
 
-const require = createRequire(import.meta.url);
+const requireCustom = createRequire(import.meta.url);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const getAbsolutePath = () => path.resolve(__dirname, '../', 'src');
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+const getAbsolutePath = () => path.resolve(dirname, '../../../', '../');
+const unenvPackagePath = () => path.resolve(dirname, '../../../../', '../../unenv-preset');
 
 const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
 
@@ -22,8 +23,8 @@ interface BuildOptions {
 
 const INTERNAL_POLYFILL_DEV = 'internal-env-dev';
 const INTERNAL_POLYFILL_PROD = 'internal-env-prod';
-const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/env/polyfills`;
-const INTERNAL_POLYFILL_PATH_PROD = `azion/unenv-preset/src/polyfills/node`;
+const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/polyfills`;
+const INTERNAL_POLYFILL_PATH_PROD = `${unenvPackagePath()}/src/polyfills/node`;
 const POLYFILL_PREFIX_DEV = 'aziondev:';
 const POLYFILL_PREFIX_PROD = 'azionprd:';
 
@@ -67,7 +68,7 @@ function handleAliasUnenv(build: PluginBuild) {
 
   Object.entries(alias).forEach(([module, unresolvedAlias]: [string, string]) => {
     try {
-      aliasAbsolute[module] = require.resolve(unresolvedAlias).replace(/\.cjs$/, '.mjs');
+      aliasAbsolute[module] = requireCustom.resolve(unresolvedAlias).replace(/\.cjs$/, '.mjs');
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -151,7 +152,7 @@ function nodeBuiltInModules(build: PluginBuild, isProd: boolean) {
   });
 
   build.onLoad({ filter: /.*/, namespace: IMPORTED_NODE_BUILT_IN_NAMESPACE }, async (args) => {
-    const resolved = require.resolve(args.path);
+    const resolved = requireCustom.resolve(args.path);
     const contents = await fs.promises.readFile(resolved, 'utf8');
     const resolveDir = path.dirname(resolved);
 
@@ -243,7 +244,8 @@ function handleInternalPolyfillEnvProd(build: PluginBuild) {
         INTERNAL_POLYFILL_PATH_PROD,
         polyfillPath.replace(`${POLYFILL_PREFIX_PROD}${args.path}:/`, ''),
       );
-      const resolved = require.resolve(internalPolyfillsPath);
+      const resolved = requireCustom.resolve(internalPolyfillsPath);
+
       const contents = await fs.promises.readFile(resolved, 'utf8');
       const resolveDir = path.dirname(resolved);
       return {
@@ -272,10 +274,10 @@ function defineNextJsRuntime(options: BuildOptions) {
 
 /**
  * ESBuild Node Module Plugin for polyfilling node modules.
- * @param {boolean} isProduction Parameter to identify whether the build is dev or prod
+ * @param {boolean} buildProd Parameter to identify whether the build is dev or prod
  * @returns {object} - ESBuild plugin object.
  */
-const ESBuildNodeModulePlugin = (isProduction: boolean) => {
+const ESBuildNodeModulePlugin = (buildProd: boolean) => {
   const NAME = 'bundler-node-modules-polyfills';
 
   return {
@@ -310,7 +312,7 @@ const ESBuildNodeModulePlugin = (isProduction: boolean) => {
       };
 
       // resolve modules
-      nodeBuiltInModules(build, isProduction);
+      nodeBuiltInModules(build, buildProd);
       handleAliasUnenv(build);
       handleNodeJSGlobals(build);
       handleInternalPolyfillEnvDev(build);

@@ -59,13 +59,14 @@
     "@swc/core": "^1.10.15",
     "@types/eslint__js": "^8.42.3",
     "@types/lodash": "^4.17.15",
+    "@types/lodash-es": "^4.17.12",
     "conventional-changelog-conventionalcommits": "^4.6.0",
     "eslint": "^8.57.0",
     "globals": "^15.7.0",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
     "semantic-release": "^21.0.7",
-    "tsup": "^8.0.2",
+    "tsup": "^8.3.6",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.16.0"
   },
@@ -82,89 +83,72 @@
   "exports": {
     ".": {
       "require": "./packages/client/dist/index.js",
-      "import": "./packages/client/dist/index.mjs",
-      "types": "./packages/client/dist/index.d.ts"
+      "import": "./packages/client/dist/index.mjs"
     },
     "./presets": {
       "require": "./packages/presets/dist/index.js",
-      "import": "./packages/presets/dist/index.mjs",
-      "types": "./packages/presets/dist/index.d.ts"
+      "import": "./packages/presets/dist/index.mjs"
     },
     "./bundler": {
       "require": "./packages/bundler/dist/index.js",
-      "import": "./packages/bundler/dist/index.mjs",
-      "types": "./packages/bundler/dist/index.d.ts"
+      "import": "./packages/bundler/dist/index.mjs"
     },
     "./unenv-preset": {
       "require": "./packages/unenv-preset/dist/index.js",
-      "import": "./packages/unenv-preset/dist/index.mjs",
-      "types": "./packages/unenv-preset/dist/index.d.ts"
+      "import": "./packages/unenv-preset/dist/index.mjs"
     },
     "./unenv-preset/src/polyfills/*": "./packages/unenv-preset/src/polyfills/*",
     "./ai": {
       "require": "./packages/ai/dist/index.js",
-      "import": "./packages/ai/dist/index.mjs",
-      "types": "./packages/ai/dist/index.d.ts"
+      "import": "./packages/ai/dist/index.mjs"
     },
     "./applications": {
       "require": "./packages/applications/dist/index.js",
-      "import": "./packages/applications/dist/index.mjs",
-      "types": "./packages/applications/dist/index.d.ts"
+      "import": "./packages/applications/dist/index.mjs"
     },
     "./types": {
       "require": "./packages/types/dist/index.js",
-      "import": "./packages/types/dist/index.mjs",
-      "types": "./packages/types/dist/index.d.ts"
+      "import": "./packages/types/dist/index.mjs"
     },
     "./config": {
       "require": "./packages/config/dist/index.js",
-      "import": "./packages/config/dist/index.mjs",
-      "types": "./packages/config/dist/index.d.ts"
+      "import": "./packages/config/dist/index.mjs"
     },
     "./sql": {
       "require": "./packages/sql/dist/index.js",
-      "import": "./packages/sql/dist/index.mjs",
-      "types": "./packages/sql/dist/index.d.ts"
+      "import": "./packages/sql/dist/index.mjs"
     },
     "./storage": {
       "require": "./packages/storage/dist/index.js",
-      "import": "./packages/storage/dist/index.mjs",
-      "types": "./packages/storage/dist/index.d.ts"
+      "import": "./packages/storage/dist/index.mjs"
     },
     "./cookies": {
       "require": "./packages/cookies/dist/index.js",
-      "import": "./packages/cookies/dist/index.mjs",
-      "types": "./packages/cookies/dist/index.d.ts"
+      "import": "./packages/cookies/dist/index.mjs"
     },
     "./jwt": {
       "require": "./packages/jwt/dist/index.js",
-      "import": "./packages/jwt/dist/index.mjs",
-      "types": "./packages/jwt/dist/index.d.ts"
+      "import": "./packages/jwt/dist/index.mjs"
     },
     "./purge": {
       "require": "./packages/purge/dist/index.js",
-      "import": "./packages/purge/dist/index.mjs",
-      "types": "./packages/purge/dist/index.d.ts"
+      "import": "./packages/purge/dist/index.mjs"
     },
     "./router": {
       "require": "./packages/router/dist/index.js",
-      "import": "./packages/router/dist/index.mjs",
-      "types": "./packages/router/dist/index.d.ts"
+      "import": "./packages/router/dist/index.mjs"
     },
     "./wasm-image-processor": {
       "require": "./packages/wasm-image-processor/dist/index.js",
-      "import": "./packages/wasm-image-processor/dist/index.mjs",
-      "types": "./packages/wasm-image-processor/dist/index.d.ts"
+      "import": "./packages/wasm-image-processor/dist/index.mjs"
     },
     "./utils": {
       "require": "./packages/utils/dist/index.js",
-      "import": "./packages/utils/dist/index.mjs",
-      "types": "./packages/utils/dist/index.d.ts"
+      "import": "./packages/utils/dist/index.mjs"
     },
     "./domains": {
       "require": "./packages/domains/dist/index.js",
-      "import": "./packages/domains/dist/index.mjs",
-      "types": "./packages/domains/dist/index.d.ts"
+      "import": "./packages/domains/dist/index.mjs"
     }
   },
   "typesVersions": {
@@ -220,8 +204,26 @@
     }
   },
   "dependencies": {
+    "@fastly/http-compute-js": "^1.1.5",
+    "accepts": "^1.3.8",
+    "browserify-zlib": "^0.2.0",
     "chalk": "^5.3.0",
     "crypto-browserify": "^3.12.1",
-    "progress": "^2.0.3"
+    "esbuild": "^0.25.0",
+    "events": "^3.3.0",
+    "inherits": "^2.0.4",
+    "lodash-es": "^4.17.21",
+    "mime": "^3.0.0",
+    "progress": "^2.0.3",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "string_decoder": "^1.3.0",
+    "timers-browserify": "^2.0.12",
+    "ts-loader": "^9.5.2",
+    "unenv": "^1.10.0",
+    "url": "^0.11.4",
+    "util": "^0.12.5",
+    "vm-browserify": "^1.1.2",
+    "webpack": "^5.97.1"
   }
 }

@@ -1,3 +1,3 @@
-import AzionPolyfillPlugin from './azion-polyfills.js';
+import AzionPolyfillPlugin from './azion-polyfills';
 
 export default AzionPolyfillPlugin;

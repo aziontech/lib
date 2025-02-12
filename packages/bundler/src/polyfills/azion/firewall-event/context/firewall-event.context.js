@@ -107,9 +107,7 @@ class FirewallEventContext extends primitives.FetchEvent {
 
   respondWith(response) {
     if (!(response instanceof Response) && !(response instanceof Promise)) {
-      throw new TypeError(
-        'respondWith expects a Response or a Promise that resolves to a Response',
-      );
+      throw new TypeError('respondWith expects a Response or a Promise that resolves to a Response');
     }
     this.#outcome = 'respondWith';
     this.#currentResponse = response;
