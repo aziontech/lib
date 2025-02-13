@@ -7,7 +7,7 @@ import {
   getBannerContent,
   getOutputFilename,
 } from '../../helpers/bundler-utils';
-import { BuildEnv, BundlerConfig, WebpackConfiguration, WebpackPluginClasses } from '../../types';
+import { BuildConfiguration, BuildEnv, WebpackConfiguration, WebpackPluginClasses } from '../../types';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 import AzionWebpackConfig from './webpack.config';
@@ -52,7 +52,7 @@ const applyContentInjection =
     return config;
   };
 
-interface WebpackBundler {
+export interface WebpackBundler {
   baseConfig: WebpackConfiguration;
   mergeConfig: (config: WebpackConfiguration) => WebpackConfiguration;
   applyConfig: (config: WebpackConfiguration) => WebpackConfiguration;
@@ -62,13 +62,13 @@ interface WebpackBundler {
 /**
  * Creates Webpack bundler instance
  */
-export const createAzionWebpackConfig = (bundlerConfig: BundlerConfig, ctx: BuildEnv): WebpackBundler => {
+export const createAzionWebpackConfig = (buildConfiguration: BuildConfiguration, ctx: BuildEnv): WebpackBundler => {
   const outputPath = ctx.output.split('/').slice(0, -1).join('/');
   const filename = getOutputFilename(ctx.output, ctx).split('/').pop() as string;
 
   const baseConfig: WebpackConfiguration = {
     ...AzionWebpackConfig,
-    entry: bundlerConfig.entry,
+    entry: buildConfiguration.config.entry,
     output: {
       ...AzionWebpackConfig.output,
       path: outputPath,
@@ -92,11 +92,18 @@ export const createAzionWebpackConfig = (bundlerConfig: BundlerConfig, ctx: Buil
     baseConfig,
     mergeConfig: (config: WebpackConfiguration) =>
       flow([
-        () => bundlerPlugins.applyPolyfills(ctx)(config)(bundlerConfig),
+        () =>
+          bundlerPlugins.applyPolyfills(ctx)(config)({
+            config: buildConfiguration.config,
+            extras: buildConfiguration.extras,
+          }),
         () => bundlerPlugins.applyAzionModule(ctx)(config),
-        () => applyContentInjection(config)(bundlerConfig.contentToInject),
-        () => applyDefineVars(config, 'webpack')(bundlerConfig.defineVars),
-        () => extendConfig(config)(bundlerConfig.extend as (config: WebpackConfiguration) => WebpackConfiguration),
+        () => applyContentInjection(config)(buildConfiguration.extras?.contentToInject),
+        () => applyDefineVars(config, 'webpack')(buildConfiguration.extras?.defineVars),
+        () =>
+          extendConfig(config)(
+            buildConfiguration.config.extend as (config: WebpackConfiguration) => WebpackConfiguration,
+          ),
       ])(config),
     applyConfig: (config: WebpackConfiguration) => config,
     executeBuild: executeWebpackBuild,

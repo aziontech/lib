@@ -13,7 +13,8 @@
       "azion/unenv-preset": ["../unenv-preset/src/"],
       "azion/utils": ["../utils/src/"],
       "azion/config": ["../config/src/index.ts"],
-      "azion/presets": ["../presets/src/index.ts"]
+      "azion/presets": ["../presets/src/index.ts"],
+      "azion/types": ["../types/src/index.ts"]
     }
   },
   "exclude": ["node_modules"]

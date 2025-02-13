@@ -8,7 +8,7 @@ import {
   getBannerContent,
   getOutputFilename,
 } from '../../helpers/bundler-utils';
-import { BuildEnv, BundlerConfig, ESBuildConfiguration } from '../../types';
+import { BuildConfiguration, BuildEnv, ESBuildConfiguration } from '../../types';
 import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import NodePolyfillPlugin from './plugins/node-polyfills';
@@ -50,10 +50,10 @@ const applyContentInjection =
 /**
  * Creates ESBuild bundler instance
  */
-export const createAzionESBuildConfig = (bundlerConfig: BundlerConfig, ctx: BuildEnv): ESBuildBundler => {
+export const createAzionESBuildConfig = (buildConfig: BuildConfiguration, ctx: BuildEnv): ESBuildBundler => {
   const baseConfig: ESBuildConfiguration = {
     ...AzionEsbuildConfig,
-    entryPoints: [bundlerConfig.entry],
+    entryPoints: [buildConfig.config.entry ?? ''],
     outfile: getOutputFilename(ctx.output, ctx),
     minify: ctx.production,
     plugins: [],
@@ -66,11 +66,11 @@ export const createAzionESBuildConfig = (bundlerConfig: BundlerConfig, ctx: Buil
     baseConfig,
     mergeConfig: (config: ESBuildConfiguration) =>
       flow([
-        () => bundlerPlugins.applyPolyfills(ctx)(config)(bundlerConfig),
+        () => bundlerPlugins.applyPolyfills(ctx)(config)({ config: buildConfig.config, extras: buildConfig.extras }),
         () => bundlerPlugins.applyAzionModule(ctx)(config),
-        () => applyContentInjection(config)(bundlerConfig.contentToInject),
-        () => applyDefineVars<ESBuildConfiguration>(config, 'esbuild')(bundlerConfig.defineVars),
-        () => extendConfig(config)(bundlerConfig.extend as (config: ESBuildConfiguration) => ESBuildConfiguration),
+        () => applyContentInjection(config)(buildConfig?.extras?.contentToInject),
+        () => applyDefineVars<ESBuildConfiguration>(config, 'esbuild')(buildConfig?.extras?.defineVars),
+        () => extendConfig(config)(buildConfig.config.extend as (config: ESBuildConfiguration) => ESBuildConfiguration),
       ])(config),
     applyConfig: (config: ESBuildConfiguration) => config,
     executeBuild: executeESBuildBuild,

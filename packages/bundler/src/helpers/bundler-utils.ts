@@ -1,22 +1,21 @@
 import { Plugin as ESBuildPlugin } from 'esbuild';
-import { flow } from 'lodash-es';
 import webpack, { WebpackPluginInstance } from 'webpack';
 import { bannerCli, bannerDevelopment } from '../constants/banners';
 import {
+  BuildConfiguration,
   BuildEnv,
-  BundlerConfig as BuilderConfig,
-  BundlerConfiguration,
   BundlerPluginFunctions,
+  BundlerProviderConfig,
   ESBuildPluginClasses,
   WebpackPluginClasses,
-} from '../types/bundler';
+} from '../types';
 
 /**
  * Creates bundler plugins factory with specific implementations
  */
 export const createBundlerPlugins = <
   T extends WebpackPluginClasses | ESBuildPluginClasses,
-  C extends BundlerConfiguration,
+  C extends BundlerProviderConfig,
 >(
   implementations: T,
 ): BundlerPluginFunctions<C> => {
@@ -28,8 +27,8 @@ export const createBundlerPlugins = <
   const applyPolyfills =
     (buildEnv: BuildEnv) =>
     (config: C) =>
-    (builderConfig: BuilderConfig): C => {
-      const polyfills = builderConfig.polyfills;
+    (buildConfiguration: BuildConfiguration): C => {
+      const polyfills = buildConfiguration.config?.polyfills;
 
       if (!polyfills) return config;
       config.plugins = [
@@ -72,7 +71,7 @@ function isWebpackPlugin(
  * Common define variables configuration
  */
 export const applyDefineVars =
-  <T extends BundlerConfiguration>(config: T, provider: 'esbuild' | 'webpack') =>
+  <T extends BundlerProviderConfig>(config: T, provider: 'esbuild' | 'webpack') =>
   (defineVars: Record<string, string> = {}): T => {
     if (!defineVars) return config;
 
@@ -109,37 +108,8 @@ export const getBannerContent = (buildEnv: BuildEnv): string => {
   return buildEnv.production ? bannerCli : `${bannerCli}${bannerDevelopment}`;
 };
 
-/**
- * Creates base bundler configuration with merged config and plugin support
- */
-export const createBaseBundler = <T extends BundlerConfiguration>(
-  builderConfig: BuilderConfig,
-  buildEnv: BuildEnv,
-  plugins: ((config: T) => T)[] = [],
-) => {
-  const mergeConfig = (baseConfig: T): T => {
-    const customConfig = builderConfig.extend?.(baseConfig).plugins;
-    if (!customConfig) return baseConfig;
-
-    return {
-      ...baseConfig,
-      ...customConfig,
-    };
-  };
-
-  const applyConfig = (baseConfig: T): T => {
-    if (!plugins.length) return baseConfig;
-    return flow(...plugins)(baseConfig);
-  };
-
-  return {
-    mergeConfig,
-    applyConfig,
-  };
-};
-
 export const extendConfig =
-  <T extends BundlerConfiguration>(config: T) =>
+  <T extends BundlerProviderConfig>(config: T) =>
   (extendFn: (config: T) => T): T => {
     if (extendFn === undefined) {
       return config;
@@ -148,7 +118,7 @@ export const extendConfig =
   };
 
 export const applyContentInjection =
-  <T extends BundlerConfiguration>(config: T) =>
+  <T extends BundlerProviderConfig>(config: T) =>
   (content: string | undefined): T => {
     if (!content) return config;
     return {

@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import fs from 'fs';
 import tmp from 'tmp';
-import { BuildEnv, BundlerConfig } from '../../types/bundler';
+import { BuildConfiguration, BuildEnv } from '../../types';
 import { createAzionESBuildConfig } from './esbuild';
 
 describe('Esbuild Bundler', () => {
@@ -38,21 +38,23 @@ describe('Esbuild Bundler', () => {
 
   describe('createAzionESBuildConfig', () => {
     it('should create base esbuild config', () => {
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          extend(context: any) {
+            const config = context;
+            config.minify = false;
+            return config;
+          },
         },
-        defineVars: {
-          NODE_ENV: 'production',
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        extend(context: any) {
-          const config = context;
-          config.minify = false;
-          return config;
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -71,21 +73,23 @@ describe('Esbuild Bundler', () => {
 
   describe('createAzionESBuildConfig.mergeConfig', () => {
     it('should merge config when extend config is provided', () => {
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          extend(context: any) {
+            const config = context;
+            config.minify = false;
+            return config;
+          },
         },
-        defineVars: {
-          NODE_ENV: 'production',
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        extend(context: any) {
-          const config = context;
-          config.minify = false;
-          return config;
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -105,15 +109,17 @@ describe('Esbuild Bundler', () => {
     });
 
     it('should merge config when extend config is not provided', () => {
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
         },
-        defineVars: {
-          NODE_ENV: 'production',
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -137,21 +143,23 @@ describe('Esbuild Bundler', () => {
       const code = `import fs from 'node:fs';console.log(process.env.NODE_ENV);`;
       await fs.promises.writeFile(tmpEntry.name, code);
 
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          extend(context: any) {
+            const config = context;
+            config.minify = false;
+            return config;
+          },
         },
-        defineVars: {
-          NODE_ENV: 'production',
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        extend(context: any) {
-          const config = context;
-          config.minify = false;
-          return config;
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -176,20 +184,17 @@ describe('Esbuild Bundler', () => {
       const code = `import crypto from 'node:crypto';const id = crypto.randomUUID();`;
       await fs.promises.writeFile(tmpEntry.name, code);
 
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        preset: {
-          name: 'javascript',
-        },
-        defineVars: {
-          NODE_ENV: 'production',
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        extend(context: any) {
-          const config = context;
-          config.minify = false;
-          return config;
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          extend(context: any) {
+            const config = context;
+            config.minify = false;
+            return config;
+          },
         },
       };
 
