@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import tmp from 'tmp';
-import { BuildEnv, BundlerConfig } from '../../types/bundler';
+import { Configuration as WebpackConfig } from 'webpack';
+import { BuildConfiguration, BuildEnv } from '../../types';
 import { createAzionWebpackConfig } from './webpack';
 
 describe('Webpack Bundler', () => {
@@ -38,15 +39,17 @@ describe('Webpack Bundler', () => {
 
   describe('createAzionWebpackConfig', () => {
     it('should create base webpack config', () => {
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
         },
-        defineVars: {
-          NODE_ENV: 'production',
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -65,20 +68,23 @@ describe('Webpack Bundler', () => {
 
   describe('createAzionWebpackConfig.mergeConfig', () => {
     it('should merge config when extend config is provided', async () => {
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
+          extend: (config) => {
+            (config as WebpackConfig).optimization = {
+              minimize: false,
+            };
+            return config;
+          },
         },
-        defineVars: {
-          NODE_ENV: 'production',
-        },
-        extend(context: any) {
-          const config = context;
-          config.optimization.minimize = false;
-          return config;
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -105,15 +111,17 @@ describe('Webpack Bundler', () => {
     });
 
     it('should merge config when extend config is not provided', async () => {
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
         },
-        defineVars: {
-          NODE_ENV: 'production',
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -145,15 +153,17 @@ describe('Webpack Bundler', () => {
       const code = `console.log(process.env.NODE_ENV);`;
       await fs.promises.writeFile(tmpEntry.name, code);
 
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
         },
-        defineVars: {
-          NODE_ENV: 'production',
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -177,15 +187,17 @@ describe('Webpack Bundler', () => {
       const code = `import crypto from 'node:crypto';const id = crypto.randomUUID();`;
       await fs.promises.writeFile(tmpEntry.name, code);
 
-      const bundlerConfig: BundlerConfig = {
-        entry: tmpEntry.name,
-        polyfills: true,
-        contentToInject: 'console.log("Hello World")',
-        preset: {
-          name: 'javascript',
+      const bundlerConfig: BuildConfiguration = {
+        config: {
+          entry: tmpEntry.name,
+          polyfills: true,
+          preset: 'javascript',
         },
-        defineVars: {
-          NODE_ENV: 'production',
+        extras: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
