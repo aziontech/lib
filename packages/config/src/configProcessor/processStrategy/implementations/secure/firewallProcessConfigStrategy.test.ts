@@ -204,7 +204,6 @@ describe('FirewallProcessConfigStrategy', () => {
 
       const config = {};
       const result = strategy.transformToConfig(manifest, config);
-      console.log(JSON.stringify(result, null, 2));
 
       expect(result).toEqual({
         name: 'Test Firewall',

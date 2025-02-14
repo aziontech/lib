@@ -1,26 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "ESNext",
     "module": "ESNext",
     "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "baseUrl": ".",
     "paths": {
-      "azion": ["../client/src/index.ts"],
-      "azion/sql": ["../sql/src/index.ts"],
-      "azion/storage": ["../storage/src/index.ts"],
-      "azion/purge": ["../purge/src/index.ts"],
+      "azion/unenv-preset": ["../unenv-preset/src/"],
+      "azion/utils": ["../utils/src/"],
       "azion/config": ["../config/src/index.ts"],
-      "azion/domains": ["../domains/src/index.ts"],
-      "azion/applications": ["../applications/src/index.ts"],
-      "azion/ai": ["../ai/src/index.ts"]
+      "azion/presets": ["../presets/src/index.ts"],
+      "azion/types": ["../types/src/index.ts"]
     }
   },
-  "exclude": ["src/presets/**/handler.ts"]
+  "exclude": ["node_modules", "src/presets/**/handler.ts"]
 }

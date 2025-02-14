@@ -59,7 +59,7 @@ export default config;
 2. Using the `defineConfig` function to enforce types and provide configuration:
 
 ```javascript
-import { defineConfig } from 'azion';
+import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   domain: {
