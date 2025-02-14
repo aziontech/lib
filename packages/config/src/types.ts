@@ -11,7 +11,7 @@ import {
   WafSensitivity,
 } from './constants';
 
-import type { AzionBuildPreset } from 'azion/presets';
+import { FetchEvent } from 'azion/types';
 
 /**
  * Domain configuration for Azion.
@@ -322,7 +322,7 @@ export type AzionPurge = {
 export type PresetInput = string | AzionBuildPreset;
 
 export interface AzionBuild {
-  bundler?: 'webpack' | 'esbuild';
+  builder?: 'webpack' | 'esbuild';
   entry?: string;
   preset?: PresetInput;
   polyfills?: boolean;
@@ -520,4 +520,16 @@ export type AzionWaf = {
   };
   /** WAF bypassAddress */
   bypassAddresses?: string[];
+};
+
+export type PresetMetadata = {
+  name: string;
+};
+
+export type AzionBuildPreset = {
+  config: AzionConfig;
+  handler: (event: FetchEvent) => Promise<Response>;
+  prebuild?: (context: AzionBuild) => Promise<void>;
+  postbuild?: (context: AzionBuild) => Promise<void>;
+  metadata: PresetMetadata;
 };

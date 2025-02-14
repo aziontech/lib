@@ -4,13 +4,13 @@
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "scripts": {
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
-    "prettier:check": "prettier --check ."
+    "prettier:check": "prettier --check .",
+    "test": "jest --clearCache && NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "exports": {
     ".": {
@@ -24,10 +24,7 @@
     "dist",
     "package.json"
   ],
-  "dependencies": {},
-  "devDependencies": {
-    "ajv": "^8.17.1",
-    "ajv-errors": "^3.0.0",
-    "ajv-keywords": "^5.1.0"
+  "dependencies": {
+    "webpack": "^5.97.1"
   }
 }

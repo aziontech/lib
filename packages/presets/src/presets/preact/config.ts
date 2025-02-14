@@ -1,7 +1,7 @@
 import { defineConfig } from 'azion/config';
 export default defineConfig({
   build: {
-    bundler: 'webpack',
+    builder: 'webpack',
     preset: 'preact',
     polyfills: false,
   },

@@ -1,4 +1,4 @@
-import { AzionBuildPreset } from '../../types';
+import { AzionBuildPreset } from 'azion/config';
 import config from './config';
 import handler from './handler';
 import metadata from './metadata';

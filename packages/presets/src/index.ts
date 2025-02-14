@@ -1,24 +1,24 @@
-import Angular from './presets/angular/index';
-import Astro from './presets/astro/index';
-import Docusaurus from './presets/docusaurus/index';
-import Eleventy from './presets/eleventy/index';
-import Emscripten from './presets/emscripten/index';
-import Gatsby from './presets/gatsby/index';
-import Hexo from './presets/hexo/index';
-import Html from './presets/html/index';
-import Hugo from './presets/hugo/index';
-import JavaScript from './presets/javascript/index';
-import Jekyll from './presets/jekyll/index';
-import Next from './presets/next/index';
-import Nuxt from './presets/nuxt/index';
-import Preact from './presets/preact/index';
-import Qwik from './presets/qwik/index';
-import React from './presets/react/index';
-import RustWasm from './presets/rustwasm/index';
-import Svelte from './presets/svelte/index';
-import TypeScript from './presets/typescript/index';
-import VitePress from './presets/vitepress/index';
-import Vue from './presets/vue/index';
+import Angular from './presets/angular';
+import Astro from './presets/astro';
+import Docusaurus from './presets/docusaurus';
+import Eleventy from './presets/eleventy';
+import Emscripten from './presets/emscripten';
+import Gatsby from './presets/gatsby';
+import Hexo from './presets/hexo';
+import Html from './presets/html';
+import Hugo from './presets/hugo';
+import JavaScript from './presets/javascript';
+import Jekyll from './presets/jekyll';
+import Next from './presets/next';
+import Nuxt from './presets/nuxt';
+import Preact from './presets/preact';
+import Qwik from './presets/qwik';
+import React from './presets/react';
+import RustWasm from './presets/rustwasm';
+import Svelte from './presets/svelte';
+import TypeScript from './presets/typescript';
+import VitePress from './presets/vitepress';
+import Vue from './presets/vue';
 
 const presets = {
   Angular,
@@ -69,5 +69,3 @@ export {
 };
 
 export default presets;
-
-export * from './types';

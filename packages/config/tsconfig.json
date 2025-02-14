@@ -12,8 +12,7 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "azion": ["../client/src/index.ts"],
-      "azion/presets": ["../presets/src/index.ts"]
+      "azion/types": ["../types/src/index.ts"]
     }
   }
 }
