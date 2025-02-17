@@ -24,7 +24,7 @@ interface BuildOptions {
 const INTERNAL_POLYFILL_DEV = 'internal-env-dev';
 const INTERNAL_POLYFILL_PROD = 'internal-env-prod';
 const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/polyfills`;
-const INTERNAL_POLYFILL_PATH_PROD = `${unenvPackagePath()}/src/polyfills/node`;
+const INTERNAL_POLYFILL_PATH_PROD = `${unenvPackagePath()}/polyfills/node`;
 const POLYFILL_PREFIX_DEV = 'aziondev:';
 const POLYFILL_PREFIX_PROD = 'azionprd:';
 

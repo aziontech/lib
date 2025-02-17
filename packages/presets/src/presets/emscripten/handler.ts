@@ -1,7 +1,4 @@
 import { FetchEvent } from 'azion/types';
-/* eslint-disable-next-line */
-// @ts-ignore - Module will be generated during build
-import createModule from './build/module';
 
 interface WasmModule {
   fetch_listener: (event: FetchEvent) => Promise<string>;
@@ -24,7 +21,8 @@ async function handler(event: FetchEvent): Promise<Response> {
   try {
     if (!wasmPromise) {
       wasmPromise = new Promise((resolve) => {
-        createModule().then((module: { cwrap: (arg0: string, arg1: string, arg2: string[]) => unknown }) => {
+        // @ts-expect-error - Module will be generated during build
+        import('./build/module').then((module: { cwrap: (arg0: string, arg1: string, arg2: string[]) => unknown }) => {
           resolve({
             fetch_listener: module.cwrap('fetch_listener', 'string', ['object']),
             module: module,
