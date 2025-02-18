@@ -17,6 +17,10 @@
     ".": {
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
+    },
+    "./polyfills": {
+      "require": "./src/polyfills/index.js",
+      "import": "./src/polyfills/index.js"
     }
   },
   "author": "aziontech",

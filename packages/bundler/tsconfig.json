@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "allowJs": true,
     "paths": {
       "azion/unenv-preset": ["../unenv-preset/src/"],
       "azion/utils": ["../utils/src/"],
