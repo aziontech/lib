@@ -17,13 +17,9 @@ export default class ComputeJsResponseCache {
 
   get(key, responseGenerator, context) {
     // ensure manual revalidate doesn't block normal requests
-    const pendingResponseKey = key
-      ? `${key}-${context.isManualRevalidate ? '1' : '0'}`
-      : null;
+    const pendingResponseKey = key ? `${key}-${context.isManualRevalidate ? '1' : '0'}` : null;
 
-    const pendingResponse = pendingResponseKey
-      ? this.pendingResponses.get(pendingResponseKey)
-      : null;
+    const pendingResponse = pendingResponseKey ? this.pendingResponses.get(pendingResponseKey) : null;
     if (pendingResponse) {
       return pendingResponse;
     }
@@ -42,10 +38,7 @@ export default class ComputeJsResponseCache {
     const resolve = (cacheEntry) => {
       if (pendingResponseKey) {
         // Ensure all reads from the cache get the latest value.
-        this.pendingResponses.set(
-          pendingResponseKey,
-          Promise.resolve(cacheEntry),
-        );
+        this.pendingResponses.set(pendingResponseKey, Promise.resolve(cacheEntry));
       }
       if (!resolved) {
         resolved = true;

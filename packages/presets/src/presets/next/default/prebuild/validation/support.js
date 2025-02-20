@@ -65,9 +65,7 @@ async function modifyVcConfigObjects(framework, vcConfigObjects) {
     // unnecessary node generated functions for i18n.
     const nextProjectConfig = await getNextProjectConfig();
     const locales = nextProjectConfig?.i18n?.locales || [];
-    filteredVcConfigObjects = vcConfigObjects.filter(
-      (config) => !isLocalePath(config.path, locales),
-    );
+    filteredVcConfigObjects = vcConfigObjects.filter((config) => !isLocalePath(config.path, locales));
   }
   return Promise.resolve(filteredVcConfigObjects);
 }
@@ -78,9 +76,7 @@ async function modifyVcConfigObjects(framework, vcConfigObjects) {
  * @returns {Promise<Array<object>>} Returns a promise that resolves to a list of objects. Each object contains the configuration file path and the configuration file content.
  * @async
  */
-async function readVcConfigFunctions(
-  path = '.vercel/output/functions/**/.vc-config.json',
-) {
+async function readVcConfigFunctions(path = '.vercel/output/functions/**/.vc-config.json') {
   const buildedFunctionsPath = '.vercel/output/functions';
   const pathsToIgnore = [
     `${buildedFunctionsPath}/favicon.ico.func/.vc-config.json`,
@@ -108,10 +104,7 @@ function filterRuntimeConfig(vcConfigObjects) {
     .map((config) => {
       return {
         runtime: config.content.runtime,
-        function: config.path.replace(
-          /^\.vercel\/output\/functions\/|\.\w+\/\.vc-config\.json$/g,
-          '',
-        ),
+        function: config.path.replace(/^\.vercel\/output\/functions\/|\.\w+\/\.vc-config\.json$/g, ''),
       };
     });
 }
@@ -137,32 +130,24 @@ export async function validationSupportAndRetrieveFromVcConfig(
 ) {
   let vcConfigObjects = await readVcConfigFunctions(path);
 
-  if (!vcConfigObjects.length)
-    throw new Error('No .vc-config.json files found');
+  if (!vcConfigObjects.length) throw new Error('No .vc-config.json files found');
 
   vcConfigObjects = await modifyVcConfigObjects(framework, vcConfigObjects);
   const runtimesConfig = [...new Set(filterRuntimeConfig(vcConfigObjects))];
 
   // runtimesConfig [ 'nodejs18.x', 'edge' ]
   let runtimes = ['edge'];
-  const isNode = runtimesConfig.some((config) =>
-    config.runtime.startsWith('node'),
-  );
-  const isEdge = runtimesConfig.some((config) =>
-    config.runtime.includes('edge'),
-  );
+  const isNode = runtimesConfig.some((config) => config.runtime.startsWith('node'));
+  const isEdge = runtimesConfig.some((config) => config.runtime.includes('edge'));
 
   if (isNode && isEdge) {
     runtimes = ['node', 'edge'];
   } else if (isNode) {
     runtimes = ['node'];
   }
-  const versions = vcConfigObjects
-    .map((config) => config.content?.framework?.version)
-    .filter(Boolean);
+  const versions = vcConfigObjects.map((config) => config.content?.framework?.version).filter(Boolean);
   const version = versions.length > 0 ? versions[0] : null;
-  if (!version)
-    Promise.reject(new Error('No framework version found in .vc-config.json'));
+  if (!version) Promise.reject(new Error('No framework version found in .vc-config.json'));
 
   const validateSupportOutput = validateSupport(version, runtimes, framework);
   const invalidFunctions = runtimesConfig.filter(

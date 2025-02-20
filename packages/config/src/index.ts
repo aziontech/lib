@@ -7,7 +7,7 @@ import { AzionConfig } from './types';
  * @param {AzionConfig} config - The configuration object for the Azion Edge Application.
  *
  * @param {Object} [config.build] - Configuration for the build.
- * @param {string} config.build.builder - Bundler to use for the build.
+ * @param {string} config.build.bundler - Bundler to use for the build.
  * @param {string} config.build.entry - Entry file for the build.
  * @param {Object} config.build.preset - Preset configuration for the build.
  * @param {string} config.build.preset.name - Name of the preset.
@@ -16,8 +16,8 @@ import { AzionConfig } from './types';
  * @param {string} config.build.memoryFS.removePathPrefix - Path prefix to remove.
  * @param {boolean} [config.build.polyfills] - Whether to enable polyfills.
  * @param {boolean} [config.build.worker] - Whether to use the owner worker with addEventListener.
- * @param {Object} [config.build.custom] - Custom configuration for the builder.
- * @param {Object} [config.build.custom.*] - Custom configuration options for the builder.
+ * @param {Object} [config.build.custom] - Custom configuration for the bundler.
+ * @param {Object} [config.build.custom.*] - Custom configuration options for the bundler.
  * @param {Object} [config.domain] - Configuration for the domain.
  * @param {string} config.domain.name - The domain name.
  * @param {boolean} [config.domain.cnameAccessOnly] - Whether to restrict access only to CNAMEs.
@@ -139,7 +139,7 @@ import { AzionConfig } from './types';
  * @example
  * const config = AzionConfig({
  *   build: {
- *    builder: 'webpack',
+ *    bundler: 'webpack',
  *    preset: {
  *     name: 'react',
  *    },

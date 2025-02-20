@@ -1,7 +1,7 @@
+import { feedback } from 'azion/utils/node';
 import fs from 'fs';
-import path, { basename } from 'path';
 import mime from 'mime-types';
-import { feedback } from '#utils';
+import path, { basename } from 'path';
 
 /**
  * normalize directory path
@@ -53,24 +53,10 @@ function readDirAndIncludeFiles(
     const isDirectory = entry.isDirectory();
     const ext = path.extname(entry.name).toLowerCase();
     const nameAsset = normalizeDirPath(path.relative(rootDir, name));
-    if (
-      isDirectory &&
-      !excludeDirs.some((dir) => nameAsset.startsWith(normalizeDirPath(dir)))
-    ) {
-      readDirAndIncludeFiles(
-        rootDir,
-        name,
-        result,
-        includeDirs,
-        excludeDirs,
-        files,
-        extNames,
-      );
+    if (isDirectory && !excludeDirs.some((dir) => nameAsset.startsWith(normalizeDirPath(dir)))) {
+      readDirAndIncludeFiles(rootDir, name, result, includeDirs, excludeDirs, files, extNames);
     }
-    if (
-      extNames.includes(ext) &&
-      files.includes(`${entry.name.replace(ext, '')}`)
-    ) {
+    if (extNames.includes(ext) && files.includes(`${entry.name.replace(ext, '')}`)) {
       const fileName = normalizeDirPath(basename(name));
       if (!result.find((file) => file.name === fileName)) {
         result.push({
@@ -79,10 +65,7 @@ function readDirAndIncludeFiles(
         });
       }
     }
-    if (
-      entry.isFile() &&
-      includeDirs.some((dir) => nameAsset.startsWith(normalizeDirPath(dir)))
-    ) {
+    if (entry.isFile() && includeDirs.some((dir) => nameAsset.startsWith(normalizeDirPath(dir)))) {
       if (isTraceFile(nameAsset)) {
         // eslint-disable-next-line no-continue
         continue;
@@ -101,10 +84,7 @@ function readDirAndIncludeFiles(
  * @returns {boolean} indicative that the file must be treated as a module
  */
 function moduleTest(pathFile) {
-  if (
-    pathFile.endsWith('/next.config.js') ||
-    pathFile.endsWith('/next.config.mjs')
-  ) {
+  if (pathFile.endsWith('/next.config.js') || pathFile.endsWith('/next.config.mjs')) {
     return true;
   }
   return (
@@ -164,23 +144,12 @@ class BuildStatic {
     });
 
     const FILES_ADDED = [];
-    readDirAndIncludeFiles(
-      this.config.rootDir,
-      '',
-      FILES_ADDED,
-      this.config.includeDirs,
-      this.config.excludeDirs,
-    );
+    readDirAndIncludeFiles(this.config.rootDir, '', FILES_ADDED, this.config.includeDirs, this.config.excludeDirs);
     const staticFiles = FILES_ADDED.filter((file) =>
-      this.config.staticDirs.some((stDirs) =>
-        file.name.startsWith(normalizeDirPath(stDirs.name)),
-      ),
+      this.config.staticDirs.some((stDirs) => file.name.startsWith(normalizeDirPath(stDirs.name))),
     );
     const serverFiles = FILES_ADDED.filter(
-      (file) =>
-        !this.config.staticDirs.some((stDirs) =>
-          file.name.startsWith(normalizeDirPath(stDirs.name)),
-        ),
+      (file) => !this.config.staticDirs.some((stDirs) => file.name.startsWith(normalizeDirPath(stDirs.name))),
     );
 
     let assets = '';
@@ -191,10 +160,7 @@ class BuildStatic {
    \n`;
 
     const totalFilterFiles = serverFiles.length + staticFiles.length;
-    feedback.prebuild.interactive.await(
-      `[%d/${totalFilterFiles}] - build config and static files`,
-      1,
-    );
+    feedback.prebuild.interactive.await(`[%d/${totalFilterFiles}] - build config and static files`, 1);
     let countProcessFile = 0;
 
     // import server module files
@@ -203,10 +169,7 @@ class BuildStatic {
       const moduleTestValue = moduleTest(normalizeDirPath(file.name));
       const contentType = mime.lookup(file.name);
       if (moduleTestValue) {
-        const relativeFilePath = path.relative(
-          this.config.out,
-          `/${file.path}`,
-        );
+        const relativeFilePath = path.relative(this.config.out, `/${file.path}`);
         fileContent += `import * as fileModule${index} from "${relativeFilePath}";\n`;
         assets += `${JSON.stringify(
           file.name,
@@ -224,10 +187,7 @@ class BuildStatic {
         }
       }
       countProcessFile += 1;
-      feedback.prebuild.interactive.await(
-        `[%d/${totalFilterFiles}] - ${file.name}`,
-        countProcessFile,
-      );
+      feedback.prebuild.interactive.await(`[%d/${totalFilterFiles}] - ${file.name}`, countProcessFile);
     }
 
     // create statics content
@@ -238,30 +198,20 @@ class BuildStatic {
       // It is necessary to replace the static directories for the .vercel output,
       // which has the _next pattern and the public folder does not exist
       // as the files are in the root (.vercel/output/static).
-      const dirToReplace = this.config.staticDirs.find(({ name }) =>
-        file.name.includes(normalizeDirPath(name)),
-      );
+      const dirToReplace = this.config.staticDirs.find(({ name }) => file.name.includes(normalizeDirPath(name)));
       let fileNameReplacement = file.name;
       if (dirToReplace && dirToReplace.replace !== undefined) {
         const dirName = normalizeDirPath(dirToReplace.name);
         const dirNameReplace = normalizeDirPath(dirToReplace.replace);
-        fileNameReplacement = file.name.replace(
-          dirName,
-          dirNameReplace === '/' ? '' : dirNameReplace,
-        );
+        fileNameReplacement = file.name.replace(dirName, dirNameReplace === '/' ? '' : dirNameReplace);
       }
 
-      const assetEntry = `${JSON.stringify(
-        file.name,
-      )}: { contentType: "${contentType}", content: ${JSON.stringify(
+      const assetEntry = `${JSON.stringify(file.name)}: { contentType: "${contentType}", content: ${JSON.stringify(
         `${fileNameReplacement}`,
       )}, isStatic: true, module: null, mode: "storage" }`;
 
       countProcessFile += 1;
-      feedback.prebuild.interactive.await(
-        `[%d/${totalFilterFiles}] - ${file.name}`,
-        countProcessFile,
-      );
+      feedback.prebuild.interactive.await(`[%d/${totalFilterFiles}] - ${file.name}`, countProcessFile);
 
       return assetEntry;
     });
@@ -272,14 +222,9 @@ class BuildStatic {
 
     fileContent += '};\n';
 
-    fs.writeFileSync(
-      path.resolve(this.config.rootDir, this.config.out, 'statics.js'),
-      fileContent,
-    );
+    fs.writeFileSync(path.resolve(this.config.rootDir, this.config.out, 'statics.js'), fileContent);
 
-    feedback.prebuild.success(
-      `[${countProcessFile}] - The total number of files processed!`,
-    );
+    feedback.prebuild.success(`[${countProcessFile}] - The total number of files processed!`);
   };
 }
 

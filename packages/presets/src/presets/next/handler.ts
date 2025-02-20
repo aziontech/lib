@@ -1,20 +1,22 @@
 /* eslint-disable */
+// @ts-expect-error - Ignore TS error because this file is not compiled
 import { handleImageResizingRequest } from 'VULCAN_LIB_PATH/presets/next/default/handler/images.js';
+// @ts-expect-error - Ignore TS error because this file is not compiled
 import { handleRequest } from 'VULCAN_LIB_PATH/presets/next/default/handler/routing/index.js';
+// @ts-expect-error - Ignore TS error because this file is not compiled
 import { adjustRequestForVercel } from 'VULCAN_LIB_PATH/presets/next/default/handler/routing/http.js';
+// @ts-expect-error - Ignore TS error because this file is not compiled
 import handlerStatic from 'VULCAN_LIB_PATH/presets/next/static/handler.js';
+import { FetchEvent } from 'azion/types';
 
-const getStorageAsset = async (request) => {
+const getStorageAsset = async (request: Request) => {
   try {
     const requestPath = new URL(request.url).pathname;
-    const assetUrl = new URL(
-      requestPath === '/' ? 'index.html' : requestPath,
-      'file://',
-    );
+    const assetUrl = new URL(requestPath === '/' ? 'index.html' : requestPath, 'file://');
 
     return fetch(assetUrl);
   } catch (e) {
-    return new Response(e.message || e.toString(), { status: 500 });
+    return new Response((e as Error).message || (e as Error).toString(), { status: 500 });
   }
 };
 
@@ -24,7 +26,7 @@ const getStorageAsset = async (request) => {
  * @param env
  * @param ctx
  */
-async function main(request, env, ctx) {
+async function main(request: Request, env: Record<string, any>, ctx: any) {
   const envAsyncLocalStorage = new AsyncLocalStorage();
 
   globalThis.process.env = { ...globalThis.process.env, ...env };
@@ -33,8 +35,10 @@ async function main(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname.startsWith('/_next/image')) {
       return handleImageResizingRequest(request, {
+        // @ts-expect-error - Ignore TS error because this file is not compiled
         buildOutput: __BUILD_OUTPUT__,
         assetsFetcher: env.ASSETS,
+        // @ts-expect-error - Ignore TS error because this file is not compiled
         imagesConfig: __CONFIG__.images,
       });
     }
@@ -46,8 +50,11 @@ async function main(request, env, ctx) {
         ctx,
         assetsFetcher: env.ASSETS,
       },
+      // @ts-expect-error - Ignore TS error because this file is not compiled
       __CONFIG__,
+      // @ts-expect-error - Ignore TS error because this file is not compiled
       __BUILD_OUTPUT__,
+      // @ts-expect-error - Ignore TS error because this file is not compiled
       __BUILD_METADATA__,
     );
   });
@@ -58,7 +65,7 @@ async function main(request, env, ctx) {
  * @param {import('azion/types').FetchEvent} event - The fetch event.
  * @returns {Promise<Response>} The response for the request.
  */
-async function handlerDefault(event) {
+async function handlerDefault(event: FetchEvent): Promise<Response> {
   const env = {
     ASSETS: {
       fetch: getStorageAsset,
@@ -76,8 +83,8 @@ async function handlerDefault(event) {
   return main(request, env, context);
 }
 
-async function handler(event) {
-  if (globalThis.nextBuildStatic) {
+async function handler(event: FetchEvent): Promise<Response> {
+  if ((globalThis as any).nextBuildStatic) {
     return handlerStatic(event);
   }
   return handlerDefault(event);

@@ -1,17 +1,8 @@
 import { parse } from 'cookie';
-import {
-  runOrFetchBuildOutputItem,
-  getNextPhase,
-  isLocaleTrailingSlashRegex,
-} from './utils.js';
-import {
-  parseAcceptLanguage,
-  applyHeaders,
-  applySearchParams,
-  isUrl,
-} from './http.js';
-import { applyPCREMatches, matchPCRE } from './pcre.js';
+import { applyHeaders, applySearchParams, isUrl, parseAcceptLanguage } from './http.js';
 import { hasField } from './matcher.js';
+import { applyPCREMatches, matchPCRE } from './pcre.js';
+import { getNextPhase, isLocaleTrailingSlashRegex, runOrFetchBuildOutputItem } from './utils.js';
 
 class RoutesMatcher {
   /**
@@ -67,9 +58,7 @@ class RoutesMatcher {
     // One of the HTTP `methods` conditions must be met - skip if not met.
     if (
       route.methods &&
-      !route.methods
-        .map((m) => m.toUpperCase())
-        .includes(this.reqCtx.request.method.toUpperCase())
+      !route.methods.map((m) => m.toUpperCase()).includes(this.reqCtx.request.method.toUpperCase())
     ) {
       return;
     }
@@ -109,9 +98,7 @@ class RoutesMatcher {
     const overrideKey = 'x-middleware-override-headers';
     const overrideHeader = resp.headers.get(overrideKey);
     if (overrideHeader) {
-      const overridenHeaderKeys = new Set(
-        overrideHeader.split(',').map((h) => h.trim()),
-      );
+      const overridenHeaderKeys = new Set(overrideHeader.split(',').map((h) => h.trim()));
 
       // eslint-disable-next-line no-restricted-syntax
       for (const key of overridenHeaderKeys.keys()) {
@@ -247,10 +234,7 @@ class RoutesMatcher {
     // they generate function type routes for '/' and '/index' in the build output,
     // a conflict occurs in the routing and the non-default i18n routes return 404. In these cases ,
     // it is necessary to check the existence of these routes and whether the locales match the current path.
-    if (
-      this.locales.has(this.path.replace('/', '')) &&
-      this.hasIndexFunctions.length > 0
-    ) {
+    if (this.locales.has(this.path.replace('/', '')) && this.hasIndexFunctions.length > 0) {
       this.path = `${this.path}/`;
     }
 
@@ -316,16 +300,12 @@ class RoutesMatcher {
     const cookieValue = cookieName && this.cookies[cookieName];
     const cookieLocales = parseAcceptLanguage(cookieValue ?? '');
 
-    const headerLocales = parseAcceptLanguage(
-      this.reqCtx.request.headers.get('accept-language') ?? '',
-    );
+    const headerLocales = parseAcceptLanguage(this.reqCtx.request.headers.get('accept-language') ?? '');
 
     // Locales from the cookie take precedence over the header.
     const locales = [...cookieLocales, ...headerLocales];
 
-    const redirectLocales = locales
-      .map((locale) => redirects[locale])
-      .filter(Boolean);
+    const redirectLocales = locales.map((locale) => redirects[locale]).filter(Boolean);
 
     const redirectValue = redirectLocales[0];
     if (redirectValue) {
@@ -353,8 +333,7 @@ class RoutesMatcher {
       return route;
     }
 
-    const isLocaleIndex =
-      /^\//.test(route.src) && route.src.slice(1) in this.locales;
+    const isLocaleIndex = /^\//.test(route.src) && route.src.slice(1) in this.locales;
     if (isLocaleIndex) {
       return { ...route, src: `^${route.src}$` };
     }
@@ -380,10 +359,7 @@ class RoutesMatcher {
     if (!routeMatch?.match) return 'skip';
 
     // If this route is a middleware route, check if it has already been invoked.
-    if (
-      route.middlewarePath &&
-      this.middlewareInvoked.includes(route.middlewarePath)
-    ) {
+    if (route.middlewarePath && this.middlewareInvoked.includes(route.middlewarePath)) {
       return 'skip';
     }
 
@@ -460,9 +436,7 @@ class RoutesMatcher {
   async checkPhase(phase) {
     if (this.checkPhaseCounter++ >= 50) {
       // eslint-disable-next-line no-console
-      console.error(
-        `Routing encountered an infinite loop while checking ${this.url.pathname}`,
-      );
+      console.error(`Routing encountered an infinite loop while checking ${this.url.pathname}`);
       this.status = 500;
       return 'error';
     }
@@ -487,11 +461,7 @@ class RoutesMatcher {
     }
 
     // In the `hit` phase or for external urls/redirects, return the match.
-    if (
-      phase === 'hit' ||
-      isUrl(this.path) ||
-      this.headers.normal.has('location')
-    ) {
+    if (phase === 'hit' || isUrl(this.path) || this.headers.normal.has('location')) {
       return 'done';
     }
 
@@ -560,10 +530,7 @@ class RoutesMatcher {
     }
 
     // Update status to redirect user to external URL.
-    if (
-      this.headers.normal.has('location') &&
-      (!this.status || this.status < 300 || this.status >= 400)
-    ) {
+    if (this.headers.normal.has('location') && (!this.status || this.status < 300 || this.status >= 400)) {
       this.status = 307;
     }
 
@@ -571,5 +538,4 @@ class RoutesMatcher {
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export { RoutesMatcher };

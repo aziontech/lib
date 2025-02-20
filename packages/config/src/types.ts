@@ -533,6 +533,6 @@ export type AzionBuildPreset = {
   config: AzionConfig;
   handler: (event: FetchEvent) => Promise<Response>;
   prebuild?: (context: AzionBuild) => Promise<void>;
-  postbuild?: (context: AzionBuild) => Promise<void>;
+  postbuild?: (context: AzionBuild, output?: string) => Promise<void>;
   metadata: PresetMetadata;
 };

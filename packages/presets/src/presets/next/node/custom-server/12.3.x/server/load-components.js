@@ -9,11 +9,7 @@ import { join } from 'path';
 
 // imports user project dependencies (node_modules)
 /* eslint-disable */
-import {
-  BUILD_MANIFEST,
-  FLIGHT_MANIFEST,
-  REACT_LOADABLE_MANIFEST,
-} from 'next/constants';
+import { BUILD_MANIFEST, FLIGHT_MANIFEST, REACT_LOADABLE_MANIFEST } from 'next/constants';
 import { interopDefault } from 'next/dist/lib/interop-default';
 /* eslint-enable */
 
@@ -57,12 +53,8 @@ export default async function loadComponents(
   let AppMod = {};
   if (!isAppPath) {
     [DocumentMod, AppMod] = await Promise.all([
-      Promise.resolve().then(() =>
-        requirePage(assets, '/_document', dir, distDir, serverless, false),
-      ),
-      Promise.resolve().then(() =>
-        requirePage(assets, '/_app', dir, distDir, serverless, false),
-      ),
+      Promise.resolve().then(() => requirePage(assets, '/_document', dir, distDir, serverless, false)),
+      Promise.resolve().then(() => requirePage(assets, '/_app', dir, distDir, serverless, false)),
     ]);
   }
 
@@ -70,18 +62,11 @@ export default async function loadComponents(
     requirePage(assets, pathname, dir, distDir, serverless, isAppPath),
   );
 
-  const [buildManifest, reactLoadableManifest, serverComponentManifest] =
-    await Promise.all([
-      readAssetManifest(assets, join(distDir, BUILD_MANIFEST), dir),
-      readAssetManifest(assets, join(distDir, REACT_LOADABLE_MANIFEST), dir),
-      hasServerComponents
-        ? readAssetManifest(
-            assets,
-            join(distDir, 'server', `${FLIGHT_MANIFEST}.json`),
-            dir,
-          )
-        : null,
-    ]);
+  const [buildManifest, reactLoadableManifest, serverComponentManifest] = await Promise.all([
+    readAssetManifest(assets, join(distDir, BUILD_MANIFEST), dir),
+    readAssetManifest(assets, join(distDir, REACT_LOADABLE_MANIFEST), dir),
+    hasServerComponents ? readAssetManifest(assets, join(distDir, 'server', `${FLIGHT_MANIFEST}.json`), dir) : null,
+  ]);
 
   const Component = interopDefault(ComponentMod);
   const Document = interopDefault(DocumentMod);

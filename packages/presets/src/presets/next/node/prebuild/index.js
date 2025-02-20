@@ -1,7 +1,7 @@
-import path, { join } from 'path';
 import fs from 'fs';
+import path, { join } from 'path';
 
-import { copyDirectory, debug, feedback, getAbsoluteLibDirPath } from '#utils';
+import { copyDirectory, feedback, getAbsoluteLibDirPath } from 'azion/utils/node';
 import BuildStatic from './statics/index.js';
 
 /**
@@ -10,8 +10,7 @@ import BuildStatic from './statics/index.js';
  * @param {string} rootDir - application root dir
  */
 function handlePublicDir(pathPrefix, rootDir) {
-  const validPathPrefix =
-    pathPrefix && typeof pathPrefix === 'string' && pathPrefix !== '';
+  const validPathPrefix = pathPrefix && typeof pathPrefix === 'string' && pathPrefix !== '';
 
   if (validPathPrefix) {
     const srcPublicDir = path.resolve(pathPrefix, 'public');
@@ -36,27 +35,14 @@ async function run(nextVersion, buildContext) {
   const CUSTOM_SERVER_DIR = 'custom-server';
   const CURRENT_VERSION = nextVersion;
   const vulcanLibPath = getAbsoluteLibDirPath();
-  const customServerPath = join(
-    vulcanLibPath,
-    'presets',
-    'next',
-    'node',
-    CUSTOM_SERVER_DIR,
-    CURRENT_VERSION,
-  );
+  const customServerPath = join(vulcanLibPath, 'presets', 'next', 'node', CUSTOM_SERVER_DIR, CURRENT_VERSION);
   const rootDir = process.cwd();
   // try version dir
-  const outPathCustomServer = path.resolve(
-    OUT_DIR_CUSTOM_SERVER,
-    'custom-server',
-  );
+  const outPathCustomServer = path.resolve(OUT_DIR_CUSTOM_SERVER, 'custom-server');
   try {
     copyDirectory(customServerPath, outPathCustomServer);
   } catch (error) {
-    feedback.prebuild.error(
-      `Custom server path not found for version ${CURRENT_VERSION}!`,
-    );
-    debug.error(error);
+    feedback.prebuild.error(`Custom server path not found for version ${CURRENT_VERSION}!`);
     fs.rmSync(OUT_DIR_CUSTOM_SERVER, { recursive: true });
     process.exit(1);
   }

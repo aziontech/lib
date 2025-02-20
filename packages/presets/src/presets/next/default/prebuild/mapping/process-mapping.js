@@ -1,7 +1,7 @@
-import { resolve } from 'path';
 import { rmSync, statSync } from 'fs';
+import { resolve } from 'path';
 
-import { feedback } from '#utils';
+import { feedback } from 'azion/utils/node';
 import { addLeadingSlash, stripIndexRoute } from '../../../utils/routing.js';
 
 /**
@@ -81,9 +81,7 @@ function processVercelConfig(config) {
  * @returns {Set} - Set of middleware paths.
  */
 function collectMiddlewarePaths(routes) {
-  return new Set(
-    routes.map((route) => route.middlewarePath ?? '').filter(Boolean),
-  );
+  return new Set(routes.map((route) => route.middlewarePath ?? '').filter(Boolean));
 }
 
 /**
@@ -112,9 +110,7 @@ function rewriteMiddlewarePaths(processedOutput, middlewarePaths) {
       processedOutput.set(middlewarePath, { ...entry, type: 'middleware' });
       processedOutput.delete(withLeadingSlash);
     } else {
-      feedback.prebuild.info(
-        `Middleware path '${middlewarePath}' does not have a function.`,
-      );
+      feedback.prebuild.info(`Middleware path '${middlewarePath}' does not have a function.`);
     }
   }
 }
@@ -135,35 +131,33 @@ function rewriteMiddlewarePaths(processedOutput, middlewarePaths) {
  * @param {Map} vercelOutput - Map of path names to function entries.
  */
 function applyVercelOverrides({ overrides }, vercelOutput) {
-  Object.entries(overrides ?? []).forEach(
-    ([rawAssetPath, { path: rawServedPath, contentType }]) => {
-      const assetPath = addLeadingSlash(rawAssetPath);
-      const servedPath = addLeadingSlash(rawServedPath ?? '');
+  Object.entries(overrides ?? []).forEach(([rawAssetPath, { path: rawServedPath, contentType }]) => {
+    const assetPath = addLeadingSlash(rawAssetPath);
+    const servedPath = addLeadingSlash(rawServedPath ?? '');
 
-      const newValue = {
-        type: 'override',
-        path: assetPath,
-        headers: contentType ? { 'content-type': contentType } : undefined,
-      };
+    const newValue = {
+      type: 'override',
+      path: assetPath,
+      headers: contentType ? { 'content-type': contentType } : undefined,
+    };
 
-      // Update the existing static record to contain the new `contentType` and `assetPath`.
-      const existingStaticRecord = vercelOutput.get(assetPath);
-      if (existingStaticRecord?.type === 'static') {
-        vercelOutput.set(assetPath, newValue);
-      }
+    // Update the existing static record to contain the new `contentType` and `assetPath`.
+    const existingStaticRecord = vercelOutput.get(assetPath);
+    if (existingStaticRecord?.type === 'static') {
+      vercelOutput.set(assetPath, newValue);
+    }
 
-      // Add the new served path to the map, overriding the existing record if it exists.
-      if (servedPath) {
-        vercelOutput.set(servedPath, newValue);
-      }
+    // Add the new served path to the map, overriding the existing record if it exists.
+    if (servedPath) {
+      vercelOutput.set(servedPath, newValue);
+    }
 
-      // If the served path is an index route, add a squashed version of the path to the map.
-      const strippedServedPath = stripIndexRoute(servedPath);
-      if (strippedServedPath !== servedPath) {
-        vercelOutput.set(strippedServedPath, newValue);
-      }
-    },
-  );
+    // If the served path is an index route, add a squashed version of the path to the map.
+    const strippedServedPath = stripIndexRoute(servedPath);
+    if (strippedServedPath !== servedPath) {
+      vercelOutput.set(strippedServedPath, newValue);
+    }
+  });
 }
 
 /**
@@ -200,17 +194,10 @@ function applyPrerenderedRoutes(prerenderedRoutes, vercelOutput) {
  * @param {Map} functionsMap - Map of functions from the file system.
  * @returns {object} - Processed Vercel build output map.
  */
-export function processVercelOutput(
-  config,
-  staticAssets,
-  prerenderedRoutes = new Map(),
-  functionsMap = new Map(),
-) {
+export function processVercelOutput(config, staticAssets, prerenderedRoutes = new Map(), functionsMap = new Map()) {
   const processedConfig = processVercelConfig(config);
 
-  const processedOutput = new Map(
-    staticAssets.map((path) => [path, { type: 'static' }]),
-  );
+  const processedOutput = new Map(staticAssets.map((path) => [path, { type: 'static' }]));
   functionsMap.forEach((value, key) => {
     // node custom server
     if (value.match(/azion-node-server\.js/)) {
@@ -241,10 +228,7 @@ export function processVercelOutput(
   // Apply the prerendered routes and their overrides to the processed output map.
   applyPrerenderedRoutes(prerenderedRoutes, processedOutput);
 
-  rewriteMiddlewarePaths(
-    processedOutput,
-    collectMiddlewarePaths(processedConfig.routes.none),
-  );
+  rewriteMiddlewarePaths(processedOutput, collectMiddlewarePaths(processedConfig.routes.none));
   return {
     vercelConfig: processedConfig,
     vercelOutput: processedOutput,

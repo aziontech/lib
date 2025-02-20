@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { processVercelOutput } from './process-mapping.js';
 
 describe('process-mapping-service', () => {
@@ -21,12 +22,7 @@ describe('process-mapping-service', () => {
         ['/use-middleware', '/use-middleware/index.js'],
       ]);
 
-      const processed = processVercelOutput(
-        inputtedConfig,
-        inputtedAssets,
-        inputtedPrerendered,
-        inputtedFunctions,
-      );
+      const processed = processVercelOutput(inputtedConfig, inputtedAssets, inputtedPrerendered, inputtedFunctions);
 
       const expected = {
         vercelConfig: {
@@ -63,15 +59,9 @@ describe('process-mapping-service', () => {
         ]),
       };
 
-      expect(Object.keys(processed).toString()).toEqual(
-        Object.keys(expected).toString(),
-      );
-      expect(Object.keys(processed.vercelConfig).toString()).toEqual(
-        Object.keys(expected.vercelConfig).toString(),
-      );
-      expect(Object.keys(processed.vercelOutput).toString()).toEqual(
-        Object.keys(expected.vercelOutput).toString(),
-      );
+      expect(Object.keys(processed).toString()).toEqual(Object.keys(expected).toString());
+      expect(Object.keys(processed.vercelConfig).toString()).toEqual(Object.keys(expected.vercelConfig).toString());
+      expect(Object.keys(processed.vercelOutput).toString()).toEqual(Object.keys(expected.vercelOutput).toString());
     });
 
     test('applies overrides from the config to the outputted functions', () => {
@@ -87,24 +77,12 @@ describe('process-mapping-service', () => {
           },
         },
       };
-      const inputtedAssets = [
-        '/404.html',
-        '/500.html',
-        '/index.html',
-        '/test.html',
-      ];
+      const inputtedAssets = ['/404.html', '/500.html', '/index.html', '/test.html'];
       const inputtedPrerendered = new Map();
 
-      const inputtedFunctions = new Map([
-        ['/azion-node-server', '/azion-node-server.js'],
-      ]);
+      const inputtedFunctions = new Map([['/azion-node-server', '/azion-node-server.js']]);
 
-      const processed = processVercelOutput(
-        inputtedConfig,
-        inputtedAssets,
-        inputtedPrerendered,
-        inputtedFunctions,
-      );
+      const processed = processVercelOutput(inputtedConfig, inputtedAssets, inputtedPrerendered, inputtedFunctions);
 
       const expected = {
         vercelConfig: {
@@ -216,13 +194,7 @@ describe('process-mapping-service', () => {
           },
         },
       };
-      const inputtedAssets = [
-        '/404.html',
-        '/500.html',
-        '/index.html',
-        '/index.rsc',
-        '/nested/(route-group)/foo.html',
-      ];
+      const inputtedAssets = ['/404.html', '/500.html', '/index.html', '/index.rsc', '/nested/(route-group)/foo.html'];
       const inputtedPrerendered = new Map([
         [
           '/index.html',
@@ -254,12 +226,7 @@ describe('process-mapping-service', () => {
       ]);
       const inputtedFunctions = new Map([['/page', '/page/index.js']]);
 
-      const processed = processVercelOutput(
-        inputtedConfig,
-        inputtedAssets,
-        inputtedPrerendered,
-        inputtedFunctions,
-      );
+      const processed = processVercelOutput(inputtedConfig, inputtedAssets, inputtedPrerendered, inputtedFunctions);
 
       const expected = {
         vercelConfig: {
@@ -305,14 +272,8 @@ describe('process-mapping-service', () => {
               type: 'override',
             },
           ],
-          [
-            '/index.html',
-            { type: 'override', path: '/index.html', headers: undefined },
-          ],
-          [
-            '/index.rsc',
-            { type: 'override', path: '/index.rsc', headers: undefined },
-          ],
+          ['/index.html', { type: 'override', path: '/index.html', headers: undefined }],
+          ['/index.rsc', { type: 'override', path: '/index.rsc', headers: undefined }],
           ['/nested/(route-group)/foo.html', { type: 'static' }],
           ['/page', { type: 'function', entrypoint: '/page/index.js' }],
           [

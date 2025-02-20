@@ -7,10 +7,7 @@
  */
 
 // imports user project dependencies (node_modules)
-import {
-  NodeNextRequest,
-  NodeNextResponse,
-} from 'next/dist/server/base-http/node';
+import { NodeNextRequest, NodeNextResponse } from 'next/dist/server/base-http/node';
 
 export class ComputeJsNextRequest extends NodeNextRequest {
   constructor(req, client) {

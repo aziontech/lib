@@ -1,5 +1,5 @@
+import { feedback } from 'azion/utils/node';
 import { join } from 'path';
-import { feedback } from '#utils';
 
 /**
  * Get user project nextjs config file

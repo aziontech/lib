@@ -40,7 +40,7 @@ async function readViteBuildOutput() {
       throw new Error('build config not found');
     }
     // eslint-disable-next-line no-eval
-    const buildConfigObject = eval(`(${buildConfig[1]})`);
+    const buildConfigObject = JSON.parse(buildConfig[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
     return Promise.resolve({ build: buildConfigObject });
   } catch (err) {
     return null;

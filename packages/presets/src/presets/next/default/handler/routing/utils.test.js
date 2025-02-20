@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { getNextPhase, isLocaleTrailingSlashRegex } from './utils.js';
 
 describe('getNextPhase', () => {

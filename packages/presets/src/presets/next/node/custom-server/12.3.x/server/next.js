@@ -13,10 +13,7 @@ import accepts from 'accepts';
 import { PHASE_PRODUCTION_SERVER } from 'next/constants';
 /* eslint-enable */
 
-import {
-  ComputeJsNextRequest,
-  ComputeJsNextResponse,
-} from './base-http/compute-js.js';
+import { ComputeJsNextRequest, ComputeJsNextResponse } from './base-http/compute-js.js';
 import loadConfig from './config.js';
 import NextComputeJsServer from './next-compute-js-server.js';
 

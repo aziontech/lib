@@ -1,3 +1,3 @@
-import vercelUtils from './vercel.utils.js';
+import vercelUtils from './vercel.js';
 
 export default vercelUtils;

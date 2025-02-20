@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "allowJs": true,
     "paths": {
       "azion/unenv-preset": ["../unenv-preset/src/"],
       "azion/utils/edge": ["../utils/src/edge/index.ts"],
@@ -18,5 +19,5 @@
       "azion/types": ["../types/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "src/presets/**/handler.ts"]
+  "exclude": ["node_modules", "src/presets/**/handler.ts", "src/presets/next/default/*", "src/presets/next/node/*"]
 }

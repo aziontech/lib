@@ -13,10 +13,7 @@ import { applyHeaders, createMutableResponse } from './routing/http.js';
  * @param {string} pattern.pathname Remote
  * @returns {boolean} Whether the URL matches the remote pattern.
  */
-export function isRemotePatternMatch(
-  url,
-  { protocol, hostname, port, pathname },
-) {
+export function isRemotePatternMatch(url, { protocol, hostname, port, pathname }) {
   // Protocol must match if defined.
   if (protocol && url.protocol.replace(/:$/, '') !== protocol) return false;
   // Hostname must match regexp.
@@ -65,17 +62,13 @@ export function getResizingProperties(request, config) {
     !isRelative &&
     // External image URL must be allowed by domains or remote patterns.
     !config?.domains?.includes(url.hostname) &&
-    !config?.remotePatterns?.find((pattern) =>
-      isRemotePatternMatch(url, pattern),
-    )
+    !config?.remotePatterns?.find((pattern) => isRemotePatternMatch(url, pattern))
   ) {
     return undefined;
   }
 
   const acceptHeader = request.headers.get('Accept') ?? '';
-  const format = config?.formats
-    ?.find((f) => acceptHeader.includes(f))
-    ?.replace('image/', '');
+  const format = config?.formats?.find((f) => acceptHeader.includes(f))?.replace('image/', '');
 
   return {
     isRelative,
@@ -115,10 +108,7 @@ export function formatResp(resp, imageUrl, config) {
   if (!resp.headers.has('Cache-Control')) {
     // Fall back to the minimumCacheTTL value if there is no Cache-Control header.
     // https://vercel.com/docs/concepts/image-optimization#caching
-    newHeaders.set(
-      'Cache-Control',
-      `public, max-age=${config?.minimumCacheTTL ?? 60}`,
-    );
+    newHeaders.set('Cache-Control', `public, max-age=${config?.minimumCacheTTL ?? 60}`);
   }
 
   const mutableResponse = createMutableResponse(resp);
@@ -136,10 +126,7 @@ export function formatResp(resp, imageUrl, config) {
  * @param {object} config.imagesConfig Nextjs image configs
  * @returns {Promise<Response>} Resized image response if the request is valid, otherwise a 400 response.
  */
-export async function handleImageResizingRequest(
-  request,
-  { buildOutput, assetsFetcher, imagesConfig },
-) {
+export async function handleImageResizingRequest(request, { buildOutput, assetsFetcher, imagesConfig }) {
   const opts = getResizingProperties(request, imagesConfig);
 
   if (!opts) {
@@ -152,9 +139,7 @@ export async function handleImageResizingRequest(
 
   const imageReq = new Request(imageUrl, { headers: request.headers });
   const imageResp =
-    isRelative && imageUrl.pathname in buildOutput
-      ? await assetsFetcher.fetch(imageReq)
-      : await fetch(imageReq);
+    isRelative && imageUrl.pathname in buildOutput ? await assetsFetcher.fetch(imageReq) : await fetch(imageReq);
 
   return formatResp(imageResp, imageUrl, imagesConfig);
 }

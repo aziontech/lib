@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { feedback, VercelUtils, copyDirectory } from '#utils';
-import { Messages } from '#constants';
+import { copyDirectory, feedback } from 'azion/utils/node';
+import VercelUtils from './utils/vercel/index';
 
 import runDefaultBuild from './default/prebuild/index.js';
-import runNodeBuild from './node/prebuild/index.js';
 import { validationSupportAndRetrieveFromVcConfig } from './default/prebuild/validation/support.js';
-import { getNextConfig } from './utils.next.js';
+import runNodeBuild from './node/prebuild/index.js';
 import prebuildStatic from './static/prebuild.js';
+import { getNextConfig } from './utils/utils.next.js';
 
-const { deleteTelemetryFiles, createVercelProjectConfig, runVercelBuild } =
-  VercelUtils;
+const { deleteTelemetryFiles, createVercelProjectConfig, runVercelBuild } = VercelUtils;
 
 /**
  * Create vercel project config when necessary.
@@ -32,24 +32,13 @@ async function vercelPrebuildActions() {
   }
 }
 
-/**
- * @param {string[]} runtimes - The runtime to use. eg. ['node', 'edge']
- * @function
- * @async
- * @description Generates the manifest file from the defined static assets and routes.
- */
-async function generateNextManifest(runtimes) {
+async function generateNextManifest(runtimes: string[]) {
   if (runtimes.includes('node')) {
-    const staticsFilePath = resolve(
-      process.cwd(),
-      '.edge/next-build/statics.js',
-    );
+    const staticsFilePath = resolve(process.cwd(), '.edge/next-build/statics.js');
     const staticsFileContent = readFileSync(staticsFilePath, 'utf8');
 
     // Extract the assets object from the file content
-    const assetsMatch = staticsFileContent.match(
-      /export const assets = ({[\s\S]*?});/,
-    );
+    const assetsMatch = staticsFileContent.match(/export const assets = ({[\s\S]*?});/);
     if (!assetsMatch) {
       throw new Error('Could not find assets object in statics.js');
     }
@@ -68,7 +57,7 @@ function copyVercelStaticGeneratedFiles() {
  * @param {object} nextConfig - the config as JSON object.
  * @returns {boolean} - if the static site
  */
-function validateStaticSiteMode(nextConfig) {
+function validateStaticSiteMode(nextConfig: Record<string, any>) {
   if (nextConfig && nextConfig.output && nextConfig.output === 'export') {
     return true;
   }
@@ -76,11 +65,9 @@ function validateStaticSiteMode(nextConfig) {
 }
 
 /**
- * Runs custom prebuild actions
- * @param {object} buildContext - info about the build
- * @returns {object} - info about the build
+ * Prebuild process for Next.js projects.
  */
-async function prebuild(buildContext) {
+async function prebuild(buildContext: Record<string, any>) {
   feedback.prebuild.info('Starting Next.js build process ...');
 
   await vercelPrebuildActions();
@@ -97,17 +84,22 @@ async function prebuild(buildContext) {
     runtimes: projectRuntimes,
     minorVersion,
     invalidFunctions,
-  } = await validationSupportAndRetrieveFromVcConfig();
+  } = (await validationSupportAndRetrieveFromVcConfig()) as any;
 
   feedback.prebuild.info('Detected Next.js version:', nextVersion);
   if (!validSupport) {
     feedback.prebuild.error(
-      Messages.build.error.prebuild_error_nextjs_invalid_functions(
-        'Nextjs',
-        nextVersion,
-        projectRuntimes,
-        invalidFunctions,
-      ),
+      `Nextjs version (${nextVersion}) not supported to "${projectRuntimes}" runtime(s).
+      This project is not an edge project
+      Make sure that following files have a correct configuration about edge runtime\n
+      ${invalidFunctions.map((invalidFunction: any) => {
+        return `\n       - ${invalidFunction.function}`;
+      })}
+
+      Maybe this links can help you\n
+      https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes#segment-runtime-option
+      https://nextjs.org/docs/pages/building-your-application/routing/api-routes#edge-api-routes\n
+      `,
     );
     process.exit(1);
   }
@@ -118,22 +110,18 @@ async function prebuild(buildContext) {
   }
 
   // build routing system and edge functions
-  const prebuildResult = await runDefaultBuild({
+  const prebuildResult = (await runDefaultBuild({
     vcConfigObjects,
     nextVersion,
     projectRuntimes,
-  });
+  } as any)) as any;
 
   // remove node handler inject on handler
-  const nodeHandlerFile = 'lib/presets/next/node/handler/index';
+  const nodeHandlerFile = 'src/presets/next/node/handler/index.js';
 
-  if (
-    Array.isArray(projectRuntimes) &&
-    projectRuntimes.length === 1 &&
-    projectRuntimes[0] === 'edge'
-  ) {
+  if (Array.isArray(projectRuntimes) && projectRuntimes.length === 1 && projectRuntimes[0] === 'edge') {
     prebuildResult.filesToInject = prebuildResult.filesToInject.filter(
-      (file) => !file.includes(nodeHandlerFile),
+      (file: string) => !file.includes(nodeHandlerFile),
     );
   }
 

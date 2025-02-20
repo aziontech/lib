@@ -7,15 +7,12 @@ import { applyPCREMatches } from './pcre.js';
  * @param {object} pcreMatch PCRE match object.
  */
 function applyHeaders(target, source, pcreMatch) {
-  const entries =
-    source instanceof Headers ? source.entries() : Object.entries(source);
+  const entries = source instanceof Headers ? source.entries() : Object.entries(source);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const [key, value] of entries) {
     const lowerKey = key.toLowerCase();
-    const newValue = pcreMatch?.match
-      ? applyPCREMatches(value, pcreMatch.match, pcreMatch.captureGroupKeys)
-      : value;
+    const newValue = pcreMatch?.match ? applyPCREMatches(value, pcreMatch.match, pcreMatch.captureGroupKeys) : value;
 
     if (lowerKey === 'set-cookie') {
       target.append(lowerKey, newValue);
@@ -103,12 +100,6 @@ function parseAcceptLanguage(headerValue) {
     .flat();
 }
 
-/* eslint-disable import/prefer-default-export */
-/**
- * Adjusts the request so that it is formatted as if it were provided by Vercel
- * @param {object} request the original request received by the worker
- * @returns {object} The adjusted request to pass to Next
- */
 function adjustRequestForVercel(request) {
   const adjustedHeaders = new Headers(request.headers);
   if (request.cf) {
@@ -124,11 +115,11 @@ function adjustRequestForVercel(request) {
 }
 
 export {
-  applyHeaders,
-  isUrl,
-  applySearchParams,
-  createRouteRequest,
-  createMutableResponse,
-  parseAcceptLanguage,
   adjustRequestForVercel,
+  applyHeaders,
+  applySearchParams,
+  createMutableResponse,
+  createRouteRequest,
+  isUrl,
+  parseAcceptLanguage,
 };

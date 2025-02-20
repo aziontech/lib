@@ -1,7 +1,7 @@
-import { readFile, access, constants } from 'fs/promises';
+import { access, constants, readFile } from 'fs/promises';
 import { join, resolve } from 'path';
 
-import { feedback } from '#utils';
+import { feedback } from 'azion/utils/node';
 
 /**
  * Get a project manifest generated after build
@@ -63,4 +63,4 @@ async function getNextConfig() {
   }
 }
 
-export { readManifestFile, getNextConfig };
+export { getNextConfig, readManifestFile };

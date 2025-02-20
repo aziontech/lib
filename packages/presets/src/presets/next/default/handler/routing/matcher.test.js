@@ -1,18 +1,15 @@
-import { parse } from 'cookie';
-// @ts-ignore
+/* eslint-disable no-undef */
 import { describe } from '@jest/globals';
+import { parse } from 'cookie';
 import { hasField } from './matcher.js';
 
-const req = new Request(
-  'https://test.com/index?queryWithValue=value&queryWithoutValue=',
-  {
-    headers: {
-      headerWithValue: 'value',
-      headerWithoutValue: undefined,
-      cookie: 'cookieWithValue=value; cookieWithoutValue=',
-    },
+const req = new Request('https://test.com/index?queryWithValue=value&queryWithoutValue=', {
+  headers: {
+    headerWithValue: 'value',
+    headerWithoutValue: undefined,
+    cookie: 'cookieWithValue=value; cookieWithoutValue=',
   },
-);
+});
 const url = new URL(req.url);
 const cookies = parse(req.headers.get('cookie') ?? '');
 

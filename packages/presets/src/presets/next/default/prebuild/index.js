@@ -1,12 +1,13 @@
-import { join } from 'path';
 import { writeFileSync } from 'fs';
 import { tmpdir } from 'os';
+import { join } from 'path';
 
-import { VercelUtils, feedback, getAbsoluteLibDirPath } from '#utils';
-import { mapAndAdaptFunctions } from './mapping/index.js';
-import { assetsPaths } from './mapping/assets.js';
-import { processVercelOutput } from './mapping/process-mapping.js';
+import { feedback, getAbsoluteLibDirPath } from 'azion/utils/node';
 import { getNextProjectConfig } from '../../utils/next.js';
+import VercelUtils from '../../utils/vercel';
+import { assetsPaths } from './mapping/assets.js';
+import { mapAndAdaptFunctions } from './mapping/index.js';
+import { processVercelOutput } from './mapping/process-mapping.js';
 
 const { loadVercelConfigs } = VercelUtils;
 
@@ -79,11 +80,7 @@ async function run(prebuildContext) {
   feedback.prebuild.info('Mapping and transforming functions ...');
 
   // adapt functions and set application mapping
-  await mapAndAdaptFunctions(
-    applicationMapping,
-    tmpFunctionsDir,
-    prebuildContext?.vcConfigObjects,
-  );
+  await mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir, prebuildContext?.vcConfigObjects);
 
   //   if (this.applicationMapping.functionsMap.size <= 0) {
   //       throw new MiddlewareManifestHandlerError("No functions was provided");
@@ -99,15 +96,9 @@ async function run(prebuildContext) {
     applicationMapping.functionsMap,
   );
 
-  const outputReferencesFilePath = join(
-    tmpdir(),
-    `functions-${Math.random().toString(36).slice(2)}.js`,
-  );
+  const outputReferencesFilePath = join(tmpdir(), `functions-${Math.random().toString(36).slice(2)}.js`);
 
-  writeOutputReferencesFile(
-    outputReferencesFilePath,
-    processedVercelOutput.vercelOutput,
-  );
+  writeOutputReferencesFile(outputReferencesFilePath, processedVercelOutput.vercelOutput);
 
   const nextProjectConfig = await getNextProjectConfig();
   const i18n = nextProjectConfig?.i18n || {};

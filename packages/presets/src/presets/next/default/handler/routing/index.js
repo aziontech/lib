@@ -17,11 +17,7 @@ import { findMatch } from './matcher.js';
  * @param {object} output The Vercel build output.
  * @returns {Response} A response object.
  */
-async function generateResponse(
-  reqCtx,
-  { path = '/404', status, headers, searchParams, body },
-  output,
-) {
+async function generateResponse(reqCtx, { path = '/404', status, headers, searchParams, body }, output) {
   // Redirect user to external URL for redirects.
   const locationHeader = headers.normal.get('location');
   if (locationHeader) {
@@ -29,9 +25,7 @@ async function generateResponse(
     // Middleware that returns a redirect will specify the destination, including any search params
     // that they want to include. Therefore, we should not be appending search params to those.
     if (locationHeader !== headers.middlewareLocation) {
-      const paramsStr = [...searchParams.keys()].length
-        ? `?${searchParams.toString()}`
-        : '';
+      const paramsStr = [...searchParams.keys()].length ? `?${searchParams.toString()}` : '';
       headers.normal.set('location', `${locationHeader ?? '/'}${paramsStr}`);
     }
 
@@ -71,12 +65,7 @@ async function generateResponse(
  * @returns {Response} An instance of the router.
  */
 async function handleRequest(reqCtx, config, output, buildMetadata) {
-  const matcher = new RoutesMatcher(
-    config.routes,
-    output,
-    reqCtx,
-    buildMetadata,
-  );
+  const matcher = new RoutesMatcher(config.routes, output, reqCtx, buildMetadata);
   const match = await findMatch(matcher);
 
   return generateResponse(reqCtx, match, output);

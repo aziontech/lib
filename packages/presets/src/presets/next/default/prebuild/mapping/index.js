@@ -1,8 +1,7 @@
+import { feedback } from 'azion/utils/node';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, relative } from 'path';
-import { readFileSync, mkdirSync, writeFileSync } from 'fs';
-import { feedback } from '#utils';
-import { Messages } from '#constants';
-import { validateFile, normalizePath } from '../../../utils/fs.js';
+import { normalizePath, validateFile } from '../../../utils/fs.js';
 import { formatRoutePath, stripIndexRoute } from '../../../utils/routing.js';
 import { fixFunctionContent } from '../edge/index.js';
 import handlePrerenderedRoutes from '../prerendered/index.js';
@@ -59,10 +58,7 @@ async function tryToFixInvalidFunctions({ functionsMap, invalidFunctions }) {
   for (const rawPath of invalidFunctions) {
     const formattedPath = formatRoutePath(rawPath);
 
-    if (
-      functionsMap.has(formattedPath) ||
-      functionsMap.has(stripIndexRoute(formattedPath))
-    ) {
+    if (functionsMap.has(formattedPath) || functionsMap.has(stripIndexRoute(formattedPath))) {
       invalidFunctions.delete(rawPath);
     } else if (formattedPath.endsWith('.rsc')) {
       const value = functionsMap.get(formattedPath.replace(/\.rsc$/, ''));
@@ -83,11 +79,7 @@ async function tryToFixInvalidFunctions({ functionsMap, invalidFunctions }) {
  * @returns {Promise<void>}
  */
 // eslint-disable-next-line consistent-return
-async function mapAndAdaptFunction(
-  applicationMapping,
-  tmpFunctionsDir,
-  vcObject,
-) {
+async function mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject) {
   const functionsDir = join('.vercel', 'output', 'functions');
   const path = vcObject.path.replace('/.vc-config.json', '');
 
@@ -110,9 +102,7 @@ async function mapAndAdaptFunction(
     vcObject.content.entrypoint = 'index';
   }
 
-  const entrypoint = isEdge
-    ? vcObject.content.entrypoint
-    : vcObject.content.handler;
+  const entrypoint = isEdge ? vcObject.content.entrypoint : vcObject.content.handler;
   const codePath = join(path, entrypoint);
   const relativePath = relative(functionsDir, path);
 
@@ -120,9 +110,7 @@ async function mapAndAdaptFunction(
     if (isMiddleware) {
       // We sometimes encounter an uncompiled `middleware.js` with no compiled `index.js` outside of a base path.
       // Outside the base path, it should not be utilised, so it should be safe to ignore the function.
-      feedback.prebuild.info(
-        `Detected an invalid middleware function for ${path}. Skipping...`,
-      );
+      feedback.prebuild.info(`Detected an invalid middleware function for ${path}. Skipping...`);
       return {};
     }
 
@@ -155,10 +143,7 @@ async function mapAndAdaptFunction(
 
   if (formattedPathName.endsWith('/index')) {
     // strip `/index` from the path name as the build output config doesn't rewrite `/index` to `/`
-    applicationMapping.functionsMap.set(
-      stripIndexRoute(formattedPathName),
-      normalizedFilePath,
-    );
+    applicationMapping.functionsMap.set(stripIndexRoute(formattedPathName), normalizedFilePath);
   }
 }
 
@@ -169,12 +154,7 @@ async function mapAndAdaptFunction(
  * @param {string} tmpFunctionsDir path to tmp functions dir
  * @param {object} vcConfigObjects object with the content of .vc-config.json
  */
-// eslint-disable-next-line import/prefer-default-export
-export async function mapAndAdaptFunctions(
-  applicationMapping,
-  tmpFunctionsDir,
-  vcConfigObjects,
-) {
+export async function mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir, vcConfigObjects) {
   // !vcConfigObjects validate support versions and retrieve from .vc-config.json
   let validConfigObjects = vcConfigObjects;
   if (!vcConfigObjects) {
@@ -185,34 +165,21 @@ export async function mapAndAdaptFunctions(
       runtimes,
     } = await validationSupportAndRetrieveFromVcConfig();
     if (!valid) {
-      throw new Error(
-        Messages.build.error.prebuild_error_validation_support(
-          'Nextjs',
-          version,
-          runtimes,
-        ),
-      );
+      throw new Error(`Nextjs version (${version}) not supported to "${runtimes}" runtime(s).`);
     }
     validConfigObjects = resVcConfigObjects;
   }
 
   const vcObjects = {
-    invalid: validConfigObjects.filter(
-      (vcConfig) => !isVcConfigValid(vcConfig.content),
-    ),
-    valid: validConfigObjects.filter((vcConfig) =>
-      isVcConfigValid(vcConfig.content),
-    ),
+    invalid: validConfigObjects.filter((vcConfig) => !isVcConfigValid(vcConfig.content)),
+    valid: validConfigObjects.filter((vcConfig) => isVcConfigValid(vcConfig.content)),
   };
 
   if (vcObjects.invalid.length > 0) {
     const invalidFunctionsList = vcObjects.invalid
       .filter((invalidFunction) => !invalidFunction.path.includes('_next/data'))
       .map((invalidFunction) =>
-        invalidFunction.path.replace(
-          /^\.vercel\/output\/functions\/|\.\w+\/\.vc-config\.json$/g,
-          '',
-        ),
+        invalidFunction.path.replace(/^\.vercel\/output\/functions\/|\.\w+\/\.vc-config\.json$/g, ''),
       );
     const invalidFunctionsString = invalidFunctionsList.join('\n');
 
@@ -220,16 +187,11 @@ export async function mapAndAdaptFunctions(
   }
 
   const validVcConfigPaths = vcObjects.valid.map((cfg) => cfg.path);
-  await handlePrerenderedRoutes(
-    validVcConfigPaths,
-    applicationMapping.prerenderedRoutes,
-  );
+  await handlePrerenderedRoutes(validVcConfigPaths, applicationMapping.prerenderedRoutes);
 
   try {
     await Promise.all(
-      vcObjects.valid.map((vcObject) =>
-        mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject),
-      ),
+      vcObjects.valid.map((vcObject) => mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject)),
     );
   } catch (error) {
     const message = `Error adapting functions: ${error}`;

@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 /* eslint-disable no-param-reassign */
 
 /**
@@ -10,8 +9,6 @@
  * @param {string} content the original function's file content
  * @returns {string} the updated/fixed content
  */
-// eslint-disable-next-line import/prefer-default-export
-//
 function fixFunctionContent(content) {
   // TODO: Investigate alternatives or a real fix. This hack is rather brittle.
   // The workers runtime does not implement certain properties like `mode` or `credentials`.
@@ -33,16 +30,10 @@ function fixFunctionContent(content) {
   // TODO: Remove once https://github.com/vercel/next.js/issues/58265 is fixed.
   // This resolves a critical issue in Next.js 14.0.2 that breaks edge runtime rendering due to the assumption
   // that the the passed internal request is of type `NodeNextRequest` and never `WebNextRequest`.
-  content = content.replace(
-    /;let{originalRequest:([\w$]+)}=([\w$]+);/gm,
-    ';let{originalRequest:$1=$2}=$2;',
-  );
+  content = content.replace(/;let{originalRequest:([\w$]+)}=([\w$]+);/gm, ';let{originalRequest:$1=$2}=$2;');
 
   // middleware entries webpack problem
-  content = content.replace(
-    /let _ENTRIES = {};/gm,
-    'globalThis._ENTRIES = {};',
-  );
+  content = content.replace(/let _ENTRIES = {};/gm, 'globalThis._ENTRIES = {};');
 
   // error socket undefined
   // https://github.com/vercel/next.js/blob/v14.2.6/packages/next/src/server/base-server.ts#L910

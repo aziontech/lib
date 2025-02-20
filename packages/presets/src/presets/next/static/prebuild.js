@@ -1,15 +1,9 @@
-import { readdir, stat, mkdir, rm, copyFile } from 'fs/promises';
-import { join, extname, basename, dirname } from 'path';
-import { gte, coerce, valid } from 'semver';
+import { copyFile, mkdir, readdir, rm, stat } from 'fs/promises';
+import { basename, dirname, extname, join } from 'path';
+import { coerce, gte, valid } from 'semver';
 
-import {
-  exec,
-  feedback,
-  getPackageManager,
-  getPackageVersion,
-  copyDirectory,
-} from '#utils';
-import { getNextConfig, readManifestFile } from '../utils.next.js';
+import { copyDirectory, exec, feedback, getPackageManager, getPackageVersion } from 'azion/utils/node';
+import { getNextConfig, readManifestFile } from '../utils/utils.next.js';
 
 const packageManager = await getPackageManager();
 
@@ -53,11 +47,7 @@ async function moveFiles(directory) {
 
       if (fileStat.isDirectory()) {
         await moveFiles(filePath); // Recursive call for subdirectories
-      } else if (
-        extname(file) === '.html' &&
-        file !== 'index.html' &&
-        file !== '404.html'
-      ) {
+      } else if (extname(file) === '.html' && file !== 'index.html' && file !== '404.html') {
         const newDirectoryName = basename(file, '.html');
         const newDirectoryPath = join(directory, newDirectoryName);
 
@@ -75,9 +65,7 @@ async function moveFiles(directory) {
           const newTXTParentDirectory = dirname(newHTMLPath);
           const newTXTPath = join(newTXTParentDirectory, correspondingTXTFile);
           await copyFile(correspondingTXTPath, newTXTPath);
-          feedback.prebuild.info(
-            `Moved ${correspondingTXTPath} to ${newTXTPath}`,
-          );
+          feedback.prebuild.info(`Moved ${correspondingTXTPath} to ${newTXTPath}`);
         }
       }
     }),
@@ -100,9 +88,7 @@ async function fixAppDirRoutes() {
 
   let appPathRoutesManifest;
   try {
-    appPathRoutesManifest = await readManifestFile(
-      'app-path-routes-manifest.json',
-    );
+    appPathRoutesManifest = await readManifestFile('app-path-routes-manifest.json');
   } catch (error) {
     feedback.prebuild.info('app dir use not detected in project.');
     return;
@@ -112,9 +98,7 @@ async function fixAppDirRoutes() {
     .filter((pathKey) => pathKey.match(/page/))
     .map((key) => appPathRoutesManifest[key]);
 
-  const pathsToCopy = appPagesPaths.filter(
-    (path) => !dynamicRoutes.includes(path) && path !== '/',
-  );
+  const pathsToCopy = appPagesPaths.filter((path) => !dynamicRoutes.includes(path) && path !== '/');
 
   // fix _next calls in client (static routes in app dir format)
   pathsToCopy.forEach(async (path) => {
@@ -220,11 +204,7 @@ async function prebuild() {
 
     await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
 
-    await exec(
-      `npx next export -o ${staticsOutputDir}`,
-      `Next ${nextVersion}`,
-      true,
-    );
+    await exec(`npx next export -o ${staticsOutputDir}`, `Next ${nextVersion}`, true);
 
     feedback.prebuild.info('Adapting Next.js build output...');
     await moveFiles(`${process.cwd()}/${staticsOutputDir}`);

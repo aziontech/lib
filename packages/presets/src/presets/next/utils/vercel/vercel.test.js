@@ -1,10 +1,10 @@
-import mockFs from 'mock-fs';
-import fs from 'fs';
-import { spawn } from 'child_process';
+/* eslint-disable no-undef */
 import { VercelUtils } from '#utils';
+import { spawn } from 'child_process';
+import fs from 'fs';
+import mockFs from 'mock-fs';
 
-const { deleteTelemetryFiles, createVercelProjectConfig, runVercelBuild } =
-  VercelUtils;
+const { deleteTelemetryFiles, createVercelProjectConfig, runVercelBuild } = VercelUtils;
 
 describe('Vercel Utils', () => {
   it('Should delete telemtry files', () => {
@@ -50,7 +50,7 @@ jest.mock('child_process');
 
 describe('runVercelBuild', () => {
   it('should resolve the promise when the command succeeds', async () => {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     spawn.mockImplementationOnce((cmd, args, options) => {
       const execProcess = {
         on: jest.fn(),
@@ -68,18 +68,14 @@ describe('runVercelBuild', () => {
 
     await expect(runVercelBuild()).resolves.toEqual(undefined);
 
-    expect(spawn).toHaveBeenCalledWith(
-      'npx',
-      ['--yes', 'vercel@32.6.1', 'build', '--prod'],
-      {
-        shell: true,
-        stdio: 'inherit',
-      },
-    );
+    expect(spawn).toHaveBeenCalledWith('npx', ['--yes', 'vercel@32.6.1', 'build', '--prod'], {
+      shell: true,
+      stdio: 'inherit',
+    });
   });
 
   it('should reject the promise when the command fails', async () => {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     spawn.mockImplementationOnce((cmd, args, options) => {
       const execProcess = {
         on: jest.fn(),
@@ -94,17 +90,11 @@ describe('runVercelBuild', () => {
       return execProcess;
     });
 
-    await expect(runVercelBuild()).rejects.toThrow(
-      "Command '--yes vercel@32.6.1 build --prod' failed with code 1",
-    );
+    await expect(runVercelBuild()).rejects.toThrow("Command '--yes vercel@32.6.1 build --prod' failed with code 1");
 
-    expect(spawn).toHaveBeenCalledWith(
-      'npx',
-      ['--yes', 'vercel@32.6.1', 'build', '--prod'],
-      {
-        shell: true,
-        stdio: 'inherit',
-      },
-    );
+    expect(spawn).toHaveBeenCalledWith('npx', ['--yes', 'vercel@32.6.1', 'build', '--prod'], {
+      shell: true,
+      stdio: 'inherit',
+    });
   });
 });

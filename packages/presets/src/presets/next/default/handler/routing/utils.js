@@ -1,9 +1,4 @@
-import {
-  applyHeaders,
-  createRouteRequest,
-  createMutableResponse,
-  applySearchParams,
-} from './http.js';
+import { applyHeaders, createRouteRequest, createMutableResponse, applySearchParams } from './http.js';
 
 /**
  * Gets the next phase of the routing process.
@@ -48,11 +43,7 @@ function getNextPhase(phase) {
  * @param {string} match.searchParams Search params to apply to the request.
  * @returns {Response} Response object.
  */
-async function runOrFetchBuildOutputItem(
-  item,
-  { request, assetsFetcher, ctx },
-  { path, searchParams },
-) {
+async function runOrFetchBuildOutputItem(item, { request, assetsFetcher, ctx }, { path, searchParams }) {
   let resp;
 
   // Apply the search params from matching the route to the request URL.
@@ -70,9 +61,7 @@ async function runOrFetchBuildOutputItem(
       }
       case 'override': {
         // TODO: check override actions
-        resp = createMutableResponse(
-          await assetsFetcher.fetch(createRouteRequest(req, item.path ?? path)),
-        );
+        resp = createMutableResponse(await assetsFetcher.fetch(createRouteRequest(req, item.path ?? path)));
 
         if (item.headers) {
           applyHeaders(resp.headers, item.headers);

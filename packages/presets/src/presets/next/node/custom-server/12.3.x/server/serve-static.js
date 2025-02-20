@@ -44,10 +44,7 @@ export default async function serveStatic(assets, req, res, path, dir) {
   }
 
   if (!outgoingHeaders.has('Content-Type')) {
-    outgoingHeaders.append(
-      'Content-Type',
-      getAssetContentType(assets, decodedPath, dir),
-    );
+    outgoingHeaders.append('Content-Type', getAssetContentType(assets, decodedPath, dir));
   }
 
   res.overrideResponse = new Response(asset, {

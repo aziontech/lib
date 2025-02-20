@@ -2554,7 +2554,7 @@ describe('processConfig', () => {
     it('should correctly process the config config when the build is type build', () => {
       const azionConfig: AzionConfig = {
         build: {
-          builder: 'esbuild',
+          bundler: 'esbuild',
           preset: 'react',
         },
       };
@@ -2563,7 +2563,7 @@ describe('processConfig', () => {
 
       expect(result.build).toEqual(
         expect.objectContaining({
-          builder: 'esbuild',
+          bundler: 'esbuild',
           preset: 'react',
         }),
       );

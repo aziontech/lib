@@ -1,13 +1,8 @@
-import { join, relative, resolve } from 'path';
 import { readdirSync } from 'fs';
+import { join, relative, resolve } from 'path';
 
-import { feedback } from '#utils';
-import {
-  copyFileWithDir,
-  normalizePath,
-  readJsonFile,
-  validateFile,
-} from '../../../utils/fs.js';
+import { feedback } from 'azion/utils/node';
+import { copyFileWithDir, normalizePath, readJsonFile, validateFile } from '../../../utils/fs.js';
 import { formatRoutePath, stripIndexRoute } from '../../../utils/routing.js';
 
 /**
@@ -55,9 +50,7 @@ async function getRoutePath({ fallback }, dirName, outputDir) {
 
   // Check the prerendered file exists.
   if (!(await validateFile(prerenderFile))) {
-    feedback.prebuild.info(
-      `Could not find prerendered file for ${prerenderRoute}`,
-    );
+    feedback.prebuild.info(`Could not find prerendered file for ${prerenderRoute}`);
     return null;
   }
 
@@ -87,13 +80,7 @@ async function getRoutePath({ fallback }, dirName, outputDir) {
  */
 async function getRouteDest({ fallback }, dirName, outputDir) {
   const destRoute = normalizePath(
-    join(
-      dirName,
-      fallback.fsPath.replace(
-        /\.prerender-fallback(?:\.(?:rsc|body|json))?/gi,
-        '',
-      ),
-    ),
+    join(dirName, fallback.fsPath.replace(/\.prerender-fallback(?:\.(?:rsc|body|json))?/gi, '')),
   );
   const destFile = join(outputDir, 'static', destRoute);
 
@@ -143,9 +130,7 @@ function getRouteOverrides(newRoute) {
   const withoutHtmlExt = formattedPathName.replace(/\.html$/, '');
   const strippedIndexRoute = stripIndexRoute(withoutHtmlExt);
   const overrides = new Set(
-    [formattedPathName, withoutHtmlExt, strippedIndexRoute].filter(
-      (route) => route !== `/${newRoute}`,
-    ),
+    [formattedPathName, withoutHtmlExt, strippedIndexRoute].filter((route) => route !== `/${newRoute}`),
   );
 
   return [...overrides];
@@ -164,9 +149,7 @@ function getRouteOverrides(newRoute) {
  */
 async function fixPrerenderedRoutes(prerenderedRoutes, files, baseDir) {
   const outputDir = resolve('.vercel', 'output');
-  const configs = files.filter((file) =>
-    /.+\.prerender-config\.json$/gi.test(file),
-  );
+  const configs = files.filter((file) => /.+\.prerender-config\.json$/gi.test(file));
 
   for (let index = 0; index < configs.length; index++) {
     const file = configs[index];
@@ -193,27 +176,15 @@ async function fixPrerenderedRoutes(prerenderedRoutes, files, baseDir) {
  * @param {Array<string>} vcConfigPaths - functions configs paths
  * @param {Map<string, object>} prerenderedRoutes - prerendered routes mapping
  */
-// eslint-disable-next-line import/prefer-default-export
-export default async function handlePrerenderedRoutes(
-  vcConfigPaths,
-  prerenderedRoutes,
-) {
+export default async function handlePrerenderedRoutes(vcConfigPaths, prerenderedRoutes) {
   // Action to get nested dirs, dirs that are not function dirs.
   // result example: ['', '/api', ...]
   const dirsToHandle = [
-    ...new Set(
-      vcConfigPaths.map((path) =>
-        path.replace('/.vc-config.json', '').replace(/\/[^/]+\.func$/, ''),
-      ),
-    ),
+    ...new Set(vcConfigPaths.map((path) => path.replace('/.vc-config.json', '').replace(/\/[^/]+\.func$/, ''))),
   ];
 
   try {
-    await Promise.all(
-      dirsToHandle.map((dir) =>
-        fixPrerenderedRoutes(prerenderedRoutes, readdirSync(dir), dir),
-      ),
-    );
+    await Promise.all(dirsToHandle.map((dir) => fixPrerenderedRoutes(prerenderedRoutes, readdirSync(dir), dir)));
   } catch (error) {
     const message = `Error handling prerendered routes: ${error}`;
     feedback.prebuild.error(message);

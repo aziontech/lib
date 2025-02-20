@@ -1,4 +1,5 @@
-import { matchPCRE, applyPCREMatches } from './pcre.js';
+/* eslint-disable no-undef */
+import { applyPCREMatches, matchPCRE } from './pcre.js';
 
 describe('matchPCRE', () => {
   const testCases = [
@@ -36,11 +37,7 @@ describe('matchPCRE', () => {
 
   testCases.forEach((testCase) => {
     test(`${testCase.name}`, () => {
-      const result = matchPCRE(
-        testCase.route.src,
-        new URL(testCase.url).pathname,
-        testCase.route.caseSensitive,
-      );
+      const result = matchPCRE(testCase.route.src, new URL(testCase.url).pathname, testCase.route.caseSensitive);
       expect({ ...result, match: !!result.match }).toEqual(testCase.expected);
     });
   });
@@ -125,11 +122,7 @@ describe('applyPCREMatches', () => {
         new URL(testCase.url).pathname,
         testCase.route.caseSensitive,
       );
-      const result = applyPCREMatches(
-        testCase.route.dest ?? '',
-        match,
-        captureGroupKeys,
-      );
+      const result = applyPCREMatches(testCase.route.dest ?? '', match, captureGroupKeys);
 
       const { newDest: expectedNewDest, ...expected } = testCase.expected;
       expect({ captureGroupKeys, match: !!match }).toEqual(expected);

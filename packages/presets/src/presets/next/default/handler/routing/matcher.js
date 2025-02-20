@@ -7,7 +7,6 @@
  * @param {string} requestProperties.headers  The request headers.
  * @returns {boolean} Whether the request matches the `has` record conditions.
  */
-// eslint-disable-next-line consistent-return, import/prefer-default-export
 function hasField(has, { url, cookies, headers }) {
   // eslint-disable-next-line default-case
   switch (has.type) {
@@ -50,10 +49,7 @@ function hasField(has, { url, cookies, headers }) {
 async function findMatch(matcher, phase = 'none', skipErrorMatch = false) {
   const result = await matcher.run(phase);
 
-  if (
-    result === 'error' ||
-    (!skipErrorMatch && matcher.status && matcher.status >= 400)
-  ) {
+  if (result === 'error' || (!skipErrorMatch && matcher.status && matcher.status >= 400)) {
     return findMatch(matcher, 'error', true);
   }
 
@@ -66,4 +62,4 @@ async function findMatch(matcher, phase = 'none', skipErrorMatch = false) {
   };
 }
 
-export { hasField, findMatch };
+export { findMatch, hasField };

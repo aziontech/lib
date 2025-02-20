@@ -24,11 +24,7 @@ export default function generateETag(payload) {
   // compute hash of entity
   // Do this without using crypto.subtle, as the crypto
   // polyfill doesn't support it.
-  const hash = crypto
-    .createHash('sha1')
-    .update(payload, 'utf8')
-    .digest('base64')
-    .substring(0, 27);
+  const hash = crypto.createHash('sha1').update(payload, 'utf8').digest('base64').substring(0, 27);
 
   // compute length of entity
   const len = Buffer.byteLength(payload);

@@ -1,11 +1,12 @@
+/* eslint-disable no-undef */
 import { describe } from '@jest/globals';
 import {
+  adjustRequestForVercel,
   applyHeaders,
   applySearchParams,
   createRouteRequest,
   isUrl,
   parseAcceptLanguage,
-  adjustRequestForVercel,
 } from './http.js';
 
 describe('applyHeaders', () => {
@@ -78,9 +79,7 @@ describe('applySearchParams', () => {
     expect([...source.searchParams.entries()].length).toEqual(1);
     expect([...target.searchParams.entries()].length).toEqual(2);
 
-    expect(target.toString()).toEqual(
-      'http://localhost/page?other=value&foo=bar',
-    );
+    expect(target.toString()).toEqual('http://localhost/page?other=value&foo=bar');
   });
 });
 

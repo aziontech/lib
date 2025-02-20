@@ -37,7 +37,6 @@ function filenamesList(rootDirectory) {
  * @param {string} dir Path to check.
  * @returns {Array} Array of all paths for all files in a directory.
  */
-// eslint-disable-next-line import/prefer-default-export
 export function assetsPaths(dir) {
   const paths = [];
   const filenames = filenamesList(dir);

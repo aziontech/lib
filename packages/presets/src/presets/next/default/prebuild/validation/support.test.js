@@ -1,8 +1,6 @@
+/* eslint-disable no-undef */
 import mockFs from 'mock-fs';
-import {
-  validateSupport,
-  validationSupportAndRetrieveFromVcConfig,
-} from './support.js';
+import { validateSupport, validationSupportAndRetrieveFromVcConfig } from './support.js';
 
 jest.mock('./supported-versions.js', () => ({
   __esModule: true,
@@ -115,9 +113,7 @@ describe('validationSupportAndRetrieveFromVcConfig', () => {
       runtimes: ['node'],
       minorVersion: '12.3.x',
       allowedRuntimes: ['node', 'edge'],
-      invalidFunctions: [
-        { runtime: 'nodejs18.x', function: '**/.vc-config.json' },
-      ],
+      invalidFunctions: [{ runtime: 'nodejs18.x', function: '**/.vc-config.json' }],
     });
   });
 });

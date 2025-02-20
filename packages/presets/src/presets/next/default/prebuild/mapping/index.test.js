@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import mockFs from 'mock-fs';
 import { mapAndAdaptFunctions } from './index.js';
 
@@ -68,9 +69,7 @@ describe('mapping index.js', () => {
 
     const tmpFunctionsDir = '/tmp/azion-functions';
 
-    await expect(() =>
-      mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir),
-    ).rejects.toThrow();
+    await expect(() => mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir)).rejects.toThrow();
 
     mockFs.restore();
   });

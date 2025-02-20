@@ -11,15 +11,8 @@ import { basename, extname, isAbsolute, relative, resolve } from 'path';
 /* eslint-disable */
 import { CONFIG_FILES } from 'next/constants';
 import * as Log from 'next/dist/build/output/log';
-import {
-  defaultConfig,
-  normalizeConfig,
-  validateConfig,
-} from 'next/dist/server/config-shared';
-import {
-  VALID_LOADERS,
-  imageConfigDefault,
-} from 'next/dist/shared/lib/image-config';
+import { defaultConfig, normalizeConfig, validateConfig } from 'next/dist/server/config-shared';
+import { VALID_LOADERS, imageConfigDefault } from 'next/dist/shared/lib/image-config';
 import { execOnce } from 'next/dist/shared/lib/utils';
 /* eslint-enable */
 
@@ -30,11 +23,7 @@ const targets = ['server'];
 
 const experimentalWarning = execOnce((configFileName, features) => {
   const s = features.length > 1 ? 's' : '';
-  Log.warn(
-    `You have enabled experimental feature${s} (${features.join(
-      ', ',
-    )}) in ${configFileName}.`,
-  );
+  Log.warn(`You have enabled experimental feature${s} (${features.join(', ')}) in ${configFileName}.`);
   Log.warn(
     `Experimental features are not covered by semver, and may cause unexpected or broken application behavior. ` +
       `Use at your own risk.`,
@@ -93,9 +82,7 @@ function assignDefaults(srcUserConfig) {
 
     if (key === 'distDir') {
       if (typeof value !== 'string') {
-        throw new Error(
-          `Specified distDir is not a string, found type "${typeof value}"`,
-        );
+        throw new Error(`Specified distDir is not a string, found type "${typeof value}"`);
       }
       const userDistDir = value.trim();
 
@@ -165,29 +152,21 @@ function assignDefaults(srcUserConfig) {
   }
 
   if (typeof result.basePath !== 'string') {
-    throw new Error(
-      `Specified basePath is not a string, found type "${typeof result.basePath}"`,
-    );
+    throw new Error(`Specified basePath is not a string, found type "${typeof result.basePath}"`);
   }
 
   if (result.basePath !== '') {
     if (result.basePath === '/') {
-      throw new Error(
-        `Specified basePath /. basePath has to be either an empty string or a path prefix"`,
-      );
+      throw new Error(`Specified basePath /. basePath has to be either an empty string or a path prefix"`);
     }
 
     if (!result.basePath.startsWith('/')) {
-      throw new Error(
-        `Specified basePath has to start with a /, found "${result.basePath}"`,
-      );
+      throw new Error(`Specified basePath has to start with a /, found "${result.basePath}"`);
     }
 
     if (result.basePath !== '/') {
       if (result.basePath.endsWith('/')) {
-        throw new Error(
-          `Specified basePath should not end with /, found "${result.basePath}"`,
-        );
+        throw new Error(`Specified basePath should not end with /, found "${result.basePath}"`);
       }
 
       if (result.assetPrefix === '') {
@@ -259,9 +238,7 @@ function assignDefaults(srcUserConfig) {
         (d) =>
           !d ||
           typeof d !== 'object' ||
-          Object.entries(d).some(
-            ([k, v]) => !validProps.has(k) || typeof v !== 'string',
-          ) ||
+          Object.entries(d).some(([k, v]) => !validProps.has(k) || typeof v !== 'string') ||
           requiredProps.some((k) => !(k in d)),
       );
       if (invalidPatterns.length > 0) {
@@ -334,19 +311,13 @@ function assignDefaults(srcUserConfig) {
 
     if (!VALID_LOADERS.includes(images.loader)) {
       throw new Error(
-        `Specified images.loader should be one of (${VALID_LOADERS.join(
-          ', ',
-        )}), received invalid value (${
+        `Specified images.loader should be one of (${VALID_LOADERS.join(', ')}), received invalid value (${
           images.loader
         }).\nSee more info here: https://nextjs.org/docs/messages/invalid-images-config`,
       );
     }
 
-    if (
-      images.loader !== 'default' &&
-      images.loader !== 'custom' &&
-      images.path === imageConfigDefault.path
-    ) {
+    if (images.loader !== 'default' && images.loader !== 'custom' && images.path === imageConfigDefault.path) {
       throw new Error(
         `Specified images.loader property (${images.loader}) also requires images.path property to be assigned to a URL prefix.\nSee more info here: https://nextjs.org/docs/api-reference/next/image#loader-configuration`,
       );
@@ -354,11 +325,7 @@ function assignDefaults(srcUserConfig) {
 
     // Append trailing slash for non-default loaders and when trailingSlash is set
     if (images.path) {
-      if (
-        (images.loader !== 'default' &&
-          images.path[images.path.length - 1] !== '/') ||
-        result.trailingSlash
-      ) {
+      if ((images.loader !== 'default' && images.path[images.path.length - 1] !== '/') || result.trailingSlash) {
         images.path += '/';
       }
     }
@@ -367,10 +334,7 @@ function assignDefaults(srcUserConfig) {
       images.path = `${result.basePath}${images.path}`;
     }
 
-    if (
-      images.minimumCacheTTL &&
-      (!Number.isInteger(images.minimumCacheTTL) || images.minimumCacheTTL < 0)
-    ) {
+    if (images.minimumCacheTTL && (!Number.isInteger(images.minimumCacheTTL) || images.minimumCacheTTL < 0)) {
       throw new Error(
         `Specified images.minimumCacheTTL should be an integer 0 or more received (${images.minimumCacheTTL}).\nSee more info here: https://nextjs.org/docs/messages/invalid-images-config`,
       );
@@ -402,29 +366,20 @@ function assignDefaults(srcUserConfig) {
       }
     }
 
-    if (
-      typeof images.dangerouslyAllowSVG !== 'undefined' &&
-      typeof images.dangerouslyAllowSVG !== 'boolean'
-    ) {
+    if (typeof images.dangerouslyAllowSVG !== 'undefined' && typeof images.dangerouslyAllowSVG !== 'boolean') {
       throw new Error(
         `Specified images.dangerouslyAllowSVG should be a boolean received (${images.dangerouslyAllowSVG}).\nSee more info here: https://nextjs.org/docs/messages/invalid-images-config`,
       );
     }
 
-    if (
-      typeof images.contentSecurityPolicy !== 'undefined' &&
-      typeof images.contentSecurityPolicy !== 'string'
-    ) {
+    if (typeof images.contentSecurityPolicy !== 'undefined' && typeof images.contentSecurityPolicy !== 'string') {
       throw new Error(
         `Specified images.contentSecurityPolicy should be a string received (${images.contentSecurityPolicy}).\nSee more info here: https://nextjs.org/docs/messages/invalid-images-config`,
       );
     }
 
     const unoptimized = result?.images?.unoptimized;
-    if (
-      typeof unoptimized !== 'undefined' &&
-      typeof unoptimized !== 'boolean'
-    ) {
+    if (typeof unoptimized !== 'undefined' && typeof unoptimized !== 'boolean') {
       throw new Error(
         `Specified images.unoptimized should be a boolean, received (${unoptimized}).\nSee more info here: https://nextjs.org/docs/messages/invalid-images-config`,
       );
@@ -473,8 +428,7 @@ function assignDefaults(srcUserConfig) {
       `\`reactRemoveProperties\` has been moved out of \`experimental\` and into \`compiler\`. Please update your ${configFileName} file accordingly.`,
     );
     result.compiler = result.compiler || {};
-    result.compiler.reactRemoveProperties =
-      result.experimental.reactRemoveProperties;
+    result.compiler.reactRemoveProperties = result.experimental.reactRemoveProperties;
   }
 
   if (result.experimental && 'removeConsole' in result.experimental) {
@@ -492,19 +446,12 @@ function assignDefaults(srcUserConfig) {
   }
 
   if (result.experimental.outputStandalone) {
-    Log.warn(
-      `experimental.outputStandalone has been renamed to "output: 'standalone'", please move the config.`,
-    );
+    Log.warn(`experimental.outputStandalone has been renamed to "output: 'standalone'", please move the config.`);
     result.output = 'standalone';
   }
 
-  if (
-    result.experimental?.outputFileTracingRoot &&
-    !isAbsolute(result.experimental.outputFileTracingRoot)
-  ) {
-    result.experimental.outputFileTracingRoot = resolve(
-      result.experimental.outputFileTracingRoot,
-    );
+  if (result.experimental?.outputFileTracingRoot && !isAbsolute(result.experimental.outputFileTracingRoot)) {
+    result.experimental.outputFileTracingRoot = resolve(result.experimental.outputFileTracingRoot);
     Log.warn(
       `experimental.outputFileTracingRoot should be absolute, using: ${result.experimental.outputFileTracingRoot}`,
     );
@@ -560,9 +507,7 @@ function assignDefaults(srcUserConfig) {
         if (!item.domain || typeof item.domain !== 'string') return true;
 
         const defaultLocaleDuplicate = i18n.domains?.find(
-          (altItem) =>
-            altItem.defaultLocale === item.defaultLocale &&
-            altItem.domain !== item.domain,
+          (altItem) => altItem.defaultLocale === item.defaultLocale && altItem.domain !== item.domain,
         );
 
         if (defaultLocaleDuplicate) {
@@ -614,17 +559,13 @@ function assignDefaults(srcUserConfig) {
       );
     }
 
-    const invalidLocales = i18n.locales.filter(
-      (locale) => typeof locale !== 'string',
-    );
+    const invalidLocales = i18n.locales.filter((locale) => typeof locale !== 'string');
 
     if (invalidLocales.length > 0) {
       throw new Error(
         `Specified i18n.locales contains invalid values (${invalidLocales
           .map(String)
-          .join(
-            ', ',
-          )}), locales must be valid locale tags provided as strings e.g. "en-US".\n` +
+          .join(', ')}), locales must be valid locale tags provided as strings e.g. "en-US".\n` +
           `See here for list of valid language sub-tags: http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry`,
       );
     }
@@ -656,17 +597,11 @@ function assignDefaults(srcUserConfig) {
     }
 
     // make sure default Locale is at the front
-    i18n.locales = [
-      i18n.defaultLocale,
-      ...i18n.locales.filter((locale) => locale !== i18n.defaultLocale),
-    ];
+    i18n.locales = [i18n.defaultLocale, ...i18n.locales.filter((locale) => locale !== i18n.defaultLocale)];
 
     const localeDetectionType = typeof i18n.localeDetection;
 
-    if (
-      localeDetectionType !== 'boolean' &&
-      localeDetectionType !== 'undefined'
-    ) {
+    if (localeDetectionType !== 'boolean' && localeDetectionType !== 'undefined') {
       throw new Error(
         `Specified i18n.localeDetection should be undefined or a boolean received ${localeDetectionType}.\nSee more info here: https://nextjs.org/docs/messages/invalid-i18n-config`,
       );
@@ -685,12 +620,7 @@ function assignDefaults(srcUserConfig) {
 
   if (result.devIndicators?.buildActivityPosition) {
     const { buildActivityPosition } = result.devIndicators;
-    const allowedValues = [
-      'top-left',
-      'top-right',
-      'bottom-left',
-      'bottom-right',
-    ];
+    const allowedValues = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
 
     if (!allowedValues.includes(buildActivityPosition)) {
       throw new Error(
@@ -750,10 +680,7 @@ export default async function loadConfig(phase, assets, dir, customConfig) {
       );
       throw err;
     }
-    const userConfig = await normalizeConfig(
-      phase,
-      userConfigModule.default || userConfigModule,
-    );
+    const userConfig = await normalizeConfig(phase, userConfigModule.default || userConfigModule);
 
     const validateResult = validateConfig(userConfig);
 
@@ -761,9 +688,7 @@ export default async function loadConfig(phase, assets, dir, customConfig) {
       Log.warn(`Invalid next.config.js options detected: `);
 
       // Only load @segment/ajv-human-errors when invalid config is detected
-      const {
-        AggregateAjvError,
-      } = require('next/dist/compiled/@segment/ajv-human-errors'); // eslint-disable-line
+      const { AggregateAjvError } = require('next/dist/compiled/@segment/ajv-human-errors'); // eslint-disable-line
       const aggregatedAjvErrors = new AggregateAjvError(validateResult.errors, {
         fieldLabels: 'js',
       });
@@ -772,9 +697,7 @@ export default async function loadConfig(phase, assets, dir, customConfig) {
         console.error(`  - ${error.message}`);
       }
 
-      console.error(
-        '\nSee more info here: https://nextjs.org/docs/messages/invalid-next-config',
-      );
+      console.error('\nSee more info here: https://nextjs.org/docs/messages/invalid-next-config');
     }
 
     if (Object.keys(userConfig).length === 0) {
@@ -785,9 +708,7 @@ export default async function loadConfig(phase, assets, dir, customConfig) {
 
     if (userConfig.target && !targets.includes(userConfig.target)) {
       throw new Error(
-        `Specified target is invalid. Provided: "${
-          userConfig.target
-        }" should be one of ${targets.join(', ')}`,
+        `Specified target is invalid. Provided: "${userConfig.target}" should be one of ${targets.join(', ')}`,
       );
     }
 
@@ -801,10 +722,7 @@ export default async function loadConfig(phase, assets, dir, customConfig) {
     if (userConfig.amp?.canonicalBase) {
       const { canonicalBase } = userConfig.amp || {};
       userConfig.amp = userConfig.amp || {};
-      userConfig.amp.canonicalBase =
-        (canonicalBase.endsWith('/')
-          ? canonicalBase.slice(0, -1)
-          : canonicalBase) || '';
+      userConfig.amp.canonicalBase = (canonicalBase.endsWith('/') ? canonicalBase.slice(0, -1) : canonicalBase) || '';
     }
 
     if (process.env.NEXT_PRIVATE_TARGET) {

@@ -20,10 +20,7 @@ import {
 import { normalizeLocalePath } from 'next/dist/shared/lib/i18n/normalize-locale-path';
 import { denormalizePagePath } from 'next/dist/shared/lib/page-path/denormalize-page-path';
 import { normalizePagePath } from 'next/dist/shared/lib/page-path/normalize-page-path';
-import {
-  MissingStaticPage,
-  PageNotFoundError,
-} from 'next/dist/shared/lib/utils';
+import { MissingStaticPage, PageNotFoundError } from 'next/dist/shared/lib/utils';
 /* eslint-enable */
 
 /**
@@ -47,9 +44,7 @@ export function assetDirectoryExists(assets, path, dir) {
  */
 export function assetDirectory(assets, path, dir) {
   const relativePath = relative(dir, path);
-  return Object.keys(assets).filter((key) =>
-    key.startsWith(`/${relativePath}/`),
-  );
+  return Object.keys(assets).filter((key) => key.startsWith(`/${relativePath}/`));
 }
 
 /**
@@ -91,9 +86,7 @@ export async function readAsyncAssetFile(assets, path, dir) {
   const urlOBJ = new URL(`${file.content}`, 'file://');
   const response = await fetch(`${urlOBJ}`);
   if (!response.ok) {
-    console.log(
-      `Error reading asset '${path}' in storage. Error: ${response.status} - ${response.statusText}`,
-    );
+    console.log(`Error reading asset '${path}' in storage. Error: ${response.status} - ${response.statusText}`);
     throw new Error('Error loading file.');
   }
   const buffer = await response.arrayBuffer();
@@ -170,35 +163,15 @@ export function readAssetModule(assets, path, dir) {
  * @param {boolean} appDirEnabled indicates if app dir (experimental) is used or not
  * @returns {string} the page path
  */
-export function getPagePath(
-  assets,
-  srcPage,
-  dir,
-  distDir,
-  serverless,
-  dev,
-  locales,
-  appDirEnabled,
-) {
+export function getPagePath(assets, srcPage, dir, distDir, serverless, dev, locales, appDirEnabled) {
   let page = srcPage;
-  const serverBuildPath = join(
-    distDir,
-    serverless && !dev ? SERVERLESS_DIRECTORY : SERVER_DIRECTORY,
-  );
+  const serverBuildPath = join(distDir, serverless && !dev ? SERVERLESS_DIRECTORY : SERVER_DIRECTORY);
   let rootPathsManifest;
 
   if (appDirEnabled) {
-    rootPathsManifest = readAssetManifest(
-      assets,
-      join(serverBuildPath, APP_PATHS_MANIFEST),
-      dir,
-    );
+    rootPathsManifest = readAssetManifest(assets, join(serverBuildPath, APP_PATHS_MANIFEST), dir);
   }
-  const pagesManifest = readAssetManifest(
-    assets,
-    join(serverBuildPath, PAGES_MANIFEST),
-    dir,
-  );
+  const pagesManifest = readAssetManifest(assets, join(serverBuildPath, PAGES_MANIFEST), dir);
 
   try {
     page = denormalizePagePath(normalizePagePath(page));
@@ -216,8 +189,7 @@ export function getPagePath(
       const manifestKeys = Object.keys(manifest);
       for (let i = 0; i < manifestKeys.length; i++) {
         const key = manifestKeys[i];
-        manifestNoLocales[normalizeLocalePath(key, locales).pathname] =
-          pagesManifest[key];
+        manifestNoLocales[normalizeLocalePath(key, locales).pathname] = pagesManifest[key];
       }
       curPath = manifestNoLocales[page];
     }
@@ -251,24 +223,8 @@ export function getPagePath(
  * @param {boolean} appDirEnabled indicates if app dir (experimental) is used or not
  * @returns {Promise<any>} a promise with the page, page asset module or missing page
  */
-export async function requirePage(
-  assets,
-  page,
-  dir,
-  distDir,
-  serverless,
-  appDirEnabled,
-) {
-  const pagePath = getPagePath(
-    assets,
-    page,
-    dir,
-    distDir,
-    serverless,
-    false,
-    undefined,
-    appDirEnabled,
-  );
+export async function requirePage(assets, page, dir, distDir, serverless, appDirEnabled) {
+  const pagePath = getPagePath(assets, page, dir, distDir, serverless, false, undefined, appDirEnabled);
   if (pagePath.endsWith('.html')) {
     try {
       return readAssetFileAsString(assets, pagePath, dir);
@@ -290,9 +246,6 @@ export async function requirePage(
  * @returns {object} the manifest in JSON format
  */
 export function requireFontManifest(assets, distDir, dir, serverless) {
-  const serverBuildPath = join(
-    distDir,
-    serverless ? SERVERLESS_DIRECTORY : SERVER_DIRECTORY,
-  );
+  const serverBuildPath = join(distDir, serverless ? SERVERLESS_DIRECTORY : SERVER_DIRECTORY);
   return readAssetManifest(assets, join(serverBuildPath, FONT_MANIFEST), dir);
 }
