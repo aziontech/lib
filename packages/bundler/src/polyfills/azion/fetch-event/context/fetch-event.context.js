@@ -1,7 +1,6 @@
+import primitives from '@edge-runtime/primitives';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import primitives from '@edge-runtime/primitives';
-import { feedback } from '#utils';
 
 class FetchEventContext extends primitives.FetchEvent {
   constructor(type, eventInitDict) {
@@ -13,11 +12,11 @@ class FetchEventContext extends primitives.FetchEvent {
         const args = JSON.parse(readFileSync(argsPath, 'utf8'));
         this.args = args || {};
       } catch (error) {
-        feedback.server.error(`Error reading args.json: ${error.message}`);
+        console.error(`Error reading args.json: ${error.message}`);
       }
     }
     this.console = {
-      log: (log) => feedback.server.log(log),
+      log: (log) => console.log(log),
     };
   }
 }
