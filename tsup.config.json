@@ -1,5 +1,5 @@
 {
-  "entry": ["src/index.ts"],
+  "entry": ["src/index.ts", "src/edge/index.ts", "src/node/index.ts"],
   "format": ["cjs", "esm"],
   "splitting": true,
   "sourcemap": false,

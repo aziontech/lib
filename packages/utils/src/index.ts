@@ -1,5 +1,14 @@
-import { mountMPA, mountSPA } from './hooks/index';
+// Importar todas as funções do edge
+import * as edgeUtils from './edge/index';
 
-export { mountMPA, mountSPA };
+// Importar todas as funções do node
+import * as nodeUtils from './node/index';
 
-export type * from './hooks/types';
+// Exportar como objetos nomeados
+export const edge = {
+  ...edgeUtils,
+};
+
+export const node = {
+  ...nodeUtils,
+};

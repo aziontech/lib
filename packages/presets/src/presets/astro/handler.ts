@@ -1,5 +1,5 @@
 import { FetchEvent } from 'azion/types';
-import { mountSPA } from 'azion/utils';
+import { mountSPA } from 'azion/utils/edge';
 
 /**
  * Handles the 'fetch' event.

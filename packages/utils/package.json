@@ -17,8 +17,19 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
+    },
+    "./edge": {
+      "types": "./dist/edge/index.d.ts",
+      "require": "./dist/edge/index.js",
+      "import": "./dist/edge/index.mjs"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "require": "./dist/node/index.js",
+      "import": "./dist/node/index.mjs"
     }
   },
   "author": "aziontech",

@@ -38,7 +38,7 @@ The `mountSPA` function is designed to process requests to a Single Page Applica
 **JavaScript Example:**
 
 ```javascript
-import { mountSPA } from 'azion/utils';
+import { mountSPA } from 'azion/utils/edge';
 
 const myApp = await mountSPA('https://example.com/');
 console.log(myApp);
@@ -49,7 +49,7 @@ console.log(myApp);
 **TypeScript Example:**
 
 ```typescript
-import { mountSPA } from 'azion/utils';
+import { mountSPA } from 'azion/utils/edge';
 
 const myApp: Response = await mountSPA('https://example.com/');
 console.log(myApp);
@@ -64,7 +64,7 @@ The `mountMPA` function handles requests for Multi-Page Applications (MPA) at th
 **JavaScript Example:**
 
 ```javascript
-import { mountMPA } from 'azion/utils';
+import { mountMPA } from 'azion/utils/edge';
 
 const myApp = await mountMPA('https://example.com/about');
 console.log(myApp);
@@ -75,7 +75,7 @@ console.log(myApp);
 **TypeScript Example:**
 
 ```typescript
-import { mountMPA } from 'azion/utils';
+import { mountMPA } from 'azion/utils/edge';
 
 const myApp: Response = await mountMPA('https://example.com/about');
 console.log(myApp);
