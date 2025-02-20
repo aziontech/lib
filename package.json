@@ -90,11 +90,10 @@
       "import": "./packages/presets/dist/index.mjs"
     },
     "./bundler": {
-      "require": "./packages/bundler/dist/index.js",
-      "import": "./packages/bundler/dist/index.mjs"
+      "require": "./packages/bundler/dist/index.cjs",
+      "import": "./packages/bundler/dist/index.js"
     },
     "./bundler/polyfills": {
-      "require": "./packages/bundler/src/polyfills/index.js",
       "import": "./packages/bundler/src/polyfills/index.js"
     },
     "./unenv-preset": {
@@ -211,16 +210,20 @@
     }
   },
   "dependencies": {
+    "@edge-runtime/primitives": "^6.0.0",
     "@fastly/http-compute-js": "^1.1.5",
     "accepts": "^1.3.8",
     "browserify-zlib": "^0.2.0",
     "chalk": "^5.3.0",
     "crypto-browserify": "^3.12.1",
+    "dotenv": "^16.4.7",
     "esbuild": "^0.25.0",
     "events": "^3.3.0",
     "inherits": "^2.0.4",
+    "ip": "^2.0.1",
     "lodash-es": "^4.17.21",
     "mime": "^3.0.0",
+    "mime-types": "^2.1.35",
     "progress": "^2.0.3",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",

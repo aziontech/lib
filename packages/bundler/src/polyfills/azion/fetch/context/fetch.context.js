@@ -1,7 +1,16 @@
-import { getUrlFromResource } from '#utils';
 import { readFileSync } from 'fs';
 import mime from 'mime-types';
 import { join } from 'path';
+
+function getUrlFromResource(context, resource) {
+  if (typeof resource === 'string') return new URL(resource);
+
+  if (resource instanceof context.Request) return new URL(resource.url);
+
+  if (resource instanceof context.URL) return resource;
+
+  throw new Error("Invalid resource input. 'resource' must be 'URL', 'Request' or 'string'.");
+}
 
 /**
  * A custom fetch implementation that adds an additional path to the URL if it starts with 'file://'.

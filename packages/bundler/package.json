@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
@@ -15,13 +15,10 @@
   },
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     },
-    "./polyfills": {
-      "require": "./src/polyfills/index.js",
-      "import": "./src/polyfills/index.js"
-    }
+    "./polyfills": "./src/polyfills/index.js"
   },
   "author": "aziontech",
   "license": "MIT",
@@ -31,15 +28,19 @@
     "src/polyfills/*"
   ],
   "dependencies": {
+    "@edge-runtime/primitives": "^6.0.0",
     "@fastly/http-compute-js": "^1.1.5",
     "@lib/unenv-preset": "*",
     "accepts": "^1.3.8",
     "browserify-zlib": "^0.2.0",
+    "dotenv": "^16.4.7",
     "esbuild": "^0.25.0",
     "events": "^3.3.0",
     "inherits": "^2.0.4",
+    "ip": "^2.0.1",
     "lodash-es": "^4.17.21",
     "mime": "^3.0.0",
+    "mime-types": "^2.1.35",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "string_decoder": "^1.3.0",
