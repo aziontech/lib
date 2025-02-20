@@ -3,11 +3,7 @@ import { BuildOptions, Plugin as ESBuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
 
 export type BuildConfiguration = {
-  config: AzionBuild & {
-    extend?: <T extends WebpackConfig | BuildOptions | unknown = WebpackConfig | BuildOptions | unknown>(
-      context: T,
-    ) => T;
-  };
+  config: AzionBuild;
   extras?: BundlerConfig;
 };
 
