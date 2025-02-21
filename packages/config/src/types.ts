@@ -543,16 +543,16 @@ export interface AzionPrebuildResult {
 
   // Global variables to be injected at the top of the worker
   workerGlobalVars: {
-    _ENTRIES: string;
-    AsyncLocalStorage: string;
-    [key: string]: string;
+    _ENTRIES?: string;
+    AsyncLocalStorage?: string;
+    [key: string]: string | undefined;
   };
 
   // Variables to be defined in the bundler
   defineVars: {
-    __CONFIG__: string;
-    __BUILD_METADATA__: string;
-    [key: string]: string;
+    __CONFIG__?: string;
+    __BUILD_METADATA__?: string;
+    [key: string]: string | undefined;
   };
-  builderPlugins: (EsbuildPlugin | WebpackPlugin)[];
+  bundlerPlugins: (EsbuildPlugin | WebpackPlugin)[];
 }

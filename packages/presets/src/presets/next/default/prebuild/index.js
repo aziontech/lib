@@ -131,7 +131,7 @@ async function run(prebuildContext) {
       __CONFIG__: JSON.stringify(processedVercelOutput.vercelConfig),
       __BUILD_METADATA__: JSON.stringify(buildMetadata),
     },
-    builderPlugins: [],
+    bundlerPlugins: [],
   };
 }
 
