@@ -58,7 +58,7 @@ function writeOutputReferencesFile(functionsFile, vercelOutput) {
  * Build the application.
  * @param {object} prebuildContext The prebuild context.
  * @param {object} prebuildContext.vcConfigObjects The Vercel configuration objects.
- * @returns {Promise<object>} The build result.
+ * @returns {Promise<import('azion/config').AzionPrebuildResult>} The build result.
  */
 async function run(prebuildContext) {
   const targetDir = process.cwd();
@@ -120,18 +120,19 @@ async function run(prebuildContext) {
       outputReferencesFilePath,
     ],
     // onBanner
-    workerGlobalVars: {
-      // inject on banner the globalThis._ENTRIES
-      // this is necessary in the order of use, which needs to be defined at the top of the worker
-      _ENTRIES: JSON.stringify({}),
-      AsyncLocalStorage: JSON.stringify({}),
+    injection: {
+      banner: {
+        _ENTRIES: JSON.stringify({}),
+        AsyncLocalStorage: JSON.stringify({}),
+      },
     },
-    // defineVars (bundlers - define)
-    defineVars: {
-      __CONFIG__: JSON.stringify(processedVercelOutput.vercelConfig),
-      __BUILD_METADATA__: JSON.stringify(buildMetadata),
+    bundler: {
+      defineVars: {
+        __CONFIG__: JSON.stringify(processedVercelOutput.vercelConfig),
+        __BUILD_METADATA__: JSON.stringify(buildMetadata),
+      },
+      bundlerPlugins: [],
     },
-    bundlerPlugins: [],
   };
 }
 

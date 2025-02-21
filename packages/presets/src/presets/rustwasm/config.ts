@@ -1,33 +1,37 @@
-import { defineConfig } from 'azion/config';
-import webpack from 'webpack';
+import { AzionBuild, defineConfig } from 'azion/config';
+import webpack, { Configuration } from 'webpack';
 
 export default defineConfig({
   build: {
     preset: 'rustwasm',
     polyfills: false,
-    custom: {
-      optimization: {
-        minimize: true,
-      },
-      performance: {
-        maxEntrypointSize: 2097152,
-        maxAssetSize: 2097152,
-      },
-      module: {
-        rules: [
-          {
-            test: /\.wasm$/,
-            type: 'asset/inline',
-          },
+    extend: (context: Configuration) => {
+      context = {
+        ...context,
+        optimization: {
+          minimize: false,
+        },
+        performance: {
+          maxEntrypointSize: 2097152,
+          maxAssetSize: 2097152,
+        },
+        module: {
+          rules: [
+            {
+              test: /\.wasm$/,
+              type: 'asset/inline',
+            },
+          ],
+        },
+        plugins: [
+          new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
+          }),
         ],
-      },
-      plugins: [
-        new webpack.optimize.LimitChunkCountPlugin({
-          maxChunks: 1,
-        }),
-      ],
+      };
+      return context;
     },
-  },
+  } as AzionBuild,
   rules: {
     request: [
       {

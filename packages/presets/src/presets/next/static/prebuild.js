@@ -167,7 +167,7 @@ function validateStaticSiteMode(nextConfig) {
 
 /**
  * Runs custom prebuild actions
- * @returns {object} - info about the build
+ * @returns {import('azion/config').AzionPrebuildResult} - info about the build
  */
 async function prebuild() {
   feedback.prebuild.info('Starting Next.js static build process...');
@@ -212,8 +212,10 @@ async function prebuild() {
 
   feedback.prebuild.success('Next.js build adaptation completed successfully.');
   return {
-    workerGlobalVars: {
-      nextBuildStatic: true,
+    injection: {
+      globals: {
+        nextBuildStatic: true,
+      },
     },
   };
 }

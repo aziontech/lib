@@ -324,13 +324,13 @@ export type AzionPurge = {
 
 export type PresetInput = string | AzionBuildPreset;
 
-export interface AzionBuild {
+export interface AzionBuild<T extends WebpackConfig | BuildOptions | unknown = WebpackConfig | BuildOptions | unknown> {
   entry?: string;
   bundler?: 'webpack' | 'esbuild';
   preset?: PresetInput;
   polyfills?: boolean;
   worker?: boolean;
-  extend?: <T extends WebpackConfig | BuildOptions | unknown = WebpackConfig | BuildOptions | unknown>(context: T) => T;
+  extend?: (context: T) => T;
   memoryFS?: {
     injectionDirs: string[];
     removePathPrefix: string;
