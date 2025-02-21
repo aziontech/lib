@@ -5,6 +5,7 @@ import { resolve } from 'path';
 import { copyDirectory, feedback } from 'azion/utils/node';
 import VercelUtils from './utils/vercel/index';
 
+import { AzionPrebuildResult } from 'azion/config';
 import runDefaultBuild from './default/prebuild/index.js';
 import { validationSupportAndRetrieveFromVcConfig } from './default/prebuild/validation/support.js';
 import runNodeBuild from './node/prebuild/index.js';
@@ -67,7 +68,7 @@ function validateStaticSiteMode(nextConfig: Record<string, any>) {
 /**
  * Prebuild process for Next.js projects.
  */
-async function prebuild(buildContext: Record<string, any>) {
+async function prebuild(buildContext: Record<string, any>): Promise<AzionPrebuildResult> {
   feedback.prebuild.info('Starting Next.js build process ...');
 
   await vercelPrebuildActions();
@@ -110,11 +111,11 @@ async function prebuild(buildContext: Record<string, any>) {
   }
 
   // build routing system and edge functions
-  const prebuildResult = (await runDefaultBuild({
+  const prebuildResult = await runDefaultBuild({
     vcConfigObjects,
     nextVersion,
     projectRuntimes,
-  } as any)) as any;
+  } as any);
 
   // remove node handler inject on handler
   const nodeHandlerFile = 'src/presets/next/node/handler/index.js';
