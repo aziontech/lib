@@ -538,21 +538,26 @@ export interface AzionBuildPreset {
 }
 
 export interface AzionPrebuildResult {
-  // Files to be injected into the worker
   filesToInject: string[];
 
-  // Global variables to be injected at the top of the worker
-  workerGlobalVars: {
-    _ENTRIES?: string;
-    AsyncLocalStorage?: string;
-    [key: string]: string | undefined;
+  // Configurações de injeção de código
+  injection: {
+    globals: {
+      _ENTRIES?: string;
+      AsyncLocalStorage?: string;
+      [key: string]: string | undefined;
+    };
+    entry?: string; // código no início do worker
+    banner?: string; // código no topo do worker
   };
 
-  // Variables to be defined in the bundler
-  defineVars: {
-    __CONFIG__?: string;
-    __BUILD_METADATA__?: string;
-    [key: string]: string | undefined;
+  // Configurações do bundler
+  bundler: {
+    defineVars: {
+      __CONFIG__?: string;
+      __BUILD_METADATA__?: string;
+      [key: string]: string | undefined;
+    };
+    plugins: (EsbuildPlugin | WebpackPlugin)[];
   };
-  bundlerPlugins: (EsbuildPlugin | WebpackPlugin)[];
 }
