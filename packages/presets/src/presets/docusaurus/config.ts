@@ -2,7 +2,7 @@ import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   build: {
-    builder: 'webpack',
+    bundler: 'webpack',
     preset: 'docusaurus',
     polyfills: false,
   },

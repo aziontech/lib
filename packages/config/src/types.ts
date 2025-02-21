@@ -13,6 +13,9 @@ import {
 
 import { FetchEvent } from 'azion/types';
 
+import { BuildOptions } from 'esbuild';
+import { Configuration as WebpackConfig } from 'webpack';
+
 /**
  * Domain configuration for Azion.
  */
@@ -322,16 +325,16 @@ export type AzionPurge = {
 export type PresetInput = string | AzionBuildPreset;
 
 export interface AzionBuild {
-  builder?: 'webpack' | 'esbuild';
   entry?: string;
+  bundler?: 'webpack' | 'esbuild';
   preset?: PresetInput;
   polyfills?: boolean;
   worker?: boolean;
+  extend?: <T extends WebpackConfig | BuildOptions | unknown = WebpackConfig | BuildOptions | unknown>(context: T) => T;
   memoryFS?: {
     injectionDirs: string[];
     removePathPrefix: string;
   };
-  custom?: Record<string, unknown>;
 }
 
 /**
@@ -530,6 +533,6 @@ export type AzionBuildPreset = {
   config: AzionConfig;
   handler: (event: FetchEvent) => Promise<Response>;
   prebuild?: (context: AzionBuild) => Promise<void>;
-  postbuild?: (context: AzionBuild) => Promise<void>;
+  postbuild?: (context: AzionBuild, output?: string) => Promise<void>;
   metadata: PresetMetadata;
 };

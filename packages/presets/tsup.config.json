@@ -1,0 +1,26 @@
+{
+  "entry": ["src/index.ts", "src/edge/index.ts", "src/node/index.ts"],
+  "format": ["cjs", "esm"],
+  "splitting": true,
+  "sourcemap": false,
+  "clean": true,
+  "bundle": true,
+  "dts": true,
+  "minify": true,
+  "minifyWhitespace": true,
+  "external": [
+    "./build/module",
+    "./.wasm-bindgen/azion_rust_edge_function",
+    "./.wasm-bindgen/azion_rust_edge_function_bg.wasm",
+    "VULCAN_LIB_PATH/presets/next/default/handler/images.js",
+    "VULCAN_LIB_PATH/presets/next/default/handler/routing/index.js",
+    "VULCAN_LIB_PATH/presets/next/default/handler/routing/http.js",
+    "VULCAN_LIB_PATH/presets/next/static/handler.js"
+  ],
+  "ignoreWarnings": [
+    {
+      "code": "direct-eval",
+      "message": "Using direct eval with a bundler is not recommended and may cause problems"
+    }
+  ]
+}

@@ -441,10 +441,10 @@ const azionConfigSchema = {
           type: 'string',
           errorMessage: "The 'entry' field must be a string representing the entry point file path.",
         },
-        builder: {
+        bundler: {
           type: ['string', 'null'],
           enum: ['esbuild', 'webpack', null],
-          errorMessage: "The 'builder' field must be either 'esbuild', 'webpack', or null.",
+          errorMessage: "The 'bundler' field must be either 'esbuild', 'webpack', or null.",
         },
         polyfills: {
           type: 'boolean',

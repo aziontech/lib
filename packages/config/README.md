@@ -306,7 +306,7 @@ Type definition for the build configuration.
 
 **Properties:**
 
-- `builder?: 'esbuild' | 'webpack'` - The builder to use.
+- `bundler?: 'esbuild' | 'webpack'` - The bundler to use.
 - `preset?: { name: string; }` - The preset to use.
 - `entry?: string` - The entry file.
 - `polyfills?: boolean` - Whether to include polyfills.

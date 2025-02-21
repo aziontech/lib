@@ -40,7 +40,7 @@ describe('convertJsonConfigToObject', () => {
     it('should correctly process the config build', () => {
       const jsonConfig = {
         build: {
-          builder: 'esbuild',
+          bundler: 'esbuild',
           preset: {
             name: 'react',
           },
@@ -50,7 +50,7 @@ describe('convertJsonConfigToObject', () => {
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
       expect(result.build).toEqual(
         expect.objectContaining({
-          builder: 'esbuild',
+          bundler: 'esbuild',
           preset: {
             name: 'react',
           },

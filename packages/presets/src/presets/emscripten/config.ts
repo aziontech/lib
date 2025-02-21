@@ -3,7 +3,7 @@ import webpack from 'webpack';
 
 const config = defineConfig({
   build: {
-    builder: 'webpack',
+    bundler: 'webpack',
     polyfills: false,
     custom: {
       optimization: {
