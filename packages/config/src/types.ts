@@ -13,8 +13,8 @@ import {
 
 import { FetchEvent } from 'azion/types';
 
-import { BuildOptions } from 'esbuild';
-import { Configuration as WebpackConfig } from 'webpack';
+import { BuildOptions, type Plugin as EsbuildPlugin } from 'esbuild';
+import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
 
 /**
  * Domain configuration for Azion.
@@ -529,10 +529,30 @@ export type PresetMetadata = {
   name: string;
 };
 
-export type AzionBuildPreset = {
+export interface AzionBuildPreset {
   config: AzionConfig;
   handler: (event: FetchEvent) => Promise<Response>;
-  prebuild?: (context: AzionBuild) => Promise<void>;
+  prebuild?: (context: AzionBuild) => Promise<void | AzionPrebuildResult>;
   postbuild?: (context: AzionBuild, output?: string) => Promise<void>;
   metadata: PresetMetadata;
-};
+}
+
+export interface AzionPrebuildResult {
+  // Files to be injected into the worker
+  filesToInject: string[];
+
+  // Global variables to be injected at the top of the worker
+  workerGlobalVars: {
+    _ENTRIES: string;
+    AsyncLocalStorage: string;
+    [key: string]: string;
+  };
+
+  // Variables to be defined in the bundler
+  defineVars: {
+    __CONFIG__: string;
+    __BUILD_METADATA__: string;
+    [key: string]: string;
+  };
+  builderPlugins: (EsbuildPlugin | WebpackPlugin)[];
+}
