@@ -527,6 +527,7 @@ export type AzionWaf = {
 
 export type PresetMetadata = {
   name: string;
+  ext?: string;
 };
 
 export interface AzionBuildPreset {
