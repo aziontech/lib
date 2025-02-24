@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import exec from './index.js';
+import exec from './index';
 
 interface MockChildProcess {
   stdout: { on: jest.Mock };
