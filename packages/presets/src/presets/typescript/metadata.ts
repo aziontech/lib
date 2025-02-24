@@ -2,7 +2,7 @@ import type { PresetMetadata } from 'azion/config';
 
 const metadata: PresetMetadata = {
   name: 'typescript',
-  ext: 'js',
+  ext: 'ts',
 };
 
 export default metadata;
