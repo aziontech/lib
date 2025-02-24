@@ -15,6 +15,7 @@ export interface BundlerConfig {
 export interface BuildEnv {
   production: boolean;
   output: string;
+  entrypoint: string;
   event: 'firewall' | 'fetch';
 }
 
