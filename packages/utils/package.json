@@ -40,5 +40,8 @@
   ],
   "devDependencies": {
     "@types/signale": "^1.4.7"
+  },
+  "dependencies": {
+    "signale": "^1.4.0"
   }
 }
