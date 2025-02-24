@@ -17,8 +17,6 @@ const cleanOutputConfig = {
 
 /**
  * Helper function to create a custom interactive logger object.
- * @param {object} options - Configuration options for the logger.
- * @returns {object} A custom logger object.
  */
 const getLogger = (options = {}) => {
   const logger = new signale.Signale({ ...options });
@@ -45,70 +43,71 @@ const methods = {
   },
 };
 
-const global = new signale.Signale({
-  interactive: false,
-  scope: 'Azion',
-  types: methods,
-});
+const global = (scope: string = 'Azion') => {
+  return new signale.Signale({
+    interactive: false,
+    scope: scope,
+    types: methods,
+  });
+};
 
 if (cleanOutputEnabled) {
-  global.config(cleanOutputConfig);
+  global().config(cleanOutputConfig);
 }
 
 /**
  * Predefined log scopes.
- * @type {object}
  */
-const scopes = {
-  ...global,
+const scopes = (scope: string = 'Azion') => ({
+  ...global(scope),
   interactive: {
     ...getLogger({
       interactive: true,
-      scope: ['Azion'],
+      scope: [scope],
       types: methods,
     }),
   },
   server: {
-    ...global.scope('Azion', 'Server'),
+    ...global(scope).scope(scope, 'Server'),
     interactive: getLogger({
       interactive: true,
-      scope: ['Azion', 'Server'],
+      scope: [scope, 'Server'],
       types: methods,
     }),
   },
   runtime: {
-    ...global.scope('Azion', 'Runtime'),
+    ...global(scope).scope(scope, 'Runtime'),
     interactive: getLogger({
       interactive: true,
-      scope: ['Azion', 'Runtime'],
+      scope: [scope, 'Runtime'],
       types: methods,
     }),
   },
   prebuild: {
-    ...global.scope('Azion', 'Pre-build'),
+    ...global(scope).scope(scope, 'Pre-build'),
     interactive: getLogger({
       interactive: true,
-      scope: ['Azion', 'Pre-build'],
+      scope: [scope, 'Pre-build'],
       types: methods,
     }),
   },
   build: {
-    ...global.scope('Azion', 'Build'),
+    ...global(scope).scope(scope, 'Build'),
     interactive: getLogger({
       interactive: true,
-      scope: ['Azion', 'Build'],
+      scope: [scope, 'Build'],
       types: methods,
     }),
   },
   postbuild: {
-    ...global.scope('Azion', 'Post-build'),
+    ...global(scope).scope(scope, 'Post-build'),
     interactive: getLogger({
       interactive: true,
-      scope: ['Azion', 'Post-build'],
+      scope: [scope, 'Post-build'],
       types: methods,
     }),
   },
-};
+});
 
 /**
  * @function
@@ -120,8 +119,10 @@ const scopes = {
  * for other clients intending to use Vulcan
  * in the background, where stylized console output may be less desirable.
  * For more information about the Signale logging methods, refer to its documentation (https://github.com/klaussinani/signale).
- * @type {object}
  */
-const feedback = { ...scopes };
+const feedback = {
+  ...scopes(),
+  globalScope: (scope?: string) => ({ ...scopes(scope) }),
+};
 
 export default feedback;

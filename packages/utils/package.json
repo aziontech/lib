@@ -9,7 +9,7 @@
     "compile": "tsup --config ../../tsup.config.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest --clearCache && jest -c jest.config.js .",
+    "test": "jest --clearCache && jest --maxWorkers=1 -c jest.config.js .",
     "test:watch": "jest -c jest.config.js . --watch",
     "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage",
     "prettier": "prettier --write .",
@@ -40,5 +40,8 @@
   ],
   "devDependencies": {
     "@types/signale": "^1.4.7"
+  },
+  "dependencies": {
+    "signale": "^1.4.0"
   }
 }
