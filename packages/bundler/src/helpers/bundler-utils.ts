@@ -1,14 +1,8 @@
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { Plugin as ESBuildPlugin } from 'esbuild';
 import webpack, { WebpackPluginInstance } from 'webpack';
 import { bannerCli, bannerDevelopment } from '../constants/banners';
-import {
-  BuildConfiguration,
-  BuildContext,
-  BundlerPluginFunctions,
-  BundlerProviderConfig,
-  ESBuildPluginClasses,
-  WebpackPluginClasses,
-} from '../types';
+import { BundlerPluginFunctions, BundlerProviderConfig, ESBuildPluginClasses, WebpackPluginClasses } from '../types';
 
 /**
  * Creates bundler plugins factory with specific implementations

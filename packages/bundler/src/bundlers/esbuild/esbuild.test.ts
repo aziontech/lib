@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { BuildConfiguration, BuildContext } from 'azion/config';
+import { JavaScript } from 'azion/presets';
 import fs from 'fs';
 import tmp from 'tmp';
-import { BuildConfiguration, BuildContext } from '../../types';
 import { createAzionESBuildConfig } from './esbuild';
 
 describe('Esbuild Bundler', () => {
@@ -39,18 +40,16 @@ describe('Esbuild Bundler', () => {
   describe('createAzionESBuildConfig', () => {
     it('should create base esbuild config', () => {
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          extend(context: any) {
-            const config = context;
-            config.minify = false;
-            return config;
-          },
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extend(context: any) {
+          const config = context;
+          config.minify = false;
+          return config;
         },
-        extras: {
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -61,6 +60,8 @@ describe('Esbuild Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -74,18 +75,16 @@ describe('Esbuild Bundler', () => {
   describe('createAzionESBuildConfig.mergeConfig', () => {
     it('should merge config when extend config is provided', () => {
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          extend(context: any) {
-            const config = context;
-            config.minify = false;
-            return config;
-          },
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extend(context: any) {
+          const config = context;
+          config.minify = false;
+          return config;
         },
-        extras: {
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -96,6 +95,8 @@ describe('Esbuild Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -110,12 +111,10 @@ describe('Esbuild Bundler', () => {
 
     it('should merge config when extend config is not provided', () => {
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-        },
-        extras: {
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -126,6 +125,8 @@ describe('Esbuild Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -144,18 +145,16 @@ describe('Esbuild Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          extend(context: any) {
-            const config = context;
-            config.minify = false;
-            return config;
-          },
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extend(context: any) {
+          const config = context;
+          config.minify = false;
+          return config;
         },
-        extras: {
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -166,6 +165,8 @@ describe('Esbuild Bundler', () => {
       const ctx: BuildContext = {
         production: false,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -185,22 +186,22 @@ describe('Esbuild Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          extend(context: any) {
-            const config = context;
-            config.minify = false;
-            return config;
-          },
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extend(context: any) {
+          const config = context;
+          config.minify = false;
+          return config;
         },
       };
 
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);

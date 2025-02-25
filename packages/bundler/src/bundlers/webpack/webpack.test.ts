@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { BuildConfiguration, BuildContext } from 'azion/config';
+import { JavaScript } from 'azion/presets';
 import fs from 'fs';
 import tmp from 'tmp';
 import { Configuration as WebpackConfig } from 'webpack';
-import { BuildConfiguration, BuildContext } from '../../types';
 import { createAzionWebpackConfig } from './webpack';
 
 describe('Webpack Bundler', () => {
@@ -40,12 +40,10 @@ describe('Webpack Bundler', () => {
   describe('createAzionWebpackConfig', () => {
     it('should create base webpack config', () => {
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-        },
-        extras: {
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -56,6 +54,8 @@ describe('Webpack Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -69,18 +69,16 @@ describe('Webpack Bundler', () => {
   describe('createAzionWebpackConfig.mergeConfig', () => {
     it('should merge config when extend config is provided', async () => {
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-          extend: (config) => {
-            (config as WebpackConfig).optimization = {
-              minimize: false,
-            };
-            return config;
-          },
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        extend: (config) => {
+          (config as WebpackConfig).optimization = {
+            minimize: false,
+          };
+          return config;
         },
-        extras: {
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -91,6 +89,8 @@ describe('Webpack Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -112,12 +112,10 @@ describe('Webpack Bundler', () => {
 
     it('should merge config when extend config is not provided', async () => {
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-        },
-        extras: {
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -128,6 +126,8 @@ describe('Webpack Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -154,12 +154,10 @@ describe('Webpack Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-        },
-        extras: {
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -170,6 +168,8 @@ describe('Webpack Bundler', () => {
       const ctx: BuildContext = {
         production: false,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -188,12 +188,10 @@ describe('Webpack Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        config: {
-          entry: tmpEntry.name,
-          polyfills: true,
-          preset: 'javascript',
-        },
-        extras: {
+        entry: tmpEntry.name,
+        polyfills: true,
+        preset: JavaScript,
+        setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
             NODE_ENV: 'production',
@@ -204,6 +202,8 @@ describe('Webpack Bundler', () => {
       const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
+        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
