@@ -556,20 +556,21 @@ export interface AzionBuildPreset {
 }
 
 export interface AzionPrebuildResult {
+  /** Files to be injected into memory during build process */
   filesToInject: string[];
 
-  // Configurações de injeção de código
+  // Code injection settings
   injection: {
     globals: {
       _ENTRIES?: string;
       AsyncLocalStorage?: string;
       [key: string]: string | undefined;
     };
-    entry?: string; // código no início do worker
-    banner?: string; // código no topo do worker
+    entry?: string; // code at the beginning of worker
+    banner?: string; // code at the top of worker
   };
 
-  // Configurações do bundler
+  // Bundler settings
   bundler: {
     defineVars: {
       __CONFIG__?: string;
