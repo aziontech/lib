@@ -16,6 +16,7 @@
       "azion/utils/node": ["../utils/src/node/index.ts"],
       "azion/config": ["../config/src/index.ts"],
       "azion/presets": ["../presets/src/index.ts"],
+      "azion/bundler": ["../bundler/src/index.ts"],
       "azion/types": ["../types/src/index.ts"]
     }
   },

@@ -1,14 +1,8 @@
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { Plugin as ESBuildPlugin } from 'esbuild';
 import webpack, { WebpackPluginInstance } from 'webpack';
 import { bannerCli, bannerDevelopment } from '../constants/banners';
-import {
-  BuildConfiguration,
-  BuildEnv,
-  BundlerPluginFunctions,
-  BundlerProviderConfig,
-  ESBuildPluginClasses,
-  WebpackPluginClasses,
-} from '../types';
+import { BundlerPluginFunctions, BundlerProviderConfig, ESBuildPluginClasses, WebpackPluginClasses } from '../types';
 
 /**
  * Creates bundler plugins factory with specific implementations
@@ -25,12 +19,11 @@ export const createBundlerPlugins = <
    * Common polyfills configuration
    */
   const applyPolyfills =
-    (buildEnv: BuildEnv) =>
+    (buildEnv: BuildContext) =>
     (config: C) =>
     (buildConfiguration: BuildConfiguration): C => {
-      const polyfills = buildConfiguration.config?.polyfills;
+      if (!buildConfiguration.polyfills) return config;
 
-      if (!polyfills) return config;
       config.plugins = [
         ...(config.plugins || []),
         isWebpackPlugin(NodePolyfillsPlugin)
@@ -44,7 +37,7 @@ export const createBundlerPlugins = <
    * Common Azion module configuration
    */
   const applyAzionModule =
-    (buildEnv: BuildEnv) =>
+    (buildEnv: BuildContext) =>
     (config: C): C => {
       config.plugins = [
         ...(config.plugins || []),
@@ -94,7 +87,7 @@ export const applyDefineVars =
 /**
  * Common filename handling
  */
-export const getOutputFilename = (path: string, buildEnv: BuildEnv): string => {
+export const getOutputFilename = (path: string, buildEnv: BuildContext): string => {
   if (buildEnv.production) return path;
   const [dir, filename] = path.split(/\/([^/]+)$/);
   const [name, ext] = filename.split('.');
@@ -104,7 +97,7 @@ export const getOutputFilename = (path: string, buildEnv: BuildEnv): string => {
 /**
  * Common banner configuration
  */
-export const getBannerContent = (buildEnv: BuildEnv): string => {
+export const getBannerContent = (buildEnv: BuildContext): string => {
   return buildEnv.production ? bannerCli : `${bannerCli}${bannerDevelopment}`;
 };
 
