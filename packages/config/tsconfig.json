@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "azion/types": ["../types/src/index.ts"]
+      "azion/types": ["../types/src/index.ts"],
+      "azion/bundler": ["../bundler/src/index.ts"]
     }
   }
 }

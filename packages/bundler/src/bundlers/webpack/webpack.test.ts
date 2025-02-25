@@ -2,7 +2,7 @@
 import fs from 'fs';
 import tmp from 'tmp';
 import { Configuration as WebpackConfig } from 'webpack';
-import { BuildConfiguration, BuildEnv } from '../../types';
+import { BuildConfiguration, BuildContext } from '../../types';
 import { createAzionWebpackConfig } from './webpack';
 
 describe('Webpack Bundler', () => {
@@ -53,7 +53,7 @@ describe('Webpack Bundler', () => {
         },
       };
 
-      const ctx: BuildEnv = {
+      const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
       };
@@ -88,7 +88,7 @@ describe('Webpack Bundler', () => {
         },
       };
 
-      const ctx: BuildEnv = {
+      const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
       };
@@ -125,7 +125,7 @@ describe('Webpack Bundler', () => {
         },
       };
 
-      const ctx: BuildEnv = {
+      const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
       };
@@ -167,7 +167,7 @@ describe('Webpack Bundler', () => {
         },
       };
 
-      const ctx: BuildEnv = {
+      const ctx: BuildContext = {
         production: false,
         output: tmpOutput.name,
       };
@@ -201,7 +201,7 @@ describe('Webpack Bundler', () => {
         },
       };
 
-      const ctx: BuildEnv = {
+      const ctx: BuildContext = {
         production: true,
         output: tmpOutput.name,
       };

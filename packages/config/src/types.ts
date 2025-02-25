@@ -13,7 +13,7 @@ import {
 
 import { FetchEvent } from 'azion/types';
 
-import { BuildOptions, type Plugin as EsbuildPlugin } from 'esbuild';
+import { BuildOptions, BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
 
 /**
@@ -525,6 +525,23 @@ export type AzionWaf = {
   bypassAddresses?: string[];
 };
 
+export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset'> & {
+  preset?: AzionBuildPreset;
+  setup?: BundlerSetup;
+};
+
+export interface BundlerSetup {
+  contentToInject?: string;
+  defineVars?: Record<string, string>;
+}
+
+export interface BuildContext {
+  production: boolean;
+  output: string;
+  entrypoint: string;
+  event: 'firewall' | 'fetch';
+}
+
 export type PresetMetadata = {
   name: string;
   ext?: string;
@@ -533,8 +550,8 @@ export type PresetMetadata = {
 export interface AzionBuildPreset {
   config: AzionConfig;
   handler: (event: FetchEvent) => Promise<Response>;
-  prebuild?: (context: AzionBuild) => Promise<void | AzionPrebuildResult>;
-  postbuild?: (context: AzionBuild, output?: string) => Promise<void>;
+  prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>;
+  postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>;
   metadata: PresetMetadata;
 }
 
