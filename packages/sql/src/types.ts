@@ -177,6 +177,48 @@ export interface AzionSQLClient {
 }
 
 /**
+ * Defines the execution environment for the Azion client.
+ *
+ * @type {('development' | 'staging' | 'production')}
+ *
+ * @property {'development'} development - Development environment for local testing
+ * @property {'staging'} staging - Staging/testing environment
+ * @property {'production'} production - Production environment
+ *
+ * @example
+ * const environment: AzionEnvironment = 'development';
+ *
+ * @example
+ * const clientOptions = {
+ *   env: 'production' as AzionEnvironment
+ * };
+ */
+export type AzionEnvironment = 'development' | 'staging' | 'production';
+
+/**
+ * Options for configuring the Azion client behavior.
+ *
+ * @property {boolean} [debug] - Enable debug mode for detailed logging.
+ * @property {boolean} [force] - Force the operation even if it might be destructive.
+ * @property {AzionEnvironment} [env] - Environment to use (dev, stage, prod).
+ *
+ * @example
+ * const options: AzionClientOptions = {
+ *   debug: true,
+ *   force: false,
+ *   env: 'dev'
+ * };
+ */
+export type AzionClientOptions = {
+  /** Enable debug mode for detailed logging */
+  debug?: boolean;
+  /** Force the operation even if it might be destructive */
+  force?: boolean;
+  /** Environment to use (dev, stage, prod) */
+  env?: AzionEnvironment;
+};
+
+/**
  * Function type for creating an Azion SQL Client.
  *
  * @param {Object} [config] - Configuration options for the SQL client.
@@ -200,20 +242,3 @@ export interface AzionSQLClient {
 export type CreateAzionSQLClient = (
   config?: Partial<{ token?: string; options?: AzionClientOptions }>,
 ) => AzionSQLClient;
-
-/**
- * Options for configuring the Azion client behavior.
- *
- * @property {boolean} [debug] - Enable debug mode for detailed logging.
- * @property {boolean} [force] - Force the operation even if it might be destructive.
- *
- * @example
- * const options: AzionClientOptions = {
- *   debug: true,
- *   force: false
- * };
- */
-export type AzionClientOptions = {
-  debug?: boolean;
-  force?: boolean;
-};

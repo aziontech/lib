@@ -51,7 +51,7 @@ describe('SQL Module', () => {
       (servicesApi.postEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
       const result = await createDatabase('test-db', { debug: mockDebug });
       expect(result.data).toEqual(expect.objectContaining({ id: 1, name: 'test-db' }));
-      expect(servicesApi.postEdgeDatabase).toHaveBeenCalledWith(mockToken, 'test-db', true);
+      expect(servicesApi.postEdgeDatabase).toHaveBeenCalledWith(mockToken, 'test-db', true, 'production');
     });
 
     it('should return error on failure', async () => {
@@ -76,7 +76,7 @@ describe('SQL Module', () => {
       (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue({ state: 'pending', data: { id: 1 } });
       const result = await deleteDatabase(1, { debug: mockDebug });
       expect(result).toEqual({ data: { id: 1, state: 'pending' } });
-      expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, true);
+      expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, true, 'production');
     });
 
     it('should return error on failure', async () => {
@@ -100,7 +100,7 @@ describe('SQL Module', () => {
 
       const result = await getDatabase('test-db', { debug: mockDebug });
       expect(result.data).toEqual(expect.objectContaining({ id: 1, name: 'test-db' }));
-      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { search: 'test-db' }, true);
+      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { search: 'test-db' }, true, 'production');
     });
 
     it('should throw an error if database is not found', async () => {
@@ -128,7 +128,12 @@ describe('SQL Module', () => {
       const { data } = await getDatabases({ page: 1, page_size: 10 }, { debug: mockDebug });
       expect(data?.databases).toHaveLength(2);
       expect(data!.databases![0]).toEqual(expect.objectContaining({ id: 1, name: 'test-db-1' }));
-      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(mockToken, { page: 1, page_size: 10 }, true);
+      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(
+        mockToken,
+        { page: 1, page_size: 10 },
+        true,
+        'production',
+      );
     });
 
     it('should return error if retrieval fails', async () => {
@@ -273,11 +278,12 @@ describe('SQL Module', () => {
     it('should successfully execute useQuery with apiQuery called', async () => {
       const spyApiQuery = jest.spyOn(services, 'apiQuery').mockResolvedValue({ data: { toObject: () => null } });
 
-      await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
+      await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug, env: 'production' });
 
       expect(spyApiQuery).toHaveBeenCalled();
       expect(spyApiQuery).toHaveBeenCalledWith(mockToken, 'test-db', ['SELECT * FROM test'], {
         debug: mockDebug,
+        env: 'production',
       });
 
       spyApiQuery.mockRestore();
@@ -295,6 +301,7 @@ describe('SQL Module', () => {
       expect(spyRuntimeQuery).toHaveBeenCalled();
       expect(spyRuntimeQuery).toHaveBeenCalledWith(mockToken, 'test-db', ['SELECT * FROM test'], {
         debug: mockDebug,
+        env: 'production',
       });
 
       spyRuntimeQuery.mockRestore();
@@ -354,7 +361,7 @@ describe('SQL Module', () => {
       (servicesApi.postEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
 
       await client.createDatabase('test-db');
-      expect(servicesApi.postEdgeDatabase).toHaveBeenCalledWith('custom-token', 'test-db', false);
+      expect(servicesApi.postEdgeDatabase).toHaveBeenCalledWith('custom-token', 'test-db', false, 'production');
     });
 
     it('should call deleteDatabase method', async () => {
@@ -362,7 +369,7 @@ describe('SQL Module', () => {
       (servicesApi.deleteEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
 
       await client.deleteDatabase(1);
-      expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith('custom-token', 1, false);
+      expect(servicesApi.deleteEdgeDatabase).toHaveBeenCalledWith('custom-token', 1, false, 'production');
     });
 
     it('should call getDatabase method', async () => {
@@ -371,7 +378,12 @@ describe('SQL Module', () => {
       if (client.getDatabase) {
         await client.getDatabase('test-db');
       }
-      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith('custom-token', { search: 'test-db' }, false);
+      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(
+        'custom-token',
+        { search: 'test-db' },
+        false,
+        'production',
+      );
     });
 
     it('should call getDatabases method', async () => {
@@ -384,7 +396,12 @@ describe('SQL Module', () => {
       (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockResponse);
 
       await client.getDatabases({ page: 1, page_size: 10 });
-      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith('custom-token', { page: 1, page_size: 10 }, false);
+      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(
+        'custom-token',
+        { page: 1, page_size: 10 },
+        false,
+        'production',
+      );
     });
   });
 });
