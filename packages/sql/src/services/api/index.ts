@@ -8,6 +8,7 @@ import type {
   ApiListDatabasesResponse,
   ApiQueryExecutionResponse,
 } from './types';
+import { hasDataError } from './utils';
 
 const BASE_URL =
   process.env.AZION_ENV === 'stage'
@@ -145,18 +146,24 @@ const postQueryEdgeDatabase = async (
       },
       debug,
     );
+
     if (!result.data || !Array.isArray(result.data)) {
       result.error = handleApiError(['detail'], result, 'post query');
       return {
         error: result.error ?? JSON.stringify(result),
       };
     }
-    if (result.data[0].error) {
+
+    const hasErrorResult = hasDataError(result.data);
+
+    if (hasErrorResult) {
       return {
         error: {
-          message: result.data[0].error,
+          message: hasErrorResult?.message,
           operation: 'post query',
         },
+        state: result.state,
+        data: result.data.filter((data: any) => data?.results),
       };
     }
 
