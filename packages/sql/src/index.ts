@@ -259,10 +259,10 @@ const queryDatabaseMethod = async (
   if (!isStatement) {
     throw new Error('Only read statements are allowed');
   }
-  if (getAzionSql()) {
-    return runtimeQuery(resolveToken(token), name, statements, resolvedOptions);
+  if (resolvedOptions.external || !getAzionSql()) {
+    return apiQuery(token, name, statements, resolvedOptions);
   }
-  return apiQuery(resolveToken(token), name, statements, resolvedOptions);
+  return runtimeQuery(token, name, statements, resolvedOptions);
 };
 
 /**
@@ -304,7 +304,7 @@ const executeDatabaseMethod = async (
     ['INSERT', 'UPDATE', 'DELETE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
   );
   const isAdminStatement = statements.some((statement) =>
-    ['CREATE', 'ALTER', 'DROP', 'TRUNCATE'].some((keyword) => statement.trim().toUpperCase().startsWith(keyword)),
+    statement.toUpperCase().match(/^(CREATE|DROP|ALTER|ATTACH|VACUUM|PRAGMA)/),
   );
   if (!isAdminStatement && !isWriteStatement) {
     return {
@@ -322,7 +322,10 @@ const executeDatabaseMethod = async (
       },
     };
   }
-  return apiQuery(token, name, statements, resolvedOptions);
+  if (resolvedOptions.external || !getAzionSql()) {
+    return apiQuery(token, name, statements, resolvedOptions);
+  }
+  return runtimeQuery(token, name, statements, resolvedOptions);
 };
 
 /**
