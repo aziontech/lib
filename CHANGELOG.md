@@ -1,3 +1,12 @@
+## [1.16.0-stage.3](https://github.com/aziontech/lib/compare/v1.16.0-stage.2...v1.16.0-stage.3) (2025-02-27)
+
+
+### Features
+
+* **sql:** browser support ([ba9b688](https://github.com/aziontech/lib/commit/ba9b688dbf55412b9295cec66554b3c8c528c0db))
+* **sql:** force api rest ([e324bd6](https://github.com/aziontech/lib/commit/e324bd6030349c4a141745d6ec2aa79066808415))
+* **storage:** force api rest ([800ef81](https://github.com/aziontech/lib/commit/800ef818dd163917b68dc43314934b22a9acc4ac))
+
 ## [1.16.0-stage.2](https://github.com/aziontech/lib/compare/v1.16.0-stage.1...v1.16.0-stage.2) (2025-02-11)
 
 
