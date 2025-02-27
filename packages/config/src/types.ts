@@ -525,9 +525,10 @@ export type AzionWaf = {
   bypassAddresses?: string[];
 };
 
-export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset'> & {
-  preset?: AzionBuildPreset;
-  setup?: BundlerSetup;
+export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {
+  entry: string; // required
+  preset: AzionBuildPreset;
+  setup: BundlerSetup;
 };
 
 export interface BundlerSetup {
