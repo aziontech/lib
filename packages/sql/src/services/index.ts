@@ -41,8 +41,15 @@ export const apiQuery = async (
 
   const { state, data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
 
-  if (data && data.length > 0) {
-    const resultStatements: AzionDatabaseQueryResponse = {
+  let resultStatements: AzionDatabaseQueryResponse = {
+    state: 'executed',
+    results: undefined,
+    toObject: () => null,
+  };
+
+  const isData = data && data.length > 0;
+  if (isData) {
+    resultStatements = {
       state,
       results: data.map((result, index) => {
         return {
@@ -54,12 +61,10 @@ export const apiQuery = async (
       }),
       toObject: () => toObjectQueryExecutionResponse(resultStatements),
     };
-    return {
-      data: resultStatements,
-    };
   }
   return {
-    error: error,
+    data: isData ? resultStatements : undefined,
+    error,
   };
 };
 

@@ -8,6 +8,7 @@ import type {
   ApiListDatabasesResponse,
   ApiQueryExecutionResponse,
 } from './types';
+import { hasDataError } from './utils';
 
 import { AzionEnvironment } from '../../types';
 
@@ -177,12 +178,17 @@ const postQueryEdgeDatabase = async (
         error: result.error ?? JSON.stringify(result),
       };
     }
-    if (result.data[0].error) {
+
+    const hasErrorResult = hasDataError(result.data);
+
+    if (hasErrorResult) {
       return {
         error: {
-          message: result.data[0].error,
+          message: hasErrorResult?.message,
           operation: 'post query',
         },
+        state: result.state,
+        data: result.data.filter((data: any) => data?.results),
       };
     }
 
