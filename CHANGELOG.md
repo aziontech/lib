@@ -1,3 +1,10 @@
+## [1.16.0-stage.4](https://github.com/aziontech/lib/compare/v1.16.0-stage.3...v1.16.0-stage.4) (2025-02-27)
+
+
+### Bug Fixes
+
+* enhance error handling in SQL queries and add utility for error checking (#124) ([f57fb55](https://github.com/aziontech/lib/commit/f57fb5580e927d268186eb72bf29f6ed4a7016b2))
+
 ## [1.16.0-stage.3](https://github.com/aziontech/lib/compare/v1.16.0-stage.2...v1.16.0-stage.3) (2025-02-27)
 
 
