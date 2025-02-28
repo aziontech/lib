@@ -523,9 +523,9 @@ const azionConfigSchema = {
           errorMessage: "The 'custom' field must be an object.",
         },
       },
-      additionalProperties: false,
+      additionalProperties: true, // this is temp, we need to validate the build (extend) function
       errorMessage: {
-        additionalProperties: "No additional properties are allowed in the 'build' object.",
+        type: "The 'build' field must be an object.",
       },
     },
     origin: {

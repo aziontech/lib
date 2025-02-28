@@ -1,5 +1,5 @@
 {
-  "entry": ["src/index.ts", "src/edge/index.ts", "src/node/index.ts"],
+  "entry": ["src/index.ts"],
   "format": ["cjs", "esm"],
   "splitting": true,
   "sourcemap": false,
@@ -12,10 +12,10 @@
     "./build/module",
     "./.wasm-bindgen/azion_rust_edge_function",
     "./.wasm-bindgen/azion_rust_edge_function_bg.wasm",
-    "VULCAN_LIB_PATH/presets/next/default/handler/images.js",
-    "VULCAN_LIB_PATH/presets/next/default/handler/routing/index.js",
-    "VULCAN_LIB_PATH/presets/next/default/handler/routing/http.js",
-    "VULCAN_LIB_PATH/presets/next/static/handler.js"
+    "signale",
+    "fast-glob",
+    "mime-types",
+    "path"
   ],
   "ignoreWarnings": [
     {

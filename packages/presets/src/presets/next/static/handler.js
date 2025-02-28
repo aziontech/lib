@@ -1,4 +1,4 @@
-import { mountMPA } from 'azion/utils';
+import { mountMPA } from 'azion/utils/edge';
 
 /**
  * Handles the 'fetch' event.

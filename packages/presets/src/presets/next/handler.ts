@@ -1,13 +1,9 @@
 /* eslint-disable */
-// @ts-expect-error - Ignore TS error because this file is not compiled
-import { handleImageResizingRequest } from 'VULCAN_LIB_PATH/presets/next/default/handler/images.js';
-// @ts-expect-error - Ignore TS error because this file is not compiled
-import { handleRequest } from 'VULCAN_LIB_PATH/presets/next/default/handler/routing/index.js';
-// @ts-expect-error - Ignore TS error because this file is not compiled
-import { adjustRequestForVercel } from 'VULCAN_LIB_PATH/presets/next/default/handler/routing/http.js';
-// @ts-expect-error - Ignore TS error because this file is not compiled
-import handlerStatic from 'VULCAN_LIB_PATH/presets/next/static/handler.js';
 import { FetchEvent } from 'azion/types';
+import { handleImageResizingRequest } from './default/handler/images.js';
+import { adjustRequestForVercel } from './default/handler/routing/http.js';
+import { handleRequest } from './default/handler/routing/index.js';
+import handlerStatic from './static/handler.js';
 
 const getStorageAsset = async (request: Request) => {
   try {
@@ -27,6 +23,7 @@ const getStorageAsset = async (request: Request) => {
  * @param ctx
  */
 async function main(request: Request, env: Record<string, any>, ctx: any) {
+  // @ts-expect-error - Ignore TS error because this file is not compiled
   const envAsyncLocalStorage = new AsyncLocalStorage();
 
   globalThis.process.env = { ...globalThis.process.env, ...env };
