@@ -13,7 +13,7 @@ import {
 
 import { FetchEvent } from 'azion/types';
 
-import { BuildOptions, BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
+import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
 
 /**
@@ -324,7 +324,7 @@ export type AzionPurge = {
 
 export type PresetInput = string | AzionBuildPreset;
 
-export interface AzionBuild<T extends WebpackConfig | BuildOptions | unknown = WebpackConfig | BuildOptions | unknown> {
+export interface AzionBuild<T extends WebpackConfig | ESBuildConfig | unknown = WebpackConfig | ESBuildConfig> {
   entry?: string;
   bundler?: 'webpack' | 'esbuild';
   preset?: PresetInput;
