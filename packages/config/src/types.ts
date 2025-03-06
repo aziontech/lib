@@ -550,7 +550,7 @@ export type PresetMetadata = {
 
 export interface AzionBuildPreset {
   config: AzionConfig;
-  handler: (event: FetchEvent) => Promise<Response>;
+  handler?: (event: FetchEvent) => Promise<Response>;
   prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>;
   postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>;
   metadata: PresetMetadata;
