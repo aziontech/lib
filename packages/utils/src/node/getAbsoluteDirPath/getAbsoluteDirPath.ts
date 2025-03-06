@@ -1,6 +1,6 @@
 const isWindows = process.platform === 'win32';
 
-function getAbsoluteLibDirPath(currentModuleFullPath: string = import.meta.url, path: string = 'bundler'): string {
+function getAbsoluteDirPath(currentModuleFullPath: string = import.meta.url, path: string = 'bundler'): string {
   const regex = new RegExp(`(.*${path})(.*)`);
   const matchResult = currentModuleFullPath.match(regex);
   let baselibPath = matchResult ? matchResult[1] : '';
@@ -17,4 +17,4 @@ function getAbsoluteLibDirPath(currentModuleFullPath: string = import.meta.url, 
   return baselibPath;
 }
 
-export default getAbsoluteLibDirPath;
+export default getAbsoluteDirPath;
