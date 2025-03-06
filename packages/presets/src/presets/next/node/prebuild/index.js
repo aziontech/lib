@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path, { join } from 'path';
 
-import { copyDirectory, feedback, getAbsoluteLibDirPath } from 'azion/utils/node';
+import { copyDirectory, feedback, getAbsoluteDirPath } from 'azion/utils/node';
 import BuildStatic from './statics/index.js';
 
 /**
@@ -34,7 +34,7 @@ async function run(nextVersion, buildContext) {
   // INIT FOLDER CUSTOM SERVER
   const CUSTOM_SERVER_DIR = 'custom-server';
   const CURRENT_VERSION = nextVersion;
-  const vulcanLibPath = getAbsoluteLibDirPath();
+  const vulcanLibPath = getAbsoluteDirPath();
   const customServerPath = join(vulcanLibPath, 'presets', 'next', 'node', CUSTOM_SERVER_DIR, CURRENT_VERSION);
   const rootDir = process.cwd();
   // try version dir

@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-import { feedback, getAbsoluteLibDirPath } from 'azion/utils/node';
+import { feedback, getAbsoluteDirPath } from 'azion/utils/node';
 import { getNextProjectConfig } from '../../utils/next.js';
 import VercelUtils from '../../utils/vercel';
 import { assetsPaths } from './mapping/assets.js';
@@ -113,9 +113,9 @@ async function run(prebuildContext) {
     // onEntry
     filesToInject: [
       // async local storage use
-      `${getAbsoluteLibDirPath()}/presets/next/default/handler/async-local-storage.js`,
+      `${getAbsoluteDirPath()}/presets/next/default/handler/async-local-storage.js`,
       // node custom server
-      `${getAbsoluteLibDirPath()}/presets/next/node/handler/index.js`,
+      `${getAbsoluteDirPath()}/presets/next/node/handler/index.js`,
       // file to generate Output. It contains functions references to build
       outputReferencesFilePath,
     ],
