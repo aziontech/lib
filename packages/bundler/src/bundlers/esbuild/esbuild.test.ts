@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { BuildConfiguration, BuildContext } from 'azion/config';
-import { JavaScript } from 'azion/presets';
+import { javascript } from 'azion/presets';
 import fs from 'fs';
 import tmp from 'tmp';
 import { createAzionESBuildConfig } from './esbuild';
@@ -42,7 +42,7 @@ describe('Esbuild Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
@@ -61,7 +61,6 @@ describe('Esbuild Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -77,7 +76,7 @@ describe('Esbuild Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
@@ -96,7 +95,6 @@ describe('Esbuild Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -113,7 +111,7 @@ describe('Esbuild Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -126,7 +124,6 @@ describe('Esbuild Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -147,7 +144,7 @@ describe('Esbuild Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
@@ -166,7 +163,6 @@ describe('Esbuild Bundler', () => {
         production: false,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -188,12 +184,18 @@ describe('Esbuild Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
           config.minify = false;
           return config;
+        },
+        setup: {
+          contentToInject: 'console.log("Hello World")',
+          defineVars: {
+            NODE_ENV: 'production',
+          },
         },
       };
 
@@ -201,7 +203,6 @@ describe('Esbuild Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);

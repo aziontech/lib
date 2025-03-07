@@ -56,7 +56,7 @@ export const createAzionESBuildConfig = (buildConfig: BuildConfiguration, ctx: B
     ...AzionEsbuildConfig,
     entryPoints: [buildConfig.entry ?? ''],
     outfile: getOutputFilename(ctx.output, ctx),
-    minify: ctx.production,
+    minify: false,
     plugins: [],
     banner: {
       js: getBannerContent(ctx),

@@ -1,5 +1,5 @@
 import { BuildConfiguration, BuildContext } from 'azion/config';
-import { JavaScript } from 'azion/presets';
+import { javascript } from 'azion/presets';
 import fs from 'fs';
 import tmp from 'tmp';
 import { Configuration as WebpackConfig } from 'webpack';
@@ -42,7 +42,7 @@ describe('Webpack Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -55,7 +55,6 @@ describe('Webpack Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -71,7 +70,7 @@ describe('Webpack Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         extend: (config) => {
           (config as WebpackConfig).optimization = {
             minimize: false,
@@ -90,7 +89,6 @@ describe('Webpack Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -114,7 +112,7 @@ describe('Webpack Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -127,7 +125,6 @@ describe('Webpack Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -156,7 +153,7 @@ describe('Webpack Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -169,7 +166,6 @@ describe('Webpack Bundler', () => {
         production: false,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -190,7 +186,7 @@ describe('Webpack Bundler', () => {
       const bundlerConfig: BuildConfiguration = {
         entry: tmpEntry.name,
         polyfills: true,
-        preset: JavaScript,
+        preset: javascript,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -203,7 +199,6 @@ describe('Webpack Bundler', () => {
         production: true,
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
-        event: 'fetch',
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);

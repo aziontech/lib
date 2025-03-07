@@ -540,7 +540,6 @@ export interface BuildContext {
   production: boolean;
   output: string;
   entrypoint: string;
-  event: 'firewall' | 'fetch';
 }
 
 export type PresetMetadata = {
