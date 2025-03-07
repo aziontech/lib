@@ -5,7 +5,7 @@ import { join } from 'path';
 class FetchEventContext extends primitives.FetchEvent {
   constructor(type, eventInitDict) {
     super(type, eventInitDict);
-    const argsPathEnv = globalThis.vulcan.argsPath || 'azion/args.json';
+    const argsPathEnv = globalThis.bundler.argsPath || 'azion/args.json';
     const argsPath = join(process.cwd(), argsPathEnv);
     if (existsSync(argsPath)) {
       try {

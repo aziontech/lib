@@ -1,19 +1,19 @@
 /* eslint-disable max-classes-per-file */
-import bPath from 'path';
 import { Buffer } from 'buffer';
+import bPath from 'path';
 
 /* eslint-disable */
 
-const MEM_FILES = globalThis.vulcan.__FILES__;
+const MEM_FILES = globalThis.bundler.__FILES__;
 
-globalThis.vulcan.FS_PATHS_CHANGED = false;
+globalThis.bundler.FS_PATHS_CHANGED = false;
 
 /**
  * fix mapped files paths based on path prefix
  */
 function fixMappedFilesPaths() {
-  const prefix = globalThis.vulcan.FS_PATH_PREFIX_TO_REMOVE;
-  if (!globalThis.vulcan.FS_PATHS_CHANGED && prefix !== '') {
+  const prefix = globalThis.bundler.FS_PATH_PREFIX_TO_REMOVE;
+  if (!globalThis.bundler.FS_PATHS_CHANGED && prefix !== '') {
     Object.keys(MEM_FILES).forEach((e) => {
       const newKey = e.replace(prefix, '');
       MEM_FILES[newKey] = MEM_FILES[e];
@@ -21,7 +21,7 @@ function fixMappedFilesPaths() {
     });
   }
 
-  globalThis.vulcan.FS_PATHS_CHANGED = true;
+  globalThis.bundler.FS_PATHS_CHANGED = true;
 }
 
 // ### fs polyfill utils
@@ -393,7 +393,7 @@ fsPolyfill.readdirSync = readdirSync;
 
 export default fsPolyfill;
 
-export { close, closeSync, openSync, statSync, statSync as lstatSync, readFileSync, readdirSync };
+export { close, closeSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
 
 export const {
   access,
