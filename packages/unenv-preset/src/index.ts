@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const getAbsolutePath = () => path.resolve(__dirname, '../', 'src');
+const getAbsolutePath = () => path.resolve(__dirname, '../../', 'unenv-preset', 'src');
 
 const nextNodePresetPath = `${getAbsolutePath()}/polyfills/node/frameworks/next`;
 const polyfillsPath = `${getAbsolutePath()}/polyfills`;
