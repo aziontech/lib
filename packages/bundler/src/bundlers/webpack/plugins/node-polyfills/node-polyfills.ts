@@ -6,8 +6,8 @@ import { fileURLToPath } from 'url';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const getAbsolutePath = () => path.resolve(dirname, '../../../', '../');
-const unenvPackagePath = () => path.resolve(dirname, '../../../../', '../../unenv-preset');
+const getAbsolutePath = () => path.resolve(dirname, '../', 'src');
+const unenvPackagePath = () => path.resolve(dirname, '../../', 'unenv-preset');
 
 import path from 'path';
 import { env, nodeless } from 'unenv';

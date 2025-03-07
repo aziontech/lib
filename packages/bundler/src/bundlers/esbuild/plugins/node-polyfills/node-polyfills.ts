@@ -12,8 +12,8 @@ const requireCustom = createRequire(import.meta.url);
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-const getAbsolutePath = () => path.resolve(dirname, '../../../', '../');
-const unenvPackagePath = () => path.resolve(dirname, '../../../../', '../../unenv-preset');
+const getAbsolutePath = () => path.resolve(dirname, '../', 'src');
+const unenvPackagePath = () => path.resolve(dirname, '../../', 'unenv-preset');
 
 const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
 
