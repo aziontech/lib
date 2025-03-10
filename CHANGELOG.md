@@ -1,3 +1,33 @@
+## [1.16.0-stage.4](https://github.com/aziontech/lib/compare/v1.16.0-stage.3...v1.16.0-stage.4) (2025-02-27)
+
+
+### Bug Fixes
+
+* enhance error handling in SQL queries and add utility for error checking (#124) ([f57fb55](https://github.com/aziontech/lib/commit/f57fb5580e927d268186eb72bf29f6ed4a7016b2))
+
+## [1.16.0-stage.3](https://github.com/aziontech/lib/compare/v1.16.0-stage.2...v1.16.0-stage.3) (2025-02-27)
+
+
+### Features
+
+* **sql:** browser support ([ba9b688](https://github.com/aziontech/lib/commit/ba9b688dbf55412b9295cec66554b3c8c528c0db))
+* **sql:** force api rest ([e324bd6](https://github.com/aziontech/lib/commit/e324bd6030349c4a141745d6ec2aa79066808415))
+* **storage:** force api rest ([800ef81](https://github.com/aziontech/lib/commit/800ef818dd163917b68dc43314934b22a9acc4ac))
+
+## [1.16.0-stage.2](https://github.com/aziontech/lib/compare/v1.16.0-stage.1...v1.16.0-stage.2) (2025-02-11)
+
+
+### Bug Fixes
+
+* preact config name ([facd7b5](https://github.com/aziontech/lib/commit/facd7b543a01df9fe96fe93b95011b61eceaa9f9))
+
+## [1.16.0-stage.1](https://github.com/aziontech/lib/compare/v1.15.0...v1.16.0-stage.1) (2025-02-10)
+
+
+### Features
+
+* new preset for preact ssg ([fa9acf2](https://github.com/aziontech/lib/commit/fa9acf24d9c3f4075d911b32ec109ece113f86df))
+
 ## [1.15.0](https://github.com/aziontech/lib/compare/v1.14.2...v1.15.0) (2025-02-10)
 
 

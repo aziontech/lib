@@ -85,10 +85,13 @@ const resolveClientOptions = (options?: AzionClientOptions): AzionClientOptions 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createInternalOrExternalMethod = <T extends (...args: any[]) => any>(internalMethod: T, externalMethod: T): T => {
   return ((...args: Parameters<T>): ReturnType<T> => {
-    if (isInternalStorageAvailable()) {
-      return internalMethod(...args);
+    const options = args[args.length - 1] as AzionClientOptions;
+    const resolvedOptions = resolveClientOptions(options);
+
+    if (resolvedOptions.external || !isInternalStorageAvailable()) {
+      return externalMethod(...args);
     }
-    return externalMethod(...args);
+    return internalMethod(...args);
   }) as T;
 };
 

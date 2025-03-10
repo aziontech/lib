@@ -211,12 +211,14 @@ export type AzionEnvironment = 'development' | 'staging' | 'production';
  * @property {boolean} [debug] - Enable debug mode for detailed logging.
  * @property {boolean} [force] - Force the operation even if it might be destructive.
  * @property {AzionEnvironment} [env] - Environment to use (dev, stage, prod).
+ * @property {boolean} [external] - Force using external REST API instead of built-in runtime API.
  *
  * @example
  * const options: AzionClientOptions = {
  *   debug: true,
  *   force: false,
- *   env: 'dev'
+ *   env: 'dev',
+ *   external: false
  * };
  */
 export type AzionClientOptions = {
@@ -226,6 +228,8 @@ export type AzionClientOptions = {
   force?: boolean;
   /** Environment to use (dev, stage, prod) */
   env?: AzionEnvironment;
+  /** Force using external REST API instead of built-in runtime API */
+  external?: boolean;
 };
 
 /**
