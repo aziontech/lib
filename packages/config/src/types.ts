@@ -544,6 +544,7 @@ export interface BuildContext {
 
 export type PresetMetadata = {
   name: string;
+  registry?: string;
   ext?: string;
 };
 
