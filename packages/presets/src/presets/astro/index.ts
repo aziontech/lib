@@ -4,6 +4,4 @@ import handler from './handler';
 import metadata from './metadata';
 import prebuild from './prebuild';
 
-const preset: AzionBuildPreset = { config, metadata, handler, prebuild };
-
-export default preset;
+export const astro: AzionBuildPreset = { config, metadata, handler, prebuild };

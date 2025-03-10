@@ -5,6 +5,4 @@ import metadata from './metadata';
 import prebuild from './prebuild';
 // import postbuild from './postbuild';
 
-const preset: AzionBuildPreset = { config, metadata, handler, prebuild };
-
-export default preset;
+export const gatsby: AzionBuildPreset = { config, metadata, handler, prebuild };

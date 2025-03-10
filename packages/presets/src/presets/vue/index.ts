@@ -4,6 +4,4 @@ import handler from './handler';
 import metadata from './metadata';
 import prebuild from './prebuild';
 
-const preset: AzionBuildPreset = { config, handler, metadata, prebuild };
-
-export default preset;
+export const vue: AzionBuildPreset = { config, handler, metadata, prebuild };
