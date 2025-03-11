@@ -1,9 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { jest } from '@jest/globals';
 import { BuildConfiguration, BuildContext } from 'azion/config';
 import { javascript } from 'azion/presets';
 import fs from 'fs';
+import path from 'path';
 import tmp from 'tmp';
 import { createAzionESBuildConfig } from './esbuild';
+import helper from './plugins/node-polyfills/helper';
 
 describe('Esbuild Bundler', () => {
   let tmpDir: tmp.DirResult;
@@ -35,6 +38,10 @@ describe('Esbuild Bundler', () => {
     tmpOutput.removeCallback();
     tmpOutputDev.removeCallback();
     tmpDir.removeCallback();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   describe('createAzionESBuildConfig', () => {
@@ -164,6 +171,11 @@ describe('Esbuild Bundler', () => {
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
+
+      jest.spyOn(helper, 'getAbsolutePath').mockImplementation((moving, internalPath) => {
+        const pathDir = path.resolve('../bundler', moving);
+        return `${pathDir}${internalPath ? internalPath : ''}`;
+      });
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
       await esbuildConfig.executeBuild(esbuildConfig);

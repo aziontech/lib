@@ -1,8 +1,11 @@
+import { jest } from '@jest/globals';
 import { BuildConfiguration, BuildContext } from 'azion/config';
 import { javascript } from 'azion/presets';
 import fs from 'fs';
+import path from 'path';
 import tmp from 'tmp';
 import { Configuration as WebpackConfig } from 'webpack';
+import NodePolyfills from './plugins/node-polyfills';
 import { createAzionWebpackConfig } from './webpack';
 
 describe('Webpack Bundler', () => {
@@ -35,6 +38,10 @@ describe('Webpack Bundler', () => {
     tmpOutput.removeCallback();
     tmpOutputDev.removeCallback();
     tmpDir.removeCallback();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   describe('createAzionWebpackConfig', () => {
@@ -168,6 +175,11 @@ describe('Webpack Bundler', () => {
         entrypoint: tmpEntry.name,
       };
 
+      jest.spyOn(NodePolyfills, 'getAbsolutePath').mockImplementation((internalPath, moving) => {
+        const pathDir = path.resolve('../bundler', moving);
+        return `${pathDir}${internalPath}`;
+      });
+
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
       await webpackConfig.executeBuild(webpackConfig);
       const result = fs.readFileSync(tmpOutputDev.name, 'utf-8');
@@ -200,6 +212,11 @@ describe('Webpack Bundler', () => {
         output: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
+
+      jest.spyOn(NodePolyfills, 'getAbsolutePath').mockImplementation((internalPath, moving) => {
+        const pathDir = path.resolve('../bundler', moving);
+        return `${pathDir}${internalPath}`;
+      });
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
       await webpackConfig.executeBuild(webpackConfig);

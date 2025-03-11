@@ -2,8 +2,9 @@
   "name": "@lib/presets",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "type": "module",
   "scripts": {
     "compile": "tsup --config ./tsup.config.json",
     "lint": "eslint .",
@@ -14,8 +15,8 @@
   },
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     }
   },
   "author": "aziontech",

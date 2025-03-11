@@ -1,9 +1,7 @@
+import { getAbsoluteDirPath } from 'azion/utils/node';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-const getAbsolutePath = () => path.resolve(dirname, '../', 'src');
+const getAbsolutePath = () => path.resolve(getAbsoluteDirPath(import.meta.url, 'bundler'), 'src');
 
 const externalPolyfillsPath = `${getAbsolutePath()}/polyfills/azion`;
 

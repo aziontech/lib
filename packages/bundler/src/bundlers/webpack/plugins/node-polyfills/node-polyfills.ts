@@ -1,28 +1,20 @@
 import unenvPresetAzion from 'azion/unenv-preset';
+import { getAbsoluteDirPath } from 'azion/utils/node';
 import fs from 'fs';
 import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
-
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-
-const getAbsolutePath = () => path.resolve(dirname, '../', 'src');
-const unenvPackagePath = () => path.resolve(dirname, '../../', 'unenv-preset');
-
 import path from 'path';
 import { env, nodeless } from 'unenv';
 import { Compiler, WebpackPluginInstance } from 'webpack';
 
 const require = createRequire(import.meta.url);
 
-const INTERNAL_POLYFILL_PATH = `${getAbsolutePath()}/polyfills`;
-const INTERNAL_POLYFILL_PATH_PROD = `${unenvPackagePath()}/polyfills/node`;
-const POLYFILL_PREFIX_DEV = 'aziondev:';
-const POLYFILL_PREFIX_PROD = 'azionprd:';
-
 const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
 
 class NodePolyfillPlugin implements WebpackPluginInstance {
+  private INTERNAL_POLYFILL_PATH = '/polyfills';
+  private INTERNAL_POLYFILL_PATH_PROD = '/polyfills/node';
+  private POLYFILL_PREFIX_DEV = 'aziondev:';
+  private POLYFILL_PREFIX_PROD = 'azionprd:';
   private isProduction: boolean;
   private prefix: string;
 
@@ -31,7 +23,12 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
     this.prefix = 'node:';
   }
 
-  #changeToPolyfillPath = (key: string, value: string, polyfillPrefix: string, polyfillPath: string) => {
+  static getAbsolutePath = (internalPath: string, moving: string) => {
+    const pathDir = path.join(getAbsoluteDirPath(import.meta.url, 'bundler'), moving);
+    return `${pathDir}${internalPath}`;
+  };
+
+  changeToPolyfillPath = (key: string, value: string, polyfillPrefix: string, polyfillPath: string) => {
     const keyModule = key.replace(new RegExp(`^${this.prefix}`), '');
     const foundPolyfill = polyfill.find((p) => p.startsWith(`${polyfillPrefix}${keyModule}`));
     if (foundPolyfill) {
@@ -115,7 +112,12 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
         ...Object.fromEntries(
           Object.entries(compiler.options.resolve.alias).map(([key, value]) => {
             // change value to polyfill path
-            return this.#changeToPolyfillPath(key, value, POLYFILL_PREFIX_PROD, INTERNAL_POLYFILL_PATH_PROD);
+            return this.changeToPolyfillPath(
+              key,
+              value,
+              this.POLYFILL_PREFIX_PROD,
+              NodePolyfillPlugin.getAbsolutePath(this.INTERNAL_POLYFILL_PATH_PROD, '../unenv-preset/src'),
+            );
           }),
         ),
       };
@@ -123,7 +125,12 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
         ...Object.fromEntries(
           Object.entries(compiler.options.resolve.fallback).map(([key, value]) => {
             // change value to polyfill path
-            return this.#changeToPolyfillPath(key, value, POLYFILL_PREFIX_PROD, INTERNAL_POLYFILL_PATH_PROD);
+            return this.changeToPolyfillPath(
+              key,
+              value,
+              this.POLYFILL_PREFIX_PROD,
+              NodePolyfillPlugin.getAbsolutePath(this.INTERNAL_POLYFILL_PATH_PROD, '../unenv-preset/src'),
+            );
           }),
         ),
       };
@@ -132,7 +139,12 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
         ...Object.fromEntries(
           Object.entries(compiler.options.resolve.alias).map(([key, value]) => {
             // change value to polyfill path
-            return this.#changeToPolyfillPath(key, value, POLYFILL_PREFIX_DEV, INTERNAL_POLYFILL_PATH);
+            return this.changeToPolyfillPath(
+              key,
+              value,
+              this.POLYFILL_PREFIX_DEV,
+              NodePolyfillPlugin.getAbsolutePath(this.INTERNAL_POLYFILL_PATH, 'src'),
+            );
           }),
         ),
       };
@@ -140,7 +152,12 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
         ...Object.fromEntries(
           Object.entries(compiler.options.resolve.fallback).map(([key, value]) => {
             // change value to polyfill path
-            return this.#changeToPolyfillPath(key, value, POLYFILL_PREFIX_DEV, INTERNAL_POLYFILL_PATH);
+            return this.changeToPolyfillPath(
+              key,
+              value,
+              this.POLYFILL_PREFIX_DEV,
+              NodePolyfillPlugin.getAbsolutePath(this.INTERNAL_POLYFILL_PATH, 'src'),
+            );
           }),
         ),
       };

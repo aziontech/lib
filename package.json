@@ -87,8 +87,8 @@
       "import": "./packages/client/dist/index.mjs"
     },
     "./presets": {
-      "require": "./packages/presets/dist/index.js",
-      "import": "./packages/presets/dist/index.mjs"
+      "require": "./packages/presets/dist/index.cjs",
+      "import": "./packages/presets/dist/index.js"
     },
     "./bundler": {
       "require": "./packages/bundler/dist/index.cjs",
