@@ -1,4 +1,4 @@
-import { exec, getPackageManager } from 'azion/utils/node';
+import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
 
 /**
  * Runs custom prebuild actions for Hugo
