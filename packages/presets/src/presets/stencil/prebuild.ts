@@ -1,5 +1,4 @@
-import { exec, getPackageManager } from 'azion/utils/node';
-import { rename } from 'fs/promises';
+import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
 
 /**
  * Runs custom prebuild actions for Stencil
@@ -15,7 +14,7 @@ async function prebuild(): Promise<void> {
   });
 
   // move files to vulcan default path
-  await rename(outDir, newOutDir);
+  copyDirectory(outDir, newOutDir);
 }
 
 export default prebuild;

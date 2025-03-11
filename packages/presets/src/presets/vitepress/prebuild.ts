@@ -1,5 +1,5 @@
-import { exec, getPackageManager } from 'azion/utils/node';
-import { lstat, rename } from 'fs/promises';
+import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
+import { lstat } from 'fs/promises';
 
 /**
  * Check if the project uses the "/docs"
@@ -30,7 +30,7 @@ async function prebuild(): Promise<void> {
   });
 
   // move files to vulcan default path
-  await rename(outDir, newOutDir);
+  copyDirectory(outDir, newOutDir);
 }
 
 export default prebuild;

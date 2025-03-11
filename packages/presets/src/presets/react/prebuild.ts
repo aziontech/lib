@@ -1,5 +1,5 @@
-import { exec, getPackageManager } from 'azion/utils/node';
-import { lstat, readFile, rename } from 'fs/promises';
+import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
+import { lstat, readFile } from 'fs/promises';
 import { join } from 'path';
 
 /**
@@ -66,7 +66,7 @@ async function prebuild(): Promise<void> {
 
     const config = await readViteBuildOutput();
     const outDir = config?.build?.outDir || defaultViteOutDir;
-    await rename(outDir, destPath);
+    copyDirectory(outDir, destPath);
   }
 
   if (!isViteProject) {

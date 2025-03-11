@@ -1,5 +1,5 @@
-import { exec, getPackageManager } from 'azion/utils/node';
-import { readFile, rename } from 'fs/promises';
+import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
+import { readFile } from 'fs/promises';
 
 /**
  * Runs custom prebuild actions for Qwik
@@ -26,7 +26,7 @@ async function prebuild(): Promise<void> {
   });
 
   // move files to vulcan default path
-  await rename(outDir, newOutDir);
+  copyDirectory(outDir, newOutDir);
 }
 
 export default prebuild;

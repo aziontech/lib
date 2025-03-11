@@ -1,5 +1,4 @@
 import { exec, getPackageManager } from 'azion/utils/node';
-import { rename } from 'fs/promises';
 
 /**
  * Runs custom prebuild actions for Hugo
@@ -16,7 +15,7 @@ async function prebuild(): Promise<void> {
   });
 
   // move files to vulcan default path
-  await rename(outDir, newOutDir);
+  copyDirectory(outDir, newOutDir);
 }
 
 export default prebuild;

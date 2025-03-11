@@ -581,3 +581,7 @@ export interface AzionPrebuildResult {
     plugins: (EsbuildPlugin | WebpackPlugin)[];
   };
 }
+
+export interface AzionConfigs {
+  configs: AzionConfig[];
+}
