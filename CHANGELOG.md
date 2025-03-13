@@ -1,3 +1,10 @@
+## [1.17.0-stage.1](https://github.com/aziontech/lib/compare/v1.16.0...v1.17.0-stage.1) (2025-03-13)
+
+
+### Features
+
+* new bundler package, presets package adjustments and utils package (#130) ([0723e36](https://github.com/aziontech/lib/commit/0723e36a97a773ac70b79be5108eab95521b9155))
+
 ## [1.16.0](https://github.com/aziontech/lib/compare/v1.15.0...v1.16.0) (2025-03-10)
 
 
