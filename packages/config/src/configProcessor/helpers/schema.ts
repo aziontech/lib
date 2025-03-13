@@ -441,10 +441,10 @@ const azionConfigSchema = {
           type: 'string',
           errorMessage: "The 'entry' field must be a string representing the entry point file path.",
         },
-        builder: {
+        bundler: {
           type: ['string', 'null'],
           enum: ['esbuild', 'webpack', null],
-          errorMessage: "The 'builder' field must be either 'esbuild', 'webpack', or null.",
+          errorMessage: "The 'bundler' field must be either 'esbuild', 'webpack', or null.",
         },
         polyfills: {
           type: 'boolean',
@@ -455,19 +455,47 @@ const azionConfigSchema = {
           errorMessage: "The 'worker' field must be a boolean.",
         },
         preset: {
-          type: 'object',
-          properties: {
-            name: {
+          oneOf: [
+            {
               type: 'string',
-              errorMessage: "The 'preset.name' field must be a string.",
+              errorMessage: "When using a string, the 'preset' must be a valid preset name",
             },
-          },
-          required: ['name'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'preset' object.",
-            required: "The 'name and mode' fields are required in the 'preset' object.",
-          },
+            {
+              type: 'object',
+              properties: {
+                handler: {
+                  type: 'string',
+                  errorMessage: "The 'preset.handler' field must be a string.",
+                },
+                prebuild: {
+                  type: 'string',
+                  errorMessage: "The 'preset.prebuild' field must be a string.",
+                },
+                postbuild: {
+                  type: 'string',
+                  errorMessage: "The 'preset.postbuild' field must be a string.",
+                },
+                meta: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string',
+                      errorMessage: "The 'preset.meta.name' field must be a string.",
+                    },
+                  },
+                  required: ['name'],
+                  additionalProperties: false,
+                },
+              },
+              required: ['handler', 'meta'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'preset' object.",
+                required: "The 'handler' and 'meta' fields are required in the 'preset' object.",
+              },
+            },
+          ],
+          errorMessage: "The 'preset' must be either a string (preset name) or an object with required fields",
         },
         memoryFS: {
           type: 'object',
@@ -495,9 +523,9 @@ const azionConfigSchema = {
           errorMessage: "The 'custom' field must be an object.",
         },
       },
-      additionalProperties: false,
+      additionalProperties: true, // this is temp, we need to validate the build (extend) function
       errorMessage: {
-        additionalProperties: "No additional properties are allowed in the 'build' object.",
+        type: "The 'build' field must be an object.",
       },
     },
     origin: {

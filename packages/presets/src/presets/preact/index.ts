@@ -1,4 +1,8 @@
-import { AzionBuildPreset } from '../../types';
+import type { AzionBuildPreset } from 'azion/config';
 import config from './config';
-const preset: AzionBuildPreset = { config };
-export default preset;
+import handler from './handler';
+import metadata from './metadata';
+// import prebuild from './prebuild';
+// import postbuild from './postbuild';
+
+export const preact: AzionBuildPreset = { config, metadata, handler };

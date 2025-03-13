@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'next',
-    },
+    bundler: 'webpack',
+    preset: 'next',
+    polyfills: true,
   },
   origin: [
     {

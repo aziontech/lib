@@ -1,6 +1,7 @@
-import { AzionBuildPreset } from '../../types';
+import type { AzionBuildPreset } from 'azion/config';
 import config from './config';
+import handler from './handler';
+import metadata from './metadata';
+import prebuild from './prebuild';
 
-const preset: AzionBuildPreset = { config };
-
-export default preset;
+export const qwik: AzionBuildPreset = { config, metadata, handler, prebuild };

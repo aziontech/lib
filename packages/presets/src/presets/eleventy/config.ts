@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   build: {
-    preset: {
-      name: 'eleventy',
-    },
+    bundler: 'webpack',
+    preset: 'eleventy',
+    polyfills: false,
   },
   origin: [
     {

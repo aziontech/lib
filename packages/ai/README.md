@@ -67,13 +67,13 @@ import { chat } from 'azion/ai';
 import type { AzionAIRequest, AzionAIResponse, AzionAIResult } from '@azion/ai';
 
 const request: AzionAIRequest = {
-messages: [{ role: 'user', content: 'Explain what Azion Edge Computing is.' }]
+  messages: [{ role: 'user', content: 'Explain what Azion Edge Computing is.' }],
 };
 const { data: response, error }: AzionAIResult<AzionAIResponse> = await chat(request, { debug: true });
 if (response) {
-console.log('AI response:', response.choices[0].message.content);
+  console.log('AI response:', response.choices[0].message.content);
 } else {
-console.error('Chat failed', error);
+  console.error('Chat failed', error);
 }
 ```
 
@@ -84,15 +84,15 @@ import { streamChat } from 'azion/ai';
 import type { AzionAIRequest, AzionAIStreamResponse, AzionAIResult } from '@azion/ai';
 
 const request: AzionAIRequest = {
-messages: [{ role: 'user', content: 'List 5 use cases for Azion Edge Functions.' }]
+  messages: [{ role: 'user', content: 'List 5 use cases for Azion Edge Functions.' }],
 };
 const stream = streamChat(request, { debug: true });
 for await (const chunk: AzionAIResult<AzionAIStreamResponse> of stream) {
-if (chunk.data) {
-process.stdout.write(chunk.data.choices[0].delta.content || '');
-} else {
-console.error('Error:', chunk.error);
-}
+  if (chunk.data) {
+    process.stdout.write(chunk.data.choices[0].delta.content || '');
+  } else {
+    console.error('Error:', chunk.error);
+  }
 }
 ```
 
@@ -142,15 +142,15 @@ Here are the main types used in the Azion AI Client:
 
 ```typescript
 import type {
-AzionAIMessage,
-AzionAIConfig,
-AzionAIRequest,
-AzionAIResponse,
-AzionAIStreamResponse,
-AzionAIResult,
-AzionAIClient,
-AzionClientOptions,
-CreateAzionAIClient
+  AzionAIMessage,
+  AzionAIConfig,
+  AzionAIRequest,
+  AzionAIResponse,
+  AzionAIStreamResponse,
+  AzionAIResult,
+  AzionAIClient,
+  AzionClientOptions,
+  CreateAzionAIClient,
 } from '@azion/ai';
 
 // AzionAIMessage

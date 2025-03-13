@@ -11,6 +11,11 @@ import {
   WafSensitivity,
 } from './constants';
 
+import { FetchEvent } from 'azion/types';
+
+import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
+import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
+
 /**
  * Domain configuration for Azion.
  */
@@ -317,30 +322,20 @@ export type AzionPurge = {
   layer?: 'edge_caching' | 'l2_caching';
 };
 
-export type AzionBuild = {
-  /** JavaScript bundler to be used for building the application */
-  builder?: 'webpack' | 'esbuild';
-  /** Entry file for the build */
+export type PresetInput = string | AzionBuildPreset;
+
+export interface AzionBuild<T extends WebpackConfig | ESBuildConfig | unknown = WebpackConfig | ESBuildConfig> {
   entry?: string;
-  /** Preset configuration e.g next */
-  preset?: {
-    name: string;
-  };
-  /** MemoryFS configuration */
+  bundler?: 'webpack' | 'esbuild';
+  preset?: PresetInput;
+  polyfills?: boolean;
+  worker?: boolean;
+  extend?: (context: T) => T;
   memoryFS?: {
-    /** List of directories to be injected */
     injectionDirs: string[];
-    /** Remove path prefix */
     removePathPrefix: string;
   };
-  /** Polyfills enabled */
-  polyfills?: boolean;
-  /** if true will use the owner worker with addEventListener */
-  worker?: boolean;
-  /** Custom configuration to bundlers e.g minify: true */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  custom?: Record<string, any>;
-};
+}
 
 /**
  * Network list configuration for Azion.
@@ -529,3 +524,64 @@ export type AzionWaf = {
   /** WAF bypassAddress */
   bypassAddresses?: string[];
 };
+
+export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {
+  entry: string; // required
+  preset: AzionBuildPreset;
+  setup: BundlerSetup;
+};
+
+export interface BundlerSetup {
+  contentToInject?: string;
+  defineVars?: Record<string, string>;
+}
+
+export interface BuildContext {
+  production: boolean;
+  output: string;
+  entrypoint: string;
+}
+
+export type PresetMetadata = {
+  name: string;
+  registry?: string;
+  ext?: string;
+};
+
+export interface AzionBuildPreset {
+  config: AzionConfig;
+  handler?: (event: FetchEvent) => Promise<Response>;
+  prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>;
+  postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>;
+  metadata: PresetMetadata;
+}
+
+export interface AzionPrebuildResult {
+  /** Files to be injected into memory during build process */
+  filesToInject: string[];
+
+  // Code injection settings
+  injection: {
+    globals: {
+      _ENTRIES?: string;
+      AsyncLocalStorage?: string;
+      [key: string]: string | undefined;
+    };
+    entry?: string; // code at the beginning of worker
+    banner?: string; // code at the top of worker
+  };
+
+  // Bundler settings
+  bundler: {
+    defineVars: {
+      __CONFIG__?: string;
+      __BUILD_METADATA__?: string;
+      [key: string]: string | undefined;
+    };
+    plugins: (EsbuildPlugin | WebpackPlugin)[];
+  };
+}
+
+export interface AzionConfigs {
+  configs: AzionConfig[];
+}

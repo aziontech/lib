@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "paths": {
+      "azion/unenv-preset": ["../unenv-preset/src/"],
+      "azion/utils": ["../utils/src/index.ts"],
+      "azion/utils/node": ["../utils/src/node/index.ts"],
+      "azion/utils/edge": ["../utils/src/edge/index.ts"],
+      "azion/config": ["../config/src/index.ts"],
+      "azion/presets": ["../presets/src/index.ts"],
+      "azion/types": ["../types/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

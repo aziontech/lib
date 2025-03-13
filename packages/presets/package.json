@@ -2,21 +2,21 @@
   "name": "@lib/presets",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "type": "module",
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "tsup --config ./tsup.config.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
-    "prettier:check": "prettier --check ."
+    "prettier:check": "prettier --check .",
+    "test": "jest --clearCache && NODE_OPTIONS='--experimental-vm-modules' jest"
   },
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     }
   },
   "author": "aziontech",
@@ -25,9 +25,9 @@
     "dist",
     "package.json"
   ],
-  "devDependencies": {
-    "ajv": "^8.17.1",
-    "ajv-errors": "^3.0.0",
-    "ajv-keywords": "^5.1.0"
+  "dependencies": {
+    "cookie": "^1.0.2",
+    "pcre-to-regexp": "^1.1.0",
+    "webpack": "^5.97.1"
   }
 }

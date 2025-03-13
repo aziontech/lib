@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'hugo',
-    },
+    bundler: 'webpack',
+    preset: 'hugo',
+    polyfills: false,
   },
   origin: [
     {

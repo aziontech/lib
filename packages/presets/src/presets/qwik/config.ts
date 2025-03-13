@@ -2,9 +2,9 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'qwik',
-    },
+    bundler: 'webpack',
+    preset: 'qwik',
+    polyfills: false,
   },
   origin: [
     {
