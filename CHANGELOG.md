@@ -1,3 +1,10 @@
+## [1.17.0-stage.2](https://github.com/aziontech/lib/compare/v1.17.0-stage.1...v1.17.0-stage.2) (2025-03-14)
+
+
+### Bug Fixes
+
+* adding dependencies to root (#132) ([088918e](https://github.com/aziontech/lib/commit/088918e24055bd35a29252407d675cae5c4ac9c2))
+
 ## [1.17.0-stage.1](https://github.com/aziontech/lib/compare/v1.16.0...v1.17.0-stage.1) (2025-03-13)
 
 
