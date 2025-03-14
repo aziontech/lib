@@ -4,6 +4,14 @@ function getAbsoluteDirPath(currentModuleFullPath: string = import.meta.url, pat
   const regex = new RegExp(`(.*${path})(.*)`);
   const matchResult = currentModuleFullPath.match(regex);
   let baselibPath = matchResult ? matchResult[1] : '';
+
+  // Handle npx case where the package name is "edge-functions"
+  if (currentModuleFullPath.includes('edge-functions') && path === 'bundler') {
+    const edgeFunctionsRegex = new RegExp(`(.*edge-functions)(.*)`);
+    const edgeFunctionsMatch = currentModuleFullPath.match(edgeFunctionsRegex);
+    baselibPath = edgeFunctionsMatch ? edgeFunctionsMatch[1] : baselibPath;
+  }
+
   if (isWindows) {
     baselibPath = new URL(baselibPath).pathname;
     if (baselibPath.startsWith('/')) {
