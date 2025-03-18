@@ -1,3 +1,10 @@
+## [1.17.0-stage.4](https://github.com/aziontech/lib/compare/v1.17.0-stage.3...v1.17.0-stage.4) (2025-03-18)
+
+
+### Bug Fixes
+
+* add preset files and adjustments (#134) ([8542e5c](https://github.com/aziontech/lib/commit/8542e5cb77eeb8b9a914083b3a87bfe6c2d9336f))
+
 ## [1.17.0-stage.3](https://github.com/aziontech/lib/compare/v1.17.0-stage.2...v1.17.0-stage.3) (2025-03-14)
 
 
