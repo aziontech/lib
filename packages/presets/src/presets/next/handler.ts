@@ -81,7 +81,7 @@ async function handlerDefault(event: FetchEvent): Promise<Response> {
 }
 
 async function handler(event: FetchEvent): Promise<Response> {
-  if ((globalThis as any).nextBuildStatic) {
+  if ((globalThis as any).bundler?.nextBuildStatic) {
     return handlerStatic(event);
   }
   return handlerDefault(event);

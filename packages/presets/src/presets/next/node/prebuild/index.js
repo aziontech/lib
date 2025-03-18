@@ -34,8 +34,8 @@ async function run(nextVersion, buildContext) {
   // INIT FOLDER CUSTOM SERVER
   const CUSTOM_SERVER_DIR = 'custom-server';
   const CURRENT_VERSION = nextVersion;
-  const vulcanLibPath = getAbsoluteDirPath();
-  const customServerPath = join(vulcanLibPath, 'presets', 'next', 'node', CUSTOM_SERVER_DIR, CURRENT_VERSION);
+  const filePath = path.resolve(getAbsoluteDirPath(import.meta.url, 'presets'), 'src');
+  const customServerPath = join(filePath, 'presets', 'next', 'node', CUSTOM_SERVER_DIR, CURRENT_VERSION);
   const rootDir = process.cwd();
   // try version dir
   const outPathCustomServer = path.resolve(OUT_DIR_CUSTOM_SERVER, 'custom-server');

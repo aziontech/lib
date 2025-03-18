@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs';
 import { tmpdir } from 'os';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 import { feedback, getAbsoluteDirPath } from 'azion/utils/node';
 import { getNextProjectConfig } from '../../utils/next.js';
@@ -109,13 +109,15 @@ async function run(prebuildContext) {
 
   const buildMetadata = { hasIndexFunctions, i18n };
 
+  const filePath = resolve(getAbsoluteDirPath(import.meta.url, 'presets'), 'src');
+
   return {
     // onEntry
     filesToInject: [
       // async local storage use
-      `${getAbsoluteDirPath()}/presets/next/default/handler/async-local-storage.js`,
+      `${filePath}/presets/next/default/handler/async-local-storage.js`,
       // node custom server
-      `${getAbsoluteDirPath()}/presets/next/node/handler/index.js`,
+      `${filePath}/presets/next/node/handler/index.js`,
       // file to generate Output. It contains functions references to build
       outputReferencesFilePath,
     ],
