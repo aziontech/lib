@@ -17,13 +17,15 @@
     ".": {
       "require": "./dist/index.cjs",
       "import": "./dist/index.js"
-    }
+    },
+    "./presets/preset/*": "./src/presets/src/*"
   },
   "author": "aziontech",
   "license": "MIT",
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "src/presets/*"
   ],
   "dependencies": {
     "cookie": "^1.0.2",
