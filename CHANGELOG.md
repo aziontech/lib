@@ -1,3 +1,10 @@
+## [1.17.0-stage.5](https://github.com/aziontech/lib/compare/v1.17.0-stage.4...v1.17.0-stage.5) (2025-03-19)
+
+
+### Bug Fixes
+
+* update @edge-runtime/primitives dependency to version 3.1.1 (#136) ([5be60f4](https://github.com/aziontech/lib/commit/5be60f434da91684ee992a3677d566688cb00a5f))
+
 ## [1.17.0-stage.4](https://github.com/aziontech/lib/compare/v1.17.0-stage.3...v1.17.0-stage.4) (2025-03-18)
 
 
