@@ -1,3 +1,10 @@
+## [1.17.0-stage.6](https://github.com/aziontech/lib/compare/v1.17.0-stage.5...v1.17.0-stage.6) (2025-03-19)
+
+
+### Bug Fixes
+
+* add fast-glob dependency (#137) ([c3a158b](https://github.com/aziontech/lib/commit/c3a158b5d150ff98048840a5d2be932ef306331a))
+
 ## [1.17.0-stage.5](https://github.com/aziontech/lib/compare/v1.17.0-stage.4...v1.17.0-stage.5) (2025-03-19)
 
 
