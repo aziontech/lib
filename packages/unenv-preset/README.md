@@ -36,7 +36,8 @@ yarn add azion
 
 The preset can be used with unenv to provide compatibility between Node.js and Azion Edge Runtime environments:
 
-```javascript:packages/unenv-preset/README.md
+```javascript
+
 import { preset } from 'azion/unenv-preset'
 // Use with unenv
 export default {
@@ -82,7 +83,7 @@ The preset includes comprehensive file system polyfills that mirror Node.js's `f
 
 #### Basic File Operations
 
-```javascript:packages/unenv-preset/README.md
+```javascript
 import { readFileSync, writeFileSync } from 'azion/unenv-preset/polyfills/node/fs'
 
 // Read a file
@@ -90,6 +91,7 @@ const content = readFileSync('/path/to/file.txt', 'utf8')
 
 // Write to a file
 writeFileSync('/path/to/new-file.txt', 'Hello World', 'utf8')
+```
 
 #### Directory Operations
 
