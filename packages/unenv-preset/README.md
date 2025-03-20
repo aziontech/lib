@@ -22,8 +22,6 @@ A preset configuration for unenv that provides polyfills and environment compati
 
 Install the package using npm or yarn:
 
-Install the package using npm or yarn:
-
 ```bash
 npm install azion
 ```
@@ -39,7 +37,7 @@ yarn add azion
 The preset can be used with unenv to provide compatibility between Node.js and Azion Edge Runtime environments:
 
 ```javascript:packages/unenv-preset/README.md
-import { preset } from '@azion/unenv-preset'
+import { preset } from 'azion/unenv-preset'
 // Use with unenv
 export default {
   preset: preset
@@ -86,11 +84,12 @@ The preset includes comprehensive file system polyfills that mirror Node.js's `f
 
 ```javascript:packages/unenv-preset/README.md
 import { readFileSync, writeFileSync } from '@azion/unenv-preset/polyfills/node/fs'
+
 // Read a file
 const content = readFileSync('/path/to/file.txt', 'utf8')
+
 // Write to a file
 writeFileSync('/path/to/new-file.txt', 'Hello World', 'utf8')
-```
 
 #### Directory Operations
 
@@ -111,6 +110,7 @@ import { statSync, existsSync } from '@azion/unenv-preset/polyfills/node/fs'
 
 // Check if file exists
 if (existsSync('/path/to/file.txt')) {
+  
   // Get file stats
   const stats = statSync('/path/to/file.txt')
   console.log(`File size: ${stats.size}`)
