@@ -87,7 +87,7 @@ const { data: apps, error } = await getApplications({
 ### Using Client Configuration
 
 ```typescript
-import createClient from '@azion/applications';
+import createClient from 'azion/applications';
 
 const client = createClient({
   token: 'your-api-token',
