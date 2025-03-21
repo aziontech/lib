@@ -6,9 +6,7 @@ describe('generate', () => {
     it('should validate the configuration object', () => {
       const config = {
         build: {
-          preset: {
-            name: 'next',
-          },
+          preset: 'next',
           polyfills: true,
           custom: {
             minify: true,

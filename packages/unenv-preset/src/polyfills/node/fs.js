@@ -1,19 +1,19 @@
 /* eslint-disable max-classes-per-file */
-import bPath from 'path';
 import { Buffer } from 'buffer';
+import bPath from 'path';
 
 /* eslint-disable */
 
-const MEM_FILES = globalThis.vulcan.__FILES__;
+const MEM_FILES = globalThis.bundler.__FILES__;
 
-globalThis.vulcan.FS_PATHS_CHANGED = false;
+globalThis.bundler.FS_PATHS_CHANGED = false;
 
 /**
  * fix mapped files paths based on path prefix
  */
 function fixMappedFilesPaths() {
-  const prefix = globalThis.vulcan.FS_PATH_PREFIX_TO_REMOVE;
-  if (!globalThis.vulcan.FS_PATHS_CHANGED && prefix !== "") {
+  const prefix = globalThis.bundler.FS_PATH_PREFIX_TO_REMOVE;
+  if (!globalThis.bundler.FS_PATHS_CHANGED && prefix !== '') {
     Object.keys(MEM_FILES).forEach((e) => {
       const newKey = e.replace(prefix, '');
       MEM_FILES[newKey] = MEM_FILES[e];
@@ -21,7 +21,7 @@ function fixMappedFilesPaths() {
     });
   }
 
-  globalThis.vulcan.FS_PATHS_CHANGED = true;
+  globalThis.bundler.FS_PATHS_CHANGED = true;
 }
 
 // ### fs polyfill utils
@@ -269,9 +269,7 @@ function openSync(path, flags, mode) {
 
     return fileDescriptor;
   } else {
-    const error = new Error(
-      `ENOENT: no such file or directory, fs.openSync call for path '${path}'`,
-    );
+    const error = new Error(`ENOENT: no such file or directory, fs.openSync call for path '${path}'`);
     error.code = 'ENOENT';
 
     throw error;
@@ -294,9 +292,7 @@ function statSync(path, options = {}) {
   // Synchronous method to get file information
   const filesInfos = getFilesInfos();
   if (!filesInfos.paths.includes(path)) {
-    const error = new Error(
-      `ENOENT: no such file or directory, fs.statSync call for path '${path}'`,
-    );
+    const error = new Error(`ENOENT: no such file or directory, fs.statSync call for path '${path}'`);
     error.code = 'ENOENT';
     throw error;
   }
@@ -337,9 +333,7 @@ function readFileSync(path, options = {}) {
     }
     return content;
   } else {
-    const error = new Error(
-      `ENOENT: no such file or directory, fs.readFileSync call for path '${path}'`,
-    );
+    const error = new Error(`ENOENT: no such file or directory, fs.readFileSync call for path '${path}'`);
     error.code = 'ENOENT';
     throw error;
   }
@@ -359,30 +353,18 @@ function readdirSync(path, options = {}) {
   const stats = statSync(path);
 
   if (!stats.isDirectory()) {
-    const error = new Error(
-      `ENOTDIR: not a directory, scandir - fs.readdirSync call for path '${path}'`,
-    );
+    const error = new Error(`ENOTDIR: not a directory, scandir - fs.readdirSync call for path '${path}'`);
     error.code = 'ENOTDIR';
     throw error;
   }
 
   let result = [];
-  const matchedElements = filesInfos.paths.filter(
-    (dir) => dir.startsWith(path) && path !== dir,
-  );
+  const matchedElements = filesInfos.paths.filter((dir) => dir.startsWith(path) && path !== dir);
   let elementsInDir;
   if (path === '/') {
-    elementsInDir = matchedElements.filter(
-      (element) => !element.substring(1).includes('/'),
-    );
+    elementsInDir = matchedElements.filter((element) => !element.substring(1).includes('/'));
   } else {
-    elementsInDir = [
-      ...new Set(
-        matchedElements.map(
-          (element) => element.replace(`${path}/`, '').split('/')[0],
-        ),
-      ),
-    ];
+    elementsInDir = [...new Set(matchedElements.map((element) => element.replace(`${path}/`, '').split('/')[0]))];
   }
   // generate the list of elements in dir (strings or Dirents)
   if (options.withFileTypes) {
@@ -411,15 +393,7 @@ fsPolyfill.readdirSync = readdirSync;
 
 export default fsPolyfill;
 
-export {
-  close,
-  closeSync,
-  openSync,
-  statSync,
-  statSync as lstatSync,
-  readFileSync,
-  readdirSync,
-};
+export { close, closeSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
 
 export const {
   access,

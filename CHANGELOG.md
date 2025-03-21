@@ -1,3 +1,45 @@
+## [1.17.0-stage.6](https://github.com/aziontech/lib/compare/v1.17.0-stage.5...v1.17.0-stage.6) (2025-03-19)
+
+
+### Bug Fixes
+
+* add fast-glob dependency (#137) ([c3a158b](https://github.com/aziontech/lib/commit/c3a158b5d150ff98048840a5d2be932ef306331a))
+
+## [1.17.0-stage.5](https://github.com/aziontech/lib/compare/v1.17.0-stage.4...v1.17.0-stage.5) (2025-03-19)
+
+
+### Bug Fixes
+
+* update @edge-runtime/primitives dependency to version 3.1.1 (#136) ([5be60f4](https://github.com/aziontech/lib/commit/5be60f434da91684ee992a3677d566688cb00a5f))
+
+## [1.17.0-stage.4](https://github.com/aziontech/lib/compare/v1.17.0-stage.3...v1.17.0-stage.4) (2025-03-18)
+
+
+### Bug Fixes
+
+* add preset files and adjustments (#134) ([8542e5c](https://github.com/aziontech/lib/commit/8542e5cb77eeb8b9a914083b3a87bfe6c2d9336f))
+
+## [1.17.0-stage.3](https://github.com/aziontech/lib/compare/v1.17.0-stage.2...v1.17.0-stage.3) (2025-03-14)
+
+
+### Bug Fixes
+
+* handle npx case for edge-functions in getAbsoluteDirPath (#133) ([8ec573d](https://github.com/aziontech/lib/commit/8ec573de3ffd0c53a885b20d1d0c9cb30ef5123f))
+
+## [1.17.0-stage.2](https://github.com/aziontech/lib/compare/v1.17.0-stage.1...v1.17.0-stage.2) (2025-03-14)
+
+
+### Bug Fixes
+
+* adding dependencies to root (#132) ([088918e](https://github.com/aziontech/lib/commit/088918e24055bd35a29252407d675cae5c4ac9c2))
+
+## [1.17.0-stage.1](https://github.com/aziontech/lib/compare/v1.16.0...v1.17.0-stage.1) (2025-03-13)
+
+
+### Features
+
+* new bundler package, presets package adjustments and utils package (#130) ([0723e36](https://github.com/aziontech/lib/commit/0723e36a97a773ac70b79be5108eab95521b9155))
+
 ## [1.16.0](https://github.com/aziontech/lib/compare/v1.15.0...v1.16.0) (2025-03-10)
 
 

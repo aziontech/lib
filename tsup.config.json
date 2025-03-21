@@ -1,5 +1,5 @@
 {
-  "entry": ["src/index.ts"],
+  "entry": ["src/index.ts", "src/edge/index.ts", "src/node/index.ts"],
   "format": ["cjs", "esm"],
   "splitting": true,
   "sourcemap": false,
@@ -7,5 +7,10 @@
   "bundle": true,
   "dts": true,
   "minify": true,
-  "minifyWhitespace": true
+  "minifyWhitespace": true,
+  "external": [
+    "./build/module",
+    "./.wasm-bindgen/azion_rust_edge_function",
+    "./.wasm-bindgen/azion_rust_edge_function_bg.wasm"
+  ]
 }

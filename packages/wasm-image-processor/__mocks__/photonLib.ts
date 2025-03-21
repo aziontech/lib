@@ -3,7 +3,7 @@
 export class PhotonImage {
   constructor() {}
 
-  static new_from_byteslice(vec): PhotonImage {
+  static new_from_byteslice(vec: any): PhotonImage {
     return new PhotonImage();
   }
 
@@ -21,7 +21,7 @@ export class PhotonImage {
     return new Uint8Array(5);
   }
 
-  get_bytes_jpeg(quality) {
+  get_bytes_jpeg(quality: any) {
     return new Uint8Array(5);
   }
 

@@ -5,7 +5,7 @@ module.exports = {
     './photon/lib/index': '<rootDir>/__mocks__/photonLib.ts',
   },
   transform: {
-    '^.+\\.(t|j)s?$': '@swc/jest',
+    '^.+\\.(t|j)s?$': 'ts-jest',
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   testEnvironment: 'node',

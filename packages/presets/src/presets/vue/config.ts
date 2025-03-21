@@ -1,10 +1,10 @@
-import { defineConfig } from 'azion';
+import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    preset: {
-      name: 'vue',
-    },
+    preset: 'vue',
+    bundler: 'webpack',
+    polyfills: false,
   },
   origin: [
     {

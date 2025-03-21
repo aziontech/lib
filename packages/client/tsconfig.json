@@ -16,7 +16,8 @@
       "azion/config": ["../config/src/index.ts"],
       "azion/domains": ["../domains/src/index.ts"],
       "azion/applications": ["../applications/src/index.ts"],
-      "azion/ai": ["../ai/src/index.ts"]
+      "azion/ai": ["../ai/src/index.ts"],
+      "azion/types": ["../types/src/index.ts"]
     }
   }
 }

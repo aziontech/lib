@@ -7,9 +7,7 @@ describe('processConfig', () => {
     it('should process config from the configuration object', () => {
       const config = {
         build: {
-          preset: {
-            name: 'next',
-          },
+          preset: 'next',
           polyfills: true,
           custom: {
             minify: true,
@@ -19,9 +17,7 @@ describe('processConfig', () => {
       expect(processConfig(config)).toEqual(
         expect.objectContaining({
           build: {
-            preset: {
-              name: 'next',
-            },
+            preset: 'next',
             polyfills: true,
             custom: {
               minify: true,
@@ -2558,20 +2554,17 @@ describe('processConfig', () => {
     it('should correctly process the config config when the build is type build', () => {
       const azionConfig: AzionConfig = {
         build: {
-          builder: 'esbuild',
-          preset: {
-            name: 'react',
-          },
+          bundler: 'esbuild',
+          preset: 'react',
         },
       };
 
       const result = processConfig(azionConfig);
+
       expect(result.build).toEqual(
         expect.objectContaining({
-          builder: 'esbuild',
-          preset: {
-            name: 'react',
-          },
+          bundler: 'esbuild',
+          preset: 'react',
         }),
       );
     });
