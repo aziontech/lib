@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/azion-lib.svg" alt="Azion Lib Logo" width="180"/>
+</p>
+
 # Azion Library
 
 [![Version](https://img.shields.io/npm/v/azion.svg)](https://www.npmjs.com/package/azion)
