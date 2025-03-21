@@ -1,4 +1,10 @@
-# Azion Lib
+# Azion Library
+
+[![Version](https://img.shields.io/npm/v/azion.svg)](https://www.npmjs.com/package/azion)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+[![Downloads](https://img.shields.io/npm/dm/azion.svg)](https://www.npmjs.com/package/azion)
+[![GitHub Stars](https://img.shields.io/github/stars/aziontech/lib.svg)](https://github.com/aziontech/lib/stargazers)
+[![Maintainers](https://img.shields.io/badge/maintainers-jotanarciso,%20jcbsfilho,%20pablodiehl-blue.svg)](https://github.com/aziontech/lib/graphs/contributors)
 
 The Azion Libraries provide a suite of tools to interact with various Azion services, including Products (Purge, SQL, Storage) and Utilities (WASM Image Processor, Cookies). Each library is configurable and supports debug mode and environment variable-based configuration.
 
