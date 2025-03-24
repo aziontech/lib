@@ -10,6 +10,7 @@ import {
 } from '../../helpers/bundler-utils';
 import { WebpackConfiguration, WebpackPluginClasses } from '../../types';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
+import BabelCustomLoaderPlugin from './plugins/babel-custom';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 import AzionWebpackConfig from './webpack.config';
 
@@ -17,6 +18,7 @@ import AzionWebpackConfig from './webpack.config';
 const bundlerPlugins = createBundlerPlugins<WebpackPluginClasses, WebpackConfiguration>({
   NodePolyfillsPlugin: NodePolyfillPlugin,
   AzionPolyfillsPlugin: AzionPolyfillPlugin,
+  BabelCustomLoaderPlugin: BabelCustomLoaderPlugin,
 });
 
 /**
@@ -67,6 +69,8 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
   const outputPath = ctx.output.split('/').slice(0, -1).join('/');
   const filename = getOutputFilename(ctx.output, ctx).split('/').pop() as string;
 
+  const plugins = AzionWebpackConfig.plugins || [];
+
   const baseConfig: WebpackConfiguration = {
     ...AzionWebpackConfig,
     entry: buildConfig.entry,
@@ -77,6 +81,7 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
       globalObject: 'globalThis',
     },
     plugins: [
+      ...plugins.filter((plugin): plugin is webpack.WebpackPluginInstance => !!plugin),
       new webpack.BannerPlugin({
         banner: getBannerContent(ctx),
         raw: true,
