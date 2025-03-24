@@ -13,7 +13,7 @@ export const createBundlerPlugins = <
 >(
   implementations: T,
 ): BundlerPluginFunctions<C> => {
-  const { NodePolyfillsPlugin, AzionPolyfillsPlugin } = implementations;
+  const pluginsClasses = implementations;
 
   /**
    * Common polyfills configuration
@@ -24,11 +24,22 @@ export const createBundlerPlugins = <
     (buildConfiguration: BuildConfiguration): C => {
       if (!buildConfiguration.polyfills) return config;
 
+      if (isWebpackPlugin(pluginsClasses.NodePolyfillsPlugin)) {
+        config.plugins = [
+          ...(config.plugins || []),
+          new pluginsClasses.NodePolyfillsPlugin(buildEnv.production),
+          new (pluginsClasses as WebpackPluginClasses).BabelCustomLoaderPlugin(
+            buildConfiguration.preset.metadata.name,
+            ['next'],
+          ),
+        ] as unknown as typeof config.plugins;
+
+        return config;
+      }
+
       config.plugins = [
         ...(config.plugins || []),
-        isWebpackPlugin(NodePolyfillsPlugin)
-          ? new NodePolyfillsPlugin(buildEnv.production)
-          : NodePolyfillsPlugin(buildEnv.production),
+        pluginsClasses.NodePolyfillsPlugin(buildEnv.production),
       ] as unknown as typeof config.plugins;
       return config;
     };
@@ -41,9 +52,9 @@ export const createBundlerPlugins = <
     (config: C): C => {
       config.plugins = [
         ...(config.plugins || []),
-        isWebpackPlugin(AzionPolyfillsPlugin)
-          ? new AzionPolyfillsPlugin(buildEnv.production)
-          : AzionPolyfillsPlugin(buildEnv.production),
+        isWebpackPlugin(pluginsClasses.AzionPolyfillsPlugin)
+          ? new pluginsClasses.AzionPolyfillsPlugin(buildEnv.production)
+          : pluginsClasses.AzionPolyfillsPlugin(buildEnv.production),
       ] as unknown as typeof config.plugins;
       return config;
     };
