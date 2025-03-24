@@ -50,7 +50,6 @@ async function getNextConfig() {
     } else if (mjsConfigExists) {
       configFile = 'next.config.mjs';
     } else {
-      feedback.prebuild.info('Nextjs config file does not exists!');
       return null;
     }
 

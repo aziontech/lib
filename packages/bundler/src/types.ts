@@ -5,6 +5,7 @@ import { Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
 export interface WebpackPluginClasses {
   NodePolyfillsPlugin: new (isProduction: boolean) => WebpackPluginInstance;
   AzionPolyfillsPlugin: new (isProduction: boolean) => WebpackPluginInstance;
+  BabelCustomLoaderPlugin: new (preset?: string, presetsAllowed?: string[]) => WebpackPluginInstance | undefined;
 }
 
 export interface ESBuildPluginClasses {

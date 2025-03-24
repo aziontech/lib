@@ -7,6 +7,7 @@ import tmp from 'tmp';
 import { Configuration as WebpackConfig } from 'webpack';
 import NodePolyfills from './plugins/node-polyfills';
 import { createAzionWebpackConfig } from './webpack';
+import AzionWebpackConfig from './webpack.config';
 
 describe('Webpack Bundler', () => {
   let tmpDir: tmp.DirResult;
@@ -153,6 +154,17 @@ describe('Webpack Bundler', () => {
   });
 
   describe('createAzionWebpackConfig.executeBuild', () => {
+    beforeEach(() => {
+      Object.defineProperty(AzionWebpackConfig, 'plugins', {
+        configurable: true,
+        writable: true,
+        value: [],
+      });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     it('should execute webpack build process when env production false ', async () => {
       const code = `console.log(process.env.NODE_ENV);`;
       await fs.promises.writeFile(tmpEntry.name, code);

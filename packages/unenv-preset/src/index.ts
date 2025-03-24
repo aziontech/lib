@@ -18,6 +18,8 @@ export default {
   },
   alias: {
     'azion/utils': 'azion/utils',
+    'azion/utils/edge': 'azion/utils/edge',
+    'azion/utils/node': 'azion/utils/node',
     '@fastly/http-compute-js': '@fastly/http-compute-js',
     'next/dist/compiled/etag': `${nextNodePresetPath}/custom-server/12.3.x/util/etag.js`,
     accepts: 'accepts',
