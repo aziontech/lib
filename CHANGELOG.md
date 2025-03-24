@@ -1,3 +1,10 @@
+### [1.17.1-stage.1](https://github.com/aziontech/lib/compare/v1.17.0...v1.17.1-stage.1) (2025-03-24)
+
+
+### Bug Fixes
+
+* enhance webpack bundler with Babel custom loader and update dependencies (#140) ([dcc481e](https://github.com/aziontech/lib/commit/dcc481ef499e786725317ccf70acea138574eaee))
+
 ## [1.17.0](https://github.com/aziontech/lib/compare/v1.16.0...v1.17.0) (2025-03-21)
 
 
