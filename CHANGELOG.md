@@ -1,3 +1,10 @@
+### [1.17.2](https://github.com/aziontech/lib/compare/v1.17.1...v1.17.2) (2025-03-25)
+
+
+### Bug Fixes
+
+* add Babel presets for TypeScript support and remove ts-loader ([9371950](https://github.com/aziontech/lib/commit/937195061a99bfe2efd59b5fb4bd858fb27dfb8f))
+
 ### [1.17.2-stage.1](https://github.com/aziontech/lib/compare/v1.17.1...v1.17.2-stage.1) (2025-03-24)
 
 
