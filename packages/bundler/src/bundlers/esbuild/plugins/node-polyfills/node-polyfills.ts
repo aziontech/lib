@@ -56,7 +56,11 @@ function handleAliasUnenv(build: PluginBuild) {
 
   Object.entries(alias).forEach(([module, unresolvedAlias]: [string, string]) => {
     try {
-      aliasAbsolute[module] = requireCustom.resolve(unresolvedAlias).replace(/\.cjs$/, '.mjs');
+      const isUnenv = unresolvedAlias.startsWith('unenv/');
+      const resolvedAlias = requireCustom.resolve(unresolvedAlias);
+      aliasAbsolute[module] = isUnenv
+        ? resolvedAlias.replace(/\.cjs$/, '.mjs')
+        : resolvedAlias.replace(/\.cjs$/, '.js');
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error.message);
