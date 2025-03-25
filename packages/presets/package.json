@@ -6,7 +6,7 @@
   "module": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "compile": "tsup --config ./tsup.config.json",
+    "compile": "tsup --config ./tsup.config.json && tsup --config ./tsup.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
@@ -18,14 +18,14 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.js"
     },
-    "./presets/preset/*": "./src/presets/src/*"
+    "./presets/preset/*": "./dist/presets/*"
   },
   "author": "aziontech",
   "license": "MIT",
   "files": [
     "dist",
     "package.json",
-    "src/presets/*"
+    "src/presets/next/*"
   ],
   "dependencies": {
     "cookie": "^1.0.2",

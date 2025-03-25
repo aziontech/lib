@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.17.2",
+  "version": "1.17.3-stage.1",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
     "azion": "./bin/azion",
@@ -80,7 +80,7 @@
     "cli/**/*",
     "packages/unenv-preset/src/polyfills/*",
     "packages/bundler/src/polyfills/*",
-    "packages/presets/src/presets/*"
+    "packages/presets/src/presets/next/*"
   ],
   "exports": {
     ".": {
@@ -91,7 +91,7 @@
       "require": "./packages/presets/dist/index.cjs",
       "import": "./packages/presets/dist/index.js"
     },
-    "./presets/preset/*": "./packages/presets/src/presets/*",
+    "./presets/preset/*": "./packages/presets/dist/presets/*",
     "./bundler": {
       "require": "./packages/bundler/dist/index.cjs",
       "import": "./packages/bundler/dist/index.js"
@@ -149,16 +149,16 @@
       "import": "./packages/wasm-image-processor/dist/index.mjs"
     },
     "./utils": {
-      "require": "./packages/utils/dist/index.js",
-      "import": "./packages/utils/dist/index.mjs"
+      "require": "./packages/utils/dist/index.cjs",
+      "import": "./packages/utils/dist/index.js"
     },
     "./utils/edge": {
-      "require": "./packages/utils/dist/edge/index.js",
-      "import": "./packages/utils/dist/edge/index.mjs"
+      "require": "./packages/utils/dist/edge/index.cjs",
+      "import": "./packages/utils/dist/edge/index.js"
     },
     "./utils/node": {
-      "require": "./packages/utils/dist/node/index.js",
-      "import": "./packages/utils/dist/node/index.mjs"
+      "require": "./packages/utils/dist/node/index.cjs",
+      "import": "./packages/utils/dist/node/index.js"
     },
     "./domains": {
       "require": "./packages/domains/dist/index.js",

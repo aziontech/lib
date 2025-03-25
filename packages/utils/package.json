@@ -2,11 +2,12 @@
   "name": "@lib/utils",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "type": "module",
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "tsup --config ./tsup.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "jest --clearCache && jest --maxWorkers=1 -c jest.config.js .",
@@ -18,18 +19,18 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     },
     "./edge": {
       "types": "./dist/edge/index.d.ts",
-      "require": "./dist/edge/index.js",
-      "import": "./dist/edge/index.mjs"
+      "require": "./dist/edge/index.cjs",
+      "import": "./dist/edge/index.js"
     },
     "./node": {
       "types": "./dist/node/index.d.ts",
-      "require": "./dist/node/index.js",
-      "import": "./dist/node/index.mjs"
+      "require": "./dist/node/index.cjs",
+      "import": "./dist/node/index.js"
     }
   },
   "author": "aziontech",
