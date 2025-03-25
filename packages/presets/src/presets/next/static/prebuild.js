@@ -5,8 +5,6 @@ import { coerce, gte, valid } from 'semver';
 import { copyDirectory, exec, feedback, getPackageManager, getPackageVersion } from 'azion/utils/node';
 import { getNextConfig, readManifestFile } from '../utils/utils.next.js';
 
-const packageManager = await getPackageManager();
-
 /**
  * Moves HTML and corresponding TXT files to subdirectories and
  * renames the HTML files to 'index.html'.
@@ -176,6 +174,7 @@ async function prebuild() {
   feedback.prebuild.info('Detected Next.js version:', nextVersion);
 
   const staticsOutputDir = '.edge/storage';
+  const packageManager = await getPackageManager();
 
   // new build format
   if (isANewerVersion(nextVersion)) {
@@ -189,7 +188,6 @@ async function prebuild() {
     if (nextConfig.distDir) {
       outDir = nextConfig.distDir;
     }
-
     await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
 
     // move files to vulcan default path

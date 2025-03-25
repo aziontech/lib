@@ -1,8 +1,6 @@
 import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
 import { lstat, rm } from 'fs/promises';
 
-const packageManager = await getPackageManager();
-
 /**
  * Check if the project uses the "/docs"
  */
@@ -19,6 +17,7 @@ async function docsFolderExists(): Promise<boolean> {
  * Runs custom prebuild actions for VitePress
  */
 async function prebuild(): Promise<void> {
+  const packageManager = await getPackageManager();
   const newOutDir = '.edge/storage';
 
   // The main folder for VuePress usually is 'docs',
