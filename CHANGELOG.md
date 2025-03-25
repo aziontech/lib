@@ -1,3 +1,10 @@
+### [1.17.3](https://github.com/aziontech/lib/compare/v1.17.2...v1.17.3) (2025-03-25)
+
+
+### Bug Fixes
+
+* update package exports and scripts for improved module resolution and TypeScript support (#144) ([574bf3c](https://github.com/aziontech/lib/commit/574bf3c39a4b3a15145a3e3d534ea89e3ff55364))
+
 ### [1.17.3-stage.1](https://github.com/aziontech/lib/compare/v1.17.2...v1.17.3-stage.1) (2025-03-25)
 
 
