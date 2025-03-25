@@ -28,9 +28,29 @@ class BabelCustomLoaderPlugin implements WebpackPluginInstance {
           },
         },
       });
-
-      compiler.options.module.rules = rules;
     }
+    rules.push({
+      test: /\.ts$/,
+      exclude: /node_modules/,
+      use: {
+        loader: require.resolve('babel-loader'),
+        options: {
+          compact: false,
+          presets: [
+            [
+              require.resolve('@babel/preset-env'),
+              {
+                targets: {
+                  node: 'current',
+                },
+              },
+            ],
+            require.resolve('@babel/preset-typescript'),
+          ],
+        },
+      },
+    });
+    compiler.options.module.rules = rules;
   }
 }
 
