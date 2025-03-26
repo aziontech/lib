@@ -1,3 +1,10 @@
+### [1.17.4](https://github.com/aziontech/lib/compare/v1.17.3...v1.17.4) (2025-03-26)
+
+
+### Bug Fixes
+
+* enable TypeScript declaration file generation in tsup configuration (#146) ([0947751](https://github.com/aziontech/lib/commit/0947751bdbc095ac529002c645aac20d705e855d))
+
 ### [1.17.4-stage.1](https://github.com/aziontech/lib/compare/v1.17.3...v1.17.4-stage.1) (2025-03-26)
 
 
