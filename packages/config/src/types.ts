@@ -529,6 +529,7 @@ export type AzionWaf = {
 
 export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {
   entry: BuildEntryPoint;
+  outDir?: string;
   preset: AzionBuildPreset;
   setup: BundlerSetup;
 };
@@ -540,7 +541,6 @@ export interface BundlerSetup {
 
 export interface BuildContext {
   production: boolean;
-  outDir: string;
   entrypoint: BuildEntryPoint;
 }
 

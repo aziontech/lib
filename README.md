@@ -2,7 +2,7 @@
   <img src="assets/azion-lib.svg" alt="Azion Lib Logo" width="180"/>
 </p>
 
-# Azion Library
+# Azion Library - The Edge Developer's Toolkit
 
 [![Version](https://img.shields.io/npm/v/azion.svg)](https://www.npmjs.com/package/azion)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)

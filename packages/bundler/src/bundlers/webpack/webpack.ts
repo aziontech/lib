@@ -60,6 +60,7 @@ export interface WebpackBundler {
  * Creates Webpack bundler instance
  */
 export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: BuildContext): WebpackBundler => {
+  const outputDirectory = buildConfig.outDir || process.cwd();
   const plugins = AzionWebpackConfig.plugins || [];
 
   const baseConfig: WebpackConfiguration = {
@@ -67,8 +68,8 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
     entry: buildConfig.entry,
     output: {
       ...AzionWebpackConfig.output,
-      path: ctx.outDir,
-      filename: ctx.production ? '[name].[ext]' : '[name].dev.[ext]',
+      path: outputDirectory,
+      filename: ctx.production ? '[name]' : '[name].dev',
       globalObject: 'globalThis',
     },
     plugins: [
@@ -105,11 +106,10 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
  */
 export const executeWebpackBuild = async (bundler: WebpackBundler): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
-    const config: Configuration = flow([
-      () => bundler.mergeConfig(bundler.baseConfig),
-      () => bundler.applyConfig(bundler.baseConfig),
-    ])(bundler.baseConfig);
+    const config: Configuration = flow([() => bundler.mergeConfig(bundler.baseConfig)])(bundler.baseConfig);
 
+    // Para debugar
+    console.log('Webpack config:', config);
     webpack(config, (err, stats) => {
       if (err || stats?.hasErrors()) {
         const info = stats?.toJson();

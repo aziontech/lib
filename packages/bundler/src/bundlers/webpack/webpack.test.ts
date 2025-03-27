@@ -61,7 +61,7 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -95,7 +95,7 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -131,7 +131,7 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -183,7 +183,7 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: false,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -221,7 +221,7 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 

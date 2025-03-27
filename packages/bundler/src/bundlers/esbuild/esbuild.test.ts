@@ -66,7 +66,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -100,7 +100,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -129,7 +129,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -168,7 +168,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: false,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 
@@ -213,7 +213,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        output: tmpOutput.name,
+        outDir: tmpOutput.name,
         entrypoint: tmpEntry.name,
       };
 

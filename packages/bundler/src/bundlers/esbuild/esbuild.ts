@@ -46,11 +46,13 @@ const applyContentInjection =
  * Creates ESBuild bundler instance
  */
 export const createAzionESBuildConfig = (buildConfig: BuildConfiguration, ctx: BuildContext): ESBuildBundler => {
+  const outputDirectory = buildConfig.outDir || process.cwd();
+
   const baseConfig: ESBuildConfiguration = {
     ...AzionEsbuildConfig,
     entryPoints: typeof buildConfig.entry === 'string' ? [buildConfig.entry] : buildConfig.entry,
-    outdir: ctx.outDir,
-    entryNames: ctx.production ? '[name]' : '[name].dev',
+    outdir: outputDirectory,
+    entryNames: ctx.production ? '[dir]/[name]' : '[dir]/[name].dev',
     minify: ctx.production,
     plugins: [],
     banner: {
