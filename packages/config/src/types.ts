@@ -324,8 +324,10 @@ export type AzionPurge = {
 
 export type PresetInput = string | AzionBuildPreset;
 
+export type BuildEntryPoint = string | string[] | Record<string, string>;
+
 export interface AzionBuild<T extends WebpackConfig | ESBuildConfig | unknown = WebpackConfig | ESBuildConfig> {
-  entry?: string;
+  entry?: BuildEntryPoint;
   bundler?: 'webpack' | 'esbuild';
   preset?: PresetInput;
   polyfills?: boolean;
@@ -526,7 +528,7 @@ export type AzionWaf = {
 };
 
 export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {
-  entry: string; // required
+  entry: BuildEntryPoint;
   preset: AzionBuildPreset;
   setup: BundlerSetup;
 };
@@ -538,8 +540,8 @@ export interface BundlerSetup {
 
 export interface BuildContext {
   production: boolean;
-  output: string;
-  entrypoint: string;
+  outDir: string;
+  entrypoint: BuildEntryPoint;
 }
 
 export type PresetMetadata = {
