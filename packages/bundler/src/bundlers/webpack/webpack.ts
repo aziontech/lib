@@ -107,9 +107,6 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
 export const executeWebpackBuild = async (bundler: WebpackBundler): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
     const config: Configuration = flow([() => bundler.mergeConfig(bundler.baseConfig)])(bundler.baseConfig);
-
-    // Para debugar
-    console.log('Webpack config:', config);
     webpack(config, (err, stats) => {
       if (err || stats?.hasErrors()) {
         const info = stats?.toJson();
