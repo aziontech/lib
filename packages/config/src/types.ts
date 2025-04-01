@@ -528,7 +528,7 @@ export type AzionWaf = {
 };
 
 export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {
-  entry: BuildEntryPoint;
+  entry: Record<string, string>;
   outDir?: string;
   preset: AzionBuildPreset;
   setup: BundlerSetup;
