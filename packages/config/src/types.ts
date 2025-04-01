@@ -541,8 +541,7 @@ export interface BundlerSetup {
 
 export interface BuildContext {
   production: boolean;
-  entrypoint: BuildEntryPoint;
-  outDir?: string;
+  handler: BuildEntryPoint;
 }
 
 export type PresetMetadata = {
