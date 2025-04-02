@@ -60,7 +60,7 @@ export interface WebpackBundler {
  * Creates Webpack bundler instance
  */
 export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: BuildContext): WebpackBundler => {
-  const outputDirectory = buildConfig.outDir || process.cwd();
+  const outputDirectory = buildConfig.baseOutputDir || process.cwd();
   const plugins = AzionWebpackConfig.plugins || [];
 
   const baseConfig: WebpackConfiguration = {
@@ -69,7 +69,7 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
     output: {
       ...AzionWebpackConfig.output,
       path: outputDirectory,
-      filename: ctx.production ? '[name]' : '[name].dev',
+      filename: '[name]',
       globalObject: 'globalThis',
     },
     plugins: [
@@ -107,6 +107,7 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
 export const executeWebpackBuild = async (bundler: WebpackBundler): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
     const config: Configuration = flow([() => bundler.mergeConfig(bundler.baseConfig)])(bundler.baseConfig);
+
     webpack(config, (err, stats) => {
       if (err || stats?.hasErrors()) {
         const info = stats?.toJson();
