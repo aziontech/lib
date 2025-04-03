@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-import { VercelUtils } from '#utils';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import mockFs from 'mock-fs';
+import VercelUtils from './index';
 
 const { deleteTelemetryFiles, createVercelProjectConfig, runVercelBuild } = VercelUtils;
 

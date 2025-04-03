@@ -11,9 +11,6 @@ import helper from './plugins/node-polyfills/helper';
 describe('Esbuild Bundler', () => {
   let tmpDir: tmp.DirResult;
   let tmpEntry: tmp.FileResult;
-  let tmpOutput: tmp.FileResult;
-  let tmpOutputDev: tmp.FileResult;
-
   beforeEach(async () => {
     tmpDir = tmp.dirSync();
     tmpEntry = tmp.fileSync({
@@ -21,23 +18,11 @@ describe('Esbuild Bundler', () => {
       dir: tmpDir.name,
       name: 'entry.js',
     });
-    tmpOutput = tmp.fileSync({
-      postfix: '.js',
-      dir: tmpDir.name,
-      name: 'output.js',
-    });
-    tmpOutputDev = tmp.fileSync({
-      postfix: '.js',
-      dir: tmpDir.name,
-      name: 'output.dev.js',
-    });
   });
 
   afterEach(async () => {
     tmpEntry.removeCallback();
-    tmpOutput.removeCallback();
-    tmpOutputDev.removeCallback();
-    tmpDir.removeCallback();
+    fs.rmSync(tmpDir.name, { recursive: true, force: true });
   });
 
   afterAll(() => {
@@ -47,7 +32,8 @@ describe('Esbuild Bundler', () => {
   describe('createAzionESBuildConfig', () => {
     it('should create base esbuild config', () => {
       const bundlerConfig: BuildConfiguration = {
-        entry: tmpEntry.name,
+        entry: { output: tmpEntry.name },
+        baseOutputDir: tmpDir.name,
         polyfills: true,
         preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,8 +52,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        outDir: tmpOutput.name,
-        entrypoint: tmpEntry.name,
+        handler: tmpEntry.name,
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
@@ -81,7 +66,8 @@ describe('Esbuild Bundler', () => {
   describe('createAzionESBuildConfig.mergeConfig', () => {
     it('should merge config when extend config is provided', () => {
       const bundlerConfig: BuildConfiguration = {
-        entry: tmpEntry.name,
+        entry: { output: tmpEntry.name },
+        baseOutputDir: tmpDir.name,
         polyfills: true,
         preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,15 +86,15 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        outDir: tmpOutput.name,
-        entrypoint: tmpEntry.name,
+        handler: tmpEntry.name,
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
       esbuildConfig.mergeConfig(esbuildConfig.baseConfig);
 
-      expect(esbuildConfig.baseConfig.entryPoints).toEqual([tmpEntry.name]);
-      expect(esbuildConfig.baseConfig.outfile).toEqual(tmpOutput.name);
+      expect(esbuildConfig.baseConfig.entryPoints).toEqual({ output: tmpEntry.name });
+      expect(esbuildConfig.baseConfig.outdir).toEqual(tmpDir.name);
+      expect(esbuildConfig.baseConfig.entryNames).toEqual('[dir]/[name]');
       expect(esbuildConfig.baseConfig.minify).toEqual(false);
       expect(esbuildConfig.baseConfig.banner?.js).toEqual(expect.stringContaining('Built with Azion CLI'));
       expect(esbuildConfig.baseConfig.banner?.js).toEqual(expect.stringContaining('console.log("Hello World")'));
@@ -116,7 +102,8 @@ describe('Esbuild Bundler', () => {
 
     it('should merge config when extend config is not provided', () => {
       const bundlerConfig: BuildConfiguration = {
-        entry: tmpEntry.name,
+        entry: { output: tmpEntry.name },
+        baseOutputDir: tmpDir.name,
         polyfills: true,
         preset: javascript,
         setup: {
@@ -129,15 +116,15 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        outDir: tmpOutput.name,
-        entrypoint: tmpEntry.name,
+        handler: tmpEntry.name,
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
       esbuildConfig.mergeConfig(esbuildConfig.baseConfig);
 
-      expect(esbuildConfig.baseConfig.entryPoints).toEqual([tmpEntry.name]);
-      expect(esbuildConfig.baseConfig.outfile).toEqual(tmpOutput.name);
+      expect(esbuildConfig.baseConfig.entryPoints).toEqual({ output: tmpEntry.name });
+      expect(esbuildConfig.baseConfig.outdir).toEqual(tmpDir.name);
+      expect(esbuildConfig.baseConfig.entryNames).toEqual('[dir]/[name]');
       expect(esbuildConfig.baseConfig.minify).toEqual(true);
       expect(esbuildConfig.baseConfig.banner?.js).toEqual(expect.stringContaining('Built with Azion CLI'));
     });
@@ -149,7 +136,8 @@ describe('Esbuild Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        entry: tmpEntry.name,
+        entry: { output: tmpEntry.name },
+        baseOutputDir: tmpDir.name,
         polyfills: true,
         preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,8 +156,7 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: false,
-        outDir: tmpOutput.name,
-        entrypoint: tmpEntry.name,
+        handler: tmpEntry.name,
       };
 
       jest.spyOn(helper, 'getAbsolutePath').mockImplementation((moving, internalPath) => {
@@ -180,12 +167,14 @@ describe('Esbuild Bundler', () => {
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
       await esbuildConfig.executeBuild(esbuildConfig);
 
-      const result = fs.readFileSync(tmpOutputDev.name, 'utf-8');
+      const outputPath = path.join(tmpDir.name, 'output.js');
+      const result = fs.readFileSync(outputPath, 'utf-8');
 
       expect(result).toEqual(expect.stringContaining('production'));
       expect(result).toEqual(expect.stringContaining('internal-env-dev:fs'));
-      expect(esbuildConfig.baseConfig.entryPoints).toEqual([tmpEntry.name]);
-      expect(esbuildConfig.baseConfig.outfile).toEqual(tmpOutputDev.name);
+      expect(esbuildConfig.baseConfig.entryPoints).toEqual({ output: tmpEntry.name });
+      expect(esbuildConfig.baseConfig.outdir).toEqual(tmpDir.name);
+      expect(esbuildConfig.baseConfig.entryNames).toEqual('[dir]/[name]');
       expect(esbuildConfig.baseConfig.minify).toEqual(false);
     });
 
@@ -194,7 +183,8 @@ describe('Esbuild Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        entry: tmpEntry.name,
+        entry: { output: tmpEntry.name },
+        baseOutputDir: tmpDir.name,
         polyfills: true,
         preset: javascript,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -213,19 +203,20 @@ describe('Esbuild Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        outDir: tmpOutput.name,
-        entrypoint: tmpEntry.name,
+        handler: tmpEntry.name,
       };
 
       const esbuildConfig = createAzionESBuildConfig(bundlerConfig, ctx);
       await esbuildConfig.executeBuild(esbuildConfig);
 
-      const result = fs.readFileSync(tmpOutput.name, 'utf-8');
+      const outputPath = path.join(tmpDir.name, 'output.js');
+      const result = fs.readFileSync(outputPath, 'utf-8');
 
       expect(result).toEqual(expect.stringContaining('node-built-in-modules:'));
 
-      expect(esbuildConfig.baseConfig.entryPoints).toEqual([tmpEntry.name]);
-      expect(esbuildConfig.baseConfig.outfile).toEqual(tmpOutput.name);
+      expect(esbuildConfig.baseConfig.entryPoints).toEqual({ output: tmpEntry.name });
+      expect(esbuildConfig.baseConfig.outdir).toEqual(tmpDir.name);
+      expect(esbuildConfig.baseConfig.entryNames).toEqual('[dir]/[name]');
       expect(esbuildConfig.baseConfig.minify).toEqual(false);
       expect(esbuildConfig.baseConfig.banner?.js).toEqual(expect.stringContaining('Built with Azion CLI'));
     });
