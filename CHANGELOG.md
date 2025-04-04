@@ -1,3 +1,10 @@
+## [1.18.0-stage.1](https://github.com/aziontech/lib/compare/v1.17.4...v1.18.0-stage.1) (2025-04-04)
+
+
+### Features
+
+* **config:** accept multiple entrypoints for build (#148) ([9f58e50](https://github.com/aziontech/lib/commit/9f58e50543146b4501cf1572fa7482234cd508e2))
+
 ### [1.17.4](https://github.com/aziontech/lib/compare/v1.17.3...v1.17.4) (2025-03-26)
 
 
