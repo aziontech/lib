@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { jest } from '@jest/globals';
 import mockFs from 'mock-fs';
 import { validateSupport, validationSupportAndRetrieveFromVcConfig } from './support.js';
 
