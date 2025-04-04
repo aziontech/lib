@@ -1,5 +1,6 @@
-/* eslint-disable no-undef */
-import { spawn } from 'child_process';
+/* eslint-disable no-undef, @typescript-eslint/no-unused-vars */
+import { jest } from '@jest/globals';
+import child_process from 'child_process';
 import fs from 'fs';
 import mockFs from 'mock-fs';
 import VercelUtils from './index';
@@ -46,12 +47,29 @@ describe('Vercel Utils', () => {
   });
 });
 
-jest.mock('child_process');
-
 describe('runVercelBuild', () => {
+  let spyOnSpawn;
+
+  beforeEach(() => {
+    spyOnSpawn = jest.spyOn(child_process, 'spawn').mockImplementation((cmd, args, options) => {
+      const execProcess = {
+        on: jest.fn(),
+      };
+
+      // Simulate a successful command execution
+      execProcess.on.mockImplementationOnce((event, callback) => {
+        if (event === 'close') {
+          callback(0); // Simulate a successful exit code
+        }
+      });
+
+      return execProcess;
+    });
+  });
+
   it('should resolve the promise when the command succeeds', async () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    spawn.mockImplementationOnce((cmd, args, options) => {
+    spyOnSpawn.mockImplementationOnce((cmd, args, options) => {
       const execProcess = {
         on: jest.fn(),
       };
@@ -68,7 +86,7 @@ describe('runVercelBuild', () => {
 
     await expect(runVercelBuild()).resolves.toEqual(undefined);
 
-    expect(spawn).toHaveBeenCalledWith('npx', ['--yes', 'vercel@32.6.1', 'build', '--prod'], {
+    expect(spyOnSpawn).toHaveBeenCalledWith('npx', ['--yes', 'vercel@32.6.1', 'build', '--prod'], {
       shell: true,
       stdio: 'inherit',
     });
@@ -76,7 +94,7 @@ describe('runVercelBuild', () => {
 
   it('should reject the promise when the command fails', async () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    spawn.mockImplementationOnce((cmd, args, options) => {
+    spyOnSpawn.mockImplementationOnce((cmd, args, options) => {
       const execProcess = {
         on: jest.fn(),
       };
@@ -92,7 +110,7 @@ describe('runVercelBuild', () => {
 
     await expect(runVercelBuild()).rejects.toThrow("Command '--yes vercel@32.6.1 build --prod' failed with code 1");
 
-    expect(spawn).toHaveBeenCalledWith('npx', ['--yes', 'vercel@32.6.1', 'build', '--prod'], {
+    expect(spyOnSpawn).toHaveBeenCalledWith('npx', ['--yes', 'vercel@32.6.1', 'build', '--prod'], {
       shell: true,
       stdio: 'inherit',
     });
