@@ -9,4 +9,5 @@ export default {
   loader: {
     '.js': 'js',
   },
+  outdir: '.',
 } as BuildOptions;
