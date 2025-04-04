@@ -30,11 +30,6 @@ jobs:
       - name: Install
         run: npm install
 
-      - name: Change CLI bin
-        run: |
-          rm -rf ./bin/azion
-          touch ./bin/azion
-
       - name: Build
         run: npm run compile
 
