@@ -1,15 +1,7 @@
 /* eslint-disable no-undef */
-import { jest } from '@jest/globals';
-import * as utils from 'azion/utils/node';
 import { processVercelOutput } from './process-mapping.js';
 
 describe('process-mapping-service', () => {
-  beforeEach(() => {
-    jest.spyOn(utils.feedback.prebuild, 'info').mockImplementation(() => {});
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
   describe('processVercelOutput', () => {
     it('should process the config and build output correctly', () => {
       const inputtedConfig = {

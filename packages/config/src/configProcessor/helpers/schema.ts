@@ -438,26 +438,8 @@ const azionConfigSchema = {
       type: 'object',
       properties: {
         entry: {
-          oneOf: [
-            {
-              type: 'string',
-              errorMessage: "When using a string, the 'entry' field must be a valid file path",
-            },
-            {
-              type: 'array',
-              items: { type: 'string' },
-              errorMessage: "When using an array, the 'entry' field must be an array of file paths",
-            },
-            {
-              type: 'object',
-              patternProperties: {
-                '.*': { type: 'string' },
-              },
-              errorMessage: "When using an object, the 'entry' field must be a map of output paths to input files",
-            },
-          ],
-          errorMessage:
-            "The 'entry' field must be either a string, array of strings, or object mapping outputs to inputs",
+          type: 'string',
+          errorMessage: "The 'entry' field must be a string representing the entry point file path.",
         },
         bundler: {
           type: ['string', 'null'],

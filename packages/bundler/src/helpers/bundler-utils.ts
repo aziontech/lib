@@ -96,6 +96,16 @@ export const applyDefineVars =
   };
 
 /**
+ * Common filename handling
+ */
+export const getOutputFilename = (path: string, buildEnv: BuildContext): string => {
+  if (buildEnv.production) return path;
+  const [dir, filename] = path.split(/\/([^/]+)$/);
+  const [name, ext] = filename.split('.');
+  return `${dir}/${name}.dev.${ext}`;
+};
+
+/**
  * Common banner configuration
  */
 export const getBannerContent = (buildEnv: BuildContext): string => {

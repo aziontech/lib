@@ -1,10 +1,18 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+/**
+ * For a detailed explanation regarding each configuration property, visit:
+ * https://jestjs.io/docs/configuration
+ */
+
+import type { Config } from 'jest';
+
+const config: Config = {
   displayName: 'Storage',
+  clearMocks: true,
+  coverageProvider: 'v8',
   preset: 'ts-jest',
-  transform: {
-    '^.+\\.(t|j)s?$': 'ts-jest',
-  },
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   testEnvironment: 'node',
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+  testPathIgnorePatterns: ['/node_modules/'],
 };
+
+export default config;

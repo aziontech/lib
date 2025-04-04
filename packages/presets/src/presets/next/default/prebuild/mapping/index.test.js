@@ -1,17 +1,8 @@
 /* eslint-disable no-undef */
-import { jest } from '@jest/globals';
-import * as utils from 'azion/utils/node';
 import mockFs from 'mock-fs';
 import { mapAndAdaptFunctions } from './index.js';
 
 describe('mapping index.js', () => {
-  beforeEach(() => {
-    jest.spyOn(utils.feedback.prebuild, 'info').mockImplementation(() => {});
-    jest.spyOn(utils.feedback.prebuild, 'error').mockImplementation(() => {});
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
   test('Should generate functionsmap', async () => {
     mockFs({
       '.vercel': {

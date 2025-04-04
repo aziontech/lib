@@ -2,7 +2,13 @@ import { BuildConfiguration, BuildContext } from 'azion/config';
 import * as esbuild from 'esbuild';
 import { Plugin as ESBuildPlugin } from 'esbuild';
 import { flow } from 'lodash-es';
-import { applyDefineVars, createBundlerPlugins, extendConfig, getBannerContent } from '../../helpers/bundler-utils';
+import {
+  applyDefineVars,
+  createBundlerPlugins,
+  extendConfig,
+  getBannerContent,
+  getOutputFilename,
+} from '../../helpers/bundler-utils';
 import { ESBuildConfiguration } from '../../types';
 import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
@@ -46,13 +52,10 @@ const applyContentInjection =
  * Creates ESBuild bundler instance
  */
 export const createAzionESBuildConfig = (buildConfig: BuildConfiguration, ctx: BuildContext): ESBuildBundler => {
-  const outputDirectory = buildConfig.baseOutputDir;
-
   const baseConfig: ESBuildConfiguration = {
     ...AzionEsbuildConfig,
-    entryPoints: typeof buildConfig.entry === 'string' ? [buildConfig.entry] : buildConfig.entry,
-    ...(outputDirectory ? { outdir: outputDirectory } : {}),
-    entryNames: '[dir]/[name]',
+    entryPoints: [buildConfig.entry ?? ''],
+    outfile: getOutputFilename(ctx.output, ctx),
     minify: ctx.production,
     plugins: [],
     banner: {

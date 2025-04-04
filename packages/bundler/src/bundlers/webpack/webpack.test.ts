@@ -12,6 +12,9 @@ import AzionWebpackConfig from './webpack.config';
 describe('Webpack Bundler', () => {
   let tmpDir: tmp.DirResult;
   let tmpEntry: tmp.FileResult;
+  let tmpOutput: tmp.FileResult;
+  let tmpOutputDev: tmp.FileResult;
+
   beforeEach(async () => {
     tmpDir = tmp.dirSync();
     tmpEntry = tmp.fileSync({
@@ -19,11 +22,23 @@ describe('Webpack Bundler', () => {
       dir: tmpDir.name,
       name: 'entry.js',
     });
+    tmpOutput = tmp.fileSync({
+      postfix: '.js',
+      dir: tmpDir.name,
+      name: 'output.js',
+    });
+    tmpOutputDev = tmp.fileSync({
+      postfix: '.js',
+      dir: tmpDir.name,
+      name: 'output.dev.js',
+    });
   });
 
   afterEach(async () => {
     tmpEntry.removeCallback();
-    fs.rmSync(tmpDir.name, { recursive: true, force: true });
+    tmpOutput.removeCallback();
+    tmpOutputDev.removeCallback();
+    tmpDir.removeCallback();
   });
 
   afterAll(() => {
@@ -33,8 +48,7 @@ describe('Webpack Bundler', () => {
   describe('createAzionWebpackConfig', () => {
     it('should create base webpack config', () => {
       const bundlerConfig: BuildConfiguration = {
-        entry: { output: tmpEntry.name },
-        baseOutputDir: tmpDir.name,
+        entry: tmpEntry.name,
         polyfills: true,
         preset: javascript,
         setup: {
@@ -47,7 +61,8 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        handler: tmpEntry.name,
+        output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
@@ -61,8 +76,7 @@ describe('Webpack Bundler', () => {
   describe('createAzionWebpackConfig.mergeConfig', () => {
     it('should merge config when extend config is provided', async () => {
       const bundlerConfig: BuildConfiguration = {
-        entry: { output: tmpEntry.name },
-        baseOutputDir: tmpDir.name,
+        entry: tmpEntry.name,
         polyfills: true,
         preset: javascript,
         extend: (config) => {
@@ -81,14 +95,15 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        handler: tmpEntry.name,
+        output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
       webpackConfig.mergeConfig(webpackConfig.baseConfig);
 
-      expect(webpackConfig.baseConfig.entry).toEqual({ output: tmpEntry.name });
-      expect(webpackConfig.baseConfig.output?.filename).toEqual('[name]');
+      expect(webpackConfig.baseConfig.entry).toEqual(tmpEntry.name);
+      expect(webpackConfig.baseConfig.output?.filename).toEqual(expect.stringContaining('output.js'));
       expect(webpackConfig.baseConfig.optimization?.minimize).toEqual(false);
       expect(webpackConfig.baseConfig.plugins).toEqual(
         expect.arrayContaining([
@@ -103,8 +118,7 @@ describe('Webpack Bundler', () => {
 
     it('should merge config when extend config is not provided', async () => {
       const bundlerConfig: BuildConfiguration = {
-        entry: { output: tmpEntry.name },
-        baseOutputDir: tmpDir.name,
+        entry: tmpEntry.name,
         polyfills: true,
         preset: javascript,
         setup: {
@@ -117,14 +131,15 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        handler: tmpEntry.name,
+        output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
       };
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
       webpackConfig.mergeConfig(webpackConfig.baseConfig);
 
-      expect(webpackConfig.baseConfig.entry).toEqual({ output: tmpEntry.name });
-      expect(webpackConfig.baseConfig.output?.filename).toEqual('[name]');
+      expect(webpackConfig.baseConfig.entry).toEqual(tmpEntry.name);
+      expect(webpackConfig.baseConfig.output?.filename).toEqual(expect.stringContaining('output.js'));
       expect(webpackConfig.baseConfig.optimization?.minimize).toEqual(true);
       expect(webpackConfig.baseConfig.plugins).toEqual(
         expect.arrayContaining([
@@ -155,8 +170,7 @@ describe('Webpack Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        entry: { output: tmpEntry.name },
-        baseOutputDir: tmpDir.name,
+        entry: tmpEntry.name,
         polyfills: true,
         preset: javascript,
         setup: {
@@ -169,7 +183,8 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: false,
-        handler: tmpEntry.name,
+        output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
       };
 
       jest.spyOn(NodePolyfills, 'getAbsolutePath').mockImplementation((internalPath, moving) => {
@@ -179,14 +194,12 @@ describe('Webpack Bundler', () => {
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
       await webpackConfig.executeBuild(webpackConfig);
-
-      const outputPath = path.join(tmpDir.name, 'output');
-      const result = fs.readFileSync(outputPath, 'utf-8');
+      const result = fs.readFileSync(tmpOutputDev.name, 'utf-8');
 
       expect(result).toEqual(expect.stringContaining('production'));
 
-      expect(webpackConfig.baseConfig.entry).toEqual({ output: tmpEntry.name });
-      expect(webpackConfig.baseConfig.output?.filename).toEqual('[name]');
+      expect(webpackConfig.baseConfig.entry).toEqual(tmpEntry.name);
+      expect(webpackConfig.baseConfig.output?.filename).toEqual(expect.stringContaining('output.dev.js'));
       expect(webpackConfig.baseConfig.optimization?.minimize).toEqual(false);
     });
 
@@ -195,8 +208,7 @@ describe('Webpack Bundler', () => {
       await fs.promises.writeFile(tmpEntry.name, code);
 
       const bundlerConfig: BuildConfiguration = {
-        entry: { output: tmpEntry.name },
-        baseOutputDir: tmpDir.name,
+        entry: tmpEntry.name,
         polyfills: true,
         preset: javascript,
         setup: {
@@ -209,7 +221,8 @@ describe('Webpack Bundler', () => {
 
       const ctx: BuildContext = {
         production: true,
-        handler: tmpEntry.name,
+        output: tmpOutput.name,
+        entrypoint: tmpEntry.name,
       };
 
       jest.spyOn(NodePolyfills, 'getAbsolutePath').mockImplementation((internalPath, moving) => {
@@ -219,13 +232,14 @@ describe('Webpack Bundler', () => {
 
       const webpackConfig = createAzionWebpackConfig(bundlerConfig, ctx);
       await webpackConfig.executeBuild(webpackConfig);
-      const outputPath = path.join(tmpDir.name, 'output');
-      const result = fs.readFileSync(outputPath, 'utf-8');
+      const result = fs.readFileSync(tmpOutput.name, 'utf-8');
+      // remove file output.LICENSE.txt
+      fs.rmSync(`${tmpOutput.name}.LICENSE.txt`);
 
       expect(result).toEqual(expect.stringContaining('randomUUID()'));
 
-      expect(webpackConfig.baseConfig.entry).toEqual({ output: tmpEntry.name });
-      expect(webpackConfig.baseConfig.output?.filename).toEqual('[name]');
+      expect(webpackConfig.baseConfig.entry).toEqual(tmpEntry.name);
+      expect(webpackConfig.baseConfig.output?.filename).toEqual(expect.stringContaining('output.js'));
       expect(webpackConfig.baseConfig.optimization?.minimize).toEqual(true);
     }, 10000);
   });

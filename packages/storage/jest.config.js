@@ -1,6 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  displayName: 'Utils',
+  displayName: 'Storage',
   preset: 'ts-jest',
   transform: {
     '^.+\\.(t|j)s?$': 'ts-jest',

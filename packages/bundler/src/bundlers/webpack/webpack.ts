@@ -1,7 +1,13 @@
 import { BuildConfiguration, BuildContext } from 'azion/config';
 import { flow } from 'lodash-es';
 import webpack, { Configuration } from 'webpack';
-import { applyDefineVars, createBundlerPlugins, extendConfig, getBannerContent } from '../../helpers/bundler-utils';
+import {
+  applyDefineVars,
+  createBundlerPlugins,
+  extendConfig,
+  getBannerContent,
+  getOutputFilename,
+} from '../../helpers/bundler-utils';
 import { WebpackConfiguration, WebpackPluginClasses } from '../../types';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import BabelCustomLoaderPlugin from './plugins/babel-custom';
@@ -60,7 +66,9 @@ export interface WebpackBundler {
  * Creates Webpack bundler instance
  */
 export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: BuildContext): WebpackBundler => {
-  const outputDirectory = buildConfig.baseOutputDir || process.cwd();
+  const outputPath = ctx.output.split('/').slice(0, -1).join('/');
+  const filename = getOutputFilename(ctx.output, ctx).split('/').pop() as string;
+
   const plugins = AzionWebpackConfig.plugins || [];
 
   const baseConfig: WebpackConfiguration = {
@@ -68,8 +76,8 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
     entry: buildConfig.entry,
     output: {
       ...AzionWebpackConfig.output,
-      path: outputDirectory,
-      filename: '[name]',
+      path: outputPath,
+      filename,
       globalObject: 'globalThis',
     },
     plugins: [
@@ -106,7 +114,10 @@ export const createAzionWebpackConfig = (buildConfig: BuildConfiguration, ctx: B
  */
 export const executeWebpackBuild = async (bundler: WebpackBundler): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
-    const config: Configuration = flow([() => bundler.mergeConfig(bundler.baseConfig)])(bundler.baseConfig);
+    const config: Configuration = flow([
+      () => bundler.mergeConfig(bundler.baseConfig),
+      () => bundler.applyConfig(bundler.baseConfig),
+    ])(bundler.baseConfig);
 
     webpack(config, (err, stats) => {
       if (err || stats?.hasErrors()) {

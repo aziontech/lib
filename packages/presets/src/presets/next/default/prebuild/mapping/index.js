@@ -1,4 +1,4 @@
-import * as utils from 'azion/utils/node';
+import { feedback } from 'azion/utils/node';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, relative } from 'path';
 import { normalizePath, validateFile } from '../../../utils/fs.js';
@@ -97,7 +97,7 @@ async function mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject
   let isMiddleware = false;
   if (vcObject.content.entrypoint === 'middleware.js' && isEdge) {
     isMiddleware = true;
-    utils.feedback.prebuild.info('Founded middleware!');
+    feedback.prebuild.info('   Founded middleware!');
     // eslint-disable-next-line no-param-reassign
     vcObject.content.entrypoint = 'index';
   }
@@ -110,7 +110,7 @@ async function mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject
     if (isMiddleware) {
       // We sometimes encounter an uncompiled `middleware.js` with no compiled `index.js` outside of a base path.
       // Outside the base path, it should not be utilised, so it should be safe to ignore the function.
-      utils.feedback.prebuild.info(`Detected an invalid middleware function for ${path}. Skipping...`);
+      feedback.prebuild.info(`Detected an invalid middleware function for ${path}. Skipping...`);
       return {};
     }
 
@@ -195,7 +195,7 @@ export async function mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir, 
     );
   } catch (error) {
     const message = `Error adapting functions: ${error}`;
-    utils.feedback.prebuild.error(message);
+    feedback.prebuild.error(message);
     throw Error(message);
   }
 

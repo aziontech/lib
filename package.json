@@ -15,7 +15,8 @@
     "format:check": "npm run prettier:check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "download:cli": "node ./cli/scripts/download-cli.mjs",
-    "build": "npm run compile"
+    "postinstall": "npm run download:cli",
+    "build": "npm run download:cli && npm run compile"
   },
   "keywords": [
     "azion",
