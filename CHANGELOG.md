@@ -1,3 +1,11 @@
+## [1.18.0-stage.2](https://github.com/aziontech/lib/compare/v1.18.0-stage.1...v1.18.0-stage.2) (2025-04-04)
+
+
+### Reverts
+
+* Revert "feat(config): accept multiple entrypoints for build (#148)" ([daad9db](https://github.com/aziontech/lib/commit/daad9db1e7504029ff5d3d2cadc2c2646cc2439b))
+* Revert "chore(release): 1.18.0-stage.1" ([f458098](https://github.com/aziontech/lib/commit/f458098f90f016fe084d767d7f7ad150b2b01d43))
+
 ### [1.17.4](https://github.com/aziontech/lib/compare/v1.17.3...v1.17.4) (2025-03-26)
 
 
