@@ -205,14 +205,71 @@ This is the first example using JSDoc to provide type information:
 ```javascript
 /** @type {import('azion').AzionConfig} */
 const config = {
-  build: {},
-  domain: {},
-  origin: [],
-  cache: [],
-  rules: [],
-  purge: [],
-  networkList: [],
-  waf: [],
+  build: {
+    // Build configuration
+    bundler: 'esbuild',
+    entry: './src/index.js',
+    preset: 'react',
+    polyfills: true,
+    worker: true,
+  },
+  domain: {
+    name: 'example.com',
+    cnameAccessOnly: false,
+  },
+  origin: [
+    {
+      name: 'My Origin',
+      type: 'single_origin',
+      addresses: ['origin.example.com'],
+    },
+  ],
+  cache: [
+    {
+      name: 'Default Cache',
+      browser: { maxAgeSeconds: 3600 },
+      edge: { maxAgeSeconds: 7200 },
+    },
+  ],
+  rules: {
+    request: [
+      {
+        name: 'Example Rule',
+        match: 'path',
+        behavior: { setOrigin: { name: 'My Origin', type: 'single_origin' } },
+      },
+    ],
+  },
+  purge: [
+    {
+      type: 'url',
+      urls: ['https://example.com/path/to/purge'],
+    },
+  ],
+  networkList: [
+    {
+      id: 12345,
+      listType: 'ip_cidr',
+      listContent: ['10.0.0.1'],
+    },
+  ],
+  firewall: {
+    name: 'My Firewall',
+    active: true,
+    rules: [
+      {
+        name: 'Block Suspicious IPs',
+        behavior: { deny: true },
+      },
+    ],
+  },
+  waf: [
+    {
+      name: 'My WAF',
+      mode: 'blocking',
+      active: true,
+    },
+  ],
 };
 
 export default config;
@@ -224,17 +281,127 @@ This is the second example using the `defineConfig` function to enforce types an
 import { defineConfig } from 'azion';
 
 const config = defineConfig({
-  build: {},
-  domain: {},
-  origin: [],
-  cache: [],
-  rules: [],
-  purge: [],
-  networkList: [],
-  waf: [],
+  build: {
+    // Advanced build configuration options
+    bundler: 'webpack',
+    entry: {
+      main: './src/index.js',
+      admin: './src/admin.js',
+    },
+    preset: {
+      config: {
+        /* custom configuration */
+      },
+      metadata: {
+        name: 'custom-preset',
+        registry: 'my-registry',
+      },
+      handler: async (event) => {
+        // Custom handler
+        return new Response('Hello World');
+      },
+    },
+    polyfills: true,
+    worker: true,
+    extend: (config) => {
+      // Customize bundler configuration
+      return {
+        ...config,
+        // Specific configurations
+      };
+    },
+    memoryFS: {
+      injectionDirs: ['./src/inject'],
+      removePathPrefix: './src',
+    },
+  },
+  domain: {
+    name: 'example.com',
+    cnameAccessOnly: false,
+    cnames: ['www.example.com'],
+  },
+  origin: [
+    {
+      name: 'My Origin',
+      type: 'single_origin',
+      addresses: [
+        {
+          address: 'origin.example.com',
+          weight: 100,
+        },
+      ],
+      protocolPolicy: 'https',
+    },
+  ],
+  // Other configurations...
 });
 
 export default config;
+```
+
+Here's a more advanced example using preset customization with TypeScript:
+
+```typescript
+import { defineConfig } from 'azion';
+import type { AzionBuildPreset, AzionPrebuildResult, BuildContext, BuildConfiguration } from 'azion/config';
+import { Next } from 'azion/presets';
+
+export default defineConfig({
+  build: {
+    preset: {
+      ...Next,
+      config: {
+        ...Next.config,
+        bundler: 'esbuild',
+        extend: (config) => {
+          config.define = {
+            ...config.define,
+            'global.customFeature': 'JSON.stringify(true)',
+            'process.env.CUSTOM_VAR': 'JSON.stringify("value")',
+          };
+          return config;
+        },
+      },
+      prebuild: async (config: BuildConfiguration, ctx: BuildContext): Promise<AzionPrebuildResult> => {
+        // Your custom prebuild logic here
+        console.log('Running custom prebuild with context:', ctx);
+
+        // Return prebuild result with custom configurations
+        return {
+          filesToInject: ['./src/custom-file.js'],
+          injection: {
+            globals: {
+              _ENTRIES: 'window._ENTRIES = {}',
+              AsyncLocalStorage: 'globalThis.AsyncLocalStorage = class {}',
+            },
+            entry: '// Custom entry code\nconsole.log("Custom initialization");',
+            banner: '/* Custom banner comment */',
+          },
+          bundler: {
+            defineVars: {
+              __CONFIG__: JSON.stringify({ customSetting: true }),
+              __BUILD_METADATA__: JSON.stringify({ version: '1.0.0', buildTime: Date.now() }),
+            },
+            plugins: [],
+          },
+        };
+      },
+      postbuild: async (config: BuildConfiguration, ctx: BuildContext): Promise<void> => {
+        // Your custom postbuild logic here
+        console.log('Build completed with output:', config.baseOutputDir);
+      },
+    },
+    // Other build configurations
+    entry: './src/index.ts',
+    polyfills: true,
+    worker: true,
+    memoryFS: {
+      injectionDirs: ['./src/inject'],
+      removePathPrefix: './src',
+    },
+  },
+  // Domain, origin, and other configurations...
+});
 ```
 
 Read more in the [AzionConfig README](./packages/config/README.md).
@@ -242,4 +409,3 @@ Read more in the [AzionConfig README](./packages/config/README.md).
 ## Contributing
 
 Feel free to submit issues or pull requests to improve the functionality or documentation.
-AzionDomainCollectionAzionDomainCollection
