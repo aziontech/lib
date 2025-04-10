@@ -1,3 +1,10 @@
+### [1.18.1](https://github.com/aziontech/lib/compare/v1.18.0...v1.18.1) (2025-04-10)
+
+
+### Bug Fixes
+
+* force release  v1.18.0 ([c4b2fff](https://github.com/aziontech/lib/commit/c4b2fff3daf4e22ac4191ea9d663d8394df7b77b))
+
 ## [1.18.0-stage.3](https://github.com/aziontech/lib/compare/v1.18.0-stage.2...v1.18.0-stage.3) (2025-04-04)
 
 
