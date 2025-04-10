@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "1.17.4",
+  "version": "1.18.0-stage.3",
   "description": "Azion Packages for Edge Computing.",
   "bin": {
     "azion": "./bin/azion",
@@ -15,8 +15,7 @@
     "format:check": "npm run prettier:check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "download:cli": "node ./cli/scripts/download-cli.mjs",
-    "postinstall": "npm run download:cli",
-    "build": "npm run download:cli && npm run compile"
+    "build": "npm run compile"
   },
   "keywords": [
     "azion",
