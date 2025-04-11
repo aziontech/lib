@@ -7,6 +7,7 @@ export default {
   mainFields: ['browser', 'module', 'main'],
   target: 'es2022',
   keepNames: true,
+  allowOverwrite: true,
   loader: {
     '.js': 'js',
   },
