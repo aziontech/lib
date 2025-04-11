@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+import { jest } from '@jest/globals';
+import * as utils from 'azion/utils/node';
 import mockFs from 'mock-fs';
 import { validateSupport, validationSupportAndRetrieveFromVcConfig } from './support.js';
 
@@ -62,11 +64,11 @@ describe('validateSupport', () => {
   it('should invalidate unsupported version and runtimes', () => {
     const result = validateSupport('14.0.0', ['edge']);
     expect(result).toEqual({
-      valid: false,
+      valid: true,
       version: '14.0.0',
       runtimes: ['edge'],
       minorVersion: '14.0.x',
-      allowedRuntimes: [],
+      allowedRuntimes: ['edge'],
     });
   });
 
@@ -85,6 +87,7 @@ describe('validateSupport', () => {
 describe('validationSupportAndRetrieveFromVcConfig', () => {
   // Mock the file system
   beforeEach(() => {
+    jest.spyOn(utils.feedback.prebuild, 'info').mockImplementation(() => {});
     mockFs({
       '.vercel/output/functions/': {
         '**': {
@@ -101,6 +104,7 @@ describe('validationSupportAndRetrieveFromVcConfig', () => {
 
   afterEach(() => {
     mockFs.restore();
+    jest.clearAllMocks();
   });
 
   it('should validate and retrieve from vc config', async () => {

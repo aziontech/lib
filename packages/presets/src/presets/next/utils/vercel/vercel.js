@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import child_process from 'child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -46,7 +46,7 @@ async function runVercelBuild() {
     const args = ['npx', '--yes', 'vercel@32.6.1', 'build', '--prod'];
     const cmd = args.shift();
 
-    const execProcess = spawn(cmd, args, {
+    const execProcess = child_process.spawn(cmd, args, {
       shell: true,
       stdio: 'inherit',
     });

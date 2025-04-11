@@ -1,7 +1,7 @@
 import { rmSync, statSync } from 'fs';
 import { resolve } from 'path';
 
-import { feedback } from 'azion/utils/node';
+import * as utils from 'azion/utils/node';
 import { addLeadingSlash, stripIndexRoute } from '../../../utils/routing.js';
 
 /**
@@ -110,7 +110,7 @@ function rewriteMiddlewarePaths(processedOutput, middlewarePaths) {
       processedOutput.set(middlewarePath, { ...entry, type: 'middleware' });
       processedOutput.delete(withLeadingSlash);
     } else {
-      feedback.prebuild.info(`Middleware path '${middlewarePath}' does not have a function.`);
+      utils.feedback.prebuild.info(`Middleware path '${middlewarePath}' does not have a function.`);
     }
   }
 }
