@@ -5,12 +5,20 @@ import fs from 'fs';
 import { createRequire } from 'module';
 import { builtinModules } from 'node:module';
 import path from 'path';
-import { env, nodeless } from 'unenv';
+import { defineEnv } from 'unenv';
 import helper from './helper/index';
 
 const requireCustom = createRequire(import.meta.url);
 
-const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
+const { env } = defineEnv({
+  nodeCompat: true,
+  resolve: false,
+  overrides: {
+    ...unenvPresetAzion,
+  },
+});
+
+const { alias, inject, polyfill, external } = env;
 
 interface BuildOptions {
   define?: Record<string, string>;
@@ -21,14 +29,12 @@ interface GlobalInjectResult {
   exportName: string;
 }
 
-type GlobalInjectValue = string | string[] | [string, string];
-
 /**
  * Get global inject
  * @param {*} globalInject Global inject
  * @returns {*} Return import statement and export name
  */
-function getGlobalInject(globalInject: GlobalInjectValue): GlobalInjectResult {
+function getGlobalInject(globalInject: string | string[]): GlobalInjectResult {
   if (typeof globalInject === 'string') {
     return {
       importStatement: `import globalVar from "${globalInject}";`,
@@ -186,7 +192,8 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
     if (!match?.[1]) throw new Error(`Invalid global name: ${args.path}`);
 
     const globalName = match[1];
-    const { importStatement, exportName } = getGlobalInject(inject[globalName]);
+
+    const { importStatement, exportName } = getGlobalInject(inject[globalName] as string | string[]);
 
     return {
       contents: `
@@ -259,7 +266,7 @@ function defineNextJsRuntime(options: BuildOptions) {
     // eslint-disable-next-line no-param-reassign
     options.define = {
       ...options.define,
-      'process.env.NEXT_RUNTIME': '"edge"',
+      'process.env.NEXT_RUNTIME': options.define?.['process.env.NEXT_RUNTIME'] || '"edge"',
       'process.env.NEXT_COMPUTE_JS': 'true',
       'process.env.__NEXT_BUILD_ID': `"${buildId}"`,
     };

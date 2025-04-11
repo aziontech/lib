@@ -6,6 +6,7 @@ export default {
   platform: 'browser',
   mainFields: ['browser', 'module', 'main'],
   target: 'es2022',
+  keepNames: true,
   loader: {
     '.js': 'js',
   },

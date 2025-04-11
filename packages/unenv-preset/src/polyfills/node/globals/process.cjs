@@ -185,7 +185,7 @@ processShim.cwd = function () {
 };
 
 processShim.chdir = function (dir) {
-  throw new Error('process.chdir is not supported');
+  return dir ?? '/';
 };
 processShim.umask = function () {
   return 0;

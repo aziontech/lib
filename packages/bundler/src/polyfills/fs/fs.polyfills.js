@@ -24,6 +24,11 @@ function closeSync(...args) {
   return FS_CONTEXT.closeSync(...args);
 }
 
+function existsSync(path) {
+  path = join(BUILD_PATH_PREFIX, path);
+  return FS_CONTEXT.existsSync(path);
+}
+
 function stat(path, ...args) {
   path = join(BUILD_PATH_PREFIX, path);
   return FS_CONTEXT.stat(path, ...args);
@@ -157,28 +162,16 @@ const W_OK = 2;
 const X_OK = 1;
 
 export {
-  promises,
-  open,
-  openSync,
   close,
   closeSync,
-  stat,
-  statSync,
-  lstat,
-  lstatSync,
-  readFile,
-  readFileSync,
-  readdir,
-  readdirSync,
-  mkdir,
-  rmdir,
+  constants,
   copyFile,
   cp,
-  writeFile,
-  rename,
-  realpath,
-  constants,
+  existsSync,
   F_OK,
+  lstat,
+  lstatSync,
+  mkdir,
   O_APPEND,
   O_CREAT,
   O_DIRECTORY,
@@ -193,8 +186,21 @@ export {
   O_SYNC,
   O_TRUNC,
   O_WRONLY,
+  open,
+  openSync,
+  promises,
   R_OK,
+  readdir,
+  readdirSync,
+  readFile,
+  readFileSync,
+  realpath,
+  rename,
+  rmdir,
+  stat,
+  statSync,
   W_OK,
+  writeFile,
   X_OK,
 };
 
@@ -204,6 +210,7 @@ localFs.open = open;
 localFs.openSync = openSync;
 localFs.close = close;
 localFs.closeSync = closeSync;
+localFs.existsSync = existsSync;
 localFs.stat = stat;
 localFs.statSync = statSync;
 localFs.lstat = lstat;

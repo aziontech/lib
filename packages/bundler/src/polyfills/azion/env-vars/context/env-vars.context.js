@@ -19,31 +19,52 @@ class EnvVarsContext {
     const projectRoot = process.cwd();
     const isWindows = process.platform === 'win32';
     const outputPath = isWindows ? fileURLToPath(new URL(`file:///${join(projectRoot, '.')}`)) : join(projectRoot, '.');
-    const envFilePathRoot = join(outputPath, this.#envFile);
     const envFilePathEdge = join(outputPath, `${this.#pathDefaultEdge}/${this.#envFile}`);
 
-    // Load .env file
-    dotenv.config({ path: [envFilePathRoot, envFilePathEdge] });
+    // Consolidate and merge .env files
+    this.#consolidateEnvFiles(outputPath, envFilePathEdge);
 
-    this.#cloneEnvRootToEdgeEnv(outputPath);
+    // Load the consolidated .env file
+    dotenv.config({ path: envFilePathEdge });
 
     this.#envVars = process.env;
   }
 
   /**
-   * Clone .env file to .edge/.env
+   * Consolidate and merge all .env files into .edge/.env
    * @param {string} outputPath Root path of user project
+   * @param {string} targetEnvFilePath Path to the consolidated .env file
    * @returns {void} - No return
    */
-  #cloneEnvRootToEdgeEnv = async (outputPath) => {
-    const envFilePathRoot = join(outputPath, this.#envFile);
-    if (!existsSync(envFilePathRoot)) return;
-    const envFileBuffer = await fs.promises.readFile(envFilePathRoot);
-    const envFilePath = join(outputPath, `${this.#pathDefaultEdge}/${this.#envFile}`);
-    await fs.promises.mkdir(join(outputPath, this.#pathDefaultEdge), {
-      recursive: true,
-    });
-    await fs.promises.writeFile(envFilePath, envFileBuffer);
+  #consolidateEnvFiles = async (outputPath, targetEnvFilePath) => {
+    const envFiles = [
+      join(outputPath, '.env.local'),
+      join(outputPath, '.env.production'),
+      join(outputPath, '.env.development'),
+      join(outputPath, '.env'),
+    ];
+
+    const mergedEnv = {};
+
+    for (const filePath of envFiles) {
+      if (existsSync(filePath)) {
+        const envConfig = dotenv.parse(await fs.promises.readFile(filePath));
+        for (const [key, value] of Object.entries(envConfig)) {
+          if (!(key in mergedEnv)) {
+            mergedEnv[key] = value; // Only add if the key does not already exist
+          }
+        }
+      }
+    }
+
+    // Ensure the .edge directory exists
+    await fs.promises.mkdir(join(outputPath, this.#pathDefaultEdge), { recursive: true });
+
+    // Write the merged environment variables to the target .env file
+    const mergedEnvContent = Object.entries(mergedEnv)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('\n');
+    await fs.promises.writeFile(targetEnvFilePath, mergedEnvContent);
   };
 
   /**
