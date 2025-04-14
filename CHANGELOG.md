@@ -1,3 +1,10 @@
+### [1.18.2-stage.1](https://github.com/aziontech/lib/compare/v1.18.1...v1.18.2-stage.1) (2025-04-11)
+
+
+### Bug Fixes
+
+* **nextjs-preset:** handle missing files in app-path-routes-manifest ([2587069](https://github.com/aziontech/lib/commit/2587069df973078dffd33e4a5d3dee698d332014))
+
 ### [1.18.1](https://github.com/aziontech/lib/compare/v1.18.0...v1.18.1) (2025-04-10)
 
 

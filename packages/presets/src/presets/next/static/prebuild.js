@@ -99,21 +99,34 @@ async function fixAppDirRoutes() {
   const pathsToCopy = appPagesPaths.filter((path) => !dynamicRoutes.includes(path) && path !== '/');
 
   // fix _next calls in client (static routes in app dir format)
-  pathsToCopy.forEach(async (path) => {
-    const storagePath = '.edge/storage';
-    const filesToCopy = [`${path}.html`, `${path}.txt`];
+  await Promise.all(
+    pathsToCopy.map(async (path) => {
+      const storagePath = '.edge/storage';
+      const filesToCopy = [`${path}.html`, `${path}.txt`];
 
-    const dirPath = getRouteDirPath(path);
-    await mkdir(join(process.cwd(), storagePath, '_next', dirPath), {
-      recursive: true,
-    });
+      const dirPath = getRouteDirPath(path);
+      await mkdir(join(process.cwd(), storagePath, '_next', dirPath), {
+        recursive: true,
+      });
 
-    filesToCopy.forEach(async (file) => {
-      const src = join(process.cwd(), storagePath, file);
-      const dest = join(process.cwd(), storagePath, '_next', file);
-      await copyFile(src, dest);
-    });
-  });
+      await Promise.all(
+        filesToCopy.map(async (file) => {
+          const src = join(process.cwd(), storagePath, file);
+          const dest = join(process.cwd(), storagePath, '_next', file);
+
+          try {
+            await copyFile(src, dest);
+          } catch (error) {
+            if (error.code === 'ENOENT') {
+              // feedback.prebuild.info(`File ${src} does not exist, skipping copy operation`);
+            } else {
+              throw error;
+            }
+          }
+        }),
+      );
+    }),
+  );
 }
 
 /**
@@ -190,7 +203,7 @@ async function prebuild() {
     }
     await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
 
-    // move files to vulcan default path
+    // move files to azion storage local directory
     copyDirectory(outDir, staticsOutputDir);
     rm(outDir, { recursive: true, force: true });
 
