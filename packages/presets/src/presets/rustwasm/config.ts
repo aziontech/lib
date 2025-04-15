@@ -32,15 +32,19 @@ export default defineConfig({
       return context;
     },
   } as AzionBuild,
+  functions: [
+    {
+      name: 'worker',
+      path: '.edge/functions/handler.js',
+    },
+  ],
   rules: {
     request: [
       {
-        name: 'Execute Edge Function',
+        name: 'Execute Edge F nction',
         match: '^\\/',
         behavior: {
-          runFunction: {
-            path: '.edge/worker.js',
-          },
+          runFunction: 'worker',
         },
       },
     ],

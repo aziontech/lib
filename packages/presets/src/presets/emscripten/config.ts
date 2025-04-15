@@ -32,15 +32,19 @@ const config = defineConfig({
       return context;
     },
   } as AzionBuild,
+  functions: [
+    {
+      name: 'handler',
+      path: '.edge/functions/handler.js',
+    },
+  ],
   rules: {
     request: [
       {
         name: 'Execute Edge Function',
         match: '^\\/',
         behavior: {
-          runFunction: {
-            path: '.edge/worker.js',
-          },
+          runFunction: 'worker',
         },
       },
     ],

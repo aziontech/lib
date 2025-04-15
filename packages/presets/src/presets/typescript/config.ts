@@ -2,19 +2,22 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    entry: './index.ts',
     preset: 'typescript',
     polyfills: true,
   },
+  functions: [
+    {
+      name: 'worker',
+      path: '.edge/functions/handler.js',
+    },
+  ],
   rules: {
     request: [
       {
         name: 'Execute Edge Function',
         match: '^\\/',
         behavior: {
-          runFunction: {
-            path: '.edge/worker.js',
-          },
+          runFunction: 'worker',
         },
       },
     ],
