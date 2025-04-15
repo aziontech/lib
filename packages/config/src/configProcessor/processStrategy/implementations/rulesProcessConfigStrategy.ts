@@ -1,3 +1,4 @@
+import { DOCS_MESSAGE } from '../../../constants';
 import { AzionConfig, AzionFirewallCriteriaWithValue } from '../../../types';
 import {
   requestBehaviors,
@@ -39,8 +40,29 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     }
   }
 
+  private validateFunctionReferences(config: AzionConfig) {
+    if (!config?.rules?.request || !config?.functions) {
+      return;
+    }
+
+    const definedFunctions = new Set(config.functions.map((f) => f.name));
+
+    for (const rule of config.rules.request) {
+      if (rule.behavior?.runFunction) {
+        if (!definedFunctions.has(rule.behavior.runFunction)) {
+          throw new Error(
+            `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the functions array. ${DOCS_MESSAGE}`,
+          );
+        }
+      }
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToManifest(config: AzionConfig, context: any) {
+    // Validar referências de funções antes de transformar
+    this.validateFunctionReferences(config);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
     if (config?.rules === undefined || Object.keys(config.rules).length === 0) {

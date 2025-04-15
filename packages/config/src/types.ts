@@ -226,12 +226,7 @@ export type AzionRequestRule = {
       subject: string;
     };
     /** Run a serverless function */
-    runFunction?: {
-      /** Function path */
-      path: string;
-      /** Function name */
-      name?: string | null;
-    };
+    runFunction?: string;
     /** Set cache configuration */
     setCache?:
       | string
@@ -286,12 +281,7 @@ export type AzionResponseRule = {
     /** Filter a header */
     filterHeader?: string | null;
     /** Run a serverless function */
-    runFunction?: {
-      /** Function path */
-      path: string;
-      /** Function name */
-      name?: string | null;
-    };
+    runFunction?: string;
     /** Redirect with 301 status */
     redirectTo301?: string | null;
     /** Redirect with 302 status */
@@ -352,6 +342,18 @@ export type AzionNetworkList = {
 };
 
 /**
+ * Function configuration for Azion.
+ */
+export type AzionFunction = {
+  /** Function name */
+  name: string;
+  /** Function path */
+  path: string;
+  /** Optional arguments to be passed to the function */
+  args?: Record<string, unknown>;
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
@@ -363,6 +365,8 @@ export type AzionConfig = {
   origin?: AzionOrigin[];
   /** Cache configurations */
   cache?: AzionCache[];
+  /** Functions configurations */
+  functions?: AzionFunction[];
   /** Rules configuration */
   rules?: AzionRules;
   /** Purge configurations */
@@ -380,10 +384,7 @@ export type AzionConfig = {
  */
 export type AzionFirewallBehavior = {
   /** Run a serverless function */
-  runFunction?: {
-    /** Function path */
-    path: string;
-  };
+  runFunction?: string;
   /** Set WAF ruleset */
   setWafRuleset?: {
     /** WAF mode */

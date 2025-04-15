@@ -80,9 +80,9 @@ export const requestBehaviors = {
     },
   },
   runFunction: {
-    transform: (value: any) => ({
+    transform: (value: string) => ({
       name: 'run_function',
-      target: value.path,
+      target: value,
     }),
   },
   enableGZIP: {
@@ -226,7 +226,7 @@ export const responseBehaviors = {
   runFunction: {
     transform: (value: any) => ({
       name: 'run_function',
-      target: value.path,
+      target: value,
     }),
   },
   redirectTo301: {
@@ -329,9 +329,8 @@ export const revertRequestBehaviors = {
   },
   run_function: {
     transform: (value: any) => ({
-      runFunction: {
-        path: value,
-      },
+      name: 'run_function',
+      target: value.target,
     }),
   },
   enable_gzip: {
@@ -437,9 +436,8 @@ export const revertResponseBehaviors = {
   },
   run_function: {
     transform: (value: any) => ({
-      runFunction: {
-        path: value,
-      },
+      name: 'run_function',
+      target: value.target,
     }),
   },
   redirect_to_301: {
