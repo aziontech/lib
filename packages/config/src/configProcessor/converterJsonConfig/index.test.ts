@@ -661,6 +661,12 @@ describe('convertJsonConfigToObject', () => {
       });
       it('should correctly process the config rules with runFunction behavior', () => {
         const jsonConfig = {
+          functions: [
+            {
+              name: 'myFunction',
+              path: './functions/myFunction.js',
+            },
+          ],
           rules: [
             {
               name: 'testRule',
@@ -692,7 +698,6 @@ describe('convertJsonConfigToObject', () => {
           expect.arrayContaining([
             expect.objectContaining({
               name: 'testRule',
-              active: true,
               criteria: [
                 {
                   variable: `\${uri}`,
@@ -702,10 +707,9 @@ describe('convertJsonConfigToObject', () => {
                 },
               ],
               description: 'This rule runs a function.',
+              active: true,
               behavior: {
-                runFunction: {
-                  path: 'myFunction',
-                },
+                runFunction: 'myFunction',
               },
             }),
           ]),
@@ -1525,8 +1529,14 @@ describe('convertJsonConfigToObject', () => {
           ]),
         );
       });
-      it('should correctly process the config rules with runFunction behavior', () => {
+      it('should correctly process the config rules with runFunction behavior in response phase', () => {
         const jsonConfig = {
+          functions: [
+            {
+              name: 'myFunction',
+              path: './functions/myFunction.js',
+            },
+          ],
           rules: [
             {
               name: 'testRule',
@@ -1569,9 +1579,7 @@ describe('convertJsonConfigToObject', () => {
               description: 'This rule runs a function.',
               active: true,
               behavior: {
-                runFunction: {
-                  path: 'myFunction',
-                },
+                runFunction: 'myFunction',
               },
             }),
           ]),

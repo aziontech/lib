@@ -224,7 +224,7 @@ export const responseBehaviors = {
     }),
   },
   runFunction: {
-    transform: (value: any) => ({
+    transform: (value: string) => ({
       name: 'run_function',
       target: value,
     }),
@@ -329,8 +329,7 @@ export const revertRequestBehaviors = {
   },
   run_function: {
     transform: (value: any) => ({
-      name: 'run_function',
-      target: value.target,
+      runFunction: value,
     }),
   },
   enable_gzip: {
@@ -436,8 +435,7 @@ export const revertResponseBehaviors = {
   },
   run_function: {
     transform: (value: any) => ({
-      name: 'run_function',
-      target: value.target,
+      runFunction: value,
     }),
   },
   redirect_to_301: {
