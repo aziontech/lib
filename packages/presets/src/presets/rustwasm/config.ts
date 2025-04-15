@@ -3,6 +3,7 @@ import webpack, { Configuration } from 'webpack';
 
 export default defineConfig({
   build: {
+    entry: 'handler.ts',
     preset: 'rustwasm',
     polyfills: false,
     extend: (context: Configuration) => {
@@ -34,7 +35,7 @@ export default defineConfig({
   } as AzionBuild,
   functions: [
     {
-      name: 'worker',
+      name: 'my-rustwasm-function',
       path: '.edge/functions/handler.js',
     },
   ],
@@ -44,7 +45,7 @@ export default defineConfig({
         name: 'Execute Edge F nction',
         match: '^\\/',
         behavior: {
-          runFunction: 'worker',
+          runFunction: 'my-rustwasm-function',
         },
       },
     ],

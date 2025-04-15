@@ -3,6 +3,7 @@ import webpack, { Configuration } from 'webpack';
 
 const config = defineConfig({
   build: {
+    entry: 'handler.ts',
     bundler: 'webpack',
     polyfills: false,
     extend: (context: Configuration) => {
@@ -34,7 +35,7 @@ const config = defineConfig({
   } as AzionBuild,
   functions: [
     {
-      name: 'handler',
+      name: 'my-emscripten-function',
       path: '.edge/functions/handler.js',
     },
   ],
@@ -44,7 +45,7 @@ const config = defineConfig({
         name: 'Execute Edge Function',
         match: '^\\/',
         behavior: {
-          runFunction: 'worker',
+          runFunction: 'my-emscripten-function',
         },
       },
     ],

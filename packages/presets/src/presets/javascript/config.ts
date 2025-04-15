@@ -2,12 +2,13 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
+    entry: 'handler.ts',
     preset: 'javascript',
     polyfills: true,
   },
   functions: [
     {
-      name: 'handler',
+      name: 'my-javascript-function',
       path: '.edge/functions/handler.js',
     },
   ],
@@ -17,7 +18,7 @@ export default defineConfig({
         name: 'Execute Edge Function',
         match: '^\\/',
         behavior: {
-          runFunction: 'handler',
+          runFunction: 'my-javascript-function',
         },
       },
     ],
