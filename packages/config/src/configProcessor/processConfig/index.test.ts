@@ -121,15 +121,19 @@ describe('processConfig', () => {
 
     it('should correctly handle the absence of cache settings', () => {
       const azionConfig: any = {
+        functions: [
+          {
+            name: 'handler',
+            path: '.edge/worker.js',
+          },
+        ],
         rules: {
           request: [
             {
               name: 'testRule',
               match: '/no-cache',
               behavior: {
-                runFunction: {
-                  path: '.edge/worker.js',
-                },
+                runFunction: 'handler',
               },
             },
           ],
@@ -371,29 +375,58 @@ describe('processConfig', () => {
 
     it('should correctly process the runFunction behavior with only the required path', () => {
       const azionConfigWithRunFunctionOnlyPath = {
+        functions: [
+          {
+            name: 'handler',
+            path: '.edge/worker.js',
+          },
+        ],
         rules: {
           request: [
             {
               name: 'testRule',
               match: '/run-function-test-path-only',
               behavior: {
-                runFunction: {
-                  path: '.edge/worker.js',
-                },
+                runFunction: 'handler',
               },
             },
           ],
         },
       };
 
-      const expectedBehaviorPathOnly = {
-        target: '.edge/worker.js',
+      const result = processConfig(azionConfigWithRunFunctionOnlyPath);
+      expect(result.rules[0].behaviors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: 'run_function',
+            target: 'handler',
+          }),
+        ]),
+      );
+    });
+
+    it('should throw an error when runFunction references a non-existent function', () => {
+      const azionConfig = {
+        functions: [
+          {
+            name: 'existingFunction',
+            path: '.edge/worker.js',
+          },
+        ],
+        rules: {
+          request: [
+            {
+              name: 'testRule',
+              match: '/test',
+              behavior: {
+                runFunction: 'nonExistentFunction',
+              },
+            },
+          ],
+        },
       };
 
-      const resultPathOnly = processConfig(azionConfigWithRunFunctionOnlyPath);
-      expect(resultPathOnly.rules[0].behaviors).toEqual(
-        expect.arrayContaining([expect.objectContaining(expectedBehaviorPathOnly)]),
-      );
+      expect(() => processConfig(azionConfig)).toThrow();
     });
 
     it('should include the behavior deliver when deliver is true', () => {
@@ -1709,6 +1742,12 @@ describe('processConfig', () => {
     });
     it('should correctly process rules with criteria', () => {
       const azionConfig: any = {
+        functions: [
+          {
+            name: 'handler',
+            path: '.edge/worker.js',
+          },
+        ],
         rules: {
           request: [
             {
@@ -1722,9 +1761,7 @@ describe('processConfig', () => {
                 },
               ],
               behavior: {
-                runFunction: {
-                  path: '.edge/worker.js',
-                },
+                runFunction: 'handler',
               },
             },
           ],
@@ -1774,6 +1811,12 @@ describe('processConfig', () => {
 
     it('should correctly process multiple criteria conditions', () => {
       const azionConfig: any = {
+        functions: [
+          {
+            name: 'handler',
+            path: '.edge/worker.js',
+          },
+        ],
         rules: {
           request: [
             {
@@ -1793,9 +1836,7 @@ describe('processConfig', () => {
                 },
               ],
               behavior: {
-                runFunction: {
-                  path: '.edge/worker.js',
-                },
+                runFunction: 'handler',
               },
             },
           ],
@@ -1823,6 +1864,12 @@ describe('processConfig', () => {
 
     it('should correctly process criteria with operator without value', () => {
       const azionConfig: any = {
+        functions: [
+          {
+            name: 'handler',
+            path: '.edge/worker.js',
+          },
+        ],
         rules: {
           request: [
             {
@@ -1835,9 +1882,7 @@ describe('processConfig', () => {
                 },
               ],
               behavior: {
-                runFunction: {
-                  path: '.edge/worker.js',
-                },
+                runFunction: 'handler',
               },
             },
           ],

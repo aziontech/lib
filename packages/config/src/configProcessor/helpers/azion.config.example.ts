@@ -115,9 +115,7 @@ export default {
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/compute/',
         behavior: {
-          runFunction: {
-            path: '.edge/worker.js',
-          },
+          runFunction: 'function_name',
         },
       },
       {
@@ -316,9 +314,7 @@ export default {
         variable: 'uri', // Optional, defaults to 'uri' if not provided
         match: '^/compute-result',
         behavior: {
-          runFunction: {
-            path: '.edge/computeResult.js',
-          },
+          runFunction: 'function_name',
           // This rule captures the full URI path and stores it in a variable named 'full_path_arr'.
           capture: {
             match: '^(.*)$', // The regular expression '^(.*)$' captures the entire URI path.
@@ -452,9 +448,7 @@ export default {
         active: true,
         match: '^/api/',
         behavior: {
-          runFunction: {
-            path: '.edge/security.js',
-          },
+          runFunction: 'function_name',
           setRateLimit: {
             type: 'second',
             limitBy: 'clientIp',

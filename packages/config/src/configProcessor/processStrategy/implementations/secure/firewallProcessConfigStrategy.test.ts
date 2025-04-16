@@ -105,6 +105,12 @@ describe('FirewallProcessConfigStrategy', () => {
 
     it('should transform all behavior types correctly', () => {
       const config: AzionConfig = {
+        functions: [
+          {
+            name: 'function1',
+            path: '.edge/functions/function1.js',
+          },
+        ],
         firewall: {
           name: 'Test Firewall',
           rules: [
@@ -112,9 +118,7 @@ describe('FirewallProcessConfigStrategy', () => {
               name: 'All Behaviors Rule',
               active: true,
               behavior: {
-                runFunction: {
-                  path: '/edge/function.js',
-                },
+                runFunction: 'function1',
                 setWafRuleset: {
                   wafMode: 'learning',
                   wafId: '123',
@@ -140,7 +144,7 @@ describe('FirewallProcessConfigStrategy', () => {
       expect(manifest.rules_engine[0].behaviors).toEqual([
         {
           name: 'run_function',
-          target: '/edge/function.js',
+          target: 'function1',
         },
         {
           name: 'set_waf_ruleset',
@@ -276,7 +280,7 @@ describe('FirewallProcessConfigStrategy', () => {
               behaviors: [
                 {
                   name: 'run_function',
-                  target: '/edge/function.js',
+                  target: 'function1',
                 },
                 {
                   name: 'set_waf_ruleset',
@@ -312,7 +316,7 @@ describe('FirewallProcessConfigStrategy', () => {
       const result: any = strategy.transformToConfig(manifest, config);
       expect(result?.rules?.[0].behavior).toEqual({
         runFunction: {
-          path: '/edge/function.js',
+          path: 'function1',
         },
         setWafRuleset: {
           wafMode: 'learning',

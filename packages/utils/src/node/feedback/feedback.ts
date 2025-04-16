@@ -84,10 +84,10 @@ const scopes = (scope: string = 'Azion') => ({
     }),
   },
   prebuild: {
-    ...global(scope).scope(scope, 'Pre-build'),
+    ...global(scope).scope(scope, 'Pre-Build'),
     interactive: getLogger({
       interactive: true,
-      scope: [scope, 'Pre-build'],
+      scope: [scope, 'Pre-Build'],
       types: methods,
     }),
   },
@@ -100,10 +100,18 @@ const scopes = (scope: string = 'Azion') => ({
     }),
   },
   postbuild: {
-    ...global(scope).scope(scope, 'Post-build'),
+    ...global(scope).scope(scope, 'Post-Build'),
     interactive: getLogger({
       interactive: true,
       scope: [scope, 'Post-build'],
+      types: methods,
+    }),
+  },
+  manifest: {
+    ...global(scope).scope(scope, 'IaC'),
+    interactive: getLogger({
+      interactive: true,
+      scope: [scope, 'IaC'],
       types: methods,
     }),
   },

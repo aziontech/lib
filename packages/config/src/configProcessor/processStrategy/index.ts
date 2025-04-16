@@ -7,6 +7,7 @@ import RulesProcessConfigStrategy from '../processStrategy/implementations/rules
 import NetworkListProcessConfigStrategy from '../processStrategy/implementations/secure/networkListProcessConfigStrategy';
 import WafProcessConfigStrategy from '../processStrategy/implementations/secure/wafProcessConfigStrategy';
 import ProcessConfigContext from '../processStrategy/processConfigContext';
+import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
 
 function factoryProcessContext() {
@@ -19,6 +20,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
   processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
+  processConfigContext.setStrategy('functions', new FunctionsProcessConfigStrategy());
   // Rules must be last to apply to behaviors (origin, cache...)
   processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
   return processConfigContext;
