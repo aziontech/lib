@@ -12,6 +12,12 @@ export default defineConfig({
       type: 'object_storage',
     },
   ],
+  functions: [
+    {
+      name: 'handler',
+      path: '.edge/functions/handler.js',
+    },
+  ],
   rules: {
     request: [
       {
@@ -40,9 +46,7 @@ export default defineConfig({
         name: 'Execute Edge Function',
         match: '^/',
         behavior: {
-          runFunction: {
-            path: '.edge/worker.js',
-          },
+          runFunction: 'handler',
           forwardCookies: true,
         },
       },

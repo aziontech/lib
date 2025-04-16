@@ -67,7 +67,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     if (behavior.runFunction) {
       behaviors.push({
         name: 'run_function',
-        target: behavior.runFunction.path,
+        target: behavior.runFunction,
       });
     }
 
