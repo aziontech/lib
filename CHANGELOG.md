@@ -1,3 +1,10 @@
+## [1.19.0-stage.1](https://github.com/aziontech/lib/compare/v1.18.2...v1.19.0-stage.1) (2025-04-16)
+
+
+### Features
+
+* instantiation multiple function in iac ([9084c75](https://github.com/aziontech/lib/commit/9084c753d398f3df2d4051cbec2ab58ca54bab50))
+
 ### [1.18.2](https://github.com/aziontech/lib/compare/v1.18.1...v1.18.2) (2025-04-14)
 
 
