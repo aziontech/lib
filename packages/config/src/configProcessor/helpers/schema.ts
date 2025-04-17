@@ -258,9 +258,7 @@ const createRuleSchema = (isRequestPhase = false) => ({
         },
         runFunction: {
           type: 'string',
-          errorMessage: withDocs(
-            "The 'runFunction' behavior must be the name of a function defined in the 'functions' array",
-          ),
+          errorMessage: withDocs("The 'runFunction' behavior must be a string"),
         },
         setWafRuleset: {
           type: 'object',
@@ -444,953 +442,909 @@ const createRuleSchema = (isRequestPhase = false) => ({
 });
 
 const azionConfigSchema = {
-  type: 'object',
-  properties: {
-    build: {
+  $id: 'azionConfig',
+  definitions: {
+    mainConfig: {
       type: 'object',
       properties: {
-        entry: {
-          oneOf: [
-            {
-              type: 'string',
-              errorMessage: withDocs("When using a string, the 'entry' field must be a valid file path"),
-            },
-            {
-              type: 'array',
-              items: { type: 'string' },
-              errorMessage: withDocs("When using an array, the 'entry' field must be an array of file paths"),
-            },
-            {
-              type: 'object',
-              patternProperties: {
-                '.*': { type: 'string' },
-              },
+        build: {
+          type: 'object',
+          properties: {
+            entry: {
+              oneOf: [
+                { type: 'string' },
+                { type: 'array', items: { type: 'string' } },
+                { type: 'object', additionalProperties: { type: 'string' } },
+              ],
               errorMessage: withDocs(
-                "When using an object, the 'entry' field must be a map of output paths to input files",
+                "The 'build.entry' must be a string, array of strings, or object with string values",
               ),
             },
-          ],
-          errorMessage: withDocs(
-            "The 'entry' field must be either a string, array of strings, or object mapping outputs to inputs",
-          ),
-        },
-        bundler: {
-          type: ['string', 'null'],
-          enum: ['esbuild', 'webpack', null],
-          errorMessage: withDocs("The 'bundler' field must be either 'esbuild', 'webpack', or null."),
-        },
-        polyfills: {
-          type: 'boolean',
-          errorMessage: withDocs("The 'polyfills' field must be a boolean."),
-        },
-        worker: {
-          type: 'boolean',
-          errorMessage: withDocs("The 'worker' field must be a boolean."),
-        },
-        preset: {
-          oneOf: [
-            {
+            bundler: {
               type: 'string',
-              errorMessage: withDocs("When using a string, the 'preset' must be a valid preset name"),
+              enum: ['webpack', 'esbuild'],
+              errorMessage: withDocs("The 'build.bundler' must be either 'webpack' or 'esbuild'"),
             },
-            {
+            preset: {
               type: 'object',
               properties: {
-                config: {
-                  type: 'object',
-                  additionalProperties: true,
-                  errorMessage: withDocs("The 'preset.config' must be a valid Azion configuration object"),
-                },
-                handler: {
-                  instanceof: 'Function',
-                  errorMessage: withDocs("The 'preset.handler' must be a valid function that handles fetch events"),
-                },
-                prebuild: {
-                  instanceof: 'Function',
-                  errorMessage: withDocs("The 'preset.prebuild' must be a function that runs before the build process"),
-                },
-                postbuild: {
-                  instanceof: 'Function',
-                  errorMessage: withDocs("The 'preset.postbuild' must be a function that runs after the build process"),
-                },
                 metadata: {
                   type: 'object',
                   properties: {
                     name: {
                       type: 'string',
-                      errorMessage: withDocs("The 'preset.metadata.name' must be a string identifying the preset"),
-                    },
-                    registry: {
-                      type: 'string',
-                      errorMessage: withDocs("The 'preset.metadata.registry' must be a string when provided"),
+                      errorMessage: withDocs("The 'name' field in preset metadata must be a string"),
                     },
                     ext: {
                       type: 'string',
-                      errorMessage: withDocs("The 'preset.metadata.ext' must be a string when provided"),
+                      errorMessage: withDocs("The 'ext' field in preset metadata must be a string"),
                     },
                   },
                   required: ['name'],
-                  additionalProperties: true,
-                  errorMessage: {
-                    type: withDocs("The 'preset.metadata' must be an object"),
-                    required: withDocs("The 'preset.metadata.name' field is required"),
-                    additionalProperties: withDocs('Additional properties are allowed in preset.metadata'),
-                  },
-                },
-              },
-              required: ['config', 'metadata'],
-              additionalProperties: false,
-              errorMessage: {
-                type: withDocs('The preset must be an object with the correct structure'),
-                required: withDocs("The preset object must contain both 'config' and 'metadata' properties"),
-                additionalProperties: withDocs(
-                  'No additional properties are allowed in the preset object beyond the specified fields',
-                ),
-              },
-            },
-          ],
-          errorMessage: withDocs("The 'preset' must be either a string (preset name) or a valid preset object"),
-        },
-        memoryFS: {
-          type: 'object',
-          properties: {
-            injectionDirs: {
-              type: ['array', 'null'],
-              items: {
-                type: 'string',
-              },
-              errorMessage: withDocs("The 'memoryFS.injectionDirs' field must be an array of strings or null."),
-            },
-            removePathPrefix: {
-              type: ['string', 'null'],
-              errorMessage: withDocs("The 'memoryFS.removePathPrefix' field must be a string or null."),
-            },
-          },
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: withDocs("No additional properties are allowed in the 'memoryFS' object."),
-          },
-        },
-        custom: {
-          type: 'object',
-          additionalProperties: true,
-          errorMessage: withDocs("The 'custom' field must be an object."),
-        },
-      },
-      additionalProperties: true, // this is temp, we need to validate the build (extend) function
-      errorMessage: withDocs({
-        type: "The 'build' field must be an object.",
-      }),
-    },
-    origin: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'integer',
-            errorMessage: withDocs("The 'id' field must be a number."),
-          },
-          key: {
-            type: 'string',
-            errorMessage: withDocs("The 'key' field must be a string."),
-          },
-          name: {
-            type: 'string',
-            errorMessage: withDocs("The 'name' field must be a string."),
-          },
-          type: {
-            type: 'string',
-            enum: ['single_origin', 'object_storage', 'load_balancer', 'live_ingest'],
-            errorMessage: withDocs(
-              "The 'type' field must be a string and one of 'single_origin', 'object_storage', 'load_balancer' or 'live_ingest'.",
-            ),
-          },
-          bucket: {
-            type: ['string', 'null'],
-            errorMessage: withDocs("The 'bucket' field must be a string or null."),
-          },
-          prefix: {
-            type: ['string', 'null'],
-            errorMessage: withDocs("The 'prefix' field must be a string or null."),
-          },
-          addresses: {
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-                errorMessage: {
-                  type: withDocs("The 'addresses' field must be an array of strings."),
-                },
-              },
-              {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    address: {
-                      type: 'string',
-                      errorMessage: withDocs("The 'address' field must be a string."),
-                    },
-                    weight: {
-                      type: 'integer',
-                    },
-                  },
-                  required: ['address'],
                   additionalProperties: false,
                   errorMessage: {
-                    type: withDocs("The 'addresses' field must be an array of objects."),
-                    additionalProperties: withDocs('No additional properties are allowed in address items.'),
-                    required: withDocs("The 'address' field is required in each address item."),
+                    required: withDocs("The 'name' field is required in preset metadata"),
+                    type: withDocs('Preset metadata must be an object'),
                   },
                 },
-              },
-            ],
-          },
-          hostHeader: {
-            type: 'string',
-            errorMessage: withDocs("The 'hostHeader' field must be a string."),
-          },
-          protocolPolicy: {
-            type: 'string',
-            enum: ['preserve', 'http', 'https'],
-            errorMessage: withDocs(
-              "The 'protocolPolicy' field must be either 'http', 'https' or 'preserve'. Default is 'preserve'.",
-            ),
-          },
-          redirection: {
-            type: 'boolean',
-            errorMessage: withDocs("The 'redirection' field must be a boolean."),
-          },
-          method: {
-            type: 'string',
-            enum: ['ip_hash', 'least_connections', 'round_robin'],
-            errorMessage: withDocs(
-              "The 'method' field must be either 'ip_hash', 'least_connections' or 'round_robin'. Default is 'ip_hash'.",
-            ),
-          },
-          path: {
-            type: 'string',
-            errorMessage: withDocs("The 'path' field must be a string."),
-          },
-          connectionTimeout: {
-            type: 'integer',
-            errorMessage: withDocs("The 'connectionTimeout' field must be a number. Default is 60."),
-          },
-          timeoutBetweenBytes: {
-            type: 'integer',
-            errorMessage: withDocs("The 'timeoutBetweenBytes' field must be a number. Default is 120."),
-          },
-          hmac: {
-            type: 'object',
-            properties: {
-              region: {
-                type: 'string',
-                errorMessage: withDocs("The 'region' field must be a string."),
-              },
-              accessKey: {
-                type: 'string',
-                errorMessage: withDocs("The 'accessKey' field must be a string."),
-              },
-              secretKey: {
-                type: 'string',
-                errorMessage: withDocs("The 'secretKey' field must be a string."),
-              },
-            },
-            required: ['region', 'accessKey', 'secretKey'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the hmac object.'),
-              required: withDocs("The 'region, accessKey and secretKey' fields are required in the hmac object."),
-            },
-          },
-        },
-        required: ['name', 'type'],
-        additionalProperties: false,
-        errorMessage: {
-          additionalProperties: withDocs('No additional properties are allowed in origin item objects.'),
-          required: withDocs("The 'name and type' field is required in each origin item."),
-        },
-      },
-      errorMessage: {
-        additionalProperties: withDocs("The 'origin' field must be an array of objects."),
-      },
-    },
-    cache: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            errorMessage: withDocs("The 'name' field must be a string."),
-          },
-          stale: {
-            type: 'boolean',
-            errorMessage: withDocs("The 'stale' field must be a boolean."),
-          },
-          queryStringSort: {
-            type: 'boolean',
-            errorMessage: withDocs("The 'queryStringSort' field must be a boolean."),
-          },
-          methods: {
-            type: 'object',
-            properties: {
-              post: {
-                type: 'boolean',
-                errorMessage: withDocs("The 'post' field must be a boolean."),
-              },
-              options: {
-                type: 'boolean',
-                errorMessage: withDocs("The 'options' field must be a boolean."),
-              },
-            },
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs("No additional properties are allowed in the 'methods' object."),
-            },
-          },
-          browser: {
-            type: 'object',
-            properties: {
-              maxAgeSeconds: {
-                oneOf: [
-                  {
-                    type: 'number',
-                    errorMessage: withDocs(
-                      "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
-                    ),
-                  },
-                  {
-                    type: 'string',
-                    pattern: '^[0-9+*/.() -]+$',
-                    errorMessage: withDocs("The 'maxAgeSeconds' field must be a valid mathematical expression."),
-                  },
-                ],
-              },
-            },
-            required: ['maxAgeSeconds'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs("No additional properties are allowed in the 'browser' object."),
-              required: withDocs("The 'maxAgeSeconds' field is required in the 'browser' object."),
-            },
-          },
-          edge: {
-            type: 'object',
-            properties: {
-              maxAgeSeconds: {
-                oneOf: [
-                  {
-                    type: 'number',
-                    errorMessage: withDocs(
-                      "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
-                    ),
-                  },
-                  {
-                    type: 'string',
-                    pattern: '^[0-9+*/.() -]+$',
-                    errorMessage: withDocs("The 'maxAgeSeconds' field must be a valid mathematical expression."),
-                  },
-                ],
-              },
-            },
-            required: ['maxAgeSeconds'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs("No additional properties are allowed in the 'edge' object."),
-              required: withDocs("The 'maxAgeSeconds' field is required in the 'edge' object."),
-            },
-          },
-          cacheByCookie: {
-            type: 'object',
-            properties: {
-              option: {
-                type: 'string',
-                enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
-                errorMessage: withDocs(
-                  "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'..",
-                ),
-              },
-              list: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  errorMessage: withDocs("Each item in 'list' must be a string."),
-                },
-                errorMessage: {
-                  type: withDocs("The 'list' field must be an array of strings."),
+                config: {
+                  $ref: '#/definitions/mainConfig',
                 },
               },
+              required: ['metadata', 'config'],
+              errorMessage: {
+                required: withDocs("Preset must contain both 'metadata' and 'config' properties"),
+                type: withDocs('Preset must be an object'),
+              },
             },
-            required: ['option'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs("No additional properties are allowed in the 'cacheByCookie' object."),
-              required: withDocs("The 'option' field is required in the 'cacheByCookie' object."),
+            polyfills: {
+              type: 'boolean',
+              errorMessage: withDocs("The 'build.polyfills' must be a boolean"),
             },
-            if: {
+            worker: {
+              type: 'boolean',
+              errorMessage: withDocs("The 'build.worker' must be a boolean"),
+            },
+            extend: {
+              instanceof: 'Function',
+              errorMessage: withDocs("The 'build.extend' must be a function"),
+            },
+            memoryFS: {
+              type: 'object',
               properties: {
-                option: { enum: ['whitelist', 'blacklist'] },
-              },
-            },
-            then: {
-              required: ['list'],
-              errorMessage: {
-                required: withDocs("The 'list' field is required when 'option' is 'whitelist' or 'blacklist'."),
-              },
-            },
-          },
-
-          cacheByQueryString: {
-            type: 'object',
-            properties: {
-              option: {
-                type: 'string',
-                enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
-                errorMessage: withDocs(
-                  "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'.",
-                ),
-              },
-              list: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  errorMessage: withDocs("Each item in 'list' must be a string."),
+                injectionDirs: {
+                  type: 'array',
+                  items: { type: 'string' },
                 },
-                errorMessage: {
-                  type: withDocs("The 'list' field must be an array of strings."),
-                },
+                removePathPrefix: { type: 'string' },
               },
-            },
-            required: ['option'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs(
-                "No additional properties are allowed in the 'cacheByQueryString' object.",
-              ),
-              required: withDocs("The 'option' field is required in the 'cacheByQueryString' object."),
-            },
-            if: {
-              properties: {
-                option: { enum: ['whitelist', 'blacklist'] },
-              },
-            },
-            then: {
-              required: ['list'],
-              errorMessage: {
-                required: withDocs("The 'list' field is required when 'option' is 'whitelist' or 'blacklist'."),
-              },
+              required: ['injectionDirs', 'removePathPrefix'],
+              additionalProperties: false,
             },
           },
-        },
-        required: ['name'],
-        additionalProperties: false,
-        errorMessage: {
-          additionalProperties: withDocs('No additional properties are allowed in cache item objects.'),
-          required: withDocs("The 'name' field is required in each cache item."),
-        },
-      },
-      errorMessage: {
-        additionalProperties: withDocs("The 'cache' field must be an array of objects."),
-      },
-    },
-    rules: {
-      type: 'object',
-      properties: {
-        request: {
-          type: 'array',
-          items: createRuleSchema(true),
-        },
-        response: {
-          type: 'array',
-          items: createRuleSchema(false),
-        },
-      },
-      additionalProperties: false,
-      errorMessage: {
-        additionalProperties: withDocs("No additional properties are allowed in the 'rules' object"),
-        anyOf: withDocs("Either 'request' or 'response' must be provided"),
-      },
-    },
-    networkList: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'number',
-            errorMessage: withDocs("The 'id' field must be a number."),
-          },
-          listType: {
-            type: 'string',
-            enum: NETWORK_LIST_TYPES,
-            errorMessage: withDocs(
-              "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
-            ),
-          },
-          listContent: {
-            type: 'array',
-            items: {
-              type: ['string', 'number'],
-              errorMessage: withDocs("The 'listContent' field must be an array of strings or numbers."),
-            },
-          },
-        },
-        required: ['id', 'listType', 'listContent'],
-        additionalProperties: false,
-        errorMessage: {
-          additionalProperties: withDocs('No additional properties are allowed in network list items.'),
-          required: withDocs("The 'id, listType and listContent' fields are required in each network list item."),
-        },
-      },
-    },
-    domain: {
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          errorMessage: withDocs("The 'name' field must be a string."),
-        },
-        cnameAccessOnly: {
-          type: 'boolean',
-          errorMessage: withDocs("The 'cnameAccessOnly' field must be a boolean."),
-        },
-        cnames: {
-          type: 'array',
-          items: {
-            type: 'string',
-            errorMessage: withDocs("Each item in 'cnames' must be a string."),
-          },
-          errorMessage: {
-            type: withDocs("The 'cnames' field must be an array of strings."),
-          },
-        },
-        edgeApplicationId: {
-          type: 'number',
-          errorMessage: withDocs("The 'edgeApplicationId' field must be a number."),
-        },
-        edgeFirewallId: {
-          type: 'number',
-          errorMessage: withDocs("The 'edgeFirewallId' field must be a number."),
-        },
-        digitalCertificateId: {
-          type: ['string', 'number', 'null'],
-          errorMessage: withDocs(
-            "The 'digitalCertificateId' field must be a string, number or null. If string, it must be 'lets_encrypt'.",
-          ),
-        },
-        active: {
-          type: 'boolean',
-          errorMessage: withDocs("The 'active' field must be a boolean."),
-        },
-        mtls: {
-          type: 'object',
-          properties: {
-            verification: {
-              type: 'string',
-              enum: ['enforce', 'permissive'],
-              errorMessage: withDocs("The 'verification' field must be a string."),
-            },
-            trustedCaCertificateId: {
-              type: 'number',
-              errorMessage: withDocs("The 'trustedCaCertificateId' field must be a number."),
-            },
-            crlList: {
-              type: 'array',
-              items: {
-                type: 'number',
-                errorMessage: withDocs("Each item in 'crlList' must be a number."),
-              },
-              errorMessage: {
-                type: withDocs("The 'crlList' field must be an array of numbers."),
-              },
-            },
-          },
-          required: ['verification', 'trustedCaCertificateId'],
           additionalProperties: false,
           errorMessage: {
-            additionalProperties: withDocs('No additional properties are allowed in the mtls object.'),
-            required: withDocs("The 'verification and trustedCaCertificateId' fields are required in the mtls object."),
+            additionalProperties: withDocs("No additional properties are allowed in the 'build' object"),
           },
         },
-      },
-      required: ['name'],
-      additionalProperties: false,
-      errorMessage: {
-        type: withDocs("The 'domain' field must be an object."),
-        additionalProperties: withDocs('No additional properties are allowed in the domain object.'),
-        required: withDocs("The 'name' field is required in the domain object."),
-      },
-    },
-    purge: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            enum: ['url', 'cachekey', 'wildcard'],
-            errorMessage: withDocs("The 'type' field must be either 'url', 'cachekey' or 'wildcard'."),
-          },
-          urls: {
-            type: 'array',
-            items: {
-              type: 'string',
-              errorMessage: withDocs("Each item in 'urls' must be a string."),
-            },
-            errorMessage: {
-              type: withDocs("The 'urls' field must be an array of strings."),
-            },
-          },
-          method: {
-            type: 'string',
-            enum: ['delete'],
-            errorMessage: withDocs("The 'method' field must be either 'delete'. Default is 'delete'."),
-          },
-          layer: {
-            type: 'string',
-            enum: ['edge_caching', 'l2_caching'],
-            errorMessage: withDocs(
-              "The 'layer' field must be either 'edge_caching' or 'l2_caching'. Default is 'edge_caching'.",
-            ),
-          },
-        },
-        required: ['type', 'urls'],
-        additionalProperties: false,
-        errorMessage: {
-          additionalProperties: withDocs('No additional properties are allowed in purge items.'),
-          required: withDocs("The 'type and urls' fields are required in each purge item."),
-        },
-      },
-    },
-    firewall: {
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          errorMessage: withDocs("The firewall configuration must have a 'name' field of type string"),
-        },
-        domains: {
-          type: 'array',
-          items: {
-            type: 'string',
-            errorMessage: withDocs("Each domain in the firewall's domains list must be a string"),
-          },
-        },
-        active: {
-          type: 'boolean',
-          errorMessage: withDocs("The firewall's 'active' field must be a boolean"),
-        },
-        debugRules: {
-          type: 'boolean',
-          errorMessage: withDocs("The firewall's 'debugRules' field must be a boolean"),
-        },
-        edgeFunctions: {
-          type: 'boolean',
-          errorMessage: withDocs("The firewall's 'edgeFunctions' field must be a boolean"),
-        },
-        networkProtection: {
-          type: 'boolean',
-          errorMessage: withDocs("The firewall's 'networkProtection' field must be a boolean"),
-        },
-        waf: {
-          type: 'boolean',
-          errorMessage: withDocs("The firewall's 'waf' field must be a boolean"),
-        },
-        variable: {
-          type: 'string',
-          enum: FIREWALL_VARIABLES,
-          errorMessage: withDocs(`The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`),
-        },
-        rules: {
+        functions: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
               name: {
                 type: 'string',
-                errorMessage: withDocs("Each firewall rule must have a 'name' field of type string"),
+                errorMessage: withDocs("The function's 'name' field must be a string"),
               },
-              description: {
+              path: {
                 type: 'string',
-                errorMessage: withDocs("The rule's 'description' field must be a string"),
+                errorMessage: withDocs("The function's 'path' field must be a string"),
+              },
+              args: {
+                type: 'object',
+                additionalProperties: true,
+                errorMessage: withDocs("The function's 'args' field must be an object"),
+              },
+            },
+            required: ['name', 'path'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: withDocs('No additional properties are allowed in function items'),
+              required: withDocs("Both 'name' and 'path' fields are required for each function"),
+            },
+          },
+        },
+        rules: {
+          type: 'object',
+          properties: {
+            request: {
+              type: 'array',
+              items: createRuleSchema(true),
+            },
+            response: {
+              type: 'array',
+              items: createRuleSchema(false),
+            },
+          },
+          additionalProperties: false,
+        },
+        origin: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'integer',
+                errorMessage: withDocs("The 'id' field must be a number."),
+              },
+              key: {
+                type: 'string',
+                errorMessage: withDocs("The 'key' field must be a string."),
+              },
+              name: {
+                type: 'string',
+                errorMessage: withDocs("The 'name' field must be a string."),
+              },
+              type: {
+                type: 'string',
+                enum: ['single_origin', 'object_storage', 'load_balancer', 'live_ingest'],
+                errorMessage: withDocs(
+                  "The 'type' field must be a string and one of 'single_origin', 'object_storage', 'load_balancer' or 'live_ingest'.",
+                ),
+              },
+              bucket: {
+                type: ['string', 'null'],
+                errorMessage: withDocs("The 'bucket' field must be a string or null."),
+              },
+              prefix: {
+                type: ['string', 'null'],
+                errorMessage: withDocs("The 'prefix' field must be a string or null."),
+              },
+              addresses: {
+                anyOf: [
+                  {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                    errorMessage: {
+                      type: withDocs("The 'addresses' field must be an array of strings."),
+                    },
+                  },
+                  {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        address: {
+                          type: 'string',
+                          errorMessage: withDocs("The 'address' field must be a string."),
+                        },
+                        weight: {
+                          type: 'integer',
+                        },
+                      },
+                      required: ['address'],
+                      additionalProperties: false,
+                      errorMessage: {
+                        type: withDocs("The 'addresses' field must be an array of objects."),
+                        additionalProperties: withDocs('No additional properties are allowed in address items.'),
+                        required: withDocs("The 'address' field is required in each address item."),
+                      },
+                    },
+                  },
+                ],
+              },
+              hostHeader: {
+                type: 'string',
+                errorMessage: withDocs("The 'hostHeader' field must be a string."),
+              },
+              protocolPolicy: {
+                type: 'string',
+                enum: ['preserve', 'http', 'https'],
+                errorMessage: withDocs(
+                  "The 'protocolPolicy' field must be either 'http', 'https' or 'preserve'. Default is 'preserve'.",
+                ),
+              },
+              redirection: {
+                type: 'boolean',
+                errorMessage: withDocs("The 'redirection' field must be a boolean."),
+              },
+              method: {
+                type: 'string',
+                enum: ['ip_hash', 'least_connections', 'round_robin'],
+                errorMessage: withDocs(
+                  "The 'method' field must be either 'ip_hash', 'least_connections' or 'round_robin'. Default is 'ip_hash'.",
+                ),
+              },
+              path: {
+                type: 'string',
+                errorMessage: withDocs("The 'path' field must be a string."),
+              },
+              connectionTimeout: {
+                type: 'integer',
+                errorMessage: withDocs("The 'connectionTimeout' field must be a number. Default is 60."),
+              },
+              timeoutBetweenBytes: {
+                type: 'integer',
+                errorMessage: withDocs("The 'timeoutBetweenBytes' field must be a number. Default is 120."),
+              },
+              hmac: {
+                type: 'object',
+                properties: {
+                  region: {
+                    type: 'string',
+                    errorMessage: withDocs("The 'region' field must be a string."),
+                  },
+                  accessKey: {
+                    type: 'string',
+                    errorMessage: withDocs("The 'accessKey' field must be a string."),
+                  },
+                  secretKey: {
+                    type: 'string',
+                    errorMessage: withDocs("The 'secretKey' field must be a string."),
+                  },
+                },
+                required: ['region', 'accessKey', 'secretKey'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs('No additional properties are allowed in the hmac object.'),
+                  required: withDocs("The 'region, accessKey and secretKey' fields are required in the hmac object."),
+                },
+              },
+            },
+            required: ['name', 'type'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: withDocs('No additional properties are allowed in origin item objects.'),
+              required: withDocs("The 'name and type' field is required in each origin item."),
+            },
+          },
+          errorMessage: {
+            additionalProperties: withDocs("The 'origin' field must be an array of objects."),
+          },
+        },
+        cache: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                errorMessage: withDocs("The 'name' field must be a string."),
+              },
+              stale: {
+                type: 'boolean',
+                errorMessage: withDocs("The 'stale' field must be a boolean."),
+              },
+              queryStringSort: {
+                type: 'boolean',
+                errorMessage: withDocs("The 'queryStringSort' field must be a boolean."),
+              },
+              methods: {
+                type: 'object',
+                properties: {
+                  post: {
+                    type: 'boolean',
+                    errorMessage: withDocs("The 'post' field must be a boolean."),
+                  },
+                  options: {
+                    type: 'boolean',
+                    errorMessage: withDocs("The 'options' field must be a boolean."),
+                  },
+                },
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs("No additional properties are allowed in the 'methods' object."),
+                },
+              },
+              browser: {
+                type: 'object',
+                properties: {
+                  maxAgeSeconds: {
+                    oneOf: [
+                      {
+                        type: 'number',
+                        errorMessage: withDocs(
+                          "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
+                        ),
+                      },
+                      {
+                        type: 'string',
+                        pattern: '^[0-9+*/.() -]+$',
+                        errorMessage: withDocs("The 'maxAgeSeconds' field must be a valid mathematical expression."),
+                      },
+                    ],
+                  },
+                },
+                required: ['maxAgeSeconds'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs("No additional properties are allowed in the 'browser' object."),
+                  required: withDocs("The 'maxAgeSeconds' field is required in the 'browser' object."),
+                },
+              },
+              edge: {
+                type: 'object',
+                properties: {
+                  maxAgeSeconds: {
+                    oneOf: [
+                      {
+                        type: 'number',
+                        errorMessage: withDocs(
+                          "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
+                        ),
+                      },
+                      {
+                        type: 'string',
+                        pattern: '^[0-9+*/.() -]+$',
+                        errorMessage: withDocs("The 'maxAgeSeconds' field must be a valid mathematical expression."),
+                      },
+                    ],
+                  },
+                },
+                required: ['maxAgeSeconds'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs("No additional properties are allowed in the 'edge' object."),
+                  required: withDocs("The 'maxAgeSeconds' field is required in the 'edge' object."),
+                },
+              },
+              cacheByCookie: {
+                type: 'object',
+                properties: {
+                  option: {
+                    type: 'string',
+                    enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
+                    errorMessage: withDocs(
+                      "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'..",
+                    ),
+                  },
+                  list: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      errorMessage: withDocs("Each item in 'list' must be a string."),
+                    },
+                    errorMessage: {
+                      type: withDocs("The 'list' field must be an array of strings."),
+                    },
+                  },
+                },
+                required: ['option'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs("No additional properties are allowed in the 'cacheByCookie' object."),
+                  required: withDocs("The 'option' field is required in the 'cacheByCookie' object."),
+                },
+                if: {
+                  properties: {
+                    option: { enum: ['whitelist', 'blacklist'] },
+                  },
+                },
+                then: {
+                  required: ['list'],
+                  errorMessage: {
+                    required: withDocs("The 'list' field is required when 'option' is 'whitelist' or 'blacklist'."),
+                  },
+                },
+              },
+
+              cacheByQueryString: {
+                type: 'object',
+                properties: {
+                  option: {
+                    type: 'string',
+                    enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
+                    errorMessage: withDocs(
+                      "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'.",
+                    ),
+                  },
+                  list: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      errorMessage: withDocs("Each item in 'list' must be a string."),
+                    },
+                    errorMessage: {
+                      type: withDocs("The 'list' field must be an array of strings."),
+                    },
+                  },
+                },
+                required: ['option'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs(
+                    "No additional properties are allowed in the 'cacheByQueryString' object.",
+                  ),
+                  required: withDocs("The 'option' field is required in the 'cacheByQueryString' object."),
+                },
+                if: {
+                  properties: {
+                    option: { enum: ['whitelist', 'blacklist'] },
+                  },
+                },
+                then: {
+                  required: ['list'],
+                  errorMessage: {
+                    required: withDocs("The 'list' field is required when 'option' is 'whitelist' or 'blacklist'."),
+                  },
+                },
+              },
+            },
+            required: ['name'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: withDocs('No additional properties are allowed in cache item objects.'),
+              required: withDocs("The 'name' field is required in each cache item."),
+            },
+          },
+          errorMessage: {
+            additionalProperties: withDocs("The 'cache' field must be an array of objects."),
+          },
+        },
+        networkList: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'number',
+                errorMessage: withDocs("The 'id' field must be a number."),
+              },
+              listType: {
+                type: 'string',
+                enum: NETWORK_LIST_TYPES,
+                errorMessage: withDocs(
+                  "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
+                ),
+              },
+              listContent: {
+                type: 'array',
+                items: {
+                  type: ['string', 'number'],
+                  errorMessage: withDocs("The 'listContent' field must be an array of strings or numbers."),
+                },
+              },
+            },
+            required: ['id', 'listType', 'listContent'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: withDocs('No additional properties are allowed in network list items.'),
+              required: withDocs("The 'id, listType and listContent' fields are required in each network list item."),
+            },
+          },
+        },
+        domain: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: withDocs("The 'name' field must be a string."),
+            },
+            cnameAccessOnly: {
+              type: 'boolean',
+              errorMessage: withDocs("The 'cnameAccessOnly' field must be a boolean."),
+            },
+            cnames: {
+              type: 'array',
+              items: {
+                type: 'string',
+                errorMessage: withDocs("Each item in 'cnames' must be a string."),
+              },
+              errorMessage: {
+                type: withDocs("The 'cnames' field must be an array of strings."),
+              },
+            },
+            edgeApplicationId: {
+              type: 'number',
+              errorMessage: withDocs("The 'edgeApplicationId' field must be a number."),
+            },
+            edgeFirewallId: {
+              type: 'number',
+              errorMessage: withDocs("The 'edgeFirewallId' field must be a number."),
+            },
+            digitalCertificateId: {
+              type: ['string', 'number', 'null'],
+              errorMessage: withDocs(
+                "The 'digitalCertificateId' field must be a string, number or null. If string, it must be 'lets_encrypt'.",
+              ),
+            },
+            active: {
+              type: 'boolean',
+              errorMessage: withDocs("The 'active' field must be a boolean."),
+            },
+            mtls: {
+              type: 'object',
+              properties: {
+                verification: {
+                  type: 'string',
+                  enum: ['enforce', 'permissive'],
+                  errorMessage: withDocs("The 'verification' field must be a string."),
+                },
+                trustedCaCertificateId: {
+                  type: 'number',
+                  errorMessage: withDocs("The 'trustedCaCertificateId' field must be a number."),
+                },
+                crlList: {
+                  type: 'array',
+                  items: {
+                    type: 'number',
+                    errorMessage: withDocs("Each item in 'crlList' must be a number."),
+                  },
+                  errorMessage: {
+                    type: withDocs("The 'crlList' field must be an array of numbers."),
+                  },
+                },
+              },
+              required: ['verification', 'trustedCaCertificateId'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: withDocs('No additional properties are allowed in the mtls object.'),
+                required: withDocs(
+                  "The 'verification and trustedCaCertificateId' fields are required in the mtls object.",
+                ),
+              },
+            },
+          },
+          additionalProperties: false,
+        },
+        purge: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                enum: ['url', 'cachekey', 'wildcard'],
+                errorMessage: withDocs("The 'type' field must be either 'url', 'cachekey' or 'wildcard'."),
+              },
+              urls: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  errorMessage: withDocs("Each item in 'urls' must be a string."),
+                },
+                errorMessage: {
+                  type: withDocs("The 'urls' field must be an array of strings."),
+                },
+              },
+              method: {
+                type: 'string',
+                enum: ['delete'],
+                errorMessage: withDocs("The 'method' field must be either 'delete'. Default is 'delete'."),
+              },
+              layer: {
+                type: 'string',
+                enum: ['edge_caching', 'l2_caching'],
+                errorMessage: withDocs(
+                  "The 'layer' field must be either 'edge_caching' or 'l2_caching'. Default is 'edge_caching'.",
+                ),
+              },
+            },
+            required: ['type', 'urls'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: withDocs('No additional properties are allowed in purge items.'),
+              required: withDocs("The 'type and urls' fields are required in each purge item."),
+            },
+          },
+        },
+        firewall: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              errorMessage: withDocs("The firewall configuration must have a 'name' field of type string"),
+            },
+            domains: {
+              type: 'array',
+              items: {
+                type: 'string',
+                errorMessage: withDocs("Each domain in the firewall's domains list must be a string"),
+              },
+            },
+            active: {
+              type: 'boolean',
+              errorMessage: withDocs("The firewall's 'active' field must be a boolean"),
+            },
+            debugRules: {
+              type: 'boolean',
+              errorMessage: withDocs("The firewall's 'debugRules' field must be a boolean"),
+            },
+            edgeFunctions: {
+              type: 'boolean',
+              errorMessage: withDocs("The firewall's 'edgeFunctions' field must be a boolean"),
+            },
+            networkProtection: {
+              type: 'boolean',
+              errorMessage: withDocs("The firewall's 'networkProtection' field must be a boolean"),
+            },
+            waf: {
+              type: 'boolean',
+              errorMessage: withDocs("The firewall's 'waf' field must be a boolean"),
+            },
+            variable: {
+              type: 'string',
+              enum: FIREWALL_VARIABLES,
+              errorMessage: withDocs(`The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`),
+            },
+            rules: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string',
+                    errorMessage: withDocs("Each firewall rule must have a 'name' field of type string"),
+                  },
+                  description: {
+                    type: 'string',
+                    errorMessage: withDocs("The rule's 'description' field must be a string"),
+                  },
+                  active: {
+                    type: 'boolean',
+                    errorMessage: withDocs("The rule's 'active' field must be a boolean"),
+                  },
+                  match: {
+                    type: 'string',
+                    errorMessage: withDocs(
+                      "The rule's 'match' field must be a string containing a valid regex pattern",
+                    ),
+                  },
+                  behavior: {
+                    type: 'object',
+                    properties: {
+                      runFunction: {
+                        type: 'string',
+                        errorMessage: withDocs(
+                          "The 'runFunction' behavior must be the name of a function defined in the 'functions' array",
+                        ),
+                      },
+                      setWafRuleset: {
+                        type: 'object',
+                        properties: {
+                          wafMode: {
+                            type: 'string',
+                            enum: FIREWALL_WAF_MODES,
+                          },
+                          wafId: { type: 'string' },
+                        },
+                        required: ['wafMode', 'wafId'],
+                      },
+                      setRateLimit: {
+                        type: 'object',
+                        properties: {
+                          type: {
+                            type: 'string',
+                            enum: FIREWALL_RATE_LIMIT_TYPES,
+                          },
+                          limitBy: {
+                            type: 'string',
+                            enum: FIREWALL_RATE_LIMIT_BY,
+                          },
+                          averageRateLimit: { type: 'string' },
+                          maximumBurstSize: { type: 'string' },
+                        },
+                        required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+                      },
+                      deny: { type: 'boolean' },
+                      drop: { type: 'boolean' },
+                      setCustomResponse: {
+                        type: 'object',
+                        properties: {
+                          statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
+                          contentType: { type: 'string' },
+                          contentBody: { type: 'string' },
+                        },
+                        required: ['statusCode', 'contentType', 'contentBody'],
+                      },
+                    },
+                    not: {
+                      anyOf: [
+                        { required: ['deny', 'drop'] },
+                        { required: ['deny', 'setCustomResponse'] },
+                        { required: ['deny', 'setRateLimit'] },
+                        { required: ['drop', 'setCustomResponse'] },
+                        { required: ['drop', 'setRateLimit'] },
+                        { required: ['setCustomResponse', 'setRateLimit'] },
+                      ],
+                    },
+                    errorMessage: {
+                      not: withDocs(
+                        'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
+                      ),
+                    },
+                    additionalProperties: false,
+                  },
+                },
+                required: ['name', 'behavior'],
+                oneOf: [
+                  {
+                    anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                    not: { required: ['criteria'] },
+                    errorMessage: withDocs("Cannot use 'match' or 'variable' together with 'criteria'."),
+                  },
+                  {
+                    required: ['criteria'],
+                    not: {
+                      anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                    },
+                    errorMessage: withDocs("Cannot use 'criteria' together with 'match' or 'variable'."),
+                  },
+                ],
+                errorMessage: {
+                  oneOf: withDocs("You must use either 'match/variable' OR 'criteria', but not both at the same time"),
+                },
+              },
+            },
+          },
+          required: ['name'],
+          additionalProperties: false,
+          errorMessage: {
+            type: withDocs("The 'firewall' field must be an object"),
+            additionalProperties: withDocs('No additional properties are allowed in the firewall object'),
+            required: withDocs("The 'name' field is required in the firewall object"),
+          },
+        },
+        waf: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'number',
+                errorMessage: withDocs("The WAF configuration must have an 'id' field of type number"),
+              },
+              name: {
+                type: 'string',
+                errorMessage: withDocs("The WAF configuration must have a 'name' field of type string"),
+              },
+              mode: {
+                type: 'string',
+                enum: WAF_MODE,
+                errorMessage: withDocs(`The 'mode' field must be one of: ${WAF_MODE.join(', ')}`),
               },
               active: {
                 type: 'boolean',
-                errorMessage: withDocs("The rule's 'active' field must be a boolean"),
+                errorMessage: withDocs("The WAF configuration's 'active' field must be a boolean"),
               },
-              match: {
-                type: 'string',
-                errorMessage: withDocs("The rule's 'match' field must be a string containing a valid regex pattern"),
-              },
-              behavior: {
+              sqlInjection: {
                 type: 'object',
                 properties: {
-                  runFunction: {
-                    type: 'string',
-                    errorMessage: withDocs(
-                      "The 'runFunction' behavior must be the name of a function defined in the 'functions' array",
-                    ),
-                  },
-                  setWafRuleset: {
-                    type: 'object',
-                    properties: {
-                      wafMode: {
-                        type: 'string',
-                        enum: FIREWALL_WAF_MODES,
-                      },
-                      wafId: { type: 'string' },
-                    },
-                    required: ['wafMode', 'wafId'],
-                  },
-                  setRateLimit: {
-                    type: 'object',
-                    properties: {
-                      type: {
-                        type: 'string',
-                        enum: FIREWALL_RATE_LIMIT_TYPES,
-                      },
-                      limitBy: {
-                        type: 'string',
-                        enum: FIREWALL_RATE_LIMIT_BY,
-                      },
-                      averageRateLimit: { type: 'string' },
-                      maximumBurstSize: { type: 'string' },
-                    },
-                    required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
-                  },
-                  deny: { type: 'boolean' },
-                  drop: { type: 'boolean' },
-                  setCustomResponse: {
-                    type: 'object',
-                    properties: {
-                      statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
-                      contentType: { type: 'string' },
-                      contentBody: { type: 'string' },
-                    },
-                    required: ['statusCode', 'contentType', 'contentBody'],
-                  },
+                  sensitivity: sensitivitySchema,
                 },
-                not: {
-                  anyOf: [
-                    { required: ['deny', 'drop'] },
-                    { required: ['deny', 'setCustomResponse'] },
-                    { required: ['deny', 'setRateLimit'] },
-                    { required: ['drop', 'setCustomResponse'] },
-                    { required: ['drop', 'setRateLimit'] },
-                    { required: ['setCustomResponse', 'setRateLimit'] },
-                  ],
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs('No additional properties are allowed in the sqlInjection object'),
+                  required: withDocs("The 'sensitivity' field is required in the sqlInjection object"),
+                },
+              },
+              remoteFileInclusion: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs(
+                    'No additional properties are allowed in the remoteFileInclusion object',
+                  ),
+                  required: withDocs("The 'sensitivity' field is required in the remoteFileInclusion object"),
+                },
+              },
+              directoryTraversal: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs(
+                    'No additional properties are allowed in the directoryTraversal object',
+                  ),
+                  required: withDocs("The 'sensitivity' field is required in the directoryTraversal object"),
+                },
+              },
+              crossSiteScripting: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs(
+                    'No additional properties are allowed in the crossSiteScripting object',
+                  ),
+                  required: withDocs("The 'sensitivity' field is required in the crossSiteScripting object"),
+                },
+              },
+              evadingTricks: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs('No additional properties are allowed in the evadingTricks object'),
+                  required: withDocs("The 'sensitivity' field is required in the evadingTricks object"),
+                },
+              },
+              fileUpload: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs('No additional properties are allowed in the fileUpload object'),
+                  required: withDocs("The 'sensitivity' field is required in the fileUpload object"),
+                },
+              },
+              unwantedAccess: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs('No additional properties are allowed in the unwantedAccess object'),
+                  required: withDocs("The 'sensitivity' field is required in the unwantedAccess object"),
+                },
+              },
+              identifiedAttack: {
+                type: 'object',
+                properties: {
+                  sensitivity: sensitivitySchema,
+                },
+                required: ['sensitivity'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: withDocs('No additional properties are allowed in the identifiedAttack object'),
+                  required: withDocs("The 'sensitivity' field is required in the identifiedAttack object"),
+                },
+              },
+              bypassAddresses: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  errorMessage: withDocs('Each item in the bypassAddresses list must be a string'),
                 },
                 errorMessage: {
-                  not: withDocs(
-                    'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
-                  ),
+                  type: withDocs("The 'bypassAddresses' field must be an array of strings"),
                 },
-                additionalProperties: false,
               },
             },
-            required: ['name', 'behavior'],
-            oneOf: [
-              {
-                anyOf: [{ required: ['match'] }, { required: ['variable'] }],
-                not: { required: ['criteria'] },
-                errorMessage: withDocs("Cannot use 'match' or 'variable' together with 'criteria'."),
-              },
-              {
-                required: ['criteria'],
-                not: {
-                  anyOf: [{ required: ['match'] }, { required: ['variable'] }],
-                },
-                errorMessage: withDocs("Cannot use 'criteria' together with 'match' or 'variable'."),
-              },
-            ],
+            required: ['name', 'active', 'mode'],
+            additionalProperties: false,
             errorMessage: {
-              oneOf: withDocs("You must use either 'match/variable' OR 'criteria', but not both at the same time"),
+              type: withDocs("The 'waf' field must be an object"),
+              additionalProperties: withDocs('No additional properties are allowed in the WAF object'),
+              required: withDocs("The 'name, active and mode' fields are required in the WAF object"),
             },
+          },
+          errorMessage: {
+            type: withDocs("The 'waf' field must be an array"),
           },
         },
       },
-      required: ['name'],
       additionalProperties: false,
       errorMessage: {
-        type: withDocs("The 'firewall' field must be an object"),
-        additionalProperties: withDocs('No additional properties are allowed in the firewall object'),
-        required: withDocs("The 'name' field is required in the firewall object"),
-      },
-    },
-    waf: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'number',
-            errorMessage: withDocs("The WAF configuration must have an 'id' field of type number"),
-          },
-          name: {
-            type: 'string',
-            errorMessage: withDocs("The WAF configuration must have a 'name' field of type string"),
-          },
-          mode: {
-            type: 'string',
-            enum: WAF_MODE,
-            errorMessage: withDocs(`The 'mode' field must be one of: ${WAF_MODE.join(', ')}`),
-          },
-          active: {
-            type: 'boolean',
-            errorMessage: withDocs("The WAF configuration's 'active' field must be a boolean"),
-          },
-          sqlInjection: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the sqlInjection object'),
-              required: withDocs("The 'sensitivity' field is required in the sqlInjection object"),
-            },
-          },
-          remoteFileInclusion: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the remoteFileInclusion object'),
-              required: withDocs("The 'sensitivity' field is required in the remoteFileInclusion object"),
-            },
-          },
-          directoryTraversal: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the directoryTraversal object'),
-              required: withDocs("The 'sensitivity' field is required in the directoryTraversal object"),
-            },
-          },
-          crossSiteScripting: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the crossSiteScripting object'),
-              required: withDocs("The 'sensitivity' field is required in the crossSiteScripting object"),
-            },
-          },
-          evadingTricks: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the evadingTricks object'),
-              required: withDocs("The 'sensitivity' field is required in the evadingTricks object"),
-            },
-          },
-          fileUpload: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the fileUpload object'),
-              required: withDocs("The 'sensitivity' field is required in the fileUpload object"),
-            },
-          },
-          unwantedAccess: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the unwantedAccess object'),
-              required: withDocs("The 'sensitivity' field is required in the unwantedAccess object"),
-            },
-          },
-          identifiedAttack: {
-            type: 'object',
-            properties: {
-              sensitivity: sensitivitySchema,
-            },
-            required: ['sensitivity'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: withDocs('No additional properties are allowed in the identifiedAttack object'),
-              required: withDocs("The 'sensitivity' field is required in the identifiedAttack object"),
-            },
-          },
-          bypassAddresses: {
-            type: 'array',
-            items: {
-              type: 'string',
-              errorMessage: withDocs('Each item in the bypassAddresses list must be a string'),
-            },
-            errorMessage: {
-              type: withDocs("The 'bypassAddresses' field must be an array of strings"),
-            },
-          },
-        },
-        required: ['name', 'active', 'mode'],
-        additionalProperties: false,
-        errorMessage: {
-          type: withDocs("The 'waf' field must be an object"),
-          additionalProperties: withDocs('No additional properties are allowed in the WAF object'),
-          required: withDocs("The 'name, active and mode' fields are required in the WAF object"),
-        },
-      },
-      errorMessage: {
-        type: withDocs("The 'waf' field must be an array"),
-      },
-    },
-    functions: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            errorMessage: withDocs("The function's 'name' field must be a string"),
-          },
-          path: {
-            type: 'string',
-            errorMessage: withDocs("The function's 'path' field must be a string"),
-          },
-          args: {
-            type: 'object',
-            additionalProperties: true,
-            errorMessage: withDocs("The function's 'args' field must be an object"),
-          },
-        },
-        required: ['name', 'path'],
-        additionalProperties: false,
-        errorMessage: {
-          additionalProperties: withDocs('No additional properties are allowed in function items'),
-          required: withDocs("Both 'name' and 'path' fields are required for each function"),
-        },
+        additionalProperties: withDocs(
+          'Configuration can only contain the following properties: build, functions, rules, origin, cache, networkList, domain, purge, firewall',
+        ),
+        type: withDocs('Configuration must be an object'),
       },
     },
   },
-  errorMessage: withDocs("The function referenced in 'runFunction' must exist in the 'functions' array"),
+  $ref: '#/definitions/mainConfig',
 };
 
 export default azionConfigSchema;

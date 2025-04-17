@@ -41,18 +41,37 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   private validateFunctionReferences(config: AzionConfig) {
-    if (!config?.rules?.request || !config?.functions) {
-      return;
+    // Validate global rules
+    if (config?.rules?.request) {
+      const definedFunctions = new Set(config.functions?.map((f) => f.name) || []);
+
+      for (const rule of config.rules.request) {
+        if (rule.behavior?.runFunction) {
+          // For global scope rules, check against global functions
+          if (!definedFunctions.has(rule.behavior.runFunction)) {
+            throw new Error(
+              `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the global functions array. ${DOCS_MESSAGE}`,
+            );
+          }
+        }
+      }
     }
 
-    const definedFunctions = new Set(config.functions.map((f) => f.name));
+    // Validate preset rules
+    if (config?.build?.preset && typeof config.build.preset === 'object') {
+      const presetConfig = config.build.preset.config;
+      if (presetConfig?.rules?.request) {
+        const presetFunctions = new Set(presetConfig.functions?.map((f) => f.name) || []);
 
-    for (const rule of config.rules.request) {
-      if (rule.behavior?.runFunction) {
-        if (!definedFunctions.has(rule.behavior.runFunction)) {
-          throw new Error(
-            `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the functions array. ${DOCS_MESSAGE}`,
-          );
+        for (const rule of presetConfig.rules.request) {
+          if (rule.behavior?.runFunction) {
+            // For preset scope rules, check against preset functions
+            if (!presetFunctions.has(rule.behavior.runFunction)) {
+              throw new Error(
+                `Function "${rule.behavior.runFunction}" referenced in preset rule "${rule.name}" is not defined in the preset functions array. ${DOCS_MESSAGE}`,
+              );
+            }
+          }
         }
       }
     }

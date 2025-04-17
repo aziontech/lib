@@ -5,6 +5,13 @@ import addKeywords from 'ajv-keywords';
 import { AzionConfig } from '../../types';
 import azionConfigSchema from '../helpers/schema';
 
+class ErrorAzionConfigValidation extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ErrorAzionConfigValidation';
+  }
+}
+
 /**
  * Validates the provided configuration against a JSON Schema.
  * This function uses AJV (Another JSON Schema Validator) to validate the configuration.
@@ -17,7 +24,11 @@ function validateConfig(
   config: AzionConfig | Record<string, unknown>,
   schema: Record<string, unknown> = azionConfigSchema,
 ) {
-  const ajv = new Ajv({ allErrors: true, $data: true, allowUnionTypes: true });
+  const ajv = new Ajv({
+    allErrors: true,
+    $data: true,
+    allowUnionTypes: true,
+  });
   ajvErrors(ajv);
   addKeywords(ajv, ['instanceof']);
   const validate = ajv.compile(schema);
@@ -25,11 +36,10 @@ function validateConfig(
 
   if (!valid) {
     if (validate.errors && validate.errors.length > 0) {
-      throw new Error(validate.errors[0].message);
-    } else {
-      throw new Error('Configuration validation failed.');
+      throw new ErrorAzionConfigValidation(validate.errors[0].message ?? 'Configuration validation failed.');
     }
+    throw new ErrorAzionConfigValidation('Configuration validation failed.');
   }
 }
 
-export { validateConfig };
+export { ErrorAzionConfigValidation, validateConfig };

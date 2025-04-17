@@ -1,4 +1,9 @@
-import { convertJsonConfigToObject, processConfig, validateConfig } from './configProcessor';
+import {
+  ErrorAzionConfigValidation,
+  convertJsonConfigToObject,
+  processConfig,
+  validateConfig,
+} from './configProcessor';
 import { AzionConfig } from './types';
 
 /**
@@ -217,6 +222,6 @@ function defineConfig(config: AzionConfig): AzionConfig {
   return config;
 }
 
-export { convertJsonConfigToObject, defineConfig, processConfig };
+export { ErrorAzionConfigValidation, convertJsonConfigToObject, defineConfig, processConfig };
 
 export type * from './types';
