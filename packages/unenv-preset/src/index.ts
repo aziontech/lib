@@ -27,6 +27,7 @@ export default {
     // '@next/env': `${polyfillsPath}/node/empty.js`,
     // accepts: 'accepts',
     crypto: `${polyfillsPath}/node/crypto.js`,
+    https: `${polyfillsPath}/node/https.js`,
     // events: 'events/events.js',
     // module: `${polyfillsPath}/node/module.js`,
     // stream: 'stream-browserify/',
