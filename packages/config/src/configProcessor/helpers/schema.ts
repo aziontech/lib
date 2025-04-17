@@ -464,8 +464,8 @@ const azionConfigSchema = {
                   required: ['name'],
                   additionalProperties: false,
                   errorMessage: {
+                    additionalProperties: 'No additional properties are allowed in preset metadata',
                     required: "The 'name' field is required in preset metadata",
-                    type: 'Preset metadata must be an object',
                   },
                 },
                 config: {
@@ -473,9 +473,10 @@ const azionConfigSchema = {
                 },
               },
               required: ['metadata', 'config'],
+              additionalProperties: false,
               errorMessage: {
+                additionalProperties: 'No additional properties are allowed in preset',
                 required: "Preset must contain both 'metadata' and 'config' properties",
-                type: 'Preset must be an object',
               },
             },
             polyfills: {
@@ -1290,7 +1291,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Configuration can only contain the following properties: build, functions, rules, origin, cache, networkList, domain, purge, firewall',
+          'Config can only contain the following properties: build, functions, rules, origin, cache, networkList, domain, purge, firewall',
         type: 'Configuration must be an object',
       },
     },
