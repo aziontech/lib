@@ -496,41 +496,60 @@ const azionConfigSchema = {
             {
               type: 'object',
               properties: {
+                config: {
+                  type: 'object',
+                  additionalProperties: true,
+                  errorMessage: withDocs("The 'preset.config' must be a valid Azion configuration object"),
+                },
                 handler: {
-                  type: 'string',
-                  errorMessage: withDocs("The 'preset.handler' field must be a string."),
+                  instanceof: 'Function',
+                  errorMessage: withDocs("The 'preset.handler' must be a valid function that handles fetch events"),
                 },
                 prebuild: {
-                  type: 'string',
-                  errorMessage: withDocs("The 'preset.prebuild' field must be a string."),
+                  instanceof: 'Function',
+                  errorMessage: withDocs("The 'preset.prebuild' must be a function that runs before the build process"),
                 },
                 postbuild: {
-                  type: 'string',
-                  errorMessage: withDocs("The 'preset.postbuild' field must be a string."),
+                  instanceof: 'Function',
+                  errorMessage: withDocs("The 'preset.postbuild' must be a function that runs after the build process"),
                 },
-                meta: {
+                metadata: {
                   type: 'object',
                   properties: {
                     name: {
                       type: 'string',
-                      errorMessage: withDocs("The 'preset.meta.name' field must be a string."),
+                      errorMessage: withDocs("The 'preset.metadata.name' must be a string identifying the preset"),
+                    },
+                    registry: {
+                      type: 'string',
+                      errorMessage: withDocs("The 'preset.metadata.registry' must be a string when provided"),
+                    },
+                    ext: {
+                      type: 'string',
+                      errorMessage: withDocs("The 'preset.metadata.ext' must be a string when provided"),
                     },
                   },
                   required: ['name'],
-                  additionalProperties: false,
+                  additionalProperties: true,
+                  errorMessage: {
+                    type: withDocs("The 'preset.metadata' must be an object"),
+                    required: withDocs("The 'preset.metadata.name' field is required"),
+                    additionalProperties: withDocs('Additional properties are allowed in preset.metadata'),
+                  },
                 },
               },
-              required: ['handler', 'meta'],
+              required: ['config', 'metadata'],
               additionalProperties: false,
               errorMessage: {
-                additionalProperties: withDocs("No additional properties are allowed in the 'preset' object."),
-                required: withDocs("The 'handler' and 'meta' fields are required in the 'preset' object."),
+                type: withDocs('The preset must be an object with the correct structure'),
+                required: withDocs("The preset object must contain both 'config' and 'metadata' properties"),
+                additionalProperties: withDocs(
+                  'No additional properties are allowed in the preset object beyond the specified fields',
+                ),
               },
             },
           ],
-          errorMessage: withDocs(
-            "The 'preset' must be either a string (preset name) or an object with required fields",
-          ),
+          errorMessage: withDocs("The 'preset' must be either a string (preset name) or a valid preset object"),
         },
         memoryFS: {
           type: 'object',
