@@ -1,4 +1,3 @@
-import { DOCS_MESSAGE } from '../../../constants';
 import { AzionConfig, AzionFirewallCriteriaWithValue } from '../../../types';
 import {
   requestBehaviors,
@@ -50,7 +49,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           // For global scope rules, check against global functions
           if (!definedFunctions.has(rule.behavior.runFunction)) {
             throw new Error(
-              `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the global functions array. ${DOCS_MESSAGE}`,
+              `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the global functions array.`,
             );
           }
         }
@@ -68,7 +67,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             // For preset scope rules, check against preset functions
             if (!presetFunctions.has(rule.behavior.runFunction)) {
               throw new Error(
-                `Function "${rule.behavior.runFunction}" referenced in preset rule "${rule.name}" is not defined in the preset functions array. ${DOCS_MESSAGE}`,
+                `Function "${rule.behavior.runFunction}" referenced in preset rule "${rule.name}" is not defined in the preset functions array.`,
               );
             }
           }

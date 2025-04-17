@@ -263,9 +263,3 @@ export const RULE_BEHAVIOR_NAMES = [
 // Tipos para Rules
 export type RulePhase = (typeof RULE_PHASES)[number];
 export type RuleBehaviorName = (typeof RULE_BEHAVIOR_NAMES)[number];
-
-export const DOCS_MESSAGE = `
-
-📚 Need help? Check out our documentation:
-   - Azion Config Documentation: https://www.azion.com/en/documentation/devtools/cli/configs/azion-config-js/
-   - Azion Config on GitHub: https://github.com/aziontech/lib/tree/main/packages/config\n`;
