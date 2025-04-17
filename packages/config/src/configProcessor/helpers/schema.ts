@@ -471,6 +471,9 @@ const azionConfigSchema = {
                 config: {
                   $ref: '#/definitions/mainConfig',
                 },
+                handler: { instanceof: 'Function' },
+                prebuild: { instanceof: 'Function' },
+                postbuild: { instanceof: 'Function' },
               },
               required: ['metadata', 'config'],
               additionalProperties: false,
