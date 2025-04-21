@@ -139,7 +139,7 @@ import { AzionConfig } from './types';
  * @example
  * const config = AzionConfig({
  *   build: {
- *    bundler: 'webpack',
+ *    bundler: 'esbuild',
  *    preset: {
  *     name: 'react',
  *    },
