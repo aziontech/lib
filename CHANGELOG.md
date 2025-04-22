@@ -1,3 +1,10 @@
+### [1.19.1-stage.1](https://github.com/aziontech/lib/compare/v1.19.0...v1.19.1-stage.1) (2025-04-22)
+
+
+### Bug Fixes
+
+*  azion.config.js schema  (#155) ([d2da8a2](https://github.com/aziontech/lib/commit/d2da8a240178d689726a4db9ed6d4b2de588e834))
+
 ## [1.19.0](https://github.com/aziontech/lib/compare/v1.18.2...v1.19.0) (2025-04-16)
 
 
