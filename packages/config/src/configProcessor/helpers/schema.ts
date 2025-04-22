@@ -1068,8 +1068,7 @@ const azionConfigSchema = {
                     properties: {
                       runFunction: {
                         type: 'string',
-                        errorMessage:
-                          "The 'runFunction' behavior must be the name of a function defined in the 'functions' array",
+                        errorMessage: "The 'runFunction' behavior must be a string",
                       },
                       setWafRuleset: {
                         type: 'object',
