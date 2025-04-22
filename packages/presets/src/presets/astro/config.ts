@@ -2,7 +2,7 @@ import { defineConfig } from 'azion/config';
 
 const config = defineConfig({
   build: {
-    bundler: 'webpack',
+    bundler: 'esbuild',
     preset: 'astro',
     polyfills: false,
   },

@@ -1,4 +1,3 @@
-import { DOCS_MESSAGE } from '../../../constants';
 import { AzionConfig, AzionFirewallCriteriaWithValue } from '../../../types';
 import {
   requestBehaviors,
@@ -51,7 +50,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
       if (rule.behavior?.runFunction) {
         if (!definedFunctions.has(rule.behavior.runFunction)) {
           throw new Error(
-            `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the functions array. ${DOCS_MESSAGE}`,
+            `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the functions array.`,
           );
         }
       }
