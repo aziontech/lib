@@ -4,7 +4,7 @@ import webpack, { Configuration } from 'webpack';
 const config = defineConfig({
   build: {
     entry: 'handler.ts',
-    bundler: 'webpack',
+    bundler: 'esbuild',
     polyfills: false,
     extend: (context: Configuration) => {
       context = {

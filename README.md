@@ -283,7 +283,7 @@ import { defineConfig } from 'azion';
 const config = defineConfig({
   build: {
     // Advanced build configuration options
-    bundler: 'webpack',
+    bundler: 'esbuild',
     entry: {
       main: './src/index.js',
       admin: './src/admin.js',

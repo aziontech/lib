@@ -3,7 +3,7 @@ import { defineConfig } from 'azion/config';
 export default defineConfig({
   build: {
     preset: 'vue',
-    bundler: 'webpack',
+    bundler: 'esbuild',
     polyfills: false,
   },
   origin: [

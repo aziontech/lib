@@ -1,11 +1,7 @@
 {
   "name": "azion",
-  "version": "1.19.0",
+  "version": "1.19.1-stage.2",
   "description": "Azion Packages for Edge Computing.",
-  "bin": {
-    "azion": "./bin/azion",
-    "azlib": "./bin/azion"
-  },
   "scripts": {
     "prepare": "husky",
     "compile": "npm run compile --workspaces",
