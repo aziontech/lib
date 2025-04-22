@@ -1,3 +1,11 @@
+### [1.19.1](https://github.com/aziontech/lib/compare/v1.19.0...v1.19.1) (2025-04-22)
+
+
+### Bug Fixes
+
+*  azion.config.js schema  (#155) ([d2da8a2](https://github.com/aziontech/lib/commit/d2da8a240178d689726a4db9ed6d4b2de588e834))
+* rm cli bin reference (#157) ([74083da](https://github.com/aziontech/lib/commit/74083dadfef0bbb6757f2d8f3b7b53b7e7c75684))
+
 ### [1.19.1-stage.2](https://github.com/aziontech/lib/compare/v1.19.1-stage.1...v1.19.1-stage.2) (2025-04-22)
 
 
