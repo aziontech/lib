@@ -5,6 +5,7 @@ import fetchContext from './azion/fetch/index.js';
 import FirewallEventContext from './azion/firewall-event/index.js';
 import NetworkListContext from './azion/network-list/index.js';
 import { StorageContext } from './azion/storage/index.js';
+import cryptoContext from './crypto/index.js';
 import { fsContext } from './fs/index.js';
 import { streamContext } from './stream/index.js';
 
@@ -12,6 +13,7 @@ import { streamContext } from './stream/index.js';
 
 export {
   AsyncHooksContext,
+  cryptoContext,
   EnvVarsContext,
   fetchContext,
   FetchEventContext,

@@ -24,12 +24,13 @@ export default {
     module: `${polyfillsPath}/node/module.js`,
     timers: 'timers-browserify/',
   },
-  external: ['node:async_hooks', 'node:fs/promises', '@fastly/http-compute-js', 'node:stream'],
+  external: ['node:async_hooks', 'node:fs/promises', '@fastly/http-compute-js', 'node:stream', 'node:crypto'],
   polyfill: [
     'aziondev:async_hooks:/async-hooks/async-hooks.polyfills.js',
     'aziondev:fs:/fs/fs.polyfills.js',
     'aziondev:fs/promises:/fs/promises/promises.polyfills.js',
     'aziondev:stream:/stream/stream.polyfills.js',
+    'aziondev:crypto:/crypto/crypto.polyfills.js',
     `azionprd:fs:/fs.js`,
   ],
 };
