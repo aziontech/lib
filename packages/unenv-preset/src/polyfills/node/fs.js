@@ -381,6 +381,17 @@ function readdirSync(path, options = {}) {
   return result;
 }
 
+function existsSync(path) {
+  path = getValidatedPath(path);
+  const filesInfos = getFilesInfos();
+
+  if (filesInfos.paths.includes(path)) {
+    return true;
+  }
+
+  return false;
+}
+
 // Use Cells node:fs API
 const fsPolyfill = Object.create(SRC_NODE_FS);
 fsPolyfill.close = close;
@@ -390,10 +401,11 @@ fsPolyfill.statSync = statSync;
 fsPolyfill.lstatSync = statSync;
 fsPolyfill.readFileSync = readFileSync;
 fsPolyfill.readdirSync = readdirSync;
+fsPolyfill.existsSync = existsSync;
 
 export default fsPolyfill;
 
-export { close, closeSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
+export { close, closeSync, existsSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
 
 export const {
   access,
@@ -414,7 +426,6 @@ export const {
   Dir,
   Dirent,
   exists,
-  existsSync,
   F_OK,
   fdatasync,
   fdatasyncSync,

@@ -6,6 +6,7 @@ import FirewallEventContext from './azion/firewall-event/index.js';
 import NetworkListContext from './azion/network-list/index.js';
 import { StorageContext } from './azion/storage/index.js';
 import { fsContext } from './fs/index.js';
+import { streamContext } from './stream/index.js';
 
 // TODO: transform polyfills to TypeScript
 
@@ -18,4 +19,5 @@ export {
   fsContext,
   NetworkListContext,
   StorageContext,
+  streamContext,
 };
