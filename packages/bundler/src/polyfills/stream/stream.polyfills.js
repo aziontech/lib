@@ -1,14 +1,16 @@
 /* eslint-disable */
 /** This polyfill is referenced in #build/bundlers/polyfills/polyfills-manager.js
  *
- * STREAM is defined in runtime.env.js for use on the local server
+ * STREAM_CONTEXT is defined in runtime.env.js for use on the local server
  */
-export class Duplex extends STREAM.Duplex {}
-export class Writable extends STREAM.Writable {}
-export class Readable extends STREAM.Readable {}
-export class Transform extends STREAM.Transform {}
-export class PassThrough extends STREAM.PassThrough {}
-export class Stream extends STREAM.Stream {}
+
+export var { Duplex } = STREAM_CONTEXT;
+export var { Writable } = STREAM_CONTEXT;
+export var { Readable } = STREAM_CONTEXT;
+export var { Transform } = STREAM_CONTEXT;
+export var { PassThrough } = STREAM_CONTEXT;
+export var { Stream } = STREAM_CONTEXT;
+export var { prototype } = STREAM_CONTEXT;
 
 Readable.toWeb = function (readable) {
   const stream = new ReadableStream({
@@ -105,4 +107,6 @@ export default {
   Transform,
   PassThrough,
   Stream,
+  stream: STREAM_CONTEXT,
+  prototype,
 };
