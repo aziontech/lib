@@ -134,7 +134,7 @@ function nodeBuiltInModules(
       // if polyfill is not found, check if the module is external
       if (!polyfillResult && externalModule) {
         return {
-          path: args.path,
+          path: args.path.startsWith('node:') ? args.path : `node:${args.path}`,
           external: externalModule.includes(args.path),
         };
       }
