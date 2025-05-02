@@ -4,7 +4,7 @@ import bPath from 'path';
 
 /* eslint-disable */
 
-const MEM_FILES = globalThis.bundler.__FILES__;
+var MEM_FILES = globalThis.bundler.__FILES__;
 
 globalThis.bundler.FS_PATHS_CHANGED = false;
 
@@ -13,12 +13,13 @@ globalThis.bundler.FS_PATHS_CHANGED = false;
  */
 function fixMappedFilesPaths() {
   const prefix = globalThis.bundler.FS_PATH_PREFIX_TO_REMOVE;
-  if (!globalThis.bundler.FS_PATHS_CHANGED && prefix !== '') {
+  if (!globalThis.bundler.FS_PATHS_CHANGED && (prefix !== undefined || prefix !== '""')) {
+    let CHANGED_PATHS = {};
     Object.keys(MEM_FILES).forEach((e) => {
       const newKey = e.replace(prefix, '');
-      MEM_FILES[newKey] = MEM_FILES[e];
-      delete MEM_FILES[e];
+      CHANGED_PATHS[newKey] = MEM_FILES[e];
     });
+    MEM_FILES = CHANGED_PATHS;
   }
 
   globalThis.bundler.FS_PATHS_CHANGED = true;
