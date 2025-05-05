@@ -1,3 +1,10 @@
+## [1.20.0-stage.1](https://github.com/aziontech/lib/compare/v1.19.1...v1.20.0-stage.1) (2025-05-05)
+
+
+### Features
+
+* upgrade unenv 1.x to 2.x (#159) ([60ef725](https://github.com/aziontech/lib/commit/60ef7255d78c4f922b8d3efdc8cd4518a54ffaff))
+
 ### [1.19.1](https://github.com/aziontech/lib/compare/v1.19.0...v1.19.1) (2025-04-22)
 
 
