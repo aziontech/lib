@@ -71,6 +71,8 @@ export const RULE_OPERATORS_WITH_VALUE = [
   'does_not_start_with',
   'matches',
   'does_not_match',
+  'is_in_list',
+  'is_not_in_list',
 ] as const;
 
 export const RULE_OPERATORS_WITHOUT_VALUE = ['exists', 'does_not_exist'] as const;
@@ -232,32 +234,34 @@ export type OriginProtocolPolicy = (typeof ORIGIN_PROTOCOL_POLICIES)[number];
 export type LoadBalancerMethod = (typeof LOAD_BALANCER_METHODS)[number];
 
 // Constantes para Rules
-export const RULE_PHASES = ['request', 'response'] as const;
+export const RULE_PHASES = ['default', 'request', 'response'] as const;
 
 export const RULE_BEHAVIOR_NAMES = [
-  'add_request_cookie',
-  'add_request_header',
-  'add_response_header',
-  'bypass_cache_phase',
-  'capture_match_groups',
-  'deliver',
   'deny',
-  'enable_gzip',
-  'filter_request_cookie',
-  'filter_response_cookie',
-  'filter_request_header',
-  'filter_response_header',
-  'forward_cookies',
+  'run_function',
   'no_content',
-  'optimize_images',
-  'redirect_http_to_https',
+  'deliver',
+  'finish_request_phase',
   'redirect_to_301',
   'redirect_to_302',
-  'rewrite_request',
-  'run_function',
-  'set_cache_policy',
-  'set_cookie',
+  'forward_cookies',
+  'optimize_images',
   'set_origin',
+  'set_edge_connector',
+  'set_cache_policy',
+  'bypass_cache_phase',
+  'enable_gzip',
+  'redirect_http_to_https',
+  'set_cookie',
+  'rewrite_request',
+  'add_request_header',
+  'filter_request_header',
+  'add_response_header',
+  'filter_response_header',
+  'capture_match_groups',
+  'add_request_cookie',
+  'filter_response_cookie',
+  'filter_request_cookie',
 ] as const;
 
 // Tipos para Rules
