@@ -7,6 +7,7 @@ import NetworkListContext from './azion/network-list/index.js';
 import { StorageContext } from './azion/storage/index.js';
 import cryptoContext from './crypto/index.js';
 import { fsContext } from './fs/index.js';
+import promisesContext from './promises/index.js';
 import { streamContext } from './stream/index.js';
 
 // TODO: transform polyfills to TypeScript
@@ -20,6 +21,7 @@ export {
   FirewallEventContext,
   fsContext,
   NetworkListContext,
+  promisesContext,
   StorageContext,
   streamContext,
 };

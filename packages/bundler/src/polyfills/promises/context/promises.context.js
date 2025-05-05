@@ -10,4 +10,4 @@ globalThis.Promise.withResolvers = function () {
   return { promise, resolve: resolve, reject: reject };
 };
 
-export default globalThis.Promise;
+export default globalThis.Promise.withResolvers;
