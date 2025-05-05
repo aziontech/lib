@@ -13,7 +13,6 @@ export default {
     __filename: `${polyfillsPath}/node/globals/path-filename.js`,
     process: `${polyfillsPath}/node/globals/process.cjs`,
     performance: `${polyfillsPath}/node/globals/performance.js`,
-    stream: `${polyfillsPath}/node/globals/stream.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',

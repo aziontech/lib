@@ -48,7 +48,6 @@ Readable.fromWeb = function (webStream) {
 Writable.toWeb = function (webStream) {
   const writer = webStream.getWriter();
 
-  // Captura erros no fechamento do stream
   writer.closed.catch((error) => {
     console.error('WritableStream closed with error:', error);
     console.error('Error details:', error?.message, error?.stack);
@@ -56,7 +55,6 @@ Writable.toWeb = function (webStream) {
 
   return new Writable({
     write(chunk, encoding, callback) {
-      // Verifica se o stream ainda está ativo antes de escrever
       if (writer.desiredSize === null) {
         const err = new Error('WritableStream is not writable or has been closed.');
         console.error(err.message);
@@ -68,32 +66,26 @@ Writable.toWeb = function (webStream) {
         .write(chunk)
         .then(() => callback(undefined))
         .catch((err) => {
-          // console.error('Error writing to WritableStream:', err);
           callback(err);
         });
     },
     final(callback) {
-      // Wait for the writer to be ready before closing
       writer.ready
         .then(() => {
           return writer.close();
         })
         .then(() => callback(undefined))
         .catch((err) => {
-          // console.error('Error closing WritableStream:', err);
           callback(err);
         });
     },
     destroy(error, callback) {
-      // Cancela o stream em caso de destruição
       writer
         .abort(error)
         .then(() => {
-          // console.log('WritableStream aborted successfully.');
           callback(undefined);
         })
         .catch((err) => {
-          // console.error('Error aborting WritableStream:', err);
           callback(err);
         });
     },
