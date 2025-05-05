@@ -2,36 +2,48 @@
 import { convertJsonConfigToObject } from '.';
 
 describe('convertJsonConfigToObject', () => {
-  describe('Domain', () => {
-    it('should correctly process the config domain', () => {
+  describe('Workload', () => {
+    it('should correctly process the config workload', () => {
       const jsonConfig = {
-        domain: {
-          name: 'mydomain',
-          cname_access_only: true,
-          cnames: ['www.example.com'],
-          digital_certificate_id: 'lets_encrypt',
-          is_mtls_enabled: true,
-          mtls_verification: 'enforce',
-          mtls_trusted_ca_certificate_id: 12345,
-          edge_application_id: 12345,
-          edge_firewall_id: 12345,
+        workload: {
+          name: 'myworkload',
+          alternate_domains: ['www.example.com'],
+          edge_application: 12345,
+          active: true,
+          network_map: '1',
+          edge_firewall: 12345,
+          tls: {
+            certificate: 12345,
+            ciphers: 'TLSv1.2_2021',
+            minimum_version: 'tls_1_2',
+          },
+          mtls: {
+            verification: 'enforce',
+            certificate: 12345,
+            crl: [1111, 2222],
+          },
         },
       };
 
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-      expect(result.domain).toEqual(
+      expect(result.workload).toEqual(
         expect.objectContaining({
-          name: 'mydomain',
-          cnameAccessOnly: true,
-          cnames: ['www.example.com'],
-          digitalCertificateId: 'lets_encrypt',
+          name: 'myworkload',
+          alternateDomains: ['www.example.com'],
+          edgeApplication: 12345,
+          active: true,
+          networkMap: '1',
+          edgeFirewall: 12345,
+          tls: {
+            certificate: 12345,
+            ciphers: 'TLSv1.2_2021',
+            minimumVersion: 'tls_1_2',
+          },
           mtls: {
             verification: 'enforce',
-            trustedCaCertificateId: 12345,
-            crlList: undefined,
+            certificate: 12345,
+            crl: [1111, 2222],
           },
-          edgeApplicationId: 12345,
-          edgeFirewallId: 12345,
         }),
       );
     });
@@ -1840,7 +1852,7 @@ describe('convertJsonConfigToObject', () => {
   describe('Domains', () => {
     it('should throw error when required fields are missing', () => {
       const jsonConfig = {
-        domain: {
+        workload: {
           // missing required fields
         },
       };
@@ -1848,29 +1860,34 @@ describe('convertJsonConfigToObject', () => {
       expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
     });
 
-    it('should throw error for invalid digital_certificate_id value', () => {
+    it('should throw error for invalid TLS cipher value', () => {
       const jsonConfig = {
-        domain: {
-          name: 'mydomain.com',
-          edge_application_id: 123,
-          cnames: ['www.mydomain.com'],
-          cname_access_only: false,
-          digital_certificate_id: 'invalid_value',
+        workload: {
+          name: 'myworkload.com',
+          edge_application: 123,
+          alternate_domains: ['www.myworkload.com'],
+          active: true,
+          tls: {
+            ciphers: 'invalid_value',
+          },
         },
       };
 
       expect(() => convertJsonConfigToObject(JSON.stringify(jsonConfig))).toThrow();
     });
 
-    it('should throw error for invalid crl_list values', () => {
+    it('should throw error for invalid mTLS crl values', () => {
       const jsonConfig = {
-        domain: {
-          name: 'mydomain.com',
-          edge_application_id: 123,
-          cnames: ['www.mydomain.com'],
-          cname_access_only: false,
-          digital_certificate_id: 'lets_encrypt',
-          crl_list: ['invalid', 'values'],
+        workload: {
+          name: 'myworkload.com',
+          edge_application: 123,
+          alternate_domains: ['www.myworkload.com'],
+          active: true,
+          mtls: {
+            verification: 'enforce',
+            certificate: 12345,
+            crl: ['invalid', 'values'],
+          },
         },
       };
 

@@ -9,9 +9,6 @@ describe('processConfig', () => {
         build: {
           preset: 'next',
           polyfills: true,
-          custom: {
-            minify: true,
-          },
         },
       };
       expect(processConfig(config)).toEqual(
@@ -19,9 +16,6 @@ describe('processConfig', () => {
           build: {
             preset: 'next',
             polyfills: true,
-            custom: {
-              minify: true,
-            },
           },
         }),
       );
@@ -2081,759 +2075,163 @@ describe('processConfig', () => {
       );
     });
   });
-  describe('Domain', () => {
-    it('should throw process the config config when the domain name is not provided', () => {
+  describe('Workload', () => {
+    it('should throw error when the workload name is not provided', () => {
       const azionConfig: any = {
-        domain: {
-          cnames: ['www.example.com'],
-        },
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow("The 'name' field is required in the domain object.");
-    });
-
-    it('should correctly process the config config when the domain cnameAccessOnly undefined', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          cnames: ['www.example.com'],
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          cname_access_only: false,
-          cnames: ['www.example.com'],
-        }),
-      );
-    });
-
-    it('should correctly process the config config when the domain cnameAccessOnly is true', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          cnames: ['www.example.com'],
-          cnameAccessOnly: true,
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          cname_access_only: true,
-          cnames: ['www.example.com'],
-        }),
-      );
-    });
-
-    it('should throw process the config config when the domain cnames is not an array', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          cnames: 'www.example.com',
-        },
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow("The 'cnames' field must be an array of strings.");
-    });
-
-    it('should throw process the config config when the domain digitalCertificateId different from lets_encrypt', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          digitalCertificateId: 'mycert',
+        workload: {
+          edgeApplication: 12345,
         },
       };
 
       expect(() => processConfig(azionConfig)).toThrow(
-        "Domain mydomain has an invalid digital certificate ID: mycert. Only 'lets_encrypt' or null is supported.",
+        "The 'name' and 'edgeApplication' fields are required in the workload object.",
       );
     });
 
-    it('should correctly process the config config when the domain digitalCertificateId is null', () => {
+    it('should correctly process the config when edgeApplication is provided', () => {
       const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          digitalCertificateId: null,
+        workload: {
+          name: 'myworkload',
+          edgeApplication: 12345,
         },
       };
 
       const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
+      expect(result.workload).toEqual(
         expect.objectContaining({
-          name: 'mydomain',
-          digital_certificate_id: null,
+          name: 'myworkload',
+          edge_application: 12345,
+          active: true,
+          network_map: '1',
+          alternate_domains: [],
+          edge_firewall: null,
         }),
       );
     });
 
-    it('should correctly process the config config when the domain digitalCertificateId is lets_encrypt', () => {
+    it('should correctly process the config with TLS settings', () => {
       const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          digitalCertificateId: 'lets_encrypt',
+        workload: {
+          name: 'myworkload',
+          edgeApplication: 12345,
+          tls: {
+            certificate: 67890,
+            ciphers: 'TLSv1.2_2021',
+            minimumVersion: 'tls_1_2',
+          },
         },
       };
 
       const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
+      expect(result.workload).toEqual(
         expect.objectContaining({
-          name: 'mydomain',
-          digital_certificate_id: 'lets_encrypt',
+          name: 'myworkload',
+          edge_application: 12345,
+          tls: {
+            certificate: 67890,
+            ciphers: 'TLSv1.2_2021',
+            minimum_version: 'tls_1_2',
+          },
         }),
       );
     });
 
-    it('should correctly process the config config when the domain digitalCertificateId is number', () => {
+    it('should correctly process the config with mTLS settings', () => {
       const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          digitalCertificateId: 12345,
-        },
-      };
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          digital_certificate_id: 12345,
-        }),
-      );
-    });
-
-    it('should correctly process the config config when the domain digitalCertificateId is not provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          digital_certificate_id: null,
-        }),
-      );
-    });
-
-    it('should correctly process the config config when the domain mtls is not provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-        },
-      };
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          is_mtls_enabled: false,
-        }),
-      );
-    });
-
-    it('should correctly process the config config when the domain mtls is active and verification equal enforce', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
+        workload: {
+          name: 'myworkload',
+          edgeApplication: 12345,
           mtls: {
             verification: 'enforce',
-            trustedCaCertificateId: 12345,
+            certificate: 67890,
+            crl: [1234, 5678],
           },
         },
       };
 
       const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
+      expect(result.workload).toEqual(
         expect.objectContaining({
-          name: 'mydomain',
-          is_mtls_enabled: true,
-          mtls_verification: 'enforce',
-          mtls_trusted_ca_certificate_id: 12345,
-        }),
-      );
-    });
-
-    it('should correctly process the config config when the domain mtls is active and verification equal permissive', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          mtls: {
-            verification: 'permissive',
-            trustedCaCertificateId: 12345,
-          },
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          is_mtls_enabled: true,
-          mtls_verification: 'permissive',
-          mtls_trusted_ca_certificate_id: 12345,
-        }),
-      );
-    });
-
-    it('should throw an error when the domain verification is not provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          mtls: {
-            trustedCaCertificateId: 12345,
-          },
-        },
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'verification and trustedCaCertificateId' fields are required in the mtls object.",
-      );
-    });
-
-    it('should throw an error when the domain trustedCaCertificateId is not provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
+          name: 'myworkload',
           mtls: {
             verification: 'enforce',
+            certificate: 67890,
+            crl: [1234, 5678],
           },
-        },
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'verification and trustedCaCertificateId' fields are required in the mtls object.",
-      );
-    });
-
-    it('should correctly process the config config when the domain mtls and crlList is present', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          mtls: {
-            verification: 'enforce',
-            trustedCaCertificateId: 12345,
-            crlList: [123, 456],
-          },
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          is_mtls_enabled: true,
-          mtls_verification: 'enforce',
-          mtls_trusted_ca_certificate_id: 12345,
-          crl_list: [123, 456],
         }),
       );
     });
 
-    it('should correctly process the config config when the domain edgeApplicationId is provided', () => {
+    it('should throw error when invalid cipher suite is provided', () => {
       const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          edgeApplicationId: 12345,
+        workload: {
+          name: 'myworkload',
+          edgeApplication: 12345,
+          tls: {
+            ciphers: 'INVALID_CIPHER',
+          },
         },
       };
 
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          edge_application_id: 12345,
-        }),
-      );
+      expect(() => processConfig(azionConfig)).toThrow("The 'ciphers' field must be a valid cipher suite or null.");
     });
 
-    it('should throw an error when the domain edgeApplicationId is not a number', () => {
+    it('should correctly process the config with HTTP protocol settings', () => {
       const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          edgeApplicationId: '12345',
-        },
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow("The 'edgeApplicationId' field must be a number.");
-    });
-
-    it('should correctly process the config config when the domain edgeApplicationId is not provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          edgeApplicationId: 0,
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          edge_application_id: null,
-        }),
-      );
-    });
-
-    it('should correctly process the config config when the domain edgeFirewallId is provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          edgeFirewallId: 12345,
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          edge_firewall_id: 12345,
-        }),
-      );
-    });
-
-    it('should throw an error when the domain edgeFirewallId is not a number', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-          edgeFirewallId: '12345',
-        },
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow("The 'edgeFirewallId' field must be a number.");
-    });
-
-    it('should correctly process the config config when the domain edgeFirewallId is not provided', () => {
-      const azionConfig: any = {
-        domain: {
-          name: 'mydomain',
-        },
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.domain).toEqual(
-        expect.objectContaining({
-          name: 'mydomain',
-          edge_firewall_id: null,
-        }),
-      );
-    });
-  });
-  describe('Purge', () => {
-    it('should correctly process the config config when the purge is type url', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'url',
-            urls: ['https://example.com'],
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.purge).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'url',
-            urls: ['https://example.com'],
-            method: 'delete',
-          }),
-        ]),
-      );
-    });
-
-    it('should correctly process the config config when the purge is type url and method is provided', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'url',
-            urls: ['https://example.com'],
-            method: 'delete',
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.purge).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'url',
-            urls: ['https://example.com'],
-            method: 'delete',
-          }),
-        ]),
-      );
-    });
-
-    it('should throw an error when the purge is method is invalid', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'url',
-            urls: ['https://example.com'],
-            method: 'invalid',
-          },
-        ],
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'method' field must be either 'delete'. Default is 'delete'.",
-      );
-    });
-
-    it('should throw an error when the purge is type is invalid', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'invalid',
-            urls: ['https://example.com'],
-          },
-        ],
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'type' field must be either 'url', 'cachekey' or 'wildcard'.",
-      );
-    });
-
-    it('should correctly process the config config when the purge is type cachekey', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'cachekey',
-            urls: ['https://example.com/test1', 'https://example.com/test2'],
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.purge).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'cachekey',
-            urls: ['https://example.com/test1', 'https://example.com/test2'],
-            method: 'delete',
-          }),
-        ]),
-      );
-    });
-
-    it('should correctly process the config config when the purge is type cachekey and layer is provided', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'cachekey',
-            urls: ['https://example.com/test1', 'https://example.com/test2'],
-            layer: 'edge_caching',
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.purge).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'cachekey',
-            urls: ['https://example.com/test1', 'https://example.com/test2'],
-            method: 'delete',
-            layer: 'edge_caching',
-          }),
-        ]),
-      );
-    });
-
-    it('should throw an error when the purge is type cachekey and layer is invalid', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'cachekey',
-            urls: ['https://example.com/test'],
-            layer: 'invalid',
-          },
-        ],
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'layer' field must be either 'edge_caching' or 'l2_caching'. Default is 'edge_caching'.",
-      );
-    });
-
-    it('should correctly process the config config when the purge is type wildcard', () => {
-      const azionConfig: AzionConfig = {
-        purge: [
-          {
-            type: 'wildcard',
-            urls: ['https://example.com/*'],
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.purge).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'wildcard',
-            urls: ['https://example.com/*'],
-            method: 'delete',
-          }),
-        ]),
-      );
-    });
-
-    it('should throw an error when the purge urls is not an array', () => {
-      const azionConfig: any = {
-        purge: [
-          {
-            type: 'url',
-            urls: 'https://example.com',
-          },
-        ],
-      };
-
-      expect(() => processConfig(azionConfig)).toThrow("The 'urls' field must be an array of strings.");
-    });
-  });
-  describe('Build', () => {
-    it('should correctly process the config config when the build is type build', () => {
-      const azionConfig: AzionConfig = {
-        build: {
-          bundler: 'esbuild',
-          preset: 'react',
-        },
-      };
-
-      const result = processConfig(azionConfig);
-
-      expect(result.build).toEqual(
-        expect.objectContaining({
-          bundler: 'esbuild',
-          preset: 'react',
-        }),
-      );
-    });
-  });
-  describe('Network List', () => {
-    it('should correctly process the config config when the network list is provided', () => {
-      const azionConfig: AzionConfig = {
-        networkList: [
-          {
-            id: 1,
-            listType: 'ip_cidr',
-            listContent: ['10.0.0.1'],
-          },
-          {
-            id: 2,
-            listType: 'asn',
-            listContent: [4569],
-          },
-          {
-            id: 3,
-            listType: 'countries',
-            listContent: ['BR'],
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.networkList).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: 1,
-            list_type: 'ip_cidr',
-            items_values: ['10.0.0.1'],
-          }),
-        ]),
-      );
-    });
-    it('should throw an error when the network list id is not a number', () => {
-      const azionConfig: any = {
-        networkList: [
-          {
-            id: '1',
-            listType: 'ip_cidr',
-            listContent: ['10.0.0.1'],
-          },
-        ],
-      };
-      expect(() => processConfig(azionConfig)).toThrow("The 'id' field must be a number.");
-    });
-    it('should throw an error when the network list listType is invalid', () => {
-      const azionConfig: any = {
-        networkList: [
-          {
-            id: 1,
-            listType: 'invalid',
-            listContent: ['10.0.0.1'],
-          },
-        ],
-      };
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'listType' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
-      );
-    });
-    it('should throw an error when the network list required fields are not provided', () => {
-      const azionConfig: any = {
-        networkList: [
-          {
-            id: 1,
-            listType: 'ip_cidr',
-          },
-        ],
-      };
-      expect(() => processConfig(azionConfig)).toThrow(
-        "The 'id, listType and listContent' fields are required in each network list item.",
-      );
-    });
-  });
-
-  describe('WAF', () => {
-    let defaultConfig: any;
-
-    beforeEach(() => {
-      defaultConfig = {
-        id: 123,
-        name: 'mywaf',
-        mode: 'counting',
-        active: true,
-        bypassAddresses: ['10.0.0.1'],
-        crossSiteScripting: {
-          sensitivity: 'medium',
-        },
-        directoryTraversal: {
-          sensitivity: 'low',
-        },
-        sqlInjection: {
-          sensitivity: 'low',
-        },
-        remoteFileInclusion: {
-          sensitivity: 'low',
-        },
-        evadingTricks: {
-          sensitivity: 'low',
-        },
-        fileUpload: {
-          sensitivity: 'low',
-        },
-        unwantedAccess: {
-          sensitivity: 'low',
-        },
-        identifiedAttack: {
-          sensitivity: 'low',
-        },
-      };
-    });
-
-    it('should correctly process the config config when the waf all fields is provided', () => {
-      const azionConfig: AzionConfig = {
-        waf: [defaultConfig],
-      };
-
-      const result = processConfig(azionConfig);
-
-      expect(result.waf).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypass_addresses: ['10.0.0.1'],
-            cross_site_scripting: true,
-            cross_site_scripting_sensitivity: 'medium',
-            directory_traversal: true,
-            directory_traversal_sensitivity: 'low',
-          }),
-        ]),
-      );
-    });
-    it('should correctly process the config config when the waf one field is provided', () => {
-      const azionConfig: AzionConfig = {
-        waf: [
-          {
-            name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypassAddresses: ['10.0.0.1'],
-          },
-        ],
-      };
-
-      const result = processConfig(azionConfig);
-      expect(result.waf).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypass_addresses: ['10.0.0.1'],
-            cross_site_scripting: false,
-            cross_site_scripting_sensitivity: 'low',
-            directory_traversal: false,
-            directory_traversal_sensitivity: 'low',
-            sql_injection: false,
-            sql_injection_sensitivity: 'low',
-            remote_file_inclusion: false,
-            remote_file_inclusion_sensitivity: 'low',
-            evading_tricks: false,
-            evading_tricks_sensitivity: 'low',
-            file_upload: false,
-            file_upload_sensitivity: 'low',
-            unwanted_access: false,
-            unwanted_access_sensitivity: 'low',
-            identified_attack: false,
-            identified_attack_sensitivity: 'low',
-          }),
-        ]),
-      );
-    });
-
-    it('should correctly process the config config when the waf bypassAddresses is provided', () => {
-      const azionConfig: AzionConfig = {
-        waf: [
-          {
-            name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypassAddresses: ['10.0.0.1'],
-            crossSiteScripting: {
-              sensitivity: 'medium',
+        workload: {
+          name: 'myworkload',
+          edgeApplication: 12345,
+          protocols: {
+            http: {
+              versions: ['http1', 'http2'],
+              httpPorts: [80],
+              httpsPorts: [443],
+              quicPorts: null,
             },
           },
-        ],
+        },
       };
 
       const result = processConfig(azionConfig);
-      expect(result.waf).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypass_addresses: ['10.0.0.1'],
-            cross_site_scripting: true,
-            cross_site_scripting_sensitivity: 'medium',
-            identified_attack: false,
-            identified_attack_sensitivity: 'low',
-          }),
-        ]),
-      );
-    });
-    it('should throw an error when the waf crossSiteScripting sensitivity is invalid', () => {
-      const azionConfig: any = {
-        waf: [
-          {
-            name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypassAddresses: [],
-            crossSiteScripting: {
-              sensitivity: 'invalid',
+      expect(result.workload).toEqual(
+        expect.objectContaining({
+          protocols: {
+            http: {
+              versions: ['http1', 'http2'],
+              http_ports: [80],
+              https_ports: [443],
+              quic_ports: null,
             },
           },
-        ],
+        }),
+      );
+    });
+
+    it('should correctly process domains configuration', () => {
+      const azionConfig: any = {
+        workload: {
+          name: 'myworkload',
+          edgeApplication: 12345,
+          domains: [
+            {
+              domain: 'example.com',
+              allowAccess: true,
+            },
+          ],
+        },
       };
-      expect(() => processConfig(azionConfig)).toThrow("The 'sensitivity' field must be one of: low, medium, high");
+
+      const result = processConfig(azionConfig);
+      expect(result.workload).toEqual(
+        expect.objectContaining({
+          domains: [
+            {
+              domain: 'example.com',
+              allow_access: true,
+            },
+          ],
+        }),
+      );
     });
   });
 });

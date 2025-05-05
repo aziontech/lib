@@ -1,4 +1,7 @@
 import {
+  ApplicationHttpPort,
+  ApplicationHttpsPort,
+  ApplicationSupportedCipher,
   FirewallRateLimitBy,
   FirewallRateLimitType,
   FirewallWafMode,
@@ -9,43 +12,15 @@ import {
   RuleVariable,
   WafMode,
   WafSensitivity,
+  WorkloadHttpVersion,
+  WorkloadNetworkMap,
+  WorkloadTlsMinimumVersion,
 } from './constants';
 
 import { FetchEvent } from 'azion/types';
 
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
-
-/**
- * Domain configuration for Azion.
- */
-export type AzionDomain = {
-  /** Domain name */
-  name: string;
-  /** Indicates if access is restricted to CNAME only */
-  cnameAccessOnly?: boolean;
-  /** List of CNAMEs associated with the domain */
-  cnames?: string[];
-  /** Associated edge application ID */
-  id?: number;
-  /** Associated edge appliaction ID */
-  edgeApplicationId?: number;
-  /** Associated edge firewall ID */
-  edgeFirewallId?: number;
-  /** Digital certificate ID */
-  digitalCertificateId?: string | number | null;
-  /** Indicates if the domain is active */
-  active?: boolean;
-  /** Mutual TLS configuration */
-  mtls?: {
-    /** Verification mode for MTLS */
-    verification: 'enforce' | 'permissive';
-    /** ID of the trusted CA certificate */
-    trustedCaCertificateId: number;
-    /** List of CRL (Certificate Revocation List) IDs */
-    crlList?: number[];
-  };
-};
 
 /**
  * Origin configuration for Azion.
@@ -354,13 +329,109 @@ export type AzionFunction = {
 };
 
 /**
+ * TLS configuration for Workloads.
+ *
+ * Replaces and expands the digitalCertificateId from the old domain configuration
+ * with more comprehensive TLS options like cipher selection and minimum version.
+ */
+export type AzionWorkloadTls = {
+  /** Certificate ID */
+  certificate?: number | null;
+  /** Cipher suites */
+  ciphers?: ApplicationSupportedCipher | null;
+  /** Minimum TLS version */
+  minimumVersion?: WorkloadTlsMinimumVersion;
+};
+
+/**
+ * HTTP Protocol configuration for Workloads.
+ */
+export type AzionWorkloadHttpProtocol = {
+  /** HTTP versions */
+  versions?: WorkloadHttpVersion[];
+  /** HTTP ports */
+  httpPorts?: ApplicationHttpPort[];
+  /** HTTPS ports */
+  httpsPorts?: ApplicationHttpsPort[];
+  /** QUIC ports */
+  quicPorts?: number[] | null;
+};
+
+/**
+ * Protocol configuration for Workloads.
+ */
+export type AzionWorkloadProtocols = {
+  /** HTTP protocol configuration */
+  http?: AzionWorkloadHttpProtocol;
+};
+
+/**
+ * Mutual TLS configuration for Workloads.
+ *
+ * Enhanced version of the mtls configuration from the old domain type,
+ * with improved organization and more clearly defined parameters.
+ */
+export type AzionWorkloadMtls = {
+  /** Verification mode */
+  verification?: 'enforce' | 'permissive';
+  /** Certificate ID */
+  certificate?: number | null;
+  /** Certificate Revocation List */
+  crl?: number[] | null;
+};
+
+/**
+ * Domain information for Workloads.
+ *
+ * This replaces the standalone AzionDomain configuration in the API v4.
+ * While more streamlined, it provides the essential domain configuration within the workload context.
+ * Multiple domains can be specified in the workload's domains array.
+ */
+export type AzionWorkloadDomainInfo = {
+  /** Domain name */
+  domain?: string | null;
+  /** Allow access to this domain */
+  allowAccess?: boolean;
+};
+
+/**
+ * Workload configuration for Azion.
+ *
+ * This is part of the API v4 and represents a more complete and powerful approach
+ * compared to the old domain configuration. It includes domain capabilities plus
+ * additional features like protocol settings, alternate domains, and improved TLS configuration.
+ *
+ * Workload should be preferred over domain for new applications.
+ */
+export type AzionWorkload = {
+  /** Workload name */
+  name: string;
+  /** Alternate domains */
+  alternateDomains?: string[];
+  /** Edge application ID */
+  edgeApplication: number;
+  /** Active status */
+  active?: boolean;
+  /** Network map (1 - Edge Global Network, 2 - Staging Network) */
+  networkMap?: WorkloadNetworkMap;
+  /** Edge firewall ID */
+  edgeFirewall?: number | null;
+  /** TLS configuration */
+  tls?: AzionWorkloadTls;
+  /** Protocol configuration */
+  protocols?: AzionWorkloadProtocols;
+  /** Mutual TLS configuration */
+  mtls?: AzionWorkloadMtls;
+  /** Domain information (replaces the old domain configuration) */
+  domains?: AzionWorkloadDomainInfo[];
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
   /** Build configuration */
   build?: AzionBuild;
-  /** Domain configuration */
-  domain?: AzionDomain;
   /** Origin configurations */
   origin?: AzionOrigin[];
   /** Cache configurations */
@@ -377,6 +448,12 @@ export type AzionConfig = {
   networkList?: AzionNetworkList[];
   /** WAF configuration */
   waf?: AzionWaf[];
+  /**
+   * Workload configuration
+   * API v4 feature that provides comprehensive domain and application configuration
+   * capabilities including TLS, protocols, and enhanced domain settings.
+   */
+  workload?: AzionWorkload;
 };
 
 /**

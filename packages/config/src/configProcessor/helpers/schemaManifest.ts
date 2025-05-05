@@ -28,6 +28,9 @@ import {
   RULE_VARIABLES,
   WAF_MODE,
   WAF_SENSITIVITY,
+  WORKLOAD_HTTP_VERSIONS,
+  WORKLOAD_NETWORK_MAPS,
+  WORKLOAD_TLS_MINIMUM_VERSIONS,
 } from '../../constants';
 
 const schemaNetworkListManifest = {
@@ -186,99 +189,6 @@ const schemaWafManifest = {
     additionalProperties: 'No additional properties are allowed in waf items.',
     required:
       "The 'name, mode, active, sql_injection, sql_injection_sensitivity, remote_file_inclusion, remote_file_inclusion_sensitivity, directory_traversal, directory_traversal_sensitivity, cross_site_scripting, cross_site_scripting_sensitivity, evading_tricks, evading_tricks_sensitivity, file_upload, file_upload_sensitivity, unwanted_access, unwanted_access_sensitivity, identified_attack, identified_attack_sensitivity and bypass_addresses' fields are required in each waf item.",
-  },
-};
-
-const schemaDomainsManifest = {
-  type: ['object', 'null'],
-  properties: {
-    id: {
-      type: 'number',
-      errorMessage: "The 'id' field must be a number.",
-    },
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    edge_application_id: {
-      type: 'number',
-      errorMessage: "The 'edge_application_id' field must be a number.",
-    },
-    cnames: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-      errorMessage: "The 'cnames' field must be an array of strings.",
-    },
-    cname_access_only: {
-      type: 'boolean',
-      errorMessage: "The 'cname_access_only' field must be a boolean.",
-    },
-    digital_certificate_id: {
-      oneOf: [{ type: 'number' }, { type: 'string', enum: ['lets_encrypt'] }, { type: 'null' }],
-      errorMessage: "The 'digital_certificate_id' field must be a number, 'lets_encrypt' or null.",
-    },
-    is_active: {
-      type: 'boolean',
-      default: true,
-      errorMessage: "The 'is_active' field must be a boolean.",
-    },
-    domain_name: {
-      type: 'string',
-      errorMessage: "The 'domain_name' field must be a string.",
-    },
-    is_mtls_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'is_mtls_enabled' field must be a boolean.",
-    },
-    mtls_verification: {
-      type: 'string',
-      enum: ['enforce', 'permissive'],
-      errorMessage: "The 'mtls_verification' field must be either 'enforce' or 'permissive'.",
-    },
-    mtls_trusted_ca_certificate_id: {
-      type: 'number',
-      errorMessage: "The 'mtls_trusted_ca_certificate_id' field must be a number.",
-    },
-    edge_firewall_id: {
-      type: 'number',
-      errorMessage: "The 'edge_firewall_id' field must be a number.",
-    },
-    crl_list: {
-      type: 'array',
-      items: {
-        type: 'number',
-      },
-      errorMessage: "The 'crl_list' field must be an array of numbers.",
-    },
-  },
-  required: ['name'],
-  dependencies: {
-    is_mtls_enabled: {
-      oneOf: [
-        {
-          properties: {
-            is_mtls_enabled: { enum: [false] },
-          },
-        },
-        {
-          properties: {
-            is_mtls_enabled: { enum: [true] },
-          },
-          required: ['mtls_verification', 'mtls_trusted_ca_certificate_id'],
-        },
-      ],
-    },
-  },
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: 'No additional properties are allowed in domain items.',
-    required:
-      "The 'name', 'edge_application_id', 'cnames', 'cname_access_only', and 'digital_certificate_id' fields are required.",
-    dependencies: {
-      is_mtls_enabled: "When mTLS is enabled, 'mtls_verification' and 'mtls_trusted_ca_certificate_id' are required.",
-    },
   },
 };
 
@@ -719,8 +629,6 @@ const schemaApplicationRules = {
   additionalProperties: false,
 };
 
-// ... resto do arquivo mantido como está ...
-
 const schemaApplicationManifest = {
   type: 'object',
   properties: {
@@ -806,6 +714,176 @@ const schemaApplicationManifest = {
   },
 };
 
+const schemaWorkloadManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
+    },
+    alternate_domains: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      maxItems: 50,
+      errorMessage: "The 'alternate_domains' field must be an array of strings with at most 50 items.",
+    },
+    edge_application: {
+      type: 'integer',
+      minimum: 1,
+      maximum: 9007199254740991,
+      errorMessage: "The 'edge_application' field must be a positive integer.",
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean.",
+    },
+    network_map: {
+      type: 'string',
+      enum: WORKLOAD_NETWORK_MAPS,
+      default: '1',
+      errorMessage: "The 'network_map' field must be '1' (Edge Global Network) or '2' (Staging Network).",
+    },
+    edge_firewall: {
+      type: ['integer', 'null'],
+      errorMessage: "The 'edge_firewall' field must be an integer or null.",
+    },
+    tls: {
+      type: 'object',
+      properties: {
+        certificate: {
+          type: ['integer', 'null'],
+          minimum: 1,
+          errorMessage: "The 'certificate' field must be a positive integer or null.",
+        },
+        ciphers: {
+          type: ['string', 'null'],
+          enum: [...APPLICATION_SUPPORTED_CIPHERS, null],
+          errorMessage: "The 'ciphers' field must be a valid cipher suite or null.",
+        },
+        minimum_version: {
+          type: 'string',
+          enum: WORKLOAD_TLS_MINIMUM_VERSIONS,
+          default: 'tls_1_2',
+          errorMessage: "The 'minimum_version' field must be a valid TLS version.",
+        },
+      },
+      additionalProperties: false,
+      default: { certificate: null, ciphers: null, minimum_version: 'tls_1_2' },
+      errorMessage: "The 'tls' field must be an object with valid properties.",
+    },
+    protocols: {
+      type: 'object',
+      properties: {
+        http: {
+          type: 'object',
+          properties: {
+            versions: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: WORKLOAD_HTTP_VERSIONS,
+              },
+              default: ['http1', 'http2'],
+              errorMessage: "The 'versions' field must be an array with values 'http1' and/or 'http2'.",
+            },
+            http_ports: {
+              type: 'array',
+              items: {
+                type: 'integer',
+                enum: APPLICATION_HTTP_PORTS,
+              },
+              default: [80],
+              errorMessage: "The 'http_ports' field must be an array of valid HTTP ports.",
+            },
+            https_ports: {
+              type: 'array',
+              items: {
+                type: 'integer',
+                enum: APPLICATION_HTTPS_PORTS,
+              },
+              default: [443],
+              errorMessage: "The 'https_ports' field must be an array of valid HTTPS ports.",
+            },
+            quic_ports: {
+              type: ['array', 'null'],
+              items: {
+                type: 'integer',
+              },
+              errorMessage: "The 'quic_ports' field must be an array of integers or null.",
+            },
+          },
+          additionalProperties: false,
+          default: { versions: ['http1', 'http2'], http_ports: [80], https_ports: [443], quic_ports: null },
+          errorMessage: "The 'http' field must be an object with valid properties.",
+        },
+      },
+      additionalProperties: false,
+      default: { http: { versions: ['http1', 'http2'], http_ports: [80], https_ports: [443], quic_ports: null } },
+      errorMessage: "The 'protocols' field must be an object with valid properties.",
+    },
+    mtls: {
+      type: 'object',
+      properties: {
+        verification: {
+          type: 'string',
+          enum: ['enforce', 'permissive'],
+          default: 'enforce',
+          errorMessage: "The 'verification' field must be 'enforce' or 'permissive'.",
+        },
+        certificate: {
+          type: ['integer', 'null'],
+          minimum: 1,
+          errorMessage: "The 'certificate' field must be a positive integer or null.",
+        },
+        crl: {
+          type: ['array', 'null'],
+          items: {
+            type: 'integer',
+          },
+          maxItems: 100,
+          errorMessage: "The 'crl' field must be an array of integers with at most 100 items or null.",
+        },
+      },
+      additionalProperties: false,
+      errorMessage: "The 'mtls' field must be an object with valid properties.",
+    },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: ['string', 'null'],
+            minLength: 1,
+            maxLength: 250,
+            errorMessage: "The 'domain' field must be a string between 1 and 250 characters or null.",
+          },
+          allow_access: {
+            type: 'boolean',
+            errorMessage: "The 'allow_access' field must be a boolean.",
+          },
+        },
+        additionalProperties: false,
+        errorMessage: 'Each domain item must be an object with valid properties.',
+      },
+      minItems: 1,
+      maxItems: 2,
+      errorMessage: "The 'domains' field must be an array with 1 or 2 items.",
+    },
+  },
+  required: ['name', 'edge_application'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: "No additional properties are allowed in the 'workload' object.",
+    required: "The 'name' and 'edge_application' fields are required in the workload object.",
+  },
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -821,12 +899,6 @@ const schemaManifest = {
         type: "The 'waf' field must be an array",
       },
     },
-    domain: {
-      ...schemaDomainsManifest,
-      errorMessage: {
-        type: "The 'domain' field must be an object",
-      },
-    },
     firewall: {
       ...schemaFirewallManifest,
       errorMessage: {
@@ -837,6 +909,12 @@ const schemaManifest = {
       type: 'array',
       items: schemaApplicationManifest,
       errorMessage: "The 'application' field must be an array of application items.",
+    },
+    workload: {
+      ...schemaWorkloadManifest,
+      errorMessage: {
+        type: "The 'workload' field must be an object",
+      },
     },
   },
 };

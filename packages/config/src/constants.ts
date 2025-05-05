@@ -263,3 +263,15 @@ export const RULE_BEHAVIOR_NAMES = [
 // Tipos para Rules
 export type RulePhase = (typeof RULE_PHASES)[number];
 export type RuleBehaviorName = (typeof RULE_BEHAVIOR_NAMES)[number];
+
+// =============================== API V4 =============================== //
+// =============================== Workloads =============================== //
+// Constantes para Workloads
+export const WORKLOAD_NETWORK_MAPS = ['1', '2'] as const; // 1 - Edge Global Network, 2 - Staging Network
+export const WORKLOAD_TLS_MINIMUM_VERSIONS = ['', 'tls_1_0', 'tls_1_1', 'tls_1_2', 'tls_1_3'] as const;
+export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
+
+// Tipos para Workloads
+export type WorkloadNetworkMap = (typeof WORKLOAD_NETWORK_MAPS)[number];
+export type WorkloadTlsMinimumVersion = (typeof WORKLOAD_TLS_MINIMUM_VERSIONS)[number];
+export type WorkloadHttpVersion = (typeof WORKLOAD_HTTP_VERSIONS)[number];

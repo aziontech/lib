@@ -1,6 +1,9 @@
 import {
   ALL_REQUEST_VARIABLES,
   ALL_RESPONSE_VARIABLES,
+  APPLICATION_HTTP_PORTS,
+  APPLICATION_HTTPS_PORTS,
+  APPLICATION_SUPPORTED_CIPHERS,
   DYNAMIC_VARIABLE_PATTERNS,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
@@ -14,6 +17,9 @@ import {
   SPECIAL_VARIABLES,
   WAF_MODE,
   WAF_SENSITIVITY,
+  WORKLOAD_HTTP_VERSIONS,
+  WORKLOAD_NETWORK_MAPS,
+  WORKLOAD_TLS_MINIMUM_VERSIONS,
 } from '../../constants';
 
 const criteriaBaseSchema = {
@@ -892,77 +898,6 @@ const azionConfigSchema = {
             },
           },
         },
-        domain: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              errorMessage: "The 'name' field must be a string.",
-            },
-            cnameAccessOnly: {
-              type: 'boolean',
-              errorMessage: "The 'cnameAccessOnly' field must be a boolean.",
-            },
-            cnames: {
-              type: 'array',
-              items: {
-                type: 'string',
-                errorMessage: "Each item in 'cnames' must be a string.",
-              },
-              errorMessage: {
-                type: "The 'cnames' field must be an array of strings.",
-              },
-            },
-            edgeApplicationId: {
-              type: 'number',
-              errorMessage: "The 'edgeApplicationId' field must be a number.",
-            },
-            edgeFirewallId: {
-              type: 'number',
-              errorMessage: "The 'edgeFirewallId' field must be a number.",
-            },
-            digitalCertificateId: {
-              type: ['string', 'number', 'null'],
-              errorMessage:
-                "The 'digitalCertificateId' field must be a string, number or null. If string, it must be 'lets_encrypt'.",
-            },
-            active: {
-              type: 'boolean',
-              errorMessage: "The 'active' field must be a boolean.",
-            },
-            mtls: {
-              type: 'object',
-              properties: {
-                verification: {
-                  type: 'string',
-                  enum: ['enforce', 'permissive'],
-                  errorMessage: "The 'verification' field must be a string.",
-                },
-                trustedCaCertificateId: {
-                  type: 'number',
-                  errorMessage: "The 'trustedCaCertificateId' field must be a number.",
-                },
-                crlList: {
-                  type: 'array',
-                  items: {
-                    type: 'number',
-                    errorMessage: "Each item in 'crlList' must be a number.",
-                  },
-                  errorMessage: {
-                    type: "The 'crlList' field must be an array of numbers.",
-                  },
-                },
-              },
-              required: ['verification', 'trustedCaCertificateId'],
-              additionalProperties: false,
-              errorMessage: {
-                additionalProperties: 'No additional properties are allowed in the mtls object.',
-                required: "The 'verification and trustedCaCertificateId' fields are required in the mtls object.",
-              },
-            },
-          },
-          additionalProperties: false,
-        },
         purge: {
           type: 'array',
           items: {
@@ -1295,11 +1230,180 @@ const azionConfigSchema = {
             type: "The 'waf' field must be an array",
           },
         },
+        workload: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 100,
+              errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
+            },
+            alternateDomains: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+              maxItems: 50,
+              errorMessage: "The 'alternateDomains' field must be an array of strings with at most 50 items.",
+            },
+            edgeApplication: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 9007199254740991,
+              errorMessage: "The 'edgeApplication' field must be a positive integer.",
+            },
+            active: {
+              type: 'boolean',
+              default: true,
+              errorMessage: "The 'active' field must be a boolean.",
+            },
+            networkMap: {
+              type: 'string',
+              enum: WORKLOAD_NETWORK_MAPS,
+              default: '1',
+              errorMessage: "The 'networkMap' field must be '1' (Edge Global Network) or '2' (Staging Network).",
+            },
+            edgeFirewall: {
+              type: ['integer', 'null'],
+              errorMessage: "The 'edgeFirewall' field must be an integer or null.",
+            },
+            tls: {
+              type: 'object',
+              properties: {
+                certificate: {
+                  type: ['integer', 'null'],
+                  minimum: 1,
+                  errorMessage: "The 'certificate' field must be a positive integer or null.",
+                },
+                ciphers: {
+                  type: ['string', 'null'],
+                  enum: [...APPLICATION_SUPPORTED_CIPHERS, null],
+                  errorMessage: "The 'ciphers' field must be a valid cipher suite or null.",
+                },
+                minimumVersion: {
+                  type: 'string',
+                  enum: WORKLOAD_TLS_MINIMUM_VERSIONS,
+                  default: 'tls_1_2',
+                  errorMessage: "The 'minimumVersion' field must be a valid TLS version.",
+                },
+              },
+              additionalProperties: false,
+              default: { certificate: null, ciphers: null, minimumVersion: 'tls_1_2' },
+              errorMessage: "The 'tls' field must be an object with valid properties.",
+            },
+            protocols: {
+              type: 'object',
+              properties: {
+                http: {
+                  type: 'object',
+                  properties: {
+                    versions: {
+                      type: 'array',
+                      items: {
+                        type: 'string',
+                        enum: WORKLOAD_HTTP_VERSIONS,
+                      },
+                      default: ['http1', 'http2'],
+                      errorMessage: "The 'versions' field must be an array with values 'http1' and/or 'http2'.",
+                    },
+                    httpPorts: {
+                      type: 'array',
+                      items: {
+                        type: 'integer',
+                        enum: APPLICATION_HTTP_PORTS,
+                      },
+                      default: [80],
+                      errorMessage: "The 'httpPorts' field must be an array of valid HTTP ports.",
+                    },
+                    httpsPorts: {
+                      type: 'array',
+                      items: {
+                        type: 'integer',
+                        enum: APPLICATION_HTTPS_PORTS,
+                      },
+                      default: [443],
+                      errorMessage: "The 'httpsPorts' field must be an array of valid HTTPS ports.",
+                    },
+                    quicPorts: {
+                      type: ['array', 'null'],
+                      items: {
+                        type: 'integer',
+                      },
+                      errorMessage: "The 'quicPorts' field must be an array of integers or null.",
+                    },
+                  },
+                  additionalProperties: false,
+                  default: { versions: ['http1', 'http2'], httpPorts: [80], httpsPorts: [443], quicPorts: null },
+                  errorMessage: "The 'http' field must be an object with valid properties.",
+                },
+              },
+              additionalProperties: false,
+              default: { http: { versions: ['http1', 'http2'], httpPorts: [80], httpsPorts: [443], quicPorts: null } },
+              errorMessage: "The 'protocols' field must be an object with valid properties.",
+            },
+            mtls: {
+              type: 'object',
+              properties: {
+                verification: {
+                  type: 'string',
+                  enum: ['enforce', 'permissive'],
+                  default: 'enforce',
+                  errorMessage: "The 'verification' field must be 'enforce' or 'permissive'.",
+                },
+                certificate: {
+                  type: ['integer', 'null'],
+                  minimum: 1,
+                  errorMessage: "The 'certificate' field must be a positive integer or null.",
+                },
+                crl: {
+                  type: ['array', 'null'],
+                  items: {
+                    type: 'integer',
+                  },
+                  maxItems: 100,
+                  errorMessage: "The 'crl' field must be an array of integers with at most 100 items or null.",
+                },
+              },
+              additionalProperties: false,
+              errorMessage: "The 'mtls' field must be an object with valid properties.",
+            },
+            domains: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  domain: {
+                    type: ['string', 'null'],
+                    minLength: 1,
+                    maxLength: 250,
+                    errorMessage: "The 'domain' field must be a string between 1 and 250 characters or null.",
+                  },
+                  allowAccess: {
+                    type: 'boolean',
+                    errorMessage: "The 'allowAccess' field must be a boolean.",
+                  },
+                },
+                additionalProperties: false,
+                errorMessage: 'Each domain item must be an object with valid properties.',
+              },
+              minItems: 1,
+              maxItems: 2,
+              errorMessage: "The 'domains' field must be an array with 1 or 2 items.",
+            },
+          },
+          required: ['name', 'edgeApplication'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: "No additional properties are allowed in the 'workload' object.",
+            required: "The 'name' and 'edgeApplication' fields are required in the workload object.",
+          },
+        },
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, functions, rules, origin, cache, networkList, domain, purge, firewall',
+          'Config can only contain the following properties: build, functions, rules, origin, cache, networkList, purge, firewall, workload',
         type: 'Configuration must be an object',
       },
     },
