@@ -73,45 +73,62 @@ export type AzionOrigin = {
 };
 
 /**
- * Cache configuration for Azion.
+ * Cache configuration for Azion v4.
  */
 export type AzionCache = {
   /** Cache name */
   name: string;
-  /** Indicates if stale content should be served */
-  stale?: boolean;
-  /** Indicates if query string parameters should be sorted */
-  queryStringSort?: boolean;
-  /** HTTP methods to be cached */
-  methods?: {
-    /** Cache POST requests */
-    post?: boolean;
-    /** Cache OPTIONS requests */
-    options?: boolean;
-  };
   /** Browser cache settings */
-  browser?: {
-    /** Maximum age for browser cache in seconds */
-    maxAgeSeconds: number | string;
+  browser: {
+    /** Behavior: 'honor', 'override', or 'no-cache' */
+    behavior: 'honor' | 'override' | 'no-cache';
+    /** Maximum age in seconds */
+    maxAge: number;
   };
   /** Edge cache settings */
-  edge?: {
-    /** Maximum age for edge cache in seconds */
-    maxAgeSeconds: number | string;
+  edge: {
+    /** Behavior: 'honor' or 'override' */
+    behavior: 'honor' | 'override';
+    /** Maximum age in seconds */
+    maxAge: number;
   };
-  /** Cache by cookie configuration */
-  cacheByCookie?: {
-    /** Cookie caching option */
-    option: 'ignore' | 'varies' | 'whitelist' | 'blacklist';
-    /** List of cookies to be considered */
-    list?: string[];
+  /** Enable caching for POST requests */
+  enablePost?: boolean;
+  /** Enable caching for OPTIONS requests */
+  enableOptions?: boolean;
+  /** Enable stale cache */
+  stale?: boolean;
+  /** Enable tiered cache */
+  tieredCache?: boolean;
+  /** Tiered cache region */
+  tieredRegion?: string;
+  /** Application controls */
+  controls: {
+    /** Cache by query string */
+    queryString: 'ignore' | 'whitelist' | 'blacklist' | 'all';
+    /** Query string fields */
+    queryStringFields: string[];
+    /** Enable query string sort */
+    queryStringSort: boolean;
+    /** Cache by cookies */
+    cookies: 'ignore' | 'whitelist' | 'blacklist' | 'all';
+    /** Cookie names */
+    cookieNames: string[];
+    /** Adaptive delivery action */
+    adaptiveDelivery: 'ignore' | 'whitelist';
+    /** Device group */
+    deviceGroup: number[];
   };
-  /** Cache by query string configuration */
-  cacheByQueryString?: {
-    /** Query string caching option */
-    option: 'ignore' | 'varies' | 'whitelist' | 'blacklist';
-    /** List of query string parameters to be considered */
-    list?: string[];
+  /** Slice controls */
+  slice?: {
+    /** Enable slice configuration */
+    enabled: boolean;
+    /** Enable slice edge caching */
+    edgeCaching: boolean;
+    /** Enable slice tiered caching */
+    tieredCaching: boolean;
+    /** Slice configuration range */
+    range?: number;
   };
 };
 
@@ -427,6 +444,34 @@ export type AzionWorkload = {
 };
 
 /**
+ * Application configuration for Azion.
+ */
+export type AzionApplication = {
+  /** Application name */
+  name: string;
+  /** Enable edge cache */
+  edgeCache?: boolean;
+  /** Enable edge functions */
+  edgeFunctions?: boolean;
+  /** Enable application accelerator */
+  applicationAccelerator?: boolean;
+  /** Enable image processor */
+  imageProcessor?: boolean;
+  /** Enable tiered cache */
+  tieredCache?: boolean;
+  /** Active status */
+  active?: boolean;
+  /** Debug mode */
+  debug?: boolean;
+  /** Rules configuration */
+  rules?: AzionRules;
+  /** Cache configurations */
+  cache?: AzionCache[];
+  /** Functions configurations */
+  functions?: AzionFunction[];
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
@@ -454,6 +499,11 @@ export type AzionConfig = {
    * capabilities including TLS, protocols, and enhanced domain settings.
    */
   workload?: AzionWorkload;
+  /**
+   * Application configurations
+   * API v4 feature that provides comprehensive edge application configuration
+   */
+  application?: AzionApplication[];
 };
 
 /**

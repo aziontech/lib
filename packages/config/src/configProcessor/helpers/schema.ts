@@ -433,6 +433,171 @@ const createRuleSchema = (isRequestPhase = false) => ({
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
+    rules: {
+      type: 'object',
+      properties: {
+        request: {
+          type: 'array',
+          items: createRuleSchema(true),
+        },
+        response: {
+          type: 'array',
+          items: createRuleSchema(false),
+        },
+      },
+      additionalProperties: false,
+    },
+    functions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            errorMessage: "The function's 'name' field must be a string",
+          },
+          path: {
+            type: 'string',
+            errorMessage: "The function's 'path' field must be a string",
+          },
+          args: {
+            type: 'object',
+            additionalProperties: true,
+            errorMessage: "The function's 'args' field must be an object",
+          },
+        },
+        required: ['name', 'path'],
+        additionalProperties: false,
+      },
+    },
+    cache: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            errorMessage: "The 'name' field must be a string.",
+          },
+          browser: {
+            type: 'object',
+            properties: {
+              behavior: {
+                type: 'string',
+                enum: ['honor', 'override', 'no-cache'],
+                errorMessage: "The browser 'behavior' field must be 'honor', 'override', or 'no-cache'.",
+              },
+              maxAge: {
+                oneOf: [{ type: 'number' }, { type: 'string', pattern: '^[0-9+*/.() -]+$' }],
+                errorMessage: "The 'maxAge' field must be a number or a valid mathematical expression.",
+              },
+            },
+            required: ['behavior', 'maxAge'],
+            additionalProperties: false,
+          },
+          edge: {
+            type: 'object',
+            properties: {
+              behavior: {
+                type: 'string',
+                enum: ['honor', 'override'],
+                errorMessage: "The edge 'behavior' field must be 'honor' or 'override'.",
+              },
+              maxAge: {
+                oneOf: [{ type: 'number' }, { type: 'string', pattern: '^[0-9+*/.() -]+$' }],
+                errorMessage: "The 'maxAge' field must be a number or a valid mathematical expression.",
+              },
+            },
+            required: ['behavior', 'maxAge'],
+            additionalProperties: false,
+          },
+          enablePost: {
+            type: 'boolean',
+            errorMessage: "The 'enablePost' field must be a boolean.",
+          },
+          enableOptions: {
+            type: 'boolean',
+            errorMessage: "The 'enableOptions' field must be a boolean.",
+          },
+          stale: {
+            type: 'boolean',
+            errorMessage: "The 'stale' field must be a boolean.",
+          },
+          tieredCache: {
+            type: 'boolean',
+            errorMessage: "The 'tieredCache' field must be a boolean.",
+          },
+          tieredRegion: {
+            type: 'string',
+            errorMessage: "The 'tieredRegion' field must be a string.",
+          },
+          controls: {
+            type: 'object',
+            properties: {
+              queryString: {
+                type: 'string',
+                enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+                errorMessage: "The 'queryString' field must be 'ignore', 'whitelist', 'blacklist', or 'all'.",
+              },
+              queryStringFields: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+              queryStringSort: {
+                type: 'boolean',
+                errorMessage: "The 'queryStringSort' field must be a boolean.",
+              },
+              cookies: {
+                type: 'string',
+                enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+                errorMessage: "The 'cookies' field must be 'ignore', 'whitelist', 'blacklist', or 'all'.",
+              },
+              cookieNames: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+              adaptiveDelivery: {
+                type: 'string',
+                enum: ['ignore', 'whitelist'],
+                errorMessage: "The 'adaptiveDelivery' field must be 'ignore' or 'whitelist'.",
+              },
+              deviceGroup: {
+                type: 'array',
+                items: { type: 'number' },
+              },
+            },
+            required: ['queryString', 'cookies', 'adaptiveDelivery'],
+            additionalProperties: false,
+          },
+          slice: {
+            type: 'object',
+            properties: {
+              enabled: {
+                type: 'boolean',
+                errorMessage: "The 'enabled' field must be a boolean.",
+              },
+              edgeCaching: {
+                type: 'boolean',
+                errorMessage: "The 'edgeCaching' field must be a boolean.",
+              },
+              tieredCaching: {
+                type: 'boolean',
+                errorMessage: "The 'tieredCaching' field must be a boolean.",
+              },
+              range: {
+                type: 'number',
+                minimum: 0,
+                maximum: 1024,
+                errorMessage: "The 'range' field must be a number between 0 and 1024.",
+              },
+            },
+            additionalProperties: false,
+          },
+        },
+        required: ['name', 'browser', 'edge', 'controls'],
+        additionalProperties: false,
+      },
+    },
     mainConfig: {
       type: 'object',
       properties: {
@@ -525,347 +690,7 @@ const azionConfigSchema = {
           },
         },
         functions: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                errorMessage: "The function's 'name' field must be a string",
-              },
-              path: {
-                type: 'string',
-                errorMessage: "The function's 'path' field must be a string",
-              },
-              args: {
-                type: 'object',
-                additionalProperties: true,
-                errorMessage: "The function's 'args' field must be an object",
-              },
-            },
-            required: ['name', 'path'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in function items',
-              required: "Both 'name' and 'path' fields are required for each function",
-            },
-          },
-        },
-        rules: {
-          type: 'object',
-          properties: {
-            request: {
-              type: 'array',
-              items: createRuleSchema(true),
-            },
-            response: {
-              type: 'array',
-              items: createRuleSchema(false),
-            },
-          },
-          additionalProperties: false,
-        },
-        origin: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: {
-                type: 'integer',
-                errorMessage: "The 'id' field must be a number.",
-              },
-              key: {
-                type: 'string',
-                errorMessage: "The 'key' field must be a string.",
-              },
-              name: {
-                type: 'string',
-                errorMessage: "The 'name' field must be a string.",
-              },
-              type: {
-                type: 'string',
-                enum: ['single_origin', 'object_storage', 'load_balancer', 'live_ingest'],
-                errorMessage:
-                  "The 'type' field must be a string and one of 'single_origin', 'object_storage', 'load_balancer' or 'live_ingest'.",
-              },
-              bucket: {
-                type: ['string', 'null'],
-                errorMessage: "The 'bucket' field must be a string or null.",
-              },
-              prefix: {
-                type: ['string', 'null'],
-                errorMessage: "The 'prefix' field must be a string or null.",
-              },
-              addresses: {
-                anyOf: [
-                  {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                    },
-                    errorMessage: {
-                      type: "The 'addresses' field must be an array of strings.",
-                    },
-                  },
-                  {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        address: {
-                          type: 'string',
-                          errorMessage: "The 'address' field must be a string.",
-                        },
-                        weight: {
-                          type: 'integer',
-                        },
-                      },
-                      required: ['address'],
-                      additionalProperties: false,
-                      errorMessage: {
-                        type: "The 'addresses' field must be an array of objects.",
-                        additionalProperties: 'No additional properties are allowed in address items.',
-                        required: "The 'address' field is required in each address item.",
-                      },
-                    },
-                  },
-                ],
-              },
-              hostHeader: {
-                type: 'string',
-                errorMessage: "The 'hostHeader' field must be a string.",
-              },
-              protocolPolicy: {
-                type: 'string',
-                enum: ['preserve', 'http', 'https'],
-                errorMessage:
-                  "The 'protocolPolicy' field must be either 'http', 'https' or 'preserve'. Default is 'preserve'.",
-              },
-              redirection: {
-                type: 'boolean',
-                errorMessage: "The 'redirection' field must be a boolean.",
-              },
-              method: {
-                type: 'string',
-                enum: ['ip_hash', 'least_connections', 'round_robin'],
-                errorMessage:
-                  "The 'method' field must be either 'ip_hash', 'least_connections' or 'round_robin'. Default is 'ip_hash'.",
-              },
-              path: {
-                type: 'string',
-                errorMessage: "The 'path' field must be a string.",
-              },
-              connectionTimeout: {
-                type: 'integer',
-                errorMessage: "The 'connectionTimeout' field must be a number. Default is 60.",
-              },
-              timeoutBetweenBytes: {
-                type: 'integer',
-                errorMessage: "The 'timeoutBetweenBytes' field must be a number. Default is 120.",
-              },
-              hmac: {
-                type: 'object',
-                properties: {
-                  region: {
-                    type: 'string',
-                    errorMessage: "The 'region' field must be a string.",
-                  },
-                  accessKey: {
-                    type: 'string',
-                    errorMessage: "The 'accessKey' field must be a string.",
-                  },
-                  secretKey: {
-                    type: 'string',
-                    errorMessage: "The 'secretKey' field must be a string.",
-                  },
-                },
-                required: ['region', 'accessKey', 'secretKey'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the hmac object.',
-                  required: "The 'region, accessKey and secretKey' fields are required in the hmac object.",
-                },
-              },
-            },
-            required: ['name', 'type'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in origin item objects.',
-              required: "The 'name and type' field is required in each origin item.",
-            },
-          },
-          errorMessage: {
-            additionalProperties: "The 'origin' field must be an array of objects.",
-          },
-        },
-        cache: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                errorMessage: "The 'name' field must be a string.",
-              },
-              stale: {
-                type: 'boolean',
-                errorMessage: "The 'stale' field must be a boolean.",
-              },
-              queryStringSort: {
-                type: 'boolean',
-                errorMessage: "The 'queryStringSort' field must be a boolean.",
-              },
-              methods: {
-                type: 'object',
-                properties: {
-                  post: {
-                    type: 'boolean',
-                    errorMessage: "The 'post' field must be a boolean.",
-                  },
-                  options: {
-                    type: 'boolean',
-                    errorMessage: "The 'options' field must be a boolean.",
-                  },
-                },
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'methods' object.",
-                },
-              },
-              browser: {
-                type: 'object',
-                properties: {
-                  maxAgeSeconds: {
-                    oneOf: [
-                      {
-                        type: 'number',
-                        errorMessage: "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
-                      },
-                      {
-                        type: 'string',
-                        pattern: '^[0-9+*/.() -]+$',
-                        errorMessage: "The 'maxAgeSeconds' field must be a valid mathematical expression.",
-                      },
-                    ],
-                  },
-                },
-                required: ['maxAgeSeconds'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'browser' object.",
-                  required: "The 'maxAgeSeconds' field is required in the 'browser' object.",
-                },
-              },
-              edge: {
-                type: 'object',
-                properties: {
-                  maxAgeSeconds: {
-                    oneOf: [
-                      {
-                        type: 'number',
-                        errorMessage: "The 'maxAgeSeconds' field must be a number or a valid mathematical expression.",
-                      },
-                      {
-                        type: 'string',
-                        pattern: '^[0-9+*/.() -]+$',
-                        errorMessage: "The 'maxAgeSeconds' field must be a valid mathematical expression.",
-                      },
-                    ],
-                  },
-                },
-                required: ['maxAgeSeconds'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'edge' object.",
-                  required: "The 'maxAgeSeconds' field is required in the 'edge' object.",
-                },
-              },
-              cacheByCookie: {
-                type: 'object',
-                properties: {
-                  option: {
-                    type: 'string',
-                    enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
-                    errorMessage: "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'..",
-                  },
-                  list: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      errorMessage: "Each item in 'list' must be a string.",
-                    },
-                    errorMessage: {
-                      type: "The 'list' field must be an array of strings.",
-                    },
-                  },
-                },
-                required: ['option'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'cacheByCookie' object.",
-                  required: "The 'option' field is required in the 'cacheByCookie' object.",
-                },
-                if: {
-                  properties: {
-                    option: { enum: ['whitelist', 'blacklist'] },
-                  },
-                },
-                then: {
-                  required: ['list'],
-                  errorMessage: {
-                    required: "The 'list' field is required when 'option' is 'whitelist' or 'blacklist'.",
-                  },
-                },
-              },
-
-              cacheByQueryString: {
-                type: 'object',
-                properties: {
-                  option: {
-                    type: 'string',
-                    enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
-                    errorMessage: "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'.",
-                  },
-                  list: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      errorMessage: "Each item in 'list' must be a string.",
-                    },
-                    errorMessage: {
-                      type: "The 'list' field must be an array of strings.",
-                    },
-                  },
-                },
-                required: ['option'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: "No additional properties are allowed in the 'cacheByQueryString' object.",
-                  required: "The 'option' field is required in the 'cacheByQueryString' object.",
-                },
-                if: {
-                  properties: {
-                    option: { enum: ['whitelist', 'blacklist'] },
-                  },
-                },
-                then: {
-                  required: ['list'],
-                  errorMessage: {
-                    required: "The 'list' field is required when 'option' is 'whitelist' or 'blacklist'.",
-                  },
-                },
-              },
-            },
-            required: ['name'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in cache item objects.',
-              required: "The 'name' field is required in each cache item.",
-            },
-          },
-          errorMessage: {
-            additionalProperties: "The 'cache' field must be an array of objects.",
-          },
+          $ref: '#/definitions/functions',
         },
         networkList: {
           type: 'array',
@@ -1399,11 +1224,75 @@ const azionConfigSchema = {
             required: "The 'name' and 'edgeApplication' fields are required in the workload object.",
           },
         },
+        application: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 250,
+                errorMessage: "The 'name' field must be a string between 1 and 250 characters.",
+              },
+              edgeCache: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'edgeCache' field must be a boolean.",
+              },
+              edgeFunctions: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'edgeFunctions' field must be a boolean.",
+              },
+              applicationAccelerator: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'applicationAccelerator' field must be a boolean.",
+              },
+              imageProcessor: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'imageProcessor' field must be a boolean.",
+              },
+              tieredCache: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'tieredCache' field must be a boolean.",
+              },
+              active: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'active' field must be a boolean.",
+              },
+              debug: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'debug' field must be a boolean.",
+              },
+              rules: {
+                $ref: '#/definitions/rules',
+              },
+              cache: {
+                $ref: '#/definitions/cache',
+              },
+              functions: {
+                $ref: '#/definitions/functions',
+              },
+            },
+            required: ['name'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: "No additional properties are allowed in the 'application' object.",
+              required: "The 'name' field is required in the application object.",
+            },
+          },
+        },
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, functions, rules, origin, cache, networkList, purge, firewall, workload',
+          'Config can only contain the following properties: build, functions, origin, networkList, purge, firewall, waf, workload, application',
         type: 'Configuration must be an object',
       },
     },

@@ -1,25 +1,14 @@
 import {
-  APPLICATION_DELIVERY_PROTOCOLS,
   APPLICATION_HTTP_PORTS,
   APPLICATION_HTTPS_PORTS,
   APPLICATION_SUPPORTED_CIPHERS,
-  APPLICATION_TLS_VERSIONS,
-  CACHE_ADAPTIVE_DELIVERY,
-  CACHE_BROWSER_SETTINGS,
-  CACHE_BY_COOKIE,
-  CACHE_BY_QUERY_STRING,
-  CACHE_CDN_SETTINGS,
-  CACHE_L2_REGION,
   FIREWALL_BEHAVIOR_NAMES,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_RULE_CONDITIONALS,
   FIREWALL_RULE_OPERATORS,
   FIREWALL_VARIABLES,
-  LOAD_BALANCER_METHODS,
   NETWORK_LIST_TYPES,
-  ORIGIN_PROTOCOL_POLICIES,
-  ORIGIN_TYPES,
   RULE_BEHAVIOR_NAMES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
@@ -430,121 +419,150 @@ const schemaApplicationCacheSettings = {
       type: 'string',
       errorMessage: "The 'name' field must be a string.",
     },
-    browser_cache_settings: {
-      type: 'string',
-      enum: CACHE_BROWSER_SETTINGS,
-      errorMessage: "The 'browser_cache_settings' must be either 'honor' or 'override'.",
-    },
-    cdn_cache_settings: {
-      type: 'string',
-      enum: CACHE_CDN_SETTINGS,
-      errorMessage: "The 'cdn_cache_settings' must be either 'honor' or 'override'.",
-    },
-    cache_by_query_string: {
-      type: 'string',
-      enum: CACHE_BY_QUERY_STRING,
-      errorMessage: "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
-    },
-    cache_by_cookie: {
-      type: 'string',
-      enum: CACHE_BY_COOKIE,
-      errorMessage: "The 'cache_by_cookie' must be one of: ignore, whitelist, blacklist, all.",
-    },
-    adaptive_delivery_action: {
-      type: 'string',
-      enum: CACHE_ADAPTIVE_DELIVERY,
-      errorMessage: "The 'adaptive_delivery_action' must be either 'ignore' or 'whitelist'.",
-    },
-    l2_caching_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'l2_caching_enabled' field must be a boolean.",
-    },
-    l2_region: {
-      type: ['string', 'null'],
-      enum: CACHE_L2_REGION,
-      errorMessage: "The 'l2_region' must be either null, 'sa-brazil' or 'na-united-states'.",
-    },
-  },
-  required: ['name'],
-  additionalProperties: false,
-};
-
-const schemaApplicationOrigins = {
-  type: 'object',
-  properties: {
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    origin_type: {
-      type: 'string',
-      enum: ORIGIN_TYPES,
-      errorMessage:
-        "The 'origin_type' field must be one of: single_origin, load_balancer, live_ingest, object_storage.",
-    },
-    origin_protocol_policy: {
-      type: 'string',
-      enum: ORIGIN_PROTOCOL_POLICIES,
-      errorMessage: "The 'origin_protocol_policy' must be one of: preserve, http, https.",
-    },
-    host_header: {
-      type: 'string',
-      errorMessage: "The 'host_header' field must be a string.",
-    },
-    bucket: {
-      type: 'string',
-      errorMessage: "The 'bucket' field must be a string.",
-    },
-    addresses: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          address: {
-            type: 'string',
-            errorMessage: "The 'address' field must be a string.",
-          },
-          weight: {
-            type: 'number',
-            minimum: 0,
-            maximum: 100,
-            errorMessage: "The 'weight' field must be a number between 0 and 100.",
-          },
-          server_role: {
-            type: 'string',
-            enum: ['primary', 'backup'],
-            errorMessage: "The 'server_role' field must be either 'primary' or 'backup'.",
-          },
-        },
-        required: ['address'],
-        additionalProperties: false,
-      },
-    },
-    load_balancer: {
+    browser_cache: {
       type: 'object',
       properties: {
-        method: {
+        behavior: {
           type: 'string',
-          enum: LOAD_BALANCER_METHODS,
-          errorMessage: "The 'method' field must be one of: ip_hash, least_connections, round_robin.",
+          enum: ['honor', 'override', 'no-cache'],
+          errorMessage: "The 'behavior' field must be 'honor', 'override', or 'no-cache'.",
+        },
+        max_age: {
+          type: 'number',
+          minimum: 0,
+          maximum: 31536000,
+          errorMessage: "The 'max_age' field must be a number between 0 and 31536000.",
         },
       },
-      required: ['method'],
+      required: ['behavior', 'max_age'],
+      additionalProperties: false,
+    },
+    edge_cache: {
+      type: 'object',
+      properties: {
+        behavior: {
+          type: 'string',
+          enum: ['honor', 'override'],
+          errorMessage: "The 'behavior' field must be 'honor' or 'override'.",
+        },
+        max_age: {
+          type: 'number',
+          minimum: 0,
+          maximum: 31536000,
+          errorMessage: "The 'max_age' field must be a number between 0 and 31536000.",
+        },
+      },
+      required: ['behavior', 'max_age'],
+      additionalProperties: false,
+    },
+    caching_for_post_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'caching_for_post_enabled' field must be a boolean.",
+    },
+    caching_for_options_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'caching_for_options_enabled' field must be a boolean.",
+    },
+    stale_cache_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'stale_cache_enabled' field must be a boolean.",
+    },
+    tiered_cache_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+    },
+    tiered_cache_region: {
+      type: ['string', 'null'],
+      errorMessage: "The 'tiered_cache_region' field must be a string or null.",
+    },
+    application_controls: {
+      type: 'object',
+      properties: {
+        cache_by_query_string: {
+          type: 'string',
+          enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+          required: true,
+          errorMessage: "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
+        },
+        query_string_fields: {
+          type: 'array',
+          items: { type: 'string' },
+          required: true,
+        },
+        query_string_sort_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'query_string_sort_enabled' field must be a boolean.",
+        },
+        cache_by_cookies: {
+          type: 'string',
+          enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+          required: true,
+          errorMessage: "The 'cache_by_cookies' must be one of: ignore, whitelist, blacklist, all.",
+        },
+        cookie_names: {
+          type: 'array',
+          items: { type: 'string' },
+          required: true,
+        },
+        adaptive_delivery_action: {
+          type: 'string',
+          enum: ['ignore', 'whitelist'],
+          required: true,
+          errorMessage: "The 'adaptive_delivery_action' must be either 'ignore' or 'whitelist'.",
+        },
+        device_group: {
+          type: 'array',
+          items: { type: 'integer' },
+          required: true,
+        },
+      },
+      required: [
+        'cache_by_query_string',
+        'query_string_fields',
+        'query_string_sort_enabled',
+        'cache_by_cookies',
+        'cookie_names',
+        'adaptive_delivery_action',
+        'device_group',
+      ],
+      additionalProperties: false,
+    },
+    slice_controls: {
+      type: 'object',
+      properties: {
+        slice_configuration_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'slice_configuration_enabled' field must be a boolean.",
+        },
+        slice_edge_caching_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'slice_edge_caching_enabled' field must be a boolean.",
+        },
+        slice_tiered_caching_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'slice_tiered_caching_enabled' field must be a boolean.",
+        },
+        slice_configuration_range: {
+          type: 'integer',
+          minimum: 0,
+          maximum: 1024,
+          default: 1024,
+          errorMessage: "The 'slice_configuration_range' must be an integer between 0 and 1024.",
+        },
+      },
+      required: ['slice_configuration_enabled', 'slice_edge_caching_enabled', 'slice_tiered_caching_enabled'],
       additionalProperties: false,
     },
   },
-  required: ['name', 'origin_type', 'addresses'],
-  allOf: [
-    {
-      if: {
-        properties: { origin_type: { const: 'object_storage' } },
-      },
-      then: {
-        required: ['bucket'],
-        errorMessage: "When origin_type is 'object_storage', the 'bucket' field is required.",
-      },
-    },
-  ],
+  required: ['name'],
   additionalProperties: false,
 };
 
@@ -629,88 +647,87 @@ const schemaApplicationRules = {
   additionalProperties: false,
 };
 
+const schemaApplicationModulesManifest = {
+  type: 'object',
+  properties: {
+    edge_cache_enabled: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
+    },
+    edge_functions_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+    },
+    application_accelerator_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
+    },
+    image_processor_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'image_processor_enabled' field must be a boolean.",
+    },
+    tiered_cache_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+    },
+  },
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: "No additional properties are allowed in the 'modules' object.",
+  },
+};
+
 const schemaApplicationManifest = {
   type: 'object',
   properties: {
-    main_settings: {
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          errorMessage: "The 'name' field must be a string.",
-        },
-        delivery_protocol: {
-          type: 'string',
-          enum: APPLICATION_DELIVERY_PROTOCOLS,
-          default: 'http',
-          errorMessage: "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
-        },
-        http3: {
-          type: 'boolean',
-          errorMessage: "The 'http3' field must be a boolean.",
-        },
-        http_port: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            enum: APPLICATION_HTTP_PORTS,
-          },
-          errorMessage: {
-            enum: "The 'http_port' field must be an array of valid HTTP ports.",
-            type: "The 'http_port' field must be an array",
-          },
-        },
-        https_port: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            enum: APPLICATION_HTTPS_PORTS,
-          },
-          default: [443],
-          errorMessage: "The 'https_port' field must be an array of valid HTTPS ports.",
-        },
-        minimum_tls_version: {
-          type: 'string',
-          enum: APPLICATION_TLS_VERSIONS,
-          default: '',
-          errorMessage: "The 'minimum_tls_version' field must be a valid TLS version.",
-        },
-        supported_ciphers: {
-          type: 'string',
-          enum: APPLICATION_SUPPORTED_CIPHERS,
-          default: 'all',
-          errorMessage: "The 'supported_ciphers' field must be a valid cipher suite.",
-        },
-        active: {
-          type: 'boolean',
-          default: true,
-          errorMessage: "The 'active' field must be a boolean.",
-        },
-      },
-      additionalProperties: false,
-      required: ['name'],
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 250,
+      errorMessage: "The 'name' field must be a string between 1 and 250 characters.",
     },
-    cache_settings: {
-      type: 'array',
-      items: schemaApplicationCacheSettings,
-      errorMessage: "The 'cache_settings' field must be an array of cache setting items.",
+    modules: schemaApplicationModulesManifest,
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean.",
     },
-    origins: {
-      type: 'array',
-      items: schemaApplicationOrigins,
-      errorMessage: "The 'origins' field must be an array of origin items.",
+    debug: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'debug' field must be a boolean.",
     },
     rules: {
       type: 'array',
       items: schemaApplicationRules,
-      errorMessage: "The 'rules' field must be an array of application rule items.",
+    },
+    cache_settings: {
+      type: 'array',
+      items: schemaApplicationCacheSettings,
+    },
+    functions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          path: { type: 'string' },
+          args: { type: 'object' },
+        },
+        required: ['name', 'path'],
+      },
     },
   },
-  required: ['main_settings'],
+  required: ['name', 'modules'],
   additionalProperties: false,
   errorMessage: {
-    additionalProperties: 'No additional properties are allowed in application items.',
-    required: "The 'name' and 'main_settings' fields are required.",
+    additionalProperties: "No additional properties are allowed in the 'application' object.",
+    required: "The 'name' and 'modules' fields are required in the application object.",
   },
 };
 

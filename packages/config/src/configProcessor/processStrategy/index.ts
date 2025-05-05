@@ -6,11 +6,12 @@ import RulesProcessConfigStrategy from '../processStrategy/implementations/rules
 import NetworkListProcessConfigStrategy from '../processStrategy/implementations/secure/networkListProcessConfigStrategy';
 import WafProcessConfigStrategy from '../processStrategy/implementations/secure/wafProcessConfigStrategy';
 import ProcessConfigContext from '../processStrategy/processConfigContext';
+import ApplicationProcessConfigStrategy from './implementations/applicationProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
 import WorkloadProcessConfigStrategy from './implementations/workloadProcessConfigStrategy';
 
-function factoryProcessContext() {
+export function factoryProcessContext(contextType = 'transformToConfig') {
   const processConfigContext = new ProcessConfigContext();
   processConfigContext.setStrategy('build', new BuildProcessConfigStrategy());
   processConfigContext.setStrategy('origin', new OriginProcessConfigStrategy());
@@ -23,7 +24,6 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('functions', new FunctionsProcessConfigStrategy());
   // Rules must be last to apply to behaviors (origin, cache...)
   processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
-  return processConfigContext;
+  processConfigContext.setStrategy('application', new ApplicationProcessConfigStrategy());
+  return { context: processConfigContext, contextType };
 }
-
-export { factoryProcessContext };
