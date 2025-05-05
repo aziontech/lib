@@ -11,4 +11,7 @@ declare module 'azion/bundler/polyfills' {
   export const NetworkListContext: any;
   export const fsContext: any;
   export const FirewallEventContext: any;
+  export const streamContext: any;
+  export const cryptoContext: any;
+  export const promisesContext: any;
 }
