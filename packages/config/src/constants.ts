@@ -291,3 +291,6 @@ export type ConnectorTlsPolicy = (typeof CONNECTOR_TLS_POLICIES)[number];
 export type ConnectorLoadBalanceMethod = (typeof CONNECTOR_LOAD_BALANCE_METHODS)[number];
 export type ConnectorConnectionPreference = (typeof CONNECTOR_CONNECTION_PREFERENCES)[number];
 export type ConnectorHttpVersion = (typeof CONNECTOR_HTTP_VERSIONS)[number];
+
+export const FUNCTION_INITIATOR_TYPES = ['edge_application', 'edge_firewall'] as const;
+export type FunctionInitiatorType = (typeof FUNCTION_INITIATOR_TYPES)[number];

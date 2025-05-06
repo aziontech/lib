@@ -1,3 +1,4 @@
+import { FUNCTION_INITIATOR_TYPES } from '../../../constants';
 import { AzionConfig } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
@@ -16,6 +17,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       name: func.name,
       target: func.path,
       args: func.args || {},
+      initiator_type: func.initiatorType || FUNCTION_INITIATOR_TYPES[0],
     }));
   }
 
@@ -29,6 +31,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       name: func.name,
       path: func.target,
       args: func.args || {},
+      initiatorType: func.initiator_type || FUNCTION_INITIATOR_TYPES[0],
     }));
 
     return transformedPayload.functions;

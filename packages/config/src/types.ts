@@ -5,6 +5,7 @@ import {
   FirewallRateLimitBy,
   FirewallRateLimitType,
   FirewallWafMode,
+  FunctionInitiatorType,
   NetworkListType,
   RuleConditional,
   RuleOperatorWithValue,
@@ -230,6 +231,13 @@ export type AzionRequestRule = {
           /** CDN cache TTL */
           cdn_cache_settings_maximum_ttl?: number | null;
         };
+    /** Set a new connector */
+    setEdgeConnector?: {
+      /** Connector name */
+      name: string;
+    };
+    /** Finish request phase */
+    finishRequestPhase?: boolean | null;
   };
 };
 
@@ -340,6 +348,8 @@ export type AzionFunction = {
   path: string;
   /** Optional arguments to be passed to the function */
   args?: Record<string, unknown>;
+  /** Initiator type (edge_application or edge_firewall) */
+  initiatorType?: FunctionInitiatorType;
 };
 
 /**

@@ -57,10 +57,29 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     }
   }
 
+  private validateConnectorReferences(config: AzionConfig) {
+    if (!config?.rules?.request || !config?.connectors) {
+      return;
+    }
+
+    const definedConnectors = new Set(config.connectors.map((c) => c.name));
+
+    for (const rule of config.rules.request) {
+      if (rule.behavior?.setEdgeConnector) {
+        if (!definedConnectors.has(rule.behavior.setEdgeConnector.name)) {
+          throw new Error(
+            `Connector "${rule.behavior.setEdgeConnector.name}" referenced in rule "${rule.name}" is not defined in the connectors array.`,
+          );
+        }
+      }
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToManifest(config: AzionConfig, context: any) {
     // Validar referências de funções antes de transformar
     this.validateFunctionReferences(config);
+    this.validateConnectorReferences(config);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
