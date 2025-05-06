@@ -4,6 +4,7 @@ import {
   APPLICATION_HTTP_PORTS,
   APPLICATION_HTTPS_PORTS,
   APPLICATION_SUPPORTED_CIPHERS,
+  CONNECTOR_TLS_POLICIES,
   DYNAMIC_VARIABLE_PATTERNS,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
@@ -1089,6 +1090,184 @@ const azionConfigSchema = {
             errorMessage: {
               additionalProperties: "No additional properties are allowed in the 'application' object.",
               required: "The 'name' field is required in the application object.",
+            },
+          },
+        },
+        connectors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                minLength: 1,
+                errorMessage: "The 'name' field must be a string with at least 1 character.",
+              },
+              type: {
+                type: 'string',
+                enum: ['http'],
+                errorMessage: "The 'type' field must be 'http'.",
+              },
+              active: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'active' field must be a boolean.",
+              },
+              addresses: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    address: {
+                      type: 'string',
+                      errorMessage: "The 'address' field must be a string.",
+                    },
+                    weight: {
+                      type: 'number',
+                      minimum: 0,
+                      maximum: 100,
+                      default: 1,
+                      errorMessage: "The 'weight' field must be a number between 0 and 100.",
+                    },
+                    serverRole: {
+                      type: 'string',
+                      errorMessage: "The 'serverRole' field must be a string.",
+                    },
+                    status: {
+                      type: 'string',
+                      errorMessage: "The 'status' field must be a string.",
+                    },
+                  },
+                  required: ['address'],
+                  additionalProperties: false,
+                },
+              },
+              modules: {
+                type: 'object',
+                properties: {
+                  loadBalancerEnabled: {
+                    type: 'boolean',
+                    default: false,
+                    errorMessage: "The 'loadBalancerEnabled' field must be a boolean.",
+                  },
+                  originShieldEnabled: {
+                    type: 'boolean',
+                    default: false,
+                    errorMessage: "The 'originShieldEnabled' field must be a boolean.",
+                  },
+                },
+                additionalProperties: false,
+              },
+              tls: {
+                type: 'object',
+                properties: {
+                  policy: {
+                    type: 'string',
+                    enum: CONNECTOR_TLS_POLICIES,
+                    default: 'off',
+                    errorMessage: `The 'policy' field must be one of: ${CONNECTOR_TLS_POLICIES.join(', ')}.`,
+                  },
+                  certificate: {
+                    type: 'number',
+                    errorMessage: "The 'certificate' field must be a number.",
+                  },
+                  certificates: {
+                    type: 'array',
+                    items: {
+                      type: 'number',
+                      errorMessage: "Each item in the 'certificates' array must be a number.",
+                    },
+                  },
+                  secret: {
+                    type: 'string',
+                    errorMessage: "The 'secret' field must be a string.",
+                  },
+                  sni: {
+                    type: 'string',
+                    errorMessage: "The 'sni' field must be a string.",
+                  },
+                },
+                additionalProperties: false,
+              },
+              loadBalanceMethod: {
+                type: 'string',
+                enum: ['off', 'round_robin', 'ip_hash', 'least_connections'],
+                default: 'off',
+                errorMessage:
+                  "The 'loadBalanceMethod' field must be 'off', 'round_robin', 'ip_hash', or 'least_connections'.",
+              },
+              connectionPreference: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  enum: ['IPv4', 'IPv6'],
+                  errorMessage: "Each item in the 'connectionPreference' array must be 'IPv4' or 'IPv6'.",
+                },
+                default: ['IPv6', 'IPv4'],
+              },
+              connectionTimeout: {
+                type: 'number',
+                minimum: 1,
+                maximum: 300,
+                default: 60,
+                errorMessage: "The 'connectionTimeout' field must be a number between 1 and 300.",
+              },
+              readWriteTimeout: {
+                type: 'number',
+                minimum: 1,
+                maximum: 300,
+                default: 120,
+                errorMessage: "The 'readWriteTimeout' field must be a number between 1 and 300.",
+              },
+              maxRetries: {
+                type: 'number',
+                minimum: 0,
+                maximum: 10,
+                default: 0,
+                errorMessage: "The 'maxRetries' field must be a number between 0 and 10.",
+              },
+              typeProperties: {
+                type: 'object',
+                properties: {
+                  versions: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      enum: ['http1', 'http2'],
+                      errorMessage: "Each item in the 'versions' array must be 'http1' or 'http2'.",
+                    },
+                    default: ['http1'],
+                  },
+                  host: {
+                    type: 'string',
+                    errorMessage: "The 'host' field must be a string.",
+                  },
+                  path: {
+                    type: 'string',
+                    errorMessage: "The 'path' field must be a string.",
+                  },
+                  followingRedirect: {
+                    type: 'boolean',
+                    default: true,
+                    errorMessage: "The 'followingRedirect' field must be a boolean.",
+                  },
+                  realIpHeader: {
+                    type: 'string',
+                    errorMessage: "The 'realIpHeader' field must be a string.",
+                  },
+                  realPortHeader: {
+                    type: 'string',
+                    errorMessage: "The 'realPortHeader' field must be a string.",
+                  },
+                },
+                additionalProperties: false,
+              },
+            },
+            required: ['name', 'type'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in connector objects.',
+              required: "The 'name' and 'type' fields are required in the connector object.",
             },
           },
         },

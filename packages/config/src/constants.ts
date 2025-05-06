@@ -279,3 +279,15 @@ export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
 export type WorkloadNetworkMap = (typeof WORKLOAD_NETWORK_MAPS)[number];
 export type WorkloadTlsMinimumVersion = (typeof WORKLOAD_TLS_MINIMUM_VERSIONS)[number];
 export type WorkloadHttpVersion = (typeof WORKLOAD_HTTP_VERSIONS)[number];
+
+// Adicionar ao arquivo constants.ts
+export const CONNECTOR_TLS_POLICIES = ['off', 'enforce', 'custom'] as const;
+export const CONNECTOR_LOAD_BALANCE_METHODS = ['off', 'round_robin', 'ip_hash', 'least_connections'] as const;
+export const CONNECTOR_CONNECTION_PREFERENCES = ['IPv4', 'IPv6'] as const;
+export const CONNECTOR_HTTP_VERSIONS = ['http1', 'http2'] as const;
+
+// Tipos correspondentes
+export type ConnectorTlsPolicy = (typeof CONNECTOR_TLS_POLICIES)[number];
+export type ConnectorLoadBalanceMethod = (typeof CONNECTOR_LOAD_BALANCE_METHODS)[number];
+export type ConnectorConnectionPreference = (typeof CONNECTOR_CONNECTION_PREFERENCES)[number];
+export type ConnectorHttpVersion = (typeof CONNECTOR_HTTP_VERSIONS)[number];

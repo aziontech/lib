@@ -927,6 +927,161 @@ const schemaWorkloadManifest = {
   },
 };
 
+const schemaConnectorManifest = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'number',
+      errorMessage: "The 'id' field must be a number.",
+    },
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    type: {
+      type: 'string',
+      enum: ['http'],
+      errorMessage: "The 'type' field must be 'http'.",
+    },
+    active: {
+      type: 'boolean',
+      errorMessage: "The 'active' field must be a boolean.",
+    },
+    addresses: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          address: {
+            type: 'string',
+            errorMessage: "The 'address' field must be a string.",
+          },
+          weight: {
+            type: 'number',
+            errorMessage: "The 'weight' field must be a number.",
+          },
+          server_role: {
+            type: 'string',
+            errorMessage: "The 'server_role' field must be a string.",
+          },
+          status: {
+            type: 'string',
+            errorMessage: "The 'status' field must be a string.",
+          },
+        },
+        required: ['address'],
+        additionalProperties: false,
+      },
+    },
+    modules: {
+      type: 'object',
+      properties: {
+        load_balancer_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'load_balancer_enabled' field must be a boolean.",
+        },
+        origin_shield_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'origin_shield_enabled' field must be a boolean.",
+        },
+      },
+      additionalProperties: false,
+    },
+    tls: {
+      type: 'object',
+      properties: {
+        policy: {
+          type: 'string',
+          enum: ['off', 'enforce', 'custom'],
+          errorMessage: "The 'policy' field must be 'off', 'enforce', or 'custom'.",
+        },
+        certificate: {
+          type: 'number',
+          errorMessage: "The 'certificate' field must be a number.",
+        },
+        certificates: {
+          type: 'array',
+          items: {
+            type: 'number',
+          },
+        },
+        secret: {
+          type: 'string',
+          errorMessage: "The 'secret' field must be a string.",
+        },
+        sni: {
+          type: 'string',
+          errorMessage: "The 'sni' field must be a string.",
+        },
+      },
+      additionalProperties: false,
+    },
+    load_balance_method: {
+      type: 'string',
+      enum: ['off', 'round_robin', 'ip_hash', 'least_connections'],
+      errorMessage: "The 'load_balance_method' field must be one of: off, round_robin, ip_hash, least_connections.",
+    },
+    connection_preference: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['IPv4', 'IPv6'],
+      },
+    },
+    connection_timeout: {
+      type: 'number',
+      errorMessage: "The 'connection_timeout' field must be a number.",
+    },
+    read_write_timeout: {
+      type: 'number',
+      errorMessage: "The 'read_write_timeout' field must be a number.",
+    },
+    max_retries: {
+      type: 'number',
+      errorMessage: "The 'max_retries' field must be a number.",
+    },
+    type_properties: {
+      type: 'object',
+      properties: {
+        versions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: ['http1', 'http2'],
+          },
+        },
+        host: {
+          type: 'string',
+          errorMessage: "The 'host' field must be a string.",
+        },
+        path: {
+          type: 'string',
+          errorMessage: "The 'path' field must be a string.",
+        },
+        following_redirect: {
+          type: 'boolean',
+          errorMessage: "The 'following_redirect' field must be a boolean.",
+        },
+        real_ip_header: {
+          type: 'string',
+          errorMessage: "The 'real_ip_header' field must be a string.",
+        },
+        real_port_header: {
+          type: 'string',
+          errorMessage: "The 'real_port_header' field must be a string.",
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  required: ['name', 'type'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in connector objects.',
+    required: "The 'name' and 'type' fields are required in the connector object.",
+  },
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -958,6 +1113,11 @@ const schemaManifest = {
       errorMessage: {
         type: "The 'workload' field must be an object",
       },
+    },
+    connectors: {
+      type: 'array',
+      items: schemaConnectorManifest,
+      errorMessage: "The 'connectors' field must be an array of connector objects.",
     },
   },
 };

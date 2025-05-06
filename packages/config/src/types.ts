@@ -469,6 +469,76 @@ export type AzionApplication = {
 };
 
 /**
+ * Connector configuration for Azion API v4.
+ */
+export type AzionConnector = {
+  /** Connector ID */
+  id?: number;
+  /** Connector name */
+  name: string;
+  /** Connector type (atualmente apenas 'http') */
+  type: 'http';
+  /** Status do connector */
+  active?: boolean;
+  /** Endereços para o connector */
+  addresses?: {
+    /** Endereço */
+    address: string;
+    /** Peso para balanceamento de carga */
+    weight?: number;
+    /** Indica se está ativo */
+    serverRole?: string;
+    /** Estado do endereço */
+    status?: string;
+  }[];
+  /** Módulos do connector */
+  modules?: {
+    /** Habilita balanceamento de carga */
+    loadBalancerEnabled?: boolean;
+    /** Habilita Origin Shield */
+    originShieldEnabled?: boolean;
+  };
+  /** Configuração TLS */
+  tls?: {
+    /** Política TLS */
+    policy?: 'off' | 'enforce' | 'custom';
+    /** Certificado para custom TLS */
+    certificate?: number;
+    /** Certificados para custom TLS */
+    certificates?: number[];
+    /** Secret para custom TLS */
+    secret?: string;
+    /** SNI para custom TLS */
+    sni?: string;
+  };
+  /** Método de balanceamento de carga */
+  loadBalanceMethod?: 'off' | 'round_robin' | 'ip_hash' | 'least_connections';
+  /** Preferência de conexão */
+  connectionPreference?: ('IPv4' | 'IPv6')[];
+  /** Timeout de conexão em segundos */
+  connectionTimeout?: number;
+  /** Timeout de leitura/escrita em segundos */
+  readWriteTimeout?: number;
+  /** Máximo de tentativas */
+  maxRetries?: number;
+  /** Propriedades específicas do tipo */
+  typeProperties?: {
+    /** Versões HTTP suportadas */
+    versions?: ('http1' | 'http2')[];
+    /** Host header */
+    host?: string;
+    /** Caminho */
+    path?: string;
+    /** Seguir redirecionamentos */
+    followingRedirect?: boolean;
+    /** Header de IP real */
+    realIpHeader?: string;
+    /** Header de porta real */
+    realPortHeader?: string;
+  };
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
@@ -501,6 +571,8 @@ export type AzionConfig = {
    * API v4 feature that provides comprehensive edge application configuration
    */
   application?: AzionApplication[];
+  /** Connector configurations for API v4 */
+  connectors?: AzionConnector[];
 };
 
 /**
