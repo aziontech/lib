@@ -296,12 +296,9 @@ export type AzionRules = {
 export type AzionPurge = {
   /** Purge type */
   type: 'url' | 'cachekey' | 'wildcard';
-  /** URLs to be purged */
-  urls: string[];
-  /** HTTP method for purge request */
-  method?: 'delete';
+  items?: string[];
   /** Cache layer to be purged */
-  layer?: 'edge_caching' | 'l2_caching';
+  layer?: 'edge_cache' | 'tiered_cache';
 };
 
 export type PresetInput = string | AzionBuildPreset;

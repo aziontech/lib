@@ -535,33 +535,35 @@ const azionConfigSchema = {
                 enum: ['url', 'cachekey', 'wildcard'],
                 errorMessage: "The 'type' field must be either 'url', 'cachekey' or 'wildcard'.",
               },
-              urls: {
+              items: {
                 type: 'array',
                 items: {
                   type: 'string',
-                  errorMessage: "Each item in 'urls' must be a string.",
+                  errorMessage: "Each item in 'items' must be a string.",
                 },
+                minItems: 1,
                 errorMessage: {
-                  type: "The 'urls' field must be an array of strings.",
+                  type: "The 'items' field must be an array of strings with at least one item.",
+                  minItems: "The 'items' array must contain at least one URL.",
                 },
               },
               method: {
                 type: 'string',
                 enum: ['delete'],
-                errorMessage: "The 'method' field must be either 'delete'. Default is 'delete'.",
+                errorMessage: "The 'method' field must be 'delete'. Default is 'delete'.",
               },
               layer: {
                 type: 'string',
-                enum: ['edge_caching', 'l2_caching'],
+                enum: ['edge_cache', 'tiered_cache'],
                 errorMessage:
-                  "The 'layer' field must be either 'edge_caching' or 'l2_caching'. Default is 'edge_caching'.",
+                  "The 'layer' field must be either 'edge_cache' or 'tiered_cache'. Default is 'edge_cache'.",
               },
             },
-            required: ['type', 'urls'],
+            required: ['type', 'items'],
             additionalProperties: false,
             errorMessage: {
               additionalProperties: 'No additional properties are allowed in purge items.',
-              required: "The 'type and urls' fields are required in each purge item.",
+              required: "The 'type' and 'items' fields are required in each purge item.",
             },
           },
         },
