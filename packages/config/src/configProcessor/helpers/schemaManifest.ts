@@ -25,6 +25,11 @@ import {
   RULE_VARIABLES,
   WAF_MODE,
   WAF_SENSITIVITY,
+  WORKLOAD_HTTP_VERSIONS,
+  WORKLOAD_MTLS_VERIFICATION,
+  WORKLOAD_NETWORK_MAP,
+  WORKLOAD_TLS_CIPHERS,
+  WORKLOAD_TLS_VERSIONS,
 } from '../../constants';
 
 const schemaNetworkListManifest = {
@@ -747,6 +752,154 @@ const schemaApplicationManifest = {
   },
 };
 
+const schemaWorkloadManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      errorMessage: "The 'name' field must be a string between 1 and 100 characters",
+    },
+    alternate_domains: {
+      type: 'array',
+      items: { type: 'string' },
+      maxItems: 50,
+      errorMessage: "The 'alternate_domains' field must be an array of strings with max 50 items",
+    },
+    edge_application: {
+      type: 'integer',
+      minimum: 1,
+      maximum: 9007199254740991,
+      errorMessage: "The 'edge_application' field must be a valid integer",
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean",
+    },
+    network_map: {
+      type: 'string',
+      enum: WORKLOAD_NETWORK_MAP,
+      default: '1',
+      errorMessage: "The 'network_map' must be either '1' or '2'",
+    },
+    edge_firewall: {
+      type: ['integer', 'null'],
+      errorMessage: "The 'edge_firewall' must be an integer or null",
+    },
+    tls: {
+      type: 'object',
+      properties: {
+        certificate: {
+          type: ['integer', 'null'],
+          minimum: 1,
+          errorMessage: "The 'certificate' must be an integer >= 1 or null",
+        },
+        ciphers: {
+          type: ['string', 'null'],
+          enum: WORKLOAD_TLS_CIPHERS,
+          errorMessage: "The 'ciphers' must be a valid TLS cipher suite or null",
+        },
+        minimum_version: {
+          type: ['string', 'null'],
+          enum: WORKLOAD_TLS_VERSIONS,
+          default: 'tls_1_2',
+          errorMessage: "The 'minimum_version' must be a valid TLS version or null",
+        },
+      },
+      default: { certificate: null, ciphers: null, minimum_version: 'tls_1_2' },
+      additionalProperties: false,
+    },
+    protocols: {
+      type: 'object',
+      properties: {
+        http: {
+          type: 'object',
+          properties: {
+            versions: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: WORKLOAD_HTTP_VERSIONS,
+              },
+              default: ['http1', 'http2'],
+            },
+            http_ports: {
+              type: 'array',
+              items: { type: 'integer' },
+              default: [80],
+            },
+            https_ports: {
+              type: 'array',
+              items: { type: 'integer' },
+              default: [443],
+            },
+            quic_ports: {
+              type: ['array', 'null'],
+              items: { type: 'integer' },
+            },
+          },
+          required: ['versions', 'http_ports', 'https_ports'],
+          additionalProperties: false,
+        },
+      },
+      default: {
+        http: {
+          versions: ['http1', 'http2'],
+          http_ports: [80],
+          https_ports: [443],
+          quic_ports: null,
+        },
+      },
+      additionalProperties: false,
+    },
+    mtls: {
+      type: 'object',
+      properties: {
+        verification: {
+          type: 'string',
+          enum: WORKLOAD_MTLS_VERIFICATION,
+          default: 'enforce',
+        },
+        certificate: {
+          type: ['integer', 'null'],
+          minimum: 1,
+        },
+        crl: {
+          type: ['array', 'null'],
+          items: { type: 'integer' },
+          maxItems: 100,
+        },
+      },
+      required: ['verification'],
+      additionalProperties: false,
+    },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: ['string', 'null'],
+            minLength: 1,
+            maxLength: 250,
+          },
+          allow_access: {
+            type: 'boolean',
+          },
+        },
+        required: ['allow_access'],
+        additionalProperties: false,
+      },
+      minItems: 1,
+      maxItems: 2,
+    },
+  },
+  required: ['name', 'edge_application', 'domains'],
+  additionalProperties: false,
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -778,6 +931,11 @@ const schemaManifest = {
       type: 'array',
       items: schemaApplicationManifest,
       errorMessage: "The 'application' field must be an array of application items.",
+    },
+    workload: {
+      type: 'array',
+      items: schemaWorkloadManifest,
+      errorMessage: "The 'workload' field must be an array of workload items.",
     },
   },
 };

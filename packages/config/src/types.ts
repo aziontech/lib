@@ -9,6 +9,11 @@ import {
   RuleVariable,
   WafMode,
   WafSensitivity,
+  WorkloadHTTPVersion,
+  WorkloadMTLSVerification,
+  WorkloadNetworkMap,
+  WorkloadTLSCipher,
+  WorkloadTLSVersion,
 } from './constants';
 
 import { FetchEvent } from 'azion/types';
@@ -138,8 +143,6 @@ export type AzionRequestRule = {
     };
     /** Rewrite the request */
     rewrite?: string;
-    /** Set headers */
-    setHeaders?: string[];
     /** Bypass cache */
     bypassCache?: boolean | null;
     /** Force HTTPS */
@@ -188,6 +191,19 @@ export type AzionRequestRule = {
           /** CDN cache TTL */
           cdn_cache_settings_maximum_ttl?: number | null;
         };
+    /** Finish request phase */
+    finishRequestPhase?: boolean;
+    /** Set Edge connector */
+    setEdgeConnector?: {
+      name: string;
+      // outros campos necessários
+    };
+    /** Add request header */
+    addRequestHeader?: string[];
+    /** Add request cookie */
+    addRequestCookie?: string;
+    /** Filter request cookie */
+    filterRequestCookie?: string;
   };
 };
 
@@ -209,8 +225,6 @@ export type AzionResponseRule = {
   criteria?: AzionRuleCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior?: {
-    /** Set a cookie */
-    setCookie?: string | null;
     /** Set headers */
     setHeaders?: string[];
     /** Deliver the content */
@@ -226,8 +240,6 @@ export type AzionResponseRule = {
     };
     /** Enable GZIP compression */
     enableGZIP?: boolean | null;
-    /** Filter a cookie */
-    filterCookie?: string | null;
     /** Filter a header */
     filterHeader?: string | null;
     /** Run a serverless function */
@@ -236,6 +248,10 @@ export type AzionResponseRule = {
     redirectTo301?: string | null;
     /** Redirect with 302 status */
     redirectTo302?: string | null;
+    /** Add response header */
+    addResponseHeader?: string[];
+    /** Filter response cookie */
+    filterResponseCookie?: string;
   };
 };
 
@@ -349,6 +365,8 @@ export type AzionConfig = {
   networkList?: AzionNetworkList[];
   /** WAF configuration */
   waf?: AzionWaf[];
+  /** Workload configuration */
+  workload?: AzionWorkload[];
 };
 
 /**
@@ -560,3 +578,42 @@ export interface AzionPrebuildResult {
 export interface AzionConfigs {
   configs: AzionConfig[];
 }
+
+export type AzionWorkloadTLS = {
+  certificate?: number | null;
+  ciphers?: WorkloadTLSCipher | null;
+  minimumVersion?: WorkloadTLSVersion | null;
+};
+
+export type AzionWorkloadProtocols = {
+  http: {
+    versions: WorkloadHTTPVersion[];
+    httpPorts: number[];
+    httpsPorts: number[];
+    quicPorts?: number[] | null;
+  };
+};
+
+export type AzionWorkloadMTLS = {
+  verification: WorkloadMTLSVerification;
+  certificate?: number | null;
+  crl?: number[] | null;
+};
+
+export type AzionWorkloadDomain = {
+  domain: string | null;
+  allowAccess: boolean;
+};
+
+export type AzionWorkload = {
+  name: string;
+  alternateDomains?: string[];
+  edgeApplication: string;
+  active?: boolean;
+  networkMap?: WorkloadNetworkMap;
+  edgeFirewall?: number | null;
+  tls?: AzionWorkloadTLS;
+  protocols?: AzionWorkloadProtocols;
+  mtls?: AzionWorkloadMTLS;
+  domains: AzionWorkloadDomain[];
+};
