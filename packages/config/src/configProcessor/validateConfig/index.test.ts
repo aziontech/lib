@@ -4,13 +4,11 @@ import { validateConfig } from '..';
 describe('generate', () => {
   describe('validateConfig', () => {
     it('should validate the configuration object', () => {
-      const config = {
+      const config: any = {
         build: {
+          bundler: 'esbuild',
           preset: 'next',
           polyfills: true,
-          custom: {
-            minify: true,
-          },
         },
       };
       expect(() => validateConfig(config)).not.toThrow();

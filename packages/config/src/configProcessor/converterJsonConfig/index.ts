@@ -39,9 +39,9 @@ function convertJsonConfigToObject(config: string): AzionConfig {
   }
   validateConfig(configObject, schemaManifest);
   const payloadConfig: AzionConfig = {};
-  const processConfigContext = factoryProcessContext();
+  const { context } = factoryProcessContext();
 
-  processConfigContext.transformToConfig(configObject, payloadConfig);
+  context.transformToConfig(configObject, payloadConfig);
 
   return payloadConfig;
 }

@@ -14,25 +14,26 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
     config?.purge.forEach((purge) => {
-      purge?.urls.forEach((value) => {
+      const itemsArray = purge.items || [];
+
+      itemsArray.forEach((value) => {
         if (!value.includes('http://') && !value.includes('https://')) {
           throw new Error('The URL must contain the protocol (http:// or https://).');
         }
 
         if (purge?.type === 'wildcard' && !value.includes('*')) {
-          throw new Error('The URL must not contain the wildcard character (*).');
+          throw new Error('The URL must contain the wildcard character (*) when type is wildcard.');
         }
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const purgeSetting: any = {
         type: purge.type,
-        urls: purge.urls || [],
-        method: purge.method || 'delete',
+        items: itemsArray,
       };
 
       if (purge?.type === 'cachekey') {
-        purgeSetting.layer = purge.layer || 'edge_caching';
+        purgeSetting.layer = purge.layer || 'edge_cache';
       }
 
       payload.push(purgeSetting);
@@ -48,23 +49,25 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
     }
     transformedPayload.purge = [];
     purgeConfig.forEach((purge) => {
-      purge.urls.forEach((value: string) => {
+      const itemsArray = purge.items || [];
+
+      itemsArray.forEach((value: string) => {
         if (!value.includes('http://') && !value.includes('https://')) {
           throw new Error('The URL must contain the protocol (http:// or https://).');
         }
 
         if (purge?.type === 'wildcard' && !value.includes('*')) {
-          throw new Error('The URL must not contain the wildcard character (*).');
+          throw new Error('The URL must contain the wildcard character (*) when type is wildcard.');
         }
       });
+
       const purgeSetting: AzionPurge = {
         type: purge.type,
-        urls: purge.urls || [],
-        method: purge.method || 'delete',
+        items: itemsArray,
       };
 
       if (purge?.type === 'cachekey') {
-        purgeSetting.layer = purge.layer || 'edge_caching';
+        purgeSetting.layer = purge.layer || 'edge_cache';
       }
 
       transformedPayload.purge!.push(purgeSetting);

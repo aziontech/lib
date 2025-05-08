@@ -185,6 +185,31 @@ export const requestBehaviors = {
       return undefined;
     },
   },
+  setEdgeConnector: {
+    transform: (value: any, payloadCDN: any) => {
+      const connector = payloadCDN.connectors?.find((c: any) => c.name === value.name);
+
+      if (!connector) {
+        throw new Error(`Rule setEdgeConnector name '${value.name}' not found in the connectors settings`);
+      }
+
+      return {
+        name: 'set_edge_connector',
+        target: connector.name,
+      };
+    },
+  },
+  finishRequestPhase: {
+    transform: (value: any) => {
+      if (value) {
+        return {
+          name: 'finish_request_phase',
+          target: null,
+        };
+      }
+      return undefined;
+    },
+  },
 };
 export const responseBehaviors = {
   setCookie: {
@@ -400,6 +425,26 @@ export const revertRequestBehaviors = {
     transform: () => {
       return {
         deny: true,
+      };
+    },
+  },
+  set_edge_connector: {
+    transform: (value: any, payloadCDN: any) => {
+      const connector = payloadCDN.connectors?.find((c: any) => c.name === value);
+      if (!connector) {
+        throw new Error(`Rule setEdgeConnector name '${value}' not found in the connectors settings`);
+      }
+      return {
+        setEdgeConnector: {
+          name: value,
+        },
+      };
+    },
+  },
+  finish_request_phase: {
+    transform: () => {
+      return {
+        finishRequestPhase: true,
       };
     },
   },

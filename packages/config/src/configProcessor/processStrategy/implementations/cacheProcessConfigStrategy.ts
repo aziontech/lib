@@ -5,9 +5,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
 const math = create(all);
 
 /**
- * CacheProcessConfigStrategy
- * @class CacheProcessConfigStrategy
- * @description This class is implementation of the Cache ProcessConfig Strategy.
+ * CacheProcessConfigStrategy para API v4
  */
 class CacheProcessConfigStrategy extends ProcessConfigStrategy {
   // Helper function to safely evaluate mathematical expressions
@@ -23,119 +21,101 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
   };
 
   transformToManifest(config: AzionConfig) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload: any[] = [];
     if (!Array.isArray(config?.cache) || config?.cache.length === 0) {
-      return;
+      return undefined;
     }
-    config?.cache.forEach((cache) => {
-      const maxAgeSecondsBrowser = cache?.browser ? this.evaluateMathExpression(cache.browser.maxAgeSeconds) : 0;
-      const maxAgeSecondsEdge = cache?.edge ? this.evaluateMathExpression(cache.edge.maxAgeSeconds) : 60;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cacheSetting: any = {
-        name: cache.name,
-        browser_cache_settings: cache?.browser ? 'override' : 'honor',
-        browser_cache_settings_maximum_ttl: maxAgeSecondsBrowser,
-        cdn_cache_settings: cache?.edge ? 'override' : 'honor',
-        cdn_cache_settings_maximum_ttl: maxAgeSecondsEdge,
-        enable_caching_for_post: cache?.methods?.post || false,
-        enable_caching_for_options: cache?.methods?.options || false,
-        enable_query_string_sort: cache?.queryStringSort || false,
-      };
-
-      if (cache.cacheByQueryString) {
-        cacheSetting.cache_by_query_string =
-          cache.cacheByQueryString.option === 'varies' ? 'all' : cache.cacheByQueryString.option;
-        if (cache.cacheByQueryString.option === 'whitelist' || cache.cacheByQueryString.option === 'blacklist') {
-          cacheSetting.query_string_fields = cache.cacheByQueryString.list || [];
-        } else {
-          cacheSetting.query_string_fields = [];
-        }
-      }
-
-      if (cache.cacheByCookie) {
-        cacheSetting.cache_by_cookie = cache.cacheByCookie.option === 'varies' ? 'all' : cache.cacheByCookie.option;
-        if (cache.cacheByCookie.option === 'whitelist' || cache.cacheByCookie.option === 'blacklist') {
-          cacheSetting.cookie_names = cache.cacheByCookie.list || [];
-        } else {
-          cacheSetting.cookie_names = [];
-        }
-      }
-
-      payload.push(cacheSetting);
-    });
-    return payload;
+    return config.cache.map((cache) => ({
+      name: cache.name,
+      browser_cache: {
+        behavior: cache.browser?.behavior || 'honor',
+        max_age: cache.browser?.maxAge || 0,
+      },
+      edge_cache: {
+        behavior: cache.edge?.behavior || 'honor',
+        max_age: cache.edge?.maxAge || 60,
+      },
+      caching_for_post_enabled: cache.enablePost ?? false,
+      caching_for_options_enabled: cache.enableOptions ?? false,
+      stale_cache_enabled: cache.stale ?? false,
+      tiered_cache_enabled: cache.tieredCache ?? false,
+      tiered_cache_region: cache.tieredRegion || null,
+      application_controls: {
+        cache_by_query_string: cache.controls?.queryString || 'ignore',
+        query_string_fields: cache.controls?.queryStringFields || [],
+        query_string_sort_enabled: cache.controls?.queryStringSort ?? false,
+        cache_by_cookies: cache.controls?.cookies || 'ignore',
+        cookie_names: cache.controls?.cookieNames || [],
+        adaptive_delivery_action: cache.controls?.adaptiveDelivery || 'ignore',
+        device_group: cache.controls?.deviceGroup || [],
+      },
+      slice_controls: cache.slice
+        ? {
+            slice_configuration_enabled: cache.slice.enabled ?? false,
+            slice_edge_caching_enabled: cache.slice.edgeCaching ?? false,
+            slice_tiered_caching_enabled: cache.slice.tieredCaching ?? false,
+            slice_configuration_range: cache.slice.range ?? 1024,
+          }
+        : {
+            slice_configuration_enabled: false,
+            slice_edge_caching_enabled: false,
+            slice_tiered_caching_enabled: false,
+            slice_configuration_range: 1024,
+          },
+    }));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    const config = payload.cache;
-    if (!Array.isArray(config) || config.length === 0) {
-      return;
+  transformToConfig(payload: Record<string, unknown>, transformedPayload: AzionConfig) {
+    const cachePayload = payload.cache;
+
+    if (!Array.isArray(cachePayload) || cachePayload.length === 0) {
+      return undefined;
     }
-    transformedPayload.cache = [];
-    config.forEach((cache) => {
-      const maxAgeSecondsBrowser = cache.browser_cache_settings_maximum_ttl
-        ? this.evaluateMathExpression(cache.browser_cache_settings_maximum_ttl)
-        : 0;
-      const maxAgeSecondsEdge = cache.cdn_cache_settings_maximum_ttl
-        ? this.evaluateMathExpression(cache.cdn_cache_settings_maximum_ttl)
-        : 60;
-      const cacheSetting: AzionCache = {
-        name: cache.name,
-        stale: cache.stale,
+
+    transformedPayload.cache = cachePayload.map((cache: Record<string, unknown>) => {
+      const browserCache = cache.browser_cache as Record<string, unknown>;
+      const edgeCache = cache.edge_cache as Record<string, unknown>;
+      const appControls = cache.application_controls as Record<string, unknown>;
+      const sliceControls = cache.slice_controls as Record<string, unknown>;
+
+      const cacheConfig: AzionCache = {
+        name: cache.name as string,
         browser: {
-          maxAgeSeconds: maxAgeSecondsBrowser,
+          behavior: (browserCache?.behavior as 'honor' | 'override' | 'no-cache') || 'honor',
+          maxAge: Number(browserCache?.max_age) || 0,
         },
         edge: {
-          maxAgeSeconds: maxAgeSecondsEdge,
+          behavior: (edgeCache?.behavior as 'honor' | 'override') || 'honor',
+          maxAge: Number(edgeCache?.max_age) || 60,
         },
-        methods: {
-          post: cache.enable_caching_for_post,
-          options: cache.enable_caching_for_options,
+        enablePost: (cache.caching_for_post_enabled as boolean) ?? false,
+        enableOptions: (cache.caching_for_options_enabled as boolean) ?? false,
+        stale: (cache.stale_cache_enabled as boolean) ?? false,
+        tieredCache: (cache.tiered_cache_enabled as boolean) ?? false,
+        tieredRegion: (cache.tiered_cache_region as string) || undefined,
+        controls: {
+          queryString: (appControls?.cache_by_query_string as 'ignore' | 'whitelist' | 'blacklist' | 'all') || 'ignore',
+          queryStringFields: (appControls?.query_string_fields as string[]) || [],
+          queryStringSort: (appControls?.query_string_sort_enabled as boolean) ?? false,
+          cookies: (appControls?.cache_by_cookies as 'ignore' | 'whitelist' | 'blacklist' | 'all') || 'ignore',
+          cookieNames: (appControls?.cookie_names as string[]) || [],
+          adaptiveDelivery: (appControls?.adaptive_delivery_action as 'ignore' | 'whitelist') || 'ignore',
+          deviceGroup: (appControls?.device_group as number[]) || [],
         },
-        queryStringSort: cache.enable_query_string_sort,
       };
 
-      if (cache.cache_by_query_string) {
-        cacheSetting.cacheByQueryString = {
-          option:
-            // eslint-disable-next-line no-nested-ternary
-            cache.cache_by_query_string === 'varies' ? 'all' : cache.cache_by_query_string,
+      if (sliceControls) {
+        cacheConfig.slice = {
+          enabled: (sliceControls.slice_configuration_enabled as boolean) ?? false,
+          edgeCaching: (sliceControls.slice_edge_caching_enabled as boolean) ?? false,
+          tieredCaching: (sliceControls.slice_tiered_caching_enabled as boolean) ?? false,
+          range: (sliceControls.slice_configuration_range as number) ?? 1024,
         };
-        if (cache.cache_by_query_string === 'whitelist' || cache.cache_by_query_string === 'blacklist') {
-          cacheSetting.cacheByQueryString = {
-            ...cacheSetting.cacheByQueryString,
-            list: cache.query_string_fields || [],
-          };
-        } else {
-          cacheSetting.cacheByQueryString = {
-            ...cacheSetting.cacheByQueryString,
-            list: [],
-          };
-        }
       }
 
-      if (cache.cache_by_cookie) {
-        cacheSetting.cacheByCookie = {
-          option: cache.cache_by_cookie === 'varies' ? 'all' : cache.cache_by_cookie,
-        };
-        if (cache.cache_by_cookie === 'whitelist' || cache.cache_by_cookie === 'blacklist') {
-          cacheSetting.cacheByCookie = {
-            ...cacheSetting.cacheByCookie,
-            list: cache.cookie_names || [],
-          };
-        } else {
-          cacheSetting.cacheByCookie = {
-            ...cacheSetting.cacheByCookie,
-            list: [],
-          };
-        }
-      }
-
-      transformedPayload.cache!.push(cacheSetting);
+      return cacheConfig;
     });
+
     return transformedPayload.cache;
   }
 }

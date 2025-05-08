@@ -71,6 +71,8 @@ export const RULE_OPERATORS_WITH_VALUE = [
   'does_not_start_with',
   'matches',
   'does_not_match',
+  'is_in_list',
+  'is_not_in_list',
 ] as const;
 
 export const RULE_OPERATORS_WITHOUT_VALUE = ['exists', 'does_not_exist'] as const;
@@ -232,34 +234,63 @@ export type OriginProtocolPolicy = (typeof ORIGIN_PROTOCOL_POLICIES)[number];
 export type LoadBalancerMethod = (typeof LOAD_BALANCER_METHODS)[number];
 
 // Constantes para Rules
-export const RULE_PHASES = ['request', 'response'] as const;
+export const RULE_PHASES = ['default', 'request', 'response'] as const;
 
 export const RULE_BEHAVIOR_NAMES = [
-  'add_request_cookie',
-  'add_request_header',
-  'add_response_header',
-  'bypass_cache_phase',
-  'capture_match_groups',
-  'deliver',
   'deny',
-  'enable_gzip',
-  'filter_request_cookie',
-  'filter_response_cookie',
-  'filter_request_header',
-  'filter_response_header',
-  'forward_cookies',
+  'run_function',
   'no_content',
-  'optimize_images',
-  'redirect_http_to_https',
+  'deliver',
+  'finish_request_phase',
   'redirect_to_301',
   'redirect_to_302',
-  'rewrite_request',
-  'run_function',
-  'set_cache_policy',
-  'set_cookie',
+  'forward_cookies',
+  'optimize_images',
   'set_origin',
+  'set_edge_connector',
+  'set_cache_policy',
+  'bypass_cache_phase',
+  'enable_gzip',
+  'redirect_http_to_https',
+  'set_cookie',
+  'rewrite_request',
+  'add_request_header',
+  'filter_request_header',
+  'add_response_header',
+  'filter_response_header',
+  'capture_match_groups',
+  'add_request_cookie',
+  'filter_response_cookie',
+  'filter_request_cookie',
 ] as const;
 
 // Tipos para Rules
 export type RulePhase = (typeof RULE_PHASES)[number];
 export type RuleBehaviorName = (typeof RULE_BEHAVIOR_NAMES)[number];
+
+// =============================== API V4 =============================== //
+// =============================== Workloads =============================== //
+// Constantes para Workloads
+export const WORKLOAD_NETWORK_MAPS = ['1', '2'] as const; // 1 - Edge Global Network, 2 - Staging Network
+export const WORKLOAD_TLS_MINIMUM_VERSIONS = ['', 'tls_1_0', 'tls_1_1', 'tls_1_2', 'tls_1_3'] as const;
+export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
+
+// Tipos para Workloads
+export type WorkloadNetworkMap = (typeof WORKLOAD_NETWORK_MAPS)[number];
+export type WorkloadTlsMinimumVersion = (typeof WORKLOAD_TLS_MINIMUM_VERSIONS)[number];
+export type WorkloadHttpVersion = (typeof WORKLOAD_HTTP_VERSIONS)[number];
+
+// Adicionar ao arquivo constants.ts
+export const CONNECTOR_TLS_POLICIES = ['off', 'enforce', 'custom'] as const;
+export const CONNECTOR_LOAD_BALANCE_METHODS = ['off', 'round_robin', 'ip_hash', 'least_connections'] as const;
+export const CONNECTOR_CONNECTION_PREFERENCES = ['IPv4', 'IPv6'] as const;
+export const CONNECTOR_HTTP_VERSIONS = ['http1', 'http2'] as const;
+
+// Tipos correspondentes
+export type ConnectorTlsPolicy = (typeof CONNECTOR_TLS_POLICIES)[number];
+export type ConnectorLoadBalanceMethod = (typeof CONNECTOR_LOAD_BALANCE_METHODS)[number];
+export type ConnectorConnectionPreference = (typeof CONNECTOR_CONNECTION_PREFERENCES)[number];
+export type ConnectorHttpVersion = (typeof CONNECTOR_HTTP_VERSIONS)[number];
+
+export const FUNCTION_INITIATOR_TYPES = ['edge_application', 'edge_firewall'] as const;
+export type FunctionInitiatorType = (typeof FUNCTION_INITIATOR_TYPES)[number];

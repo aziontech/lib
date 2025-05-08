@@ -5,18 +5,28 @@ export default {
       name: 'angular',
     },
   },
-  domain: {
+  workload: {
     name: 'my_domain',
-    cnameAccessOnly: false, // Optional, defaults to false
-    cnames: ['www.example.com'], // Optional
-    edgeApplicationId: 12345, // Optional
-    edgeFirewallId: 12345, // Optional
-    digitalCertificateId: 'lets_encrypt', // 'lets_encrypt' or null
+    alternateDomains: ['www.example.com'],
+    edgeApplication: 12345,
+    active: true,
+    edgeFirewall: 12345,
+    tls: {
+      certificate: null,
+      ciphers: 'TLSv1.2_2021',
+      minimumVersion: 'tls_1_2',
+    },
     mtls: {
-      verification: 'enforce', // 'enforce' or 'permissive'
-      trustedCaCertificateId: 12345,
-      crlList: [111, 222],
-    }, // Optional
+      verification: 'enforce',
+      certificate: 12345,
+      crl: [111, 222],
+    },
+    domains: [
+      {
+        domain: 'my_domain',
+        allowAccess: true,
+      },
+    ],
   },
   origin: [
     {

@@ -1,33 +1,25 @@
 import {
-  APPLICATION_DELIVERY_PROTOCOLS,
   APPLICATION_HTTP_PORTS,
   APPLICATION_HTTPS_PORTS,
   APPLICATION_SUPPORTED_CIPHERS,
-  APPLICATION_TLS_VERSIONS,
-  CACHE_ADAPTIVE_DELIVERY,
-  CACHE_BROWSER_SETTINGS,
-  CACHE_BY_COOKIE,
-  CACHE_BY_QUERY_STRING,
-  CACHE_CDN_SETTINGS,
-  CACHE_L2_REGION,
   FIREWALL_BEHAVIOR_NAMES,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_RULE_CONDITIONALS,
   FIREWALL_RULE_OPERATORS,
   FIREWALL_VARIABLES,
-  LOAD_BALANCER_METHODS,
+  FUNCTION_INITIATOR_TYPES,
   NETWORK_LIST_TYPES,
-  ORIGIN_PROTOCOL_POLICIES,
-  ORIGIN_TYPES,
   RULE_BEHAVIOR_NAMES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_PHASES,
-  RULE_VARIABLES,
   WAF_MODE,
   WAF_SENSITIVITY,
+  WORKLOAD_HTTP_VERSIONS,
+  WORKLOAD_NETWORK_MAPS,
+  WORKLOAD_TLS_MINIMUM_VERSIONS,
 } from '../../constants';
 
 const schemaNetworkListManifest = {
@@ -186,99 +178,6 @@ const schemaWafManifest = {
     additionalProperties: 'No additional properties are allowed in waf items.',
     required:
       "The 'name, mode, active, sql_injection, sql_injection_sensitivity, remote_file_inclusion, remote_file_inclusion_sensitivity, directory_traversal, directory_traversal_sensitivity, cross_site_scripting, cross_site_scripting_sensitivity, evading_tricks, evading_tricks_sensitivity, file_upload, file_upload_sensitivity, unwanted_access, unwanted_access_sensitivity, identified_attack, identified_attack_sensitivity and bypass_addresses' fields are required in each waf item.",
-  },
-};
-
-const schemaDomainsManifest = {
-  type: ['object', 'null'],
-  properties: {
-    id: {
-      type: 'number',
-      errorMessage: "The 'id' field must be a number.",
-    },
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    edge_application_id: {
-      type: 'number',
-      errorMessage: "The 'edge_application_id' field must be a number.",
-    },
-    cnames: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-      errorMessage: "The 'cnames' field must be an array of strings.",
-    },
-    cname_access_only: {
-      type: 'boolean',
-      errorMessage: "The 'cname_access_only' field must be a boolean.",
-    },
-    digital_certificate_id: {
-      oneOf: [{ type: 'number' }, { type: 'string', enum: ['lets_encrypt'] }, { type: 'null' }],
-      errorMessage: "The 'digital_certificate_id' field must be a number, 'lets_encrypt' or null.",
-    },
-    is_active: {
-      type: 'boolean',
-      default: true,
-      errorMessage: "The 'is_active' field must be a boolean.",
-    },
-    domain_name: {
-      type: 'string',
-      errorMessage: "The 'domain_name' field must be a string.",
-    },
-    is_mtls_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'is_mtls_enabled' field must be a boolean.",
-    },
-    mtls_verification: {
-      type: 'string',
-      enum: ['enforce', 'permissive'],
-      errorMessage: "The 'mtls_verification' field must be either 'enforce' or 'permissive'.",
-    },
-    mtls_trusted_ca_certificate_id: {
-      type: 'number',
-      errorMessage: "The 'mtls_trusted_ca_certificate_id' field must be a number.",
-    },
-    edge_firewall_id: {
-      type: 'number',
-      errorMessage: "The 'edge_firewall_id' field must be a number.",
-    },
-    crl_list: {
-      type: 'array',
-      items: {
-        type: 'number',
-      },
-      errorMessage: "The 'crl_list' field must be an array of numbers.",
-    },
-  },
-  required: ['name'],
-  dependencies: {
-    is_mtls_enabled: {
-      oneOf: [
-        {
-          properties: {
-            is_mtls_enabled: { enum: [false] },
-          },
-        },
-        {
-          properties: {
-            is_mtls_enabled: { enum: [true] },
-          },
-          required: ['mtls_verification', 'mtls_trusted_ca_certificate_id'],
-        },
-      ],
-    },
-  },
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: 'No additional properties are allowed in domain items.',
-    required:
-      "The 'name', 'edge_application_id', 'cnames', 'cname_access_only', and 'digital_certificate_id' fields are required.",
-    dependencies: {
-      is_mtls_enabled: "When mTLS is enabled, 'mtls_verification' and 'mtls_trusted_ca_certificate_id' are required.",
-    },
   },
 };
 
@@ -520,70 +419,540 @@ const schemaApplicationCacheSettings = {
       type: 'string',
       errorMessage: "The 'name' field must be a string.",
     },
-    browser_cache_settings: {
-      type: 'string',
-      enum: CACHE_BROWSER_SETTINGS,
-      errorMessage: "The 'browser_cache_settings' must be either 'honor' or 'override'.",
+    browser_cache: {
+      type: 'object',
+      properties: {
+        behavior: {
+          type: 'string',
+          enum: ['honor', 'override', 'no-cache'],
+          errorMessage: "The 'behavior' field must be 'honor', 'override', or 'no-cache'.",
+        },
+        max_age: {
+          type: 'number',
+          minimum: 0,
+          maximum: 31536000,
+          errorMessage: "The 'max_age' field must be a number between 0 and 31536000.",
+        },
+      },
+      required: ['behavior', 'max_age'],
+      additionalProperties: false,
     },
-    cdn_cache_settings: {
-      type: 'string',
-      enum: CACHE_CDN_SETTINGS,
-      errorMessage: "The 'cdn_cache_settings' must be either 'honor' or 'override'.",
+    edge_cache: {
+      type: 'object',
+      properties: {
+        behavior: {
+          type: 'string',
+          enum: ['honor', 'override'],
+          errorMessage: "The 'behavior' field must be 'honor' or 'override'.",
+        },
+        max_age: {
+          type: 'number',
+          minimum: 0,
+          maximum: 31536000,
+          errorMessage: "The 'max_age' field must be a number between 0 and 31536000.",
+        },
+      },
+      required: ['behavior', 'max_age'],
+      additionalProperties: false,
     },
-    cache_by_query_string: {
-      type: 'string',
-      enum: CACHE_BY_QUERY_STRING,
-      errorMessage: "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
-    },
-    cache_by_cookie: {
-      type: 'string',
-      enum: CACHE_BY_COOKIE,
-      errorMessage: "The 'cache_by_cookie' must be one of: ignore, whitelist, blacklist, all.",
-    },
-    adaptive_delivery_action: {
-      type: 'string',
-      enum: CACHE_ADAPTIVE_DELIVERY,
-      errorMessage: "The 'adaptive_delivery_action' must be either 'ignore' or 'whitelist'.",
-    },
-    l2_caching_enabled: {
+    caching_for_post_enabled: {
       type: 'boolean',
-      errorMessage: "The 'l2_caching_enabled' field must be a boolean.",
+      required: true,
+      errorMessage: "The 'caching_for_post_enabled' field must be a boolean.",
     },
-    l2_region: {
+    caching_for_options_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'caching_for_options_enabled' field must be a boolean.",
+    },
+    stale_cache_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'stale_cache_enabled' field must be a boolean.",
+    },
+    tiered_cache_enabled: {
+      type: 'boolean',
+      required: true,
+      errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+    },
+    tiered_cache_region: {
       type: ['string', 'null'],
-      enum: CACHE_L2_REGION,
-      errorMessage: "The 'l2_region' must be either null, 'sa-brazil' or 'na-united-states'.",
+      errorMessage: "The 'tiered_cache_region' field must be a string or null.",
+    },
+    application_controls: {
+      type: 'object',
+      properties: {
+        cache_by_query_string: {
+          type: 'string',
+          enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+          required: true,
+          errorMessage: "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
+        },
+        query_string_fields: {
+          type: 'array',
+          items: { type: 'string' },
+          required: true,
+        },
+        query_string_sort_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'query_string_sort_enabled' field must be a boolean.",
+        },
+        cache_by_cookies: {
+          type: 'string',
+          enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+          required: true,
+          errorMessage: "The 'cache_by_cookies' must be one of: ignore, whitelist, blacklist, all.",
+        },
+        cookie_names: {
+          type: 'array',
+          items: { type: 'string' },
+          required: true,
+        },
+        adaptive_delivery_action: {
+          type: 'string',
+          enum: ['ignore', 'whitelist'],
+          required: true,
+          errorMessage: "The 'adaptive_delivery_action' must be either 'ignore' or 'whitelist'.",
+        },
+        device_group: {
+          type: 'array',
+          items: { type: 'integer' },
+          required: true,
+        },
+      },
+      required: [
+        'cache_by_query_string',
+        'query_string_fields',
+        'query_string_sort_enabled',
+        'cache_by_cookies',
+        'cookie_names',
+        'adaptive_delivery_action',
+        'device_group',
+      ],
+      additionalProperties: false,
+    },
+    slice_controls: {
+      type: 'object',
+      properties: {
+        slice_configuration_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'slice_configuration_enabled' field must be a boolean.",
+        },
+        slice_edge_caching_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'slice_edge_caching_enabled' field must be a boolean.",
+        },
+        slice_tiered_caching_enabled: {
+          type: 'boolean',
+          required: true,
+          errorMessage: "The 'slice_tiered_caching_enabled' field must be a boolean.",
+        },
+        slice_configuration_range: {
+          type: 'integer',
+          minimum: 0,
+          maximum: 1024,
+          default: 1024,
+          errorMessage: "The 'slice_configuration_range' must be an integer between 0 and 1024.",
+        },
+      },
+      required: ['slice_configuration_enabled', 'slice_edge_caching_enabled', 'slice_tiered_caching_enabled'],
+      additionalProperties: false,
     },
   },
   required: ['name'],
   additionalProperties: false,
 };
 
-const schemaApplicationOrigins = {
+const schemaApplicationRules = {
   type: 'object',
   properties: {
     name: {
       type: 'string',
+      minLength: 1,
+      maxLength: 250,
+      errorMessage: "The 'name' field must be a string between 1 and 250 characters",
+    },
+    phase: {
+      type: 'string',
+      enum: RULE_PHASES,
+      errorMessage: `The 'phase' field must be one of: ${RULE_PHASES.join(', ')}`,
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean",
+    },
+    description: {
+      type: 'string',
+      maxLength: 1000,
+      errorMessage: "The 'description' field must be a string with at most 1000 characters",
+    },
+    behaviors: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            enum: RULE_BEHAVIOR_NAMES,
+            errorMessage: `The 'name' field must be one of: ${RULE_BEHAVIOR_NAMES.join(', ')}`,
+          },
+          target: {
+            oneOf: [
+              { type: 'string' },
+              { type: 'null' },
+              {
+                type: 'object',
+                additionalProperties: true,
+                errorMessage: 'The target object must have appropriate properties for the behavior',
+              },
+            ],
+            errorMessage: "The 'target' must be a string, object, or null according to the behavior",
+          },
+        },
+        required: ['name'],
+        additionalProperties: false,
+      },
+      minItems: 1,
+      maxItems: 10,
+      errorMessage: "The 'behaviors' array must have between 1 and 10 items",
+    },
+    criteria: {
+      type: 'array',
+      items: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            variable: {
+              type: 'string',
+              errorMessage: "The 'variable' field must be a string representing a valid variable",
+            },
+            operator: {
+              type: 'string',
+              enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+              errorMessage: `The 'operator' field must be one of: ${[...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE].join(', ')}`,
+            },
+            conditional: {
+              type: 'string',
+              enum: RULE_CONDITIONALS,
+              errorMessage: `The 'conditional' field must be one of: ${RULE_CONDITIONALS.join(', ')}`,
+            },
+            input_value: {
+              type: 'string',
+              errorMessage: "The 'input_value' field must be a string",
+            },
+          },
+          required: ['variable', 'operator', 'conditional'],
+          dependencies: {
+            operator: {
+              oneOf: [
+                {
+                  properties: {
+                    operator: { enum: RULE_OPERATORS_WITH_VALUE },
+                  },
+                  required: ['input_value'],
+                },
+              ],
+            },
+          },
+          additionalProperties: false,
+        },
+        minItems: 1,
+        maxItems: 5,
+        errorMessage: 'Each criteria group must have between 1 and 5 criterion items',
+      },
+      minItems: 1,
+      maxItems: 5,
+      errorMessage: "The 'criteria' field must have between 1 and 5 criterion groups",
+    },
+  },
+  required: ['name', 'behaviors', 'criteria'],
+  additionalProperties: false,
+};
+
+const schemaApplicationModulesManifest = {
+  type: 'object',
+  properties: {
+    edge_cache_enabled: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
+    },
+    edge_functions_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+    },
+    application_accelerator_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
+    },
+    image_processor_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'image_processor_enabled' field must be a boolean.",
+    },
+    tiered_cache_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+    },
+  },
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: "No additional properties are allowed in the 'modules' object.",
+  },
+};
+
+const schemaApplicationManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 250,
+      errorMessage: "The 'name' field must be a string between 1 and 250 characters.",
+    },
+    modules: schemaApplicationModulesManifest,
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean.",
+    },
+    debug: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'debug' field must be a boolean.",
+    },
+    rules: {
+      type: 'array',
+      items: schemaApplicationRules,
+    },
+    cache_settings: {
+      type: 'array',
+      items: schemaApplicationCacheSettings,
+    },
+    edge_functions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          target: { type: 'string' },
+          args: { type: 'object' },
+          initiator_type: {
+            type: 'string',
+            enum: FUNCTION_INITIATOR_TYPES,
+            default: 'edge_application',
+            errorMessage: `The 'initiator_type' field must be one of: ${FUNCTION_INITIATOR_TYPES.join(', ')}.`,
+          },
+        },
+        required: ['name', 'target'],
+      },
+    },
+  },
+  required: ['name', 'modules'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: "No additional properties are allowed in the 'application' object.",
+    required: "The 'name' and 'modules' fields are required in the application object.",
+  },
+};
+
+const schemaWorkloadManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
+    },
+    alternate_domains: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      maxItems: 50,
+      errorMessage: "The 'alternate_domains' field must be an array of strings with at most 50 items.",
+    },
+    edge_application: {
+      type: 'integer',
+      minimum: 1,
+      maximum: 9007199254740991,
+      errorMessage: "The 'edge_application' field must be a positive integer.",
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean.",
+    },
+    network_map: {
+      type: 'string',
+      enum: WORKLOAD_NETWORK_MAPS,
+      default: '1',
+      errorMessage: "The 'network_map' field must be '1' (Edge Global Network) or '2' (Staging Network).",
+    },
+    edge_firewall: {
+      type: ['integer', 'null'],
+      errorMessage: "The 'edge_firewall' field must be an integer or null.",
+    },
+    tls: {
+      type: 'object',
+      properties: {
+        certificate: {
+          type: ['integer', 'null'],
+          minimum: 1,
+          errorMessage: "The 'certificate' field must be a positive integer or null.",
+        },
+        ciphers: {
+          type: ['string', 'null'],
+          enum: [...APPLICATION_SUPPORTED_CIPHERS, null],
+          errorMessage: "The 'ciphers' field must be a valid cipher suite or null.",
+        },
+        minimum_version: {
+          type: 'string',
+          enum: WORKLOAD_TLS_MINIMUM_VERSIONS,
+          default: 'tls_1_2',
+          errorMessage: "The 'minimum_version' field must be a valid TLS version.",
+        },
+      },
+      additionalProperties: false,
+      default: { certificate: null, ciphers: null, minimum_version: 'tls_1_2' },
+      errorMessage: "The 'tls' field must be an object with valid properties.",
+    },
+    protocols: {
+      type: 'object',
+      properties: {
+        http: {
+          type: 'object',
+          properties: {
+            versions: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: WORKLOAD_HTTP_VERSIONS,
+              },
+              default: ['http1', 'http2'],
+              errorMessage: "The 'versions' field must be an array with values 'http1' and/or 'http2'.",
+            },
+            http_ports: {
+              type: 'array',
+              items: {
+                type: 'integer',
+                enum: APPLICATION_HTTP_PORTS,
+              },
+              default: [80],
+              errorMessage: "The 'http_ports' field must be an array of valid HTTP ports.",
+            },
+            https_ports: {
+              type: 'array',
+              items: {
+                type: 'integer',
+                enum: APPLICATION_HTTPS_PORTS,
+              },
+              default: [443],
+              errorMessage: "The 'https_ports' field must be an array of valid HTTPS ports.",
+            },
+            quic_ports: {
+              type: ['array', 'null'],
+              items: {
+                type: 'integer',
+              },
+              errorMessage: "The 'quic_ports' field must be an array of integers or null.",
+            },
+          },
+          additionalProperties: false,
+          default: { versions: ['http1', 'http2'], http_ports: [80], https_ports: [443], quic_ports: null },
+          errorMessage: "The 'http' field must be an object with valid properties.",
+        },
+      },
+      additionalProperties: false,
+      default: { http: { versions: ['http1', 'http2'], http_ports: [80], https_ports: [443], quic_ports: null } },
+      errorMessage: "The 'protocols' field must be an object with valid properties.",
+    },
+    mtls: {
+      type: 'object',
+      properties: {
+        verification: {
+          type: 'string',
+          enum: ['enforce', 'permissive'],
+          default: 'enforce',
+          errorMessage: "The 'verification' field must be 'enforce' or 'permissive'.",
+        },
+        certificate: {
+          type: ['integer', 'null'],
+          minimum: 1,
+          errorMessage: "The 'certificate' field must be a positive integer or null.",
+        },
+        crl: {
+          type: ['array', 'null'],
+          items: {
+            type: 'integer',
+          },
+          maxItems: 100,
+          errorMessage: "The 'crl' field must be an array of integers with at most 100 items or null.",
+        },
+      },
+      additionalProperties: false,
+      errorMessage: "The 'mtls' field must be an object with valid properties.",
+    },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          domain: {
+            type: ['string', 'null'],
+            minLength: 1,
+            maxLength: 250,
+            errorMessage: "The 'domain' field must be a string between 1 and 250 characters or null.",
+          },
+          allow_access: {
+            type: 'boolean',
+            errorMessage: "The 'allow_access' field must be a boolean.",
+          },
+        },
+        additionalProperties: false,
+        errorMessage: 'Each domain item must be an object with valid properties.',
+      },
+      minItems: 1,
+      maxItems: 2,
+      errorMessage: "The 'domains' field must be an array with 1 or 2 items.",
+    },
+  },
+  required: ['name', 'edge_application'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: "No additional properties are allowed in the 'workload' object.",
+    required: "The 'name' and 'edge_application' fields are required in the workload object.",
+  },
+};
+
+const schemaConnectorManifest = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'number',
+      errorMessage: "The 'id' field must be a number.",
+    },
+    name: {
+      type: 'string',
       errorMessage: "The 'name' field must be a string.",
     },
-    origin_type: {
+    type: {
       type: 'string',
-      enum: ORIGIN_TYPES,
-      errorMessage:
-        "The 'origin_type' field must be one of: single_origin, load_balancer, live_ingest, object_storage.",
+      enum: ['http'],
+      errorMessage: "The 'type' field must be 'http'.",
     },
-    origin_protocol_policy: {
-      type: 'string',
-      enum: ORIGIN_PROTOCOL_POLICIES,
-      errorMessage: "The 'origin_protocol_policy' must be one of: preserve, http, https.",
-    },
-    host_header: {
-      type: 'string',
-      errorMessage: "The 'host_header' field must be a string.",
-    },
-    bucket: {
-      type: 'string',
-      errorMessage: "The 'bucket' field must be a string.",
+    active: {
+      type: 'boolean',
+      errorMessage: "The 'active' field must be a boolean.",
     },
     addresses: {
       type: 'array',
@@ -596,213 +965,127 @@ const schemaApplicationOrigins = {
           },
           weight: {
             type: 'number',
-            minimum: 0,
-            maximum: 100,
-            errorMessage: "The 'weight' field must be a number between 0 and 100.",
+            errorMessage: "The 'weight' field must be a number.",
           },
           server_role: {
             type: 'string',
-            enum: ['primary', 'backup'],
-            errorMessage: "The 'server_role' field must be either 'primary' or 'backup'.",
+            errorMessage: "The 'server_role' field must be a string.",
+          },
+          status: {
+            type: 'string',
+            errorMessage: "The 'status' field must be a string.",
           },
         },
         required: ['address'],
         additionalProperties: false,
       },
     },
-    load_balancer: {
+    modules: {
       type: 'object',
       properties: {
-        method: {
-          type: 'string',
-          enum: LOAD_BALANCER_METHODS,
-          errorMessage: "The 'method' field must be one of: ip_hash, least_connections, round_robin.",
+        load_balancer_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'load_balancer_enabled' field must be a boolean.",
+        },
+        origin_shield_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'origin_shield_enabled' field must be a boolean.",
         },
       },
-      required: ['method'],
       additionalProperties: false,
     },
-  },
-  required: ['name', 'origin_type', 'addresses'],
-  allOf: [
-    {
-      if: {
-        properties: { origin_type: { const: 'object_storage' } },
+    tls: {
+      type: 'object',
+      properties: {
+        policy: {
+          type: 'string',
+          enum: ['off', 'enforce', 'custom'],
+          errorMessage: "The 'policy' field must be 'off', 'enforce', or 'custom'.",
+        },
+        certificate: {
+          type: 'number',
+          errorMessage: "The 'certificate' field must be a number.",
+        },
+        certificates: {
+          type: 'array',
+          items: {
+            type: 'number',
+          },
+        },
+        secret: {
+          type: 'string',
+          errorMessage: "The 'secret' field must be a string.",
+        },
+        sni: {
+          type: 'string',
+          errorMessage: "The 'sni' field must be a string.",
+        },
       },
-      then: {
-        required: ['bucket'],
-        errorMessage: "When origin_type is 'object_storage', the 'bucket' field is required.",
-      },
+      additionalProperties: false,
     },
-  ],
-  additionalProperties: false,
-};
-
-const schemaApplicationRules = {
-  type: 'object',
-  properties: {
-    name: {
+    load_balance_method: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string.",
+      enum: ['off', 'round_robin', 'ip_hash', 'least_connections'],
+      errorMessage: "The 'load_balance_method' field must be one of: off, round_robin, ip_hash, least_connections.",
     },
-    phase: {
-      type: 'string',
-      enum: RULE_PHASES,
-      errorMessage: "The 'phase' field must be either 'request' or 'response'.",
-    },
-    behaviors: {
+    connection_preference: {
       type: 'array',
       items: {
-        type: 'object',
-        properties: {
-          name: {
+        type: 'string',
+        enum: ['IPv4', 'IPv6'],
+      },
+    },
+    connection_timeout: {
+      type: 'number',
+      errorMessage: "The 'connection_timeout' field must be a number.",
+    },
+    read_write_timeout: {
+      type: 'number',
+      errorMessage: "The 'read_write_timeout' field must be a number.",
+    },
+    max_retries: {
+      type: 'number',
+      errorMessage: "The 'max_retries' field must be a number.",
+    },
+    type_properties: {
+      type: 'object',
+      properties: {
+        versions: {
+          type: 'array',
+          items: {
             type: 'string',
-            enum: RULE_BEHAVIOR_NAMES,
-            errorMessage: "The 'name' field must be a valid behavior name.",
-          },
-          target: {
-            oneOf: [{ type: 'string' }, { type: 'null' }],
-            errorMessage: "The 'target' must be a string or null.",
+            enum: ['http1', 'http2'],
           },
         },
-        required: ['name'],
-        additionalProperties: false,
-      },
-    },
-    criteria: {
-      type: 'array',
-      items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            variable: {
-              type: 'string',
-              enum: Array.from(new Set(RULE_VARIABLES)),
-              errorMessage: "The 'variable' field must be a valid variable name.",
-            },
-            operator: {
-              type: 'string',
-              enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
-              errorMessage: "The 'operator' field must be a valid operator.",
-            },
-            conditional: {
-              type: 'string',
-              enum: RULE_CONDITIONALS,
-              errorMessage: "The 'conditional' field must be one of: if, and, or.",
-            },
-            input_value: {
-              type: 'string',
-              errorMessage: "The 'input_value' field must be a string.",
-            },
-          },
-          required: ['variable', 'operator', 'conditional'],
-          dependencies: {
-            operator: {
-              oneOf: [
-                {
-                  properties: {
-                    operator: { enum: RULE_OPERATORS_WITH_VALUE },
-                  },
-                  required: ['input_value'],
-                  errorMessage: "The operator 'matches' requires an input_value.",
-                },
-              ],
-            },
-          },
-          additionalProperties: false,
-        },
-      },
-    },
-  },
-  required: ['name', 'behaviors', 'criteria'],
-  additionalProperties: false,
-};
-
-// ... resto do arquivo mantido como está ...
-
-const schemaApplicationManifest = {
-  type: 'object',
-  properties: {
-    main_settings: {
-      type: 'object',
-      properties: {
-        name: {
+        host: {
           type: 'string',
-          errorMessage: "The 'name' field must be a string.",
+          errorMessage: "The 'host' field must be a string.",
         },
-        delivery_protocol: {
+        path: {
           type: 'string',
-          enum: APPLICATION_DELIVERY_PROTOCOLS,
-          default: 'http',
-          errorMessage: "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
+          errorMessage: "The 'path' field must be a string.",
         },
-        http3: {
+        following_redirect: {
           type: 'boolean',
-          errorMessage: "The 'http3' field must be a boolean.",
+          errorMessage: "The 'following_redirect' field must be a boolean.",
         },
-        http_port: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            enum: APPLICATION_HTTP_PORTS,
-          },
-          errorMessage: {
-            enum: "The 'http_port' field must be an array of valid HTTP ports.",
-            type: "The 'http_port' field must be an array",
-          },
-        },
-        https_port: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            enum: APPLICATION_HTTPS_PORTS,
-          },
-          default: [443],
-          errorMessage: "The 'https_port' field must be an array of valid HTTPS ports.",
-        },
-        minimum_tls_version: {
+        real_ip_header: {
           type: 'string',
-          enum: APPLICATION_TLS_VERSIONS,
-          default: '',
-          errorMessage: "The 'minimum_tls_version' field must be a valid TLS version.",
+          errorMessage: "The 'real_ip_header' field must be a string.",
         },
-        supported_ciphers: {
+        real_port_header: {
           type: 'string',
-          enum: APPLICATION_SUPPORTED_CIPHERS,
-          default: 'all',
-          errorMessage: "The 'supported_ciphers' field must be a valid cipher suite.",
-        },
-        active: {
-          type: 'boolean',
-          default: true,
-          errorMessage: "The 'active' field must be a boolean.",
+          errorMessage: "The 'real_port_header' field must be a string.",
         },
       },
       additionalProperties: false,
-      required: ['name'],
-    },
-    cache_settings: {
-      type: 'array',
-      items: schemaApplicationCacheSettings,
-      errorMessage: "The 'cache_settings' field must be an array of cache setting items.",
-    },
-    origins: {
-      type: 'array',
-      items: schemaApplicationOrigins,
-      errorMessage: "The 'origins' field must be an array of origin items.",
-    },
-    rules: {
-      type: 'array',
-      items: schemaApplicationRules,
-      errorMessage: "The 'rules' field must be an array of application rule items.",
     },
   },
-  required: ['main_settings'],
+  required: ['name', 'type'],
   additionalProperties: false,
   errorMessage: {
-    additionalProperties: 'No additional properties are allowed in application items.',
-    required: "The 'name' and 'main_settings' fields are required.",
+    additionalProperties: 'No additional properties are allowed in connector objects.',
+    required: "The 'name' and 'type' fields are required in the connector object.",
   },
 };
 
@@ -821,22 +1104,27 @@ const schemaManifest = {
         type: "The 'waf' field must be an array",
       },
     },
-    domain: {
-      ...schemaDomainsManifest,
-      errorMessage: {
-        type: "The 'domain' field must be an object",
-      },
-    },
-    firewall: {
+    edge_firewall: {
       ...schemaFirewallManifest,
       errorMessage: {
-        type: "The 'firewall' field must be an object",
+        type: "The 'edge_firewall' field must be an object",
       },
     },
-    application: {
+    edge_application: {
       type: 'array',
       items: schemaApplicationManifest,
-      errorMessage: "The 'application' field must be an array of application items.",
+      errorMessage: "The 'edge_application' field must be an array of application items.",
+    },
+    workload: {
+      ...schemaWorkloadManifest,
+      errorMessage: {
+        type: "The 'workload' field must be an object",
+      },
+    },
+    edge_connectors: {
+      type: 'array',
+      items: schemaConnectorManifest,
+      errorMessage: "The 'edge_connectors' field must be an array of connector objects.",
     },
   },
 };

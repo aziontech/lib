@@ -1,7 +1,11 @@
 import {
+  ApplicationHttpPort,
+  ApplicationHttpsPort,
+  ApplicationSupportedCipher,
   FirewallRateLimitBy,
   FirewallRateLimitType,
   FirewallWafMode,
+  FunctionInitiatorType,
   NetworkListType,
   RuleConditional,
   RuleOperatorWithValue,
@@ -9,43 +13,15 @@ import {
   RuleVariable,
   WafMode,
   WafSensitivity,
+  WorkloadHttpVersion,
+  WorkloadNetworkMap,
+  WorkloadTlsMinimumVersion,
 } from './constants';
 
 import { FetchEvent } from 'azion/types';
 
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
-
-/**
- * Domain configuration for Azion.
- */
-export type AzionDomain = {
-  /** Domain name */
-  name: string;
-  /** Indicates if access is restricted to CNAME only */
-  cnameAccessOnly?: boolean;
-  /** List of CNAMEs associated with the domain */
-  cnames?: string[];
-  /** Associated edge application ID */
-  id?: number;
-  /** Associated edge appliaction ID */
-  edgeApplicationId?: number;
-  /** Associated edge firewall ID */
-  edgeFirewallId?: number;
-  /** Digital certificate ID */
-  digitalCertificateId?: string | number | null;
-  /** Indicates if the domain is active */
-  active?: boolean;
-  /** Mutual TLS configuration */
-  mtls?: {
-    /** Verification mode for MTLS */
-    verification: 'enforce' | 'permissive';
-    /** ID of the trusted CA certificate */
-    trustedCaCertificateId: number;
-    /** List of CRL (Certificate Revocation List) IDs */
-    crlList?: number[];
-  };
-};
 
 /**
  * Origin configuration for Azion.
@@ -98,45 +74,62 @@ export type AzionOrigin = {
 };
 
 /**
- * Cache configuration for Azion.
+ * Cache configuration for Azion v4.
  */
 export type AzionCache = {
   /** Cache name */
   name: string;
-  /** Indicates if stale content should be served */
-  stale?: boolean;
-  /** Indicates if query string parameters should be sorted */
-  queryStringSort?: boolean;
-  /** HTTP methods to be cached */
-  methods?: {
-    /** Cache POST requests */
-    post?: boolean;
-    /** Cache OPTIONS requests */
-    options?: boolean;
-  };
   /** Browser cache settings */
-  browser?: {
-    /** Maximum age for browser cache in seconds */
-    maxAgeSeconds: number | string;
+  browser: {
+    /** Behavior: 'honor', 'override', or 'no-cache' */
+    behavior: 'honor' | 'override' | 'no-cache';
+    /** Maximum age in seconds */
+    maxAge: number;
   };
   /** Edge cache settings */
-  edge?: {
-    /** Maximum age for edge cache in seconds */
-    maxAgeSeconds: number | string;
+  edge: {
+    /** Behavior: 'honor' or 'override' */
+    behavior: 'honor' | 'override';
+    /** Maximum age in seconds */
+    maxAge: number;
   };
-  /** Cache by cookie configuration */
-  cacheByCookie?: {
-    /** Cookie caching option */
-    option: 'ignore' | 'varies' | 'whitelist' | 'blacklist';
-    /** List of cookies to be considered */
-    list?: string[];
+  /** Enable caching for POST requests */
+  enablePost?: boolean;
+  /** Enable caching for OPTIONS requests */
+  enableOptions?: boolean;
+  /** Enable stale cache */
+  stale?: boolean;
+  /** Enable tiered cache */
+  tieredCache?: boolean;
+  /** Tiered cache region */
+  tieredRegion?: string;
+  /** Application controls */
+  controls: {
+    /** Cache by query string */
+    queryString: 'ignore' | 'whitelist' | 'blacklist' | 'all';
+    /** Query string fields */
+    queryStringFields: string[];
+    /** Enable query string sort */
+    queryStringSort: boolean;
+    /** Cache by cookies */
+    cookies: 'ignore' | 'whitelist' | 'blacklist' | 'all';
+    /** Cookie names */
+    cookieNames: string[];
+    /** Adaptive delivery action */
+    adaptiveDelivery: 'ignore' | 'whitelist';
+    /** Device group */
+    deviceGroup: number[];
   };
-  /** Cache by query string configuration */
-  cacheByQueryString?: {
-    /** Query string caching option */
-    option: 'ignore' | 'varies' | 'whitelist' | 'blacklist';
-    /** List of query string parameters to be considered */
-    list?: string[];
+  /** Slice controls */
+  slice?: {
+    /** Enable slice configuration */
+    enabled: boolean;
+    /** Enable slice edge caching */
+    edgeCaching: boolean;
+    /** Enable slice tiered caching */
+    tieredCaching: boolean;
+    /** Slice configuration range */
+    range?: number;
   };
 };
 
@@ -238,6 +231,13 @@ export type AzionRequestRule = {
           /** CDN cache TTL */
           cdn_cache_settings_maximum_ttl?: number | null;
         };
+    /** Set a new connector */
+    setEdgeConnector?: {
+      /** Connector name */
+      name: string;
+    };
+    /** Finish request phase */
+    finishRequestPhase?: boolean | null;
   };
 };
 
@@ -304,12 +304,9 @@ export type AzionRules = {
 export type AzionPurge = {
   /** Purge type */
   type: 'url' | 'cachekey' | 'wildcard';
-  /** URLs to be purged */
-  urls: string[];
-  /** HTTP method for purge request */
-  method?: 'delete';
+  items?: string[];
   /** Cache layer to be purged */
-  layer?: 'edge_caching' | 'l2_caching';
+  layer?: 'edge_cache' | 'tiered_cache';
 };
 
 export type PresetInput = string | AzionBuildPreset;
@@ -344,13 +341,211 @@ export type AzionNetworkList = {
 /**
  * Function configuration for Azion.
  */
-export type AzionFunction = {
+export type AzionEdgeFunction = {
   /** Function name */
   name: string;
   /** Function path */
   path: string;
   /** Optional arguments to be passed to the function */
   args?: Record<string, unknown>;
+  /** Initiator type (edge_application or edge_firewall) */
+  initiatorType?: FunctionInitiatorType;
+};
+
+/**
+ * TLS configuration for Workloads.
+ *
+ * Replaces and expands the digitalCertificateId from the old domain configuration
+ * with more comprehensive TLS options like cipher selection and minimum version.
+ */
+export type AzionWorkloadTls = {
+  /** Certificate ID */
+  certificate?: number | null;
+  /** Cipher suites */
+  ciphers?: ApplicationSupportedCipher | null;
+  /** Minimum TLS version */
+  minimumVersion?: WorkloadTlsMinimumVersion;
+};
+
+/**
+ * HTTP Protocol configuration for Workloads.
+ */
+export type AzionWorkloadHttpProtocol = {
+  /** HTTP versions */
+  versions?: WorkloadHttpVersion[];
+  /** HTTP ports */
+  httpPorts?: ApplicationHttpPort[];
+  /** HTTPS ports */
+  httpsPorts?: ApplicationHttpsPort[];
+  /** QUIC ports */
+  quicPorts?: number[] | null;
+};
+
+/**
+ * Protocol configuration for Workloads.
+ */
+export type AzionWorkloadProtocols = {
+  /** HTTP protocol configuration */
+  http?: AzionWorkloadHttpProtocol;
+};
+
+/**
+ * Mutual TLS configuration for Workloads.
+ *
+ * Enhanced version of the mtls configuration from the old domain type,
+ * with improved organization and more clearly defined parameters.
+ */
+export type AzionWorkloadMtls = {
+  /** Verification mode */
+  verification?: 'enforce' | 'permissive';
+  /** Certificate ID */
+  certificate?: number | null;
+  /** Certificate Revocation List */
+  crl?: number[] | null;
+};
+
+/**
+ * Domain information for Workloads.
+ *
+ * This replaces the standalone AzionDomain configuration in the API v4.
+ * While more streamlined, it provides the essential domain configuration within the workload context.
+ * Multiple domains can be specified in the workload's domains array.
+ */
+export type AzionWorkloadDomainInfo = {
+  /** Domain name */
+  domain?: string | null;
+  /** Allow access to this domain */
+  allowAccess?: boolean;
+};
+
+/**
+ * Workload configuration for Azion.
+ *
+ * This is part of the API v4 and represents a more complete and powerful approach
+ * compared to the old domain configuration. It includes domain capabilities plus
+ * additional features like protocol settings, alternate domains, and improved TLS configuration.
+ *
+ * Workload should be preferred over domain for new applications.
+ */
+export type AzionWorkload = {
+  /** Workload name */
+  name: string;
+  /** Alternate domains */
+  alternateDomains?: string[];
+  /** Edge application name */
+  edgeApplication: string;
+  /** Active status */
+  active?: boolean;
+  /** Network map (1 - Edge Global Network, 2 - Staging Network) */
+  networkMap?: WorkloadNetworkMap;
+  /** Edge firewall ID */
+  edgeFirewall?: number | null;
+  /** TLS configuration */
+  tls?: AzionWorkloadTls;
+  /** Protocol configuration */
+  protocols?: AzionWorkloadProtocols;
+  /** Mutual TLS configuration */
+  mtls?: AzionWorkloadMtls;
+  /** Domain information (replaces the old domain configuration) */
+  domains?: AzionWorkloadDomainInfo[];
+};
+
+/**
+ * Application configuration for Azion.
+ */
+export type AzionEdgeApplication = {
+  /** Application name */
+  name: string;
+  /** Enable edge cache */
+  edgeCache?: boolean;
+  /** Enable edge functions */
+  edgeFunctions?: boolean;
+  /** Enable application accelerator */
+  applicationAccelerator?: boolean;
+  /** Enable image processor */
+  imageProcessor?: boolean;
+  /** Enable tiered cache */
+  tieredCache?: boolean;
+  /** Active status */
+  active?: boolean;
+  /** Debug mode */
+  debug?: boolean;
+  /** Rules configuration */
+  rules?: AzionRules;
+  /** Cache configurations */
+  cache?: AzionCache[];
+  /** Functions configurations */
+  functions?: AzionEdgeFunction[];
+};
+
+/**
+ * Connector configuration for Azion API v4.
+ */
+export type AzionEdgeConnector = {
+  /** Connector ID */
+  id?: number;
+  /** Connector name */
+  name: string;
+  /** Connector type (atualmente apenas 'http') */
+  type: 'http';
+  /** Status do connector */
+  active?: boolean;
+  /** Endereços para o connector */
+  addresses?: {
+    /** Endereço */
+    address: string;
+    /** Peso para balanceamento de carga */
+    weight?: number;
+    /** Indica se está ativo */
+    serverRole?: string;
+    /** Estado do endereço */
+    status?: string;
+  }[];
+  /** Módulos do connector */
+  modules?: {
+    /** Habilita balanceamento de carga */
+    loadBalancerEnabled?: boolean;
+    /** Habilita Origin Shield */
+    originShieldEnabled?: boolean;
+  };
+  /** Configuração TLS */
+  tls?: {
+    /** Política TLS */
+    policy?: 'off' | 'enforce' | 'custom';
+    /** Certificado para custom TLS */
+    certificate?: number;
+    /** Certificados para custom TLS */
+    certificates?: number[];
+    /** Secret para custom TLS */
+    secret?: string;
+    /** SNI para custom TLS */
+    sni?: string;
+  };
+  /** Método de balanceamento de carga */
+  loadBalanceMethod?: 'off' | 'round_robin' | 'ip_hash' | 'least_connections';
+  /** Preferência de conexão */
+  connectionPreference?: ('IPv4' | 'IPv6')[];
+  /** Timeout de conexão em segundos */
+  connectionTimeout?: number;
+  /** Timeout de leitura/escrita em segundos */
+  readWriteTimeout?: number;
+  /** Máximo de tentativas */
+  maxRetries?: number;
+  /** Propriedades específicas do tipo */
+  typeProperties?: {
+    /** Versões HTTP suportadas */
+    versions?: ('http1' | 'http2')[];
+    /** Host header */
+    host?: string;
+    /** Caminho */
+    path?: string;
+    /** Seguir redirecionamentos */
+    followingRedirect?: boolean;
+    /** Header de IP real */
+    realIpHeader?: string;
+    /** Header de porta real */
+    realPortHeader?: string;
+  };
 };
 
 /**
@@ -359,30 +554,41 @@ export type AzionFunction = {
 export type AzionConfig = {
   /** Build configuration */
   build?: AzionBuild;
-  /** Domain configuration */
-  domain?: AzionDomain;
   /** Origin configurations */
   origin?: AzionOrigin[];
   /** Cache configurations */
   cache?: AzionCache[];
   /** Functions configurations */
-  functions?: AzionFunction[];
+  edgeFunctions?: AzionEdgeFunction[];
   /** Rules configuration */
   rules?: AzionRules;
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
-  firewall?: AzionFirewall;
+  edgeFirewall?: AzionEdgeFirewall;
   /** Network list configurations */
   networkList?: AzionNetworkList[];
   /** WAF configuration */
   waf?: AzionWaf[];
+  /**
+   * Workload configuration
+   * API v4 feature that provides comprehensive domain and application configuration
+   * capabilities including TLS, protocols, and enhanced domain settings.
+   */
+  workload?: AzionWorkload;
+  /**
+   * Application configurations
+   * API v4 feature that provides comprehensive edge application configuration
+   */
+  edgeApplication?: AzionEdgeApplication[];
+  /** Connector configurations for API v4 */
+  edgeConnectors?: AzionEdgeConnector[];
 };
 
 /**
  * Firewall behavior configuration for Azion.
  */
-export type AzionFirewallBehavior = {
+export type AzionEdgeFirewallBehavior = {
   /** Run a serverless function */
   runFunction?: string;
   /** Set WAF ruleset */
@@ -418,31 +624,31 @@ export type AzionFirewallBehavior = {
   };
 };
 
-export type AzionFirewallCriteriaBase = {
+export type AzionEdgeFirewallCriteriaBase = {
   /** Variable to be evaluated */
   variable: RuleVariable;
   /** Conditional type */
   conditional: RuleConditional;
 };
 
-export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
   inputValue: string;
 };
 
-export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithoutValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that doesn't require input value */
   operator: RuleOperatorWithoutValue;
 };
 
-export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewallCriteriaWithoutValue;
+export type AzionEdgeFirewallCriteria = AzionEdgeFirewallCriteriaWithValue | AzionEdgeFirewallCriteriaWithoutValue;
 
 /**
  * Firewall rule configuration for Azion.
  */
-export type AzionFirewallRule = {
+export type AzionEdgeFirewallRule = {
   /** Rule name */
   name: string;
   /** Rule description */
@@ -454,15 +660,15 @@ export type AzionFirewallRule = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** Array of criteria for complex conditions */
-  criteria?: AzionFirewallCriteria[];
+  criteria?: AzionEdgeFirewallCriteria[];
   /** Behavior to be applied when the rule matches */
-  behavior: AzionFirewallBehavior;
+  behavior: AzionEdgeFirewallBehavior;
 };
 
 /**
  * Firewall configuration for Azion.
  */
-export type AzionFirewall = {
+export type AzionEdgeFirewall = {
   /** Firewall name */
   name: string;
   /** List of domains */
@@ -478,7 +684,7 @@ export type AzionFirewall = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** List of firewall rules */
-  rules?: AzionFirewallRule[];
+  rules?: AzionEdgeFirewallRule[];
   /** Debug mode */
   debugRules?: boolean;
 };

@@ -35,7 +35,7 @@ function processConfig(inputConfig: AzionConfig) {
   const payloadCDN: any = {};
   // ProcessConfig Strategy Pattern
   const processConfigContext = factoryProcessContext();
-  processConfigContext.transformToManifest(config, payloadCDN);
+  processConfigContext.context.transformToManifest(config, payloadCDN);
   return payloadCDN;
 }
 export { processConfig, validateConfig };
