@@ -341,7 +341,7 @@ export type AzionNetworkList = {
 /**
  * Function configuration for Azion.
  */
-export type AzionFunction = {
+export type AzionEdgeFunction = {
   /** Function name */
   name: string;
   /** Function path */
@@ -432,8 +432,8 @@ export type AzionWorkload = {
   name: string;
   /** Alternate domains */
   alternateDomains?: string[];
-  /** Edge application ID */
-  edgeApplication: number;
+  /** Edge application name */
+  edgeApplication: string;
   /** Active status */
   active?: boolean;
   /** Network map (1 - Edge Global Network, 2 - Staging Network) */
@@ -453,7 +453,7 @@ export type AzionWorkload = {
 /**
  * Application configuration for Azion.
  */
-export type AzionApplication = {
+export type AzionEdgeApplication = {
   /** Application name */
   name: string;
   /** Enable edge cache */
@@ -475,13 +475,13 @@ export type AzionApplication = {
   /** Cache configurations */
   cache?: AzionCache[];
   /** Functions configurations */
-  functions?: AzionFunction[];
+  functions?: AzionEdgeFunction[];
 };
 
 /**
  * Connector configuration for Azion API v4.
  */
-export type AzionConnector = {
+export type AzionEdgeConnector = {
   /** Connector ID */
   id?: number;
   /** Connector name */
@@ -559,13 +559,13 @@ export type AzionConfig = {
   /** Cache configurations */
   cache?: AzionCache[];
   /** Functions configurations */
-  functions?: AzionFunction[];
+  edgeFunctions?: AzionEdgeFunction[];
   /** Rules configuration */
   rules?: AzionRules;
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
-  firewall?: AzionFirewall;
+  edgeFirewall?: AzionEdgeFirewall;
   /** Network list configurations */
   networkList?: AzionNetworkList[];
   /** WAF configuration */
@@ -580,15 +580,15 @@ export type AzionConfig = {
    * Application configurations
    * API v4 feature that provides comprehensive edge application configuration
    */
-  application?: AzionApplication[];
+  edgeApplication?: AzionEdgeApplication[];
   /** Connector configurations for API v4 */
-  connectors?: AzionConnector[];
+  edgeConnectors?: AzionEdgeConnector[];
 };
 
 /**
  * Firewall behavior configuration for Azion.
  */
-export type AzionFirewallBehavior = {
+export type AzionEdgeFirewallBehavior = {
   /** Run a serverless function */
   runFunction?: string;
   /** Set WAF ruleset */
@@ -624,31 +624,31 @@ export type AzionFirewallBehavior = {
   };
 };
 
-export type AzionFirewallCriteriaBase = {
+export type AzionEdgeFirewallCriteriaBase = {
   /** Variable to be evaluated */
   variable: RuleVariable;
   /** Conditional type */
   conditional: RuleConditional;
 };
 
-export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
   inputValue: string;
 };
 
-export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithoutValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that doesn't require input value */
   operator: RuleOperatorWithoutValue;
 };
 
-export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewallCriteriaWithoutValue;
+export type AzionEdgeFirewallCriteria = AzionEdgeFirewallCriteriaWithValue | AzionEdgeFirewallCriteriaWithoutValue;
 
 /**
  * Firewall rule configuration for Azion.
  */
-export type AzionFirewallRule = {
+export type AzionEdgeFirewallRule = {
   /** Rule name */
   name: string;
   /** Rule description */
@@ -660,15 +660,15 @@ export type AzionFirewallRule = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** Array of criteria for complex conditions */
-  criteria?: AzionFirewallCriteria[];
+  criteria?: AzionEdgeFirewallCriteria[];
   /** Behavior to be applied when the rule matches */
-  behavior: AzionFirewallBehavior;
+  behavior: AzionEdgeFirewallBehavior;
 };
 
 /**
  * Firewall configuration for Azion.
  */
-export type AzionFirewall = {
+export type AzionEdgeFirewall = {
   /** Firewall name */
   name: string;
   /** List of domains */
@@ -684,7 +684,7 @@ export type AzionFirewall = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** List of firewall rules */
-  rules?: AzionFirewallRule[];
+  rules?: AzionEdgeFirewallRule[];
   /** Debug mode */
   debugRules?: boolean;
 };

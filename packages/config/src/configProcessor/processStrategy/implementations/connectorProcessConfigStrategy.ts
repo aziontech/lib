@@ -1,4 +1,4 @@
-import { AzionConfig, AzionConnector } from '../../../types';
+import { AzionConfig, AzionEdgeConnector } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 // Interface local específica para o payload da API
@@ -18,27 +18,27 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const payload: any[] = [];
-    if (!Array.isArray(config?.connectors) || config?.connectors.length === 0) {
+    if (!Array.isArray(config?.edgeConnectors) || config?.edgeConnectors.length === 0) {
       return;
     }
 
-    config?.connectors.forEach((connector) => {
+    config?.edgeConnectors.forEach((edgeConnector) => {
       // Validação do tipo
-      if (connector.type !== 'http') {
-        throw new Error(`Connector type '${connector.type}' is not supported. Currently only 'http' is supported.`);
+      if (edgeConnector.type !== 'http') {
+        throw new Error(`Connector type '${edgeConnector.type}' is not supported. Currently only 'http' is supported.`);
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const connectorSetting: any = {
-        id: connector.id,
-        name: connector.name,
-        type: connector.type,
-        active: connector.active ?? true,
+        id: edgeConnector.id,
+        name: edgeConnector.name,
+        type: edgeConnector.type,
+        active: edgeConnector.active ?? true,
       };
 
       // Configuração de endereços
-      if (connector.addresses && connector.addresses.length > 0) {
-        connectorSetting.addresses = connector.addresses.map((addr) => ({
+      if (edgeConnector.addresses && edgeConnector.addresses.length > 0) {
+        connectorSetting.addresses = edgeConnector.addresses.map((addr) => ({
           address: addr.address,
           weight: addr.weight,
           server_role: addr.serverRole,
@@ -49,49 +49,49 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       }
 
       // Configuração de módulos
-      if (connector.modules) {
+      if (edgeConnector.modules) {
         connectorSetting.modules = {
-          load_balancer_enabled: connector.modules.loadBalancerEnabled ?? false,
-          origin_shield_enabled: connector.modules.originShieldEnabled ?? false,
+          load_balancer_enabled: edgeConnector.modules.loadBalancerEnabled ?? false,
+          origin_shield_enabled: edgeConnector.modules.originShieldEnabled ?? false,
         };
       }
 
       // Configuração TLS
-      if (connector.tls) {
+      if (edgeConnector.tls) {
         connectorSetting.tls = {
-          policy: connector.tls.policy || 'off',
+          policy: edgeConnector.tls.policy || 'off',
         };
 
-        if (connector.tls.policy === 'custom') {
-          connectorSetting.tls.certificate = connector.tls.certificate;
-          connectorSetting.tls.certificates = connector.tls.certificates;
-          connectorSetting.tls.secret = connector.tls.secret;
-          connectorSetting.tls.sni = connector.tls.sni;
+        if (edgeConnector.tls.policy === 'custom') {
+          connectorSetting.tls.certificate = edgeConnector.tls.certificate;
+          connectorSetting.tls.certificates = edgeConnector.tls.certificates;
+          connectorSetting.tls.secret = edgeConnector.tls.secret;
+          connectorSetting.tls.sni = edgeConnector.tls.sni;
         }
       }
 
       // Outras configurações
-      connectorSetting.load_balance_method = connector.loadBalanceMethod || 'off';
-      connectorSetting.connection_preference = connector.connectionPreference || ['IPv6', 'IPv4'];
-      connectorSetting.connection_timeout = connector.connectionTimeout || 60;
-      connectorSetting.read_write_timeout = connector.readWriteTimeout || 120;
-      connectorSetting.max_retries = connector.maxRetries || 0;
+      connectorSetting.load_balance_method = edgeConnector.loadBalanceMethod || 'off';
+      connectorSetting.connection_preference = edgeConnector.connectionPreference || ['IPv6', 'IPv4'];
+      connectorSetting.connection_timeout = edgeConnector.connectionTimeout || 60;
+      connectorSetting.read_write_timeout = edgeConnector.readWriteTimeout || 120;
+      connectorSetting.max_retries = edgeConnector.maxRetries || 0;
 
       // Propriedades específicas do tipo
-      if (connector.typeProperties) {
+      if (edgeConnector.typeProperties) {
         connectorSetting.type_properties = {
-          versions: connector.typeProperties.versions || ['http1'],
-          host: connector.typeProperties.host || '',
-          path: connector.typeProperties.path || '',
-          following_redirect: connector.typeProperties.followingRedirect ?? true,
+          versions: edgeConnector.typeProperties.versions || ['http1'],
+          host: edgeConnector.typeProperties.host || '',
+          path: edgeConnector.typeProperties.path || '',
+          following_redirect: edgeConnector.typeProperties.followingRedirect ?? true,
         };
 
-        if (connector.typeProperties.realIpHeader) {
-          connectorSetting.type_properties.real_ip_header = connector.typeProperties.realIpHeader;
+        if (edgeConnector.typeProperties.realIpHeader) {
+          connectorSetting.type_properties.real_ip_header = edgeConnector.typeProperties.realIpHeader;
         }
 
-        if (connector.typeProperties.realPortHeader) {
-          connectorSetting.type_properties.real_port_header = connector.typeProperties.realPortHeader;
+        if (edgeConnector.typeProperties.realPortHeader) {
+          connectorSetting.type_properties.real_port_header = edgeConnector.typeProperties.realPortHeader;
         }
       }
 
@@ -108,14 +108,14 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
 
-    transformedPayload.connectors = [];
+    transformedPayload.edgeConnectors = [];
 
     connectors.forEach((conn) => {
       if (conn.type !== 'http') {
         throw new Error(`Connector type '${conn.type}' is not supported. Currently only 'http' is supported.`);
       }
 
-      const connectorSetting: AzionConnector = {
+      const connectorSetting: AzionEdgeConnector = {
         id: conn.id,
         name: conn.name,
         type: conn.type,
@@ -179,10 +179,10 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
         }
       }
 
-      transformedPayload.connectors!.push(connectorSetting);
+      transformedPayload.edgeConnectors!.push(connectorSetting);
     });
 
-    return transformedPayload.connectors;
+    return transformedPayload.edgeConnectors;
   }
 }
 

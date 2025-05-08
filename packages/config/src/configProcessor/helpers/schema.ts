@@ -236,171 +236,6 @@ const createRuleSchema = (isRequestPhase = false) => ({
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
-    rules: {
-      type: 'object',
-      properties: {
-        request: {
-          type: 'array',
-          items: createRuleSchema(true),
-        },
-        response: {
-          type: 'array',
-          items: createRuleSchema(false),
-        },
-      },
-      additionalProperties: false,
-    },
-    functions: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            errorMessage: "The function's 'name' field must be a string",
-          },
-          path: {
-            type: 'string',
-            errorMessage: "The function's 'path' field must be a string",
-          },
-          args: {
-            type: 'object',
-            additionalProperties: true,
-            errorMessage: "The function's 'args' field must be an object",
-          },
-        },
-        required: ['name', 'path'],
-        additionalProperties: false,
-      },
-    },
-    cache: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            errorMessage: "The 'name' field must be a string.",
-          },
-          browser: {
-            type: 'object',
-            properties: {
-              behavior: {
-                type: 'string',
-                enum: ['honor', 'override', 'no-cache'],
-                errorMessage: "The browser 'behavior' field must be 'honor', 'override', or 'no-cache'.",
-              },
-              maxAge: {
-                oneOf: [{ type: 'number' }, { type: 'string', pattern: '^[0-9+*/.() -]+$' }],
-                errorMessage: "The 'maxAge' field must be a number or a valid mathematical expression.",
-              },
-            },
-            required: ['behavior', 'maxAge'],
-            additionalProperties: false,
-          },
-          edge: {
-            type: 'object',
-            properties: {
-              behavior: {
-                type: 'string',
-                enum: ['honor', 'override'],
-                errorMessage: "The edge 'behavior' field must be 'honor' or 'override'.",
-              },
-              maxAge: {
-                oneOf: [{ type: 'number' }, { type: 'string', pattern: '^[0-9+*/.() -]+$' }],
-                errorMessage: "The 'maxAge' field must be a number or a valid mathematical expression.",
-              },
-            },
-            required: ['behavior', 'maxAge'],
-            additionalProperties: false,
-          },
-          enablePost: {
-            type: 'boolean',
-            errorMessage: "The 'enablePost' field must be a boolean.",
-          },
-          enableOptions: {
-            type: 'boolean',
-            errorMessage: "The 'enableOptions' field must be a boolean.",
-          },
-          stale: {
-            type: 'boolean',
-            errorMessage: "The 'stale' field must be a boolean.",
-          },
-          tieredCache: {
-            type: 'boolean',
-            errorMessage: "The 'tieredCache' field must be a boolean.",
-          },
-          tieredRegion: {
-            type: 'string',
-            errorMessage: "The 'tieredRegion' field must be a string.",
-          },
-          controls: {
-            type: 'object',
-            properties: {
-              queryString: {
-                type: 'string',
-                enum: ['ignore', 'whitelist', 'blacklist', 'all'],
-                errorMessage: "The 'queryString' field must be 'ignore', 'whitelist', 'blacklist', or 'all'.",
-              },
-              queryStringFields: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-              queryStringSort: {
-                type: 'boolean',
-                errorMessage: "The 'queryStringSort' field must be a boolean.",
-              },
-              cookies: {
-                type: 'string',
-                enum: ['ignore', 'whitelist', 'blacklist', 'all'],
-                errorMessage: "The 'cookies' field must be 'ignore', 'whitelist', 'blacklist', or 'all'.",
-              },
-              cookieNames: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-              adaptiveDelivery: {
-                type: 'string',
-                enum: ['ignore', 'whitelist'],
-                errorMessage: "The 'adaptiveDelivery' field must be 'ignore' or 'whitelist'.",
-              },
-              deviceGroup: {
-                type: 'array',
-                items: { type: 'number' },
-              },
-            },
-            required: ['queryString', 'cookies', 'adaptiveDelivery'],
-            additionalProperties: false,
-          },
-          slice: {
-            type: 'object',
-            properties: {
-              enabled: {
-                type: 'boolean',
-                errorMessage: "The 'enabled' field must be a boolean.",
-              },
-              edgeCaching: {
-                type: 'boolean',
-                errorMessage: "The 'edgeCaching' field must be a boolean.",
-              },
-              tieredCaching: {
-                type: 'boolean',
-                errorMessage: "The 'tieredCaching' field must be a boolean.",
-              },
-              range: {
-                type: 'number',
-                minimum: 0,
-                maximum: 1024,
-                errorMessage: "The 'range' field must be a number between 0 and 1024.",
-              },
-            },
-            additionalProperties: false,
-          },
-        },
-        required: ['name', 'browser', 'edge', 'controls'],
-        additionalProperties: false,
-      },
-    },
     mainConfig: {
       type: 'object',
       properties: {
@@ -492,8 +327,28 @@ const azionConfigSchema = {
             additionalProperties: "No additional properties are allowed in the 'build' object",
           },
         },
-        functions: {
-          $ref: '#/definitions/functions',
+        edgeFunctions: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                errorMessage: "The function's 'name' field must be a string",
+              },
+              path: {
+                type: 'string',
+                errorMessage: "The function's 'path' field must be a string",
+              },
+              args: {
+                type: 'object',
+                additionalProperties: true,
+                errorMessage: "The function's 'args' field must be an object",
+              },
+            },
+            required: ['name', 'path'],
+            additionalProperties: false,
+          },
         },
         networkList: {
           type: 'array',
@@ -568,7 +423,7 @@ const azionConfigSchema = {
             },
           },
         },
-        firewall: {
+        edgeFirewall: {
           type: 'object',
           properties: {
             name: {
@@ -878,10 +733,13 @@ const azionConfigSchema = {
               errorMessage: "The 'alternateDomains' field must be an array of strings with at most 50 items.",
             },
             edgeApplication: {
-              type: 'integer',
-              minimum: 1,
-              maximum: 9007199254740991,
-              errorMessage: "The 'edgeApplication' field must be a positive integer.",
+              oneOf: [
+                {
+                  type: 'string',
+                  minLength: 1,
+                },
+              ],
+              errorMessage: "The 'edgeApplication' field must be a positive integer or a string reference.",
             },
             active: {
               type: 'boolean',
@@ -1029,7 +887,7 @@ const azionConfigSchema = {
             required: "The 'name' and 'edgeApplication' fields are required in the workload object.",
           },
         },
-        application: {
+        edgeApplication: {
           type: 'array',
           items: {
             type: 'object',
@@ -1076,24 +934,157 @@ const azionConfigSchema = {
                 errorMessage: "The 'debug' field must be a boolean.",
               },
               rules: {
-                $ref: '#/definitions/rules',
+                type: 'object',
+                properties: {
+                  request: {
+                    type: 'array',
+                    items: createRuleSchema(true),
+                  },
+                  response: {
+                    type: 'array',
+                    items: createRuleSchema(false),
+                  },
+                },
+                additionalProperties: false,
               },
               cache: {
-                $ref: '#/definitions/cache',
-              },
-              functions: {
-                $ref: '#/definitions/functions',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string',
+                      errorMessage: "The 'name' field must be a string.",
+                    },
+                    browser: {
+                      type: 'object',
+                      properties: {
+                        behavior: {
+                          type: 'string',
+                          enum: ['honor', 'override', 'no-cache'],
+                          errorMessage: "The browser 'behavior' field must be 'honor', 'override', or 'no-cache'.",
+                        },
+                        maxAge: {
+                          oneOf: [{ type: 'number' }, { type: 'string', pattern: '^[0-9+*/.() -]+$' }],
+                          errorMessage: "The 'maxAge' field must be a number or a valid mathematical expression.",
+                        },
+                      },
+                      required: ['behavior', 'maxAge'],
+                      additionalProperties: false,
+                    },
+                    edge: {
+                      type: 'object',
+                      properties: {
+                        behavior: {
+                          type: 'string',
+                          enum: ['honor', 'override'],
+                          errorMessage: "The edge 'behavior' field must be 'honor' or 'override'.",
+                        },
+                        maxAge: {
+                          oneOf: [{ type: 'number' }, { type: 'string', pattern: '^[0-9+*/.() -]+$' }],
+                          errorMessage: "The 'maxAge' field must be a number or a valid mathematical expression.",
+                        },
+                      },
+                      required: ['behavior', 'maxAge'],
+                      additionalProperties: false,
+                    },
+                    enablePost: {
+                      type: 'boolean',
+                      errorMessage: "The 'enablePost' field must be a boolean.",
+                    },
+                    enableOptions: {
+                      type: 'boolean',
+                      errorMessage: "The 'enableOptions' field must be a boolean.",
+                    },
+                    stale: {
+                      type: 'boolean',
+                      errorMessage: "The 'stale' field must be a boolean.",
+                    },
+                    tieredCache: {
+                      type: 'boolean',
+                      errorMessage: "The 'tieredCache' field must be a boolean.",
+                    },
+                    tieredRegion: {
+                      type: 'string',
+                      errorMessage: "The 'tieredRegion' field must be a string.",
+                    },
+                    controls: {
+                      type: 'object',
+                      properties: {
+                        queryString: {
+                          type: 'string',
+                          enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+                          errorMessage: "The 'queryString' field must be 'ignore', 'whitelist', 'blacklist', or 'all'.",
+                        },
+                        queryStringFields: {
+                          type: 'array',
+                          items: { type: 'string' },
+                        },
+                        queryStringSort: {
+                          type: 'boolean',
+                          errorMessage: "The 'queryStringSort' field must be a boolean.",
+                        },
+                        cookies: {
+                          type: 'string',
+                          enum: ['ignore', 'whitelist', 'blacklist', 'all'],
+                          errorMessage: "The 'cookies' field must be 'ignore', 'whitelist', 'blacklist', or 'all'.",
+                        },
+                        cookieNames: {
+                          type: 'array',
+                          items: { type: 'string' },
+                        },
+                        adaptiveDelivery: {
+                          type: 'string',
+                          enum: ['ignore', 'whitelist'],
+                          errorMessage: "The 'adaptiveDelivery' field must be 'ignore' or 'whitelist'.",
+                        },
+                        deviceGroup: {
+                          type: 'array',
+                          items: { type: 'number' },
+                        },
+                      },
+                      required: ['queryString', 'cookies', 'adaptiveDelivery'],
+                      additionalProperties: false,
+                    },
+                    slice: {
+                      type: 'object',
+                      properties: {
+                        enabled: {
+                          type: 'boolean',
+                          errorMessage: "The 'enabled' field must be a boolean.",
+                        },
+                        edgeCaching: {
+                          type: 'boolean',
+                          errorMessage: "The 'edgeCaching' field must be a boolean.",
+                        },
+                        tieredCaching: {
+                          type: 'boolean',
+                          errorMessage: "The 'tieredCaching' field must be a boolean.",
+                        },
+                        range: {
+                          type: 'number',
+                          minimum: 0,
+                          maximum: 1024,
+                          errorMessage: "The 'range' field must be a number between 0 and 1024.",
+                        },
+                      },
+                      additionalProperties: false,
+                    },
+                  },
+                  required: ['name', 'browser', 'edge', 'controls'],
+                  additionalProperties: false,
+                },
               },
             },
             required: ['name'],
             additionalProperties: false,
             errorMessage: {
-              additionalProperties: "No additional properties are allowed in the 'application' object.",
-              required: "The 'name' field is required in the application object.",
+              additionalProperties: "No additional properties are allowed in the 'edgeApplication' object.",
+              required: "The 'name' field is required in the edgeApplication object.",
             },
           },
         },
-        connectors: {
+        edgeConnectors: {
           type: 'array',
           items: {
             type: 'object',
@@ -1275,7 +1266,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, functions, origin, networkList, purge, firewall, waf, workload, application',
+          'Config can only contain the following properties: build, workload, edgeApplication, edgeConnectors, edgeFunctions, edgeFirewall, networkList, purge, and waf.',
         type: 'Configuration must be an object',
       },
     },

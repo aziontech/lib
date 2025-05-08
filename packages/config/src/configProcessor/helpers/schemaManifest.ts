@@ -737,7 +737,7 @@ const schemaApplicationManifest = {
       type: 'array',
       items: schemaApplicationCacheSettings,
     },
-    functions: {
+    edge_functions: {
       type: 'array',
       items: {
         type: 'object',
@@ -1104,16 +1104,16 @@ const schemaManifest = {
         type: "The 'waf' field must be an array",
       },
     },
-    firewall: {
+    edge_firewall: {
       ...schemaFirewallManifest,
       errorMessage: {
-        type: "The 'firewall' field must be an object",
+        type: "The 'edge_firewall' field must be an object",
       },
     },
-    application: {
+    edge_application: {
       type: 'array',
       items: schemaApplicationManifest,
-      errorMessage: "The 'application' field must be an array of application items.",
+      errorMessage: "The 'edge_application' field must be an array of application items.",
     },
     workload: {
       ...schemaWorkloadManifest,
@@ -1121,10 +1121,10 @@ const schemaManifest = {
         type: "The 'workload' field must be an object",
       },
     },
-    connectors: {
+    edge_connectors: {
       type: 'array',
       items: schemaConnectorManifest,
-      errorMessage: "The 'connectors' field must be an array of connector objects.",
+      errorMessage: "The 'edge_connectors' field must be an array of connector objects.",
     },
   },
 };

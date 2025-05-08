@@ -9,11 +9,11 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    if (!Array.isArray(config?.functions) || config?.functions.length === 0) {
+    if (!Array.isArray(config?.edgeFunctions) || config?.edgeFunctions.length === 0) {
       return;
     }
 
-    return config.functions.map((func) => ({
+    return config.edgeFunctions.map((func) => ({
       name: func.name,
       target: func.path,
       args: func.args || {},
@@ -23,18 +23,18 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!Array.isArray(payload?.functions) || payload?.functions.length === 0) {
+    if (!Array.isArray(payload?.edgeFunctions) || payload?.edgeFunctions.length === 0) {
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.functions = payload.functions.map((func: any) => ({
+    transformedPayload.edgeFunctions = payload.edgeFunctions.map((func: any) => ({
       name: func.name,
       path: func.target,
       args: func.args || {},
       initiatorType: func.initiator_type || FUNCTION_INITIATOR_TYPES[0],
     }));
 
-    return transformedPayload.functions;
+    return transformedPayload.edgeFunctions;
   }
 }
 

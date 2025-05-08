@@ -1,4 +1,4 @@
-import { AzionConfig, AzionFirewallCriteriaWithValue } from '../../../types';
+import { AzionConfig, AzionEdgeFirewallCriteriaWithValue } from '../../../types';
 import {
   requestBehaviors,
   responseBehaviors,
@@ -40,11 +40,11 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   private validateFunctionReferences(config: AzionConfig) {
-    if (!config?.rules?.request || !config?.functions) {
+    if (!config?.rules?.request || !config?.edgeFunctions) {
       return;
     }
 
-    const definedFunctions = new Set(config.functions.map((f) => f.name));
+    const definedFunctions = new Set(config.edgeFunctions.map((f) => f.name));
 
     for (const rule of config.rules.request) {
       if (rule.behavior?.runFunction) {
@@ -58,11 +58,11 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   private validateConnectorReferences(config: AzionConfig) {
-    if (!config?.rules?.request || !config?.connectors) {
+    if (!config?.rules?.request || !config?.edgeConnectors) {
       return;
     }
 
-    const definedConnectors = new Set(config.connectors.map((c) => c.name));
+    const definedConnectors = new Set(config.edgeConnectors.map((c) => c.name));
 
     for (const rule of config.rules.request) {
       if (rule.behavior?.setEdgeConnector) {
@@ -99,7 +99,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
@@ -137,7 +137,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,

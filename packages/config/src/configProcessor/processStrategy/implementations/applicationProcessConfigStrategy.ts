@@ -1,30 +1,41 @@
 import { AzionConfig } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
-import FunctionsProcessConfigStrategy from './functionsProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
 
 export default class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   private rulesStrategy = new RulesProcessConfigStrategy();
   private cacheStrategy = new CacheProcessConfigStrategy();
-  private functionsStrategy = new FunctionsProcessConfigStrategy();
+
+  private validateWorkloadReferences(config: AzionConfig) {
+    if (!config.workload || !config.edgeApplication) {
+      return;
+    }
+
+    const applicationNames = new Set(config.edgeApplication.map((app) => app.name));
+    if (!applicationNames.has(config.workload.edgeApplication)) {
+      throw new Error(
+        `Edge Application "${config.workload.edgeApplication}" referenced in workload "${config.workload.name}" is not defined in the application array.`,
+      );
+    }
+  }
 
   transformToManifest(config: AzionConfig) {
-    if (!config.application || config.application.length === 0) {
+    if (!config.edgeApplication || config.edgeApplication.length === 0) {
       return undefined;
     }
 
-    return config.application.map((app) => {
+    this.validateWorkloadReferences(config);
+
+    return config.edgeApplication.map((app) => {
       const tempConfig: AzionConfig = {
         rules: app.rules,
         cache: app.cache,
-        functions: app.functions,
       };
 
       // Processa rules, cache e functions para o manifesto
       const rulesManifest = this.rulesStrategy.transformToManifest(tempConfig, {});
       const cacheManifest = this.cacheStrategy.transformToManifest(tempConfig);
-      const functionsManifest = this.functionsStrategy.transformToManifest(tempConfig);
 
       return {
         name: app.name,
@@ -39,7 +50,6 @@ export default class ApplicationProcessConfigStrategy extends ProcessConfigStrat
         debug: app.debug ?? false,
         rules: rulesManifest,
         cache_settings: cacheManifest,
-        functions: functionsManifest,
       };
     });
   }
@@ -50,8 +60,7 @@ export default class ApplicationProcessConfigStrategy extends ProcessConfigStrat
       return undefined;
     }
 
-    transformedPayload.application = (payload.application as Record<string, unknown>[]).map((app) => {
-      // Cria um payload temporário para processar subelementos
+    transformedPayload.edgeApplication = (payload.edgeApplication as Record<string, unknown>[]).map((app) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const tempPayload: any = {
         rules: app.rules,
@@ -59,13 +68,10 @@ export default class ApplicationProcessConfigStrategy extends ProcessConfigStrat
         functions: app.functions,
       };
 
-      // Cria um objeto de configuração temporário
       const tempConfig: AzionConfig = {};
 
-      // Processa subelementos usando as estratégias específicas
       this.rulesStrategy.transformToConfig(tempPayload, tempConfig);
       this.cacheStrategy.transformToConfig(tempPayload, tempConfig);
-      this.functionsStrategy.transformToConfig(tempPayload, tempConfig);
 
       return {
         name: app.name as string,
@@ -78,10 +84,9 @@ export default class ApplicationProcessConfigStrategy extends ProcessConfigStrat
         debug: (app.debug as boolean) ?? false,
         rules: tempConfig.rules,
         cache: tempConfig.cache,
-        functions: tempConfig.functions,
       };
     });
 
-    return transformedPayload.application;
+    return transformedPayload.edgeApplication;
   }
 }
