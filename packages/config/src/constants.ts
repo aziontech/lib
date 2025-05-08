@@ -281,3 +281,7 @@ export type WorkloadTLSCipher = (typeof WORKLOAD_TLS_CIPHERS)[number];
 export type WorkloadTLSVersion = (typeof WORKLOAD_TLS_VERSIONS)[number];
 export type WorkloadMTLSVerification = (typeof WORKLOAD_MTLS_VERIFICATION)[number];
 export type WorkloadHTTPVersion = (typeof WORKLOAD_HTTP_VERSIONS)[number];
+
+export const EDGE_CONNECTOR_TYPES = ['http', 's3', 'edge_storage', 'live_ingest'] as const;
+export const EDGE_CONNECTOR_LOAD_BALANCE = ['off', 'round_robin', 'ip_hash', 'least_conn'] as const;
+export const EDGE_CONNECTOR_CONNECTION_PREFERENCE = ['IPv4', 'IPv6'] as const;

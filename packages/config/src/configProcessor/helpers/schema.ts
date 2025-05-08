@@ -2,6 +2,9 @@ import {
   ALL_REQUEST_VARIABLES,
   ALL_RESPONSE_VARIABLES,
   DYNAMIC_VARIABLE_PATTERNS,
+  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+  EDGE_CONNECTOR_LOAD_BALANCE,
+  EDGE_CONNECTOR_TYPES,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_VARIABLES,
@@ -1215,11 +1218,167 @@ const azionConfigSchema = {
             type: "The 'waf' field must be an array",
           },
         },
+        edgeConnectors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 255,
+                errorMessage: "O campo 'name' deve ser uma string entre 1 e 255 caracteres",
+              },
+              modules: {
+                type: 'object',
+                errorMessage: "O campo 'modules' é obrigatório",
+              },
+              active: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "O campo 'active' deve ser um booleano",
+              },
+              productVersion: {
+                type: 'string',
+                pattern: '\\d+\\.\\d+',
+                minLength: 3,
+                maxLength: 50,
+                errorMessage: "O campo 'productVersion' deve seguir o padrão \\d+\\.\\d+",
+              },
+              type: {
+                type: 'string',
+                enum: EDGE_CONNECTOR_TYPES,
+                errorMessage: "O campo 'type' deve ser um dos seguintes: http, s3, edge_storage, live_ingest",
+              },
+              addresses: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    address: {
+                      type: 'string',
+                      minLength: 1,
+                      maxLength: 255,
+                      errorMessage: "O campo 'address' deve ser uma string entre 1 e 255 caracteres",
+                    },
+                    plainPort: {
+                      type: 'integer',
+                      minimum: 1,
+                      maximum: 65535,
+                      default: 80,
+                      errorMessage: "O campo 'plainPort' deve estar entre 1 e 65535",
+                    },
+                    tlsPort: {
+                      type: 'integer',
+                      minimum: 1,
+                      maximum: 65535,
+                      default: 443,
+                      errorMessage: "O campo 'tlsPort' deve estar entre 1 e 65535",
+                    },
+                    serverRole: {
+                      type: 'string',
+                      enum: ['primary', 'backup'],
+                      default: 'primary',
+                      errorMessage: "O campo 'serverRole' deve ser 'primary' ou 'backup'",
+                    },
+                    weight: {
+                      type: 'integer',
+                      minimum: 0,
+                      maximum: 100,
+                      default: 1,
+                      errorMessage: "O campo 'weight' deve estar entre 0 e 100",
+                    },
+                    active: {
+                      type: 'boolean',
+                      default: true,
+                      errorMessage: "O campo 'active' deve ser um booleano",
+                    },
+                    maxConns: {
+                      type: 'integer',
+                      minimum: 0,
+                      maximum: 1000,
+                      default: 0,
+                      errorMessage: "O campo 'maxConns' deve estar entre 0 e 1000",
+                    },
+                    maxFails: {
+                      type: 'integer',
+                      minimum: 1,
+                      maximum: 10,
+                      default: 1,
+                      errorMessage: "O campo 'maxFails' deve estar entre 1 e 10",
+                    },
+                    failTimeout: {
+                      type: 'integer',
+                      minimum: 1,
+                      maximum: 60,
+                      default: 10,
+                      errorMessage: "O campo 'failTimeout' deve estar entre 1 e 60",
+                    },
+                    tls: {
+                      type: 'object',
+                      properties: {
+                        policy: {
+                          type: 'string',
+                          enum: ['off', 'on', 'preserve'],
+                          default: 'preserve',
+                          errorMessage: "O campo 'policy' do TLS deve ser um dos seguintes: off, on, preserve",
+                        },
+                      },
+                      default: { policy: 'preserve' },
+                    },
+                  },
+                  required: ['address'],
+                  additionalProperties: false,
+                },
+              },
+              tls: {
+                type: 'object',
+                properties: {
+                  policy: { type: 'string' },
+                },
+                default: { policy: 'preserve' },
+              },
+              loadBalanceMethod: {
+                type: 'string',
+                enum: EDGE_CONNECTOR_LOAD_BALANCE,
+                default: 'off',
+              },
+              connectionPreference: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  enum: EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+                },
+                maxItems: 2,
+                default: ['IPv6', 'IPv4'],
+              },
+              connectionTimeout: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 300,
+                default: 60,
+              },
+              readWriteTimeout: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 300,
+                default: 120,
+              },
+              maxRetries: {
+                type: 'integer',
+                minimum: 0,
+                maximum: 10,
+              },
+            },
+            required: ['name', 'modules', 'productVersion', 'type'],
+            additionalProperties: false,
+          },
+        },
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, functions, edgeApplication, domain, purge, firewall, networkList, waf',
+          'Config can only contain the following properties: build, functions, edgeApplication, domain, purge, firewall, networkList, waf, edgeConnectors',
         type: 'Configuration must be an object',
       },
     },

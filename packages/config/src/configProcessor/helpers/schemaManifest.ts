@@ -10,6 +10,9 @@ import {
   CACHE_BY_QUERY_STRING,
   CACHE_CDN_SETTINGS,
   CACHE_L2_REGION,
+  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+  EDGE_CONNECTOR_LOAD_BALANCE,
+  EDGE_CONNECTOR_TYPES,
   FIREWALL_BEHAVIOR_NAMES,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
@@ -900,6 +903,161 @@ const schemaWorkloadManifest = {
   additionalProperties: false,
 };
 
+const schemaEdgeConnectorManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 255,
+      errorMessage: "The 'name' field must be a string between 1 and 255 characters",
+    },
+    modules: {
+      type: 'object',
+      required: true,
+      errorMessage: "The 'modules' field is required",
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean",
+    },
+    product_version: {
+      type: 'string',
+      pattern: '\\d+\\.\\d+',
+      minLength: 3,
+      maxLength: 50,
+      errorMessage: "The 'product_version' must match pattern \\d+\\.\\d+",
+    },
+    type: {
+      type: 'string',
+      enum: EDGE_CONNECTOR_TYPES,
+      errorMessage: "The 'type' must be one of: http, s3, edge_storage, live_ingest",
+    },
+    addresses: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          address: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 255,
+            errorMessage: "The 'address' field must be a string between 1 and 255 characters",
+          },
+          plain_port: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 65535,
+            default: 80,
+            errorMessage: "The 'plain_port' must be between 1 and 65535",
+          },
+          tls_port: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 65535,
+            default: 443,
+            errorMessage: "The 'tls_port' must be between 1 and 65535",
+          },
+          server_role: {
+            type: 'string',
+            enum: ['primary', 'backup'],
+            default: 'primary',
+            errorMessage: "The 'server_role' must be either 'primary' or 'backup'",
+          },
+          weight: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 100,
+            default: 1,
+            errorMessage: "The 'weight' must be between 0 and 100",
+          },
+          active: {
+            type: 'boolean',
+            default: true,
+            errorMessage: "The 'active' field must be a boolean",
+          },
+          max_conns: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 1000,
+            default: 0,
+            errorMessage: "The 'max_conns' must be between 0 and 1000",
+          },
+          max_fails: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 10,
+            default: 1,
+            errorMessage: "The 'max_fails' must be between 1 and 10",
+          },
+          fail_timeout: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 60,
+            default: 10,
+            errorMessage: "The 'fail_timeout' must be between 1 and 60",
+          },
+          tls: {
+            type: 'object',
+            properties: {
+              policy: {
+                type: 'string',
+                enum: ['off', 'on', 'preserve'],
+                default: 'preserve',
+                errorMessage: "The TLS 'policy' must be one of: off, on, preserve",
+              },
+            },
+            default: { policy: 'preserve' },
+          },
+        },
+        required: ['address'],
+        additionalProperties: false,
+      },
+    },
+    tls: {
+      type: 'object',
+      properties: {
+        policy: { type: 'string' },
+      },
+      default: { policy: 'preserve' },
+    },
+    load_balance_method: {
+      type: 'string',
+      enum: EDGE_CONNECTOR_LOAD_BALANCE,
+      default: 'off',
+    },
+    connection_preference: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+      },
+      maxItems: 2,
+      default: ['IPv6', 'IPv4'],
+    },
+    connection_timeout: {
+      type: 'integer',
+      minimum: 1,
+      maximum: 300,
+      default: 60,
+    },
+    read_write_timeout: {
+      type: 'integer',
+      minimum: 1,
+      maximum: 300,
+      default: 120,
+    },
+    max_retries: {
+      type: 'integer',
+      minimum: 0,
+      maximum: 10,
+    },
+  },
+  required: ['name', 'modules', 'product_version', 'type'],
+  additionalProperties: false,
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -936,6 +1094,13 @@ const schemaManifest = {
       type: 'array',
       items: schemaWorkloadManifest,
       errorMessage: "The 'workload' field must be an array of workload items.",
+    },
+    edge_connector: {
+      type: 'array',
+      items: schemaEdgeConnectorManifest,
+      errorMessage: {
+        type: "The 'edge_connector' field must be an array",
+      },
     },
   },
 };

@@ -4,6 +4,7 @@ import NetworkListProcessConfigStrategy from '../processStrategy/implementations
 import WafProcessConfigStrategy from '../processStrategy/implementations/secure/wafProcessConfigStrategy';
 import ProcessConfigContext from '../processStrategy/processConfigContext';
 import EdgeApplicationProcessConfigStrategy from './implementations/application/edgeApplicationProcessConfigStrategy';
+import EdgeConnectorProcessConfigStrategy from './implementations/edgeConnectorProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
 import WorkloadProcessConfigStrategy from './implementations/workloadProcessConfigStrategy';
@@ -19,6 +20,7 @@ function factoryProcessContext() {
   const edgeApplicationStrategy = new EdgeApplicationProcessConfigStrategy();
   processConfigContext.setStrategy('edgeApplication', edgeApplicationStrategy);
   processConfigContext.setStrategy('workload', new WorkloadProcessConfigStrategy());
+  processConfigContext.setStrategy('edgeConnectors', new EdgeConnectorProcessConfigStrategy());
   return processConfigContext;
 }
 

@@ -1,4 +1,7 @@
 import {
+  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+  EDGE_CONNECTOR_LOAD_BALANCE,
+  EDGE_CONNECTOR_TYPES,
   FirewallRateLimitBy,
   FirewallRateLimitType,
   FirewallWafMode,
@@ -367,6 +370,8 @@ export type AzionConfig = {
   waf?: AzionWaf[];
   /** Workload configuration */
   workload?: AzionWorkload[];
+  /** Edge Connectors configuration */
+  edgeConnectors?: AzionEdgeConnector[];
 };
 
 /**
@@ -617,3 +622,46 @@ export type AzionWorkload = {
   mtls?: AzionWorkloadMTLS;
   domains: AzionWorkloadDomain[];
 };
+
+export type EdgeConnectorType = (typeof EDGE_CONNECTOR_TYPES)[number];
+export type EdgeConnectorLoadBalance = (typeof EDGE_CONNECTOR_LOAD_BALANCE)[number];
+export type EdgeConnectorConnectionPreference = (typeof EDGE_CONNECTOR_CONNECTION_PREFERENCE)[number];
+
+export interface EdgeConnectorModules {
+  loadBalancerEnabled: boolean;
+  originShieldEnabled: boolean;
+}
+
+export interface EdgeConnectorTLS {
+  policy: string;
+}
+
+export interface EdgeConnectorAddress {
+  address: string;
+  plainPort?: number;
+  tlsPort?: number;
+  serverRole?: 'primary' | 'backup';
+  weight?: number;
+  active?: boolean;
+  maxConns?: number;
+  maxFails?: number;
+  failTimeout?: number;
+  tls?: {
+    policy: 'off' | 'on' | 'preserve';
+  };
+}
+
+export interface AzionEdgeConnector {
+  name: string;
+  modules: EdgeConnectorModules;
+  active?: boolean;
+  productVersion: string;
+  type: EdgeConnectorType;
+  addresses?: EdgeConnectorAddress[];
+  tls?: EdgeConnectorTLS;
+  loadBalanceMethod?: EdgeConnectorLoadBalance;
+  connectionPreference?: EdgeConnectorConnectionPreference[];
+  connectionTimeout?: number;
+  readWriteTimeout?: number;
+  maxRetries?: number;
+}
