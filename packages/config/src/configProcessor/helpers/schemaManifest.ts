@@ -16,10 +16,7 @@ import {
   FIREWALL_RULE_CONDITIONALS,
   FIREWALL_RULE_OPERATORS,
   FIREWALL_VARIABLES,
-  LOAD_BALANCER_METHODS,
   NETWORK_LIST_TYPES,
-  ORIGIN_PROTOCOL_POLICIES,
-  ORIGIN_TYPES,
   RULE_BEHAVIOR_NAMES,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
@@ -559,85 +556,6 @@ const schemaApplicationCacheSettings = {
   additionalProperties: false,
 };
 
-const schemaApplicationOrigins = {
-  type: 'object',
-  properties: {
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    origin_type: {
-      type: 'string',
-      enum: ORIGIN_TYPES,
-      errorMessage:
-        "The 'origin_type' field must be one of: single_origin, load_balancer, live_ingest, object_storage.",
-    },
-    origin_protocol_policy: {
-      type: 'string',
-      enum: ORIGIN_PROTOCOL_POLICIES,
-      errorMessage: "The 'origin_protocol_policy' must be one of: preserve, http, https.",
-    },
-    host_header: {
-      type: 'string',
-      errorMessage: "The 'host_header' field must be a string.",
-    },
-    bucket: {
-      type: 'string',
-      errorMessage: "The 'bucket' field must be a string.",
-    },
-    addresses: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          address: {
-            type: 'string',
-            errorMessage: "The 'address' field must be a string.",
-          },
-          weight: {
-            type: 'number',
-            minimum: 0,
-            maximum: 100,
-            errorMessage: "The 'weight' field must be a number between 0 and 100.",
-          },
-          server_role: {
-            type: 'string',
-            enum: ['primary', 'backup'],
-            errorMessage: "The 'server_role' field must be either 'primary' or 'backup'.",
-          },
-        },
-        required: ['address'],
-        additionalProperties: false,
-      },
-    },
-    load_balancer: {
-      type: 'object',
-      properties: {
-        method: {
-          type: 'string',
-          enum: LOAD_BALANCER_METHODS,
-          errorMessage: "The 'method' field must be one of: ip_hash, least_connections, round_robin.",
-        },
-      },
-      required: ['method'],
-      additionalProperties: false,
-    },
-  },
-  required: ['name', 'origin_type', 'addresses'],
-  allOf: [
-    {
-      if: {
-        properties: { origin_type: { const: 'object_storage' } },
-      },
-      then: {
-        required: ['bucket'],
-        errorMessage: "When origin_type is 'object_storage', the 'bucket' field is required.",
-      },
-    },
-  ],
-  additionalProperties: false,
-};
-
 const schemaApplicationRules = {
   type: 'object',
   properties: {
@@ -719,8 +637,6 @@ const schemaApplicationRules = {
   additionalProperties: false,
 };
 
-// ... resto do arquivo mantido como está ...
-
 const schemaApplicationManifest = {
   type: 'object',
   properties: {
@@ -778,6 +694,36 @@ const schemaApplicationManifest = {
           default: true,
           errorMessage: "The 'active' field must be a boolean.",
         },
+        debug: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'debug' field must be a boolean.",
+        },
+        edge_cache_enabled: {
+          type: 'boolean',
+          default: true,
+          errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
+        },
+        edge_functions_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+        },
+        application_accelerator_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
+        },
+        image_processor_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'image_processor_enabled' field must be a boolean.",
+        },
+        tiered_cache_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+        },
       },
       additionalProperties: false,
       required: ['name'],
@@ -786,11 +732,6 @@ const schemaApplicationManifest = {
       type: 'array',
       items: schemaApplicationCacheSettings,
       errorMessage: "The 'cache_settings' field must be an array of cache setting items.",
-    },
-    origins: {
-      type: 'array',
-      items: schemaApplicationOrigins,
-      errorMessage: "The 'origins' field must be an array of origin items.",
     },
     rules: {
       type: 'array',
@@ -840,4 +781,5 @@ const schemaManifest = {
     },
   },
 };
+
 export { schemaManifest };

@@ -48,56 +48,6 @@ export type AzionDomain = {
 };
 
 /**
- * Origin configuration for Azion.
- */
-export type AzionOrigin = {
-  /** Origin ID */
-  id?: number;
-  /** Origin key */
-  key?: string;
-  /** Origin name */
-  name: string;
-  /** Origin type */
-  type: string;
-  /** Bucket name for S3-like origins */
-  bucket?: string | null;
-  /** Prefix for S3-like origins */
-  prefix?: string | null;
-  /** Addresses for the origin */
-  addresses?:
-    | string[]
-    | {
-        /** Address of the origin */
-        address: string;
-        /** Weight for load balancing */
-        weight?: number;
-      }[];
-  /** Host header to be sent to the origin */
-  hostHeader?: string;
-  /** Protocol policy for communicating with the origin */
-  protocolPolicy?: 'http' | 'https' | 'preserve';
-  /** Indicates if redirection should be used */
-  redirection?: boolean;
-  /** Load balancing method */
-  method?: 'ip_hash' | 'least_connections' | 'round_robin';
-  /** Path to be appended to the origin address */
-  path?: string;
-  /** Connection timeout in seconds */
-  connectionTimeout?: number;
-  /** Timeout between bytes in seconds */
-  timeoutBetweenBytes?: number;
-  /** HMAC authentication configuration */
-  hmac?: {
-    /** AWS region */
-    region: string;
-    /** AWS access key */
-    accessKey: string;
-    /** AWS secret key */
-    secretKey: string;
-  };
-};
-
-/**
  * Cache configuration for Azion.
  */
 export type AzionCache = {
@@ -354,6 +304,32 @@ export type AzionFunction = {
 };
 
 /**
+ * Edge Application configuration for Azion.
+ */
+export type AzionEdgeApplication = {
+  /** Application name */
+  name: string;
+  /** Enable edge cache */
+  edgeCacheEnabled?: boolean;
+  /** Enable edge functions */
+  edgeFunctionsEnabled?: boolean;
+  /** Enable application accelerator */
+  applicationAcceleratorEnabled?: boolean;
+  /** Enable image processor */
+  imageProcessorEnabled?: boolean;
+  /** Enable tiered cache */
+  tieredCacheEnabled?: boolean;
+  /** Indicates if the application is active */
+  active?: boolean;
+  /** Enable debug mode */
+  debug?: boolean;
+  /** Cache settings */
+  cache?: AzionCache[];
+  /** Rules configuration */
+  rules?: AzionRules;
+};
+
+/**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
@@ -361,14 +337,10 @@ export type AzionConfig = {
   build?: AzionBuild;
   /** Domain configuration */
   domain?: AzionDomain;
-  /** Origin configurations */
-  origin?: AzionOrigin[];
-  /** Cache configurations */
-  cache?: AzionCache[];
+  /** Edge Application configuration */
+  edgeApplication?: AzionEdgeApplication[];
   /** Functions configurations */
   functions?: AzionFunction[];
-  /** Rules configuration */
-  rules?: AzionRules;
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
