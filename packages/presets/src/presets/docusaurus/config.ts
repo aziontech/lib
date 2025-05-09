@@ -1,56 +1,63 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-const config = defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'docusaurus',
     polyfills: false,
   },
-  origin: [
+  edgeApplication: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'docusaurus-app',
+      rules: {
+        request: [
+          {
+            name: 'Deliver Static Assets',
+            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+            behavior: {
+              deliver: true,
+            },
+          },
+          {
+            name: 'Redirect to index.html',
+            match: '.*/$',
+            behavior: {
+              rewrite: '${uri}index.html',
+            },
+          },
+          {
+            name: 'Redirect to index.html for Subpaths',
+            match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
+            behavior: {
+              rewrite: '${uri}/index.html',
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
+  workload: [
+    {
+      name: 'docusaurus-workload',
+      edgeApplication: 'docusaurus-app',
+      domains: [
+        {
+          domain: null,
+          allowAccess: true,
         },
+      ],
+    },
+  ],
+  edgeConnectors: [
+    {
+      name: 'docusaurus-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-      {
-        name: 'Redirect to index.html',
-        match: '.*/$',
-        behavior: {
-          rewrite: '${uri}index.html',
-        },
-      },
-      {
-        name: 'Redirect to index.html for Subpaths',
-        match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
-        behavior: {
-          rewrite: '${uri}/index.html',
-        },
-      },
-    ],
-  },
-});
+      type: 'edge_storage',
+    },
+  ],
+};
 
 export default config;

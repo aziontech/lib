@@ -74,6 +74,7 @@ import { AzionConfig } from './types';
  * });
  */
 function defineConfig(config: AzionConfig): AzionConfig {
+  console.log('config', config);
   try {
     validateConfig(config);
   } catch (error) {

@@ -13,10 +13,8 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       modules: {
         load_balancer_enabled: connector.modules.loadBalancerEnabled,
         origin_shield_enabled: connector.modules.originShieldEnabled,
-        active: connector.active ?? true,
       },
       active: connector.active ?? true,
-      product_version: connector.productVersion,
       type: connector.type,
       addresses: connector.addresses?.map((addr) => ({
         address: addr.address,
@@ -52,7 +50,6 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
         originShieldEnabled: connector.modules.origin_shield_enabled,
       },
       active: connector.active,
-      productVersion: connector.product_version,
       type: connector.type,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       addresses: connector.addresses?.map((addr: any) => ({

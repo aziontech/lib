@@ -194,99 +194,6 @@ const schemaWafManifest = {
   },
 };
 
-const schemaDomainsManifest = {
-  type: ['object', 'null'],
-  properties: {
-    id: {
-      type: 'number',
-      errorMessage: "The 'id' field must be a number.",
-    },
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    edge_application_id: {
-      type: 'number',
-      errorMessage: "The 'edge_application_id' field must be a number.",
-    },
-    cnames: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-      errorMessage: "The 'cnames' field must be an array of strings.",
-    },
-    cname_access_only: {
-      type: 'boolean',
-      errorMessage: "The 'cname_access_only' field must be a boolean.",
-    },
-    digital_certificate_id: {
-      oneOf: [{ type: 'number' }, { type: 'string', enum: ['lets_encrypt'] }, { type: 'null' }],
-      errorMessage: "The 'digital_certificate_id' field must be a number, 'lets_encrypt' or null.",
-    },
-    is_active: {
-      type: 'boolean',
-      default: true,
-      errorMessage: "The 'is_active' field must be a boolean.",
-    },
-    domain_name: {
-      type: 'string',
-      errorMessage: "The 'domain_name' field must be a string.",
-    },
-    is_mtls_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'is_mtls_enabled' field must be a boolean.",
-    },
-    mtls_verification: {
-      type: 'string',
-      enum: ['enforce', 'permissive'],
-      errorMessage: "The 'mtls_verification' field must be either 'enforce' or 'permissive'.",
-    },
-    mtls_trusted_ca_certificate_id: {
-      type: 'number',
-      errorMessage: "The 'mtls_trusted_ca_certificate_id' field must be a number.",
-    },
-    edge_firewall_id: {
-      type: 'number',
-      errorMessage: "The 'edge_firewall_id' field must be a number.",
-    },
-    crl_list: {
-      type: 'array',
-      items: {
-        type: 'number',
-      },
-      errorMessage: "The 'crl_list' field must be an array of numbers.",
-    },
-  },
-  required: ['name'],
-  dependencies: {
-    is_mtls_enabled: {
-      oneOf: [
-        {
-          properties: {
-            is_mtls_enabled: { enum: [false] },
-          },
-        },
-        {
-          properties: {
-            is_mtls_enabled: { enum: [true] },
-          },
-          required: ['mtls_verification', 'mtls_trusted_ca_certificate_id'],
-        },
-      ],
-    },
-  },
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: 'No additional properties are allowed in domain items.',
-    required:
-      "The 'name', 'edge_application_id', 'cnames', 'cname_access_only', and 'digital_certificate_id' fields are required.",
-    dependencies: {
-      is_mtls_enabled: "When mTLS is enabled, 'mtls_verification' and 'mtls_trusted_ca_certificate_id' are required.",
-    },
-  },
-};
-
 const schemaFirewallRuleCriteria = {
   type: 'object',
   properties: {
@@ -1071,12 +978,6 @@ const schemaManifest = {
       items: schemaWafManifest,
       errorMessage: {
         type: "The 'waf' field must be an array",
-      },
-    },
-    domain: {
-      ...schemaDomainsManifest,
-      errorMessage: {
-        type: "The 'domain' field must be an object",
       },
     },
     firewall: {

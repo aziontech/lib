@@ -1,49 +1,56 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'react',
     polyfills: false,
   },
-  origin: [
+  edgeApplication: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'react-app',
+      rules: {
+        request: [
+          {
+            name: 'Deliver Static Assets',
+            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+            behavior: {
+              deliver: true,
+            },
+          },
+          {
+            name: 'Redirect to index.html',
+            match: '^\\/',
+            behavior: {
+              rewrite: '/index.html',
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
+  workload: [
+    {
+      name: 'react-workload',
+      edgeApplication: 'react-app',
+      domains: [
+        {
+          domain: null,
+          allowAccess: true,
         },
+      ],
+    },
+  ],
+  edgeConnectors: [
+    {
+      name: 'react-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
+      type: 'edge_storage',
+    },
+  ],
+};
 
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+export default config;

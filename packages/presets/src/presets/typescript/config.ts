@@ -1,6 +1,6 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     entry: 'handler.ts',
     preset: 'typescript',
@@ -12,15 +12,35 @@ export default defineConfig({
       path: '.edge/functions/handler.js',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Execute Edge Function',
-        match: '^\\/',
-        behavior: {
-          runFunction: 'my-typescript-function',
-        },
+  edgeApplication: [
+    {
+      name: 'typescript-app',
+      rules: {
+        request: [
+          {
+            name: 'Execute Edge Function',
+            match: '^\\/',
+            behavior: {
+              runFunction: 'my-typescript-function',
+              forwardCookies: true,
+            },
+          },
+        ],
       },
-    ],
-  },
-});
+    },
+  ],
+  workload: [
+    {
+      name: 'typescript-workload',
+      edgeApplication: 'typescript-app',
+      domains: [
+        {
+          domain: null,
+          allowAccess: true,
+        },
+      ],
+    },
+  ],
+};
+
+export default config;

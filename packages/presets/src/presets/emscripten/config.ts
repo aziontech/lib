@@ -1,7 +1,7 @@
-import { AzionBuild, defineConfig } from 'azion/config';
+import type { AzionBuild, AzionConfig } from 'azion/config';
 import webpack, { Configuration } from 'webpack';
 
-const config = defineConfig({
+const config: AzionConfig = {
   build: {
     entry: 'handler.ts',
     bundler: 'esbuild',
@@ -39,17 +39,35 @@ const config = defineConfig({
       path: '.edge/functions/handler.js',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Execute Edge Function',
-        match: '^\\/',
-        behavior: {
-          runFunction: 'my-emscripten-function',
-        },
+  edgeApplication: [
+    {
+      name: 'emscripten-app',
+      edgeFunctionsEnabled: true,
+      rules: {
+        request: [
+          {
+            name: 'Execute Edge Function',
+            match: '^\\/',
+            behavior: {
+              runFunction: 'my-emscripten-function',
+            },
+          },
+        ],
       },
-    ],
-  },
-});
+    },
+  ],
+  workload: [
+    {
+      name: 'emscripten-workload',
+      edgeApplication: 'emscripten-app',
+      domains: [
+        {
+          domain: null,
+          allowAccess: true,
+        },
+      ],
+    },
+  ],
+};
 
 export default config;

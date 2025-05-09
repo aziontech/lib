@@ -655,7 +655,6 @@ export interface AzionEdgeConnector {
   name: string;
   modules: EdgeConnectorModules;
   active?: boolean;
-  productVersion: string;
   type: EdgeConnectorType;
   addresses?: EdgeConnectorAddress[];
   tls?: EdgeConnectorTLS;
