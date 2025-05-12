@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'react',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'react-app',
       rules: {
@@ -29,18 +29,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  workload: [
-    {
-      name: 'react-workload',
-      edgeApplication: 'react-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
-    },
-  ],
+
   edgeConnectors: [
     {
       name: 'react-storage',

@@ -6,13 +6,13 @@ const config: AzionConfig = {
     preset: 'javascript',
     polyfills: true,
   },
-  functions: [
+  edgeFunctions: [
     {
       name: 'my-javascript-function',
       path: '.edge/functions/handler.js',
     },
   ],
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'javascript-app',
       rules: {
@@ -26,18 +26,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'javascript-workload',
-      edgeApplication: 'javascript-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
 };

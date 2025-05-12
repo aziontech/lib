@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'vue',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'vue-app',
       rules: {

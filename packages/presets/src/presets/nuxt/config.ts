@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'nuxt',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'nuxt-app',
       rules: {
@@ -36,18 +36,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  workload: [
-    {
-      name: 'nuxt-workload',
-      edgeApplication: 'nuxt-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
-    },
-  ],
+
   edgeConnectors: [
     {
       name: 'nuxt-storage',

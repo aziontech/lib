@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'preact',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'preact-app',
       rules: {
@@ -22,18 +22,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  workload: [
-    {
-      name: 'preact-workload',
-      edgeApplication: 'preact-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
-    },
-  ],
+
   edgeConnectors: [
     {
       name: 'preact-storage',

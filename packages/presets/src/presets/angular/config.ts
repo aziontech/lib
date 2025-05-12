@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'angular',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'angular-app',
       edgeFunctionsEnabled: false,
@@ -28,18 +28,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'angular-workload',
-      edgeApplication: 'angular-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

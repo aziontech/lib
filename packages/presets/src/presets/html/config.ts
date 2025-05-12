@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'html',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'html-app',
       rules: {
@@ -20,18 +20,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'html-workload',
-      edgeApplication: 'html-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

@@ -6,13 +6,13 @@ const config: AzionConfig = {
     preset: 'next',
     polyfills: true,
   },
-  functions: [
+  edgeFunctions: [
     {
       name: 'next-function',
       path: '.edge/functions/next-function.js',
     },
   ],
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'next-app',
       rules: {
@@ -41,18 +41,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'next-workload',
-      edgeApplication: 'next-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

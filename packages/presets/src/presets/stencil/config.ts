@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'stencil',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'stencil-app',
       rules: {

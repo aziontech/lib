@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'astro',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'astro-app',
       rules: {
@@ -34,18 +34,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'astro-workload',
-      edgeApplication: 'astro-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

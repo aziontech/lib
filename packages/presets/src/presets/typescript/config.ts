@@ -6,13 +6,13 @@ const config: AzionConfig = {
     preset: 'typescript',
     polyfills: true,
   },
-  functions: [
+  edgeFunctions: [
     {
       name: 'my-typescript-function',
       path: '.edge/functions/handler.js',
     },
   ],
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'typescript-app',
       rules: {
@@ -27,18 +27,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'typescript-workload',
-      edgeApplication: 'typescript-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
 };

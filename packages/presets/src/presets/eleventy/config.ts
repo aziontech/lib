@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'eleventy',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'eleventy-app',
       rules: {
@@ -34,18 +34,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'eleventy-workload',
-      edgeApplication: 'eleventy-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

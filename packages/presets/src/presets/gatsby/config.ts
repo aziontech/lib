@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'gatsby',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'gatsby-app',
       rules: {
@@ -36,18 +36,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  workload: [
-    {
-      name: 'gatsby-workload',
-      edgeApplication: 'gatsby-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
-    },
-  ],
+
   edgeConnectors: [
     {
       name: 'gatsby-storage',

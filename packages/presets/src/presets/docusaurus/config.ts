@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'docusaurus',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'docusaurus-app',
       rules: {
@@ -34,18 +34,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'docusaurus-workload',
-      edgeApplication: 'docusaurus-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

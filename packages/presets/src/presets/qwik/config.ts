@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'qwik',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'qwik-app',
       rules: {

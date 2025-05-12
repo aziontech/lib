@@ -33,13 +33,13 @@ const config: AzionConfig = {
       return context;
     },
   } as AzionBuild,
-  functions: [
+  edgeFunctions: [
     {
       name: 'my-rustwasm-function',
       path: '.edge/functions/handler.js',
     },
   ],
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'rustwasm-app',
       rules: {
@@ -53,18 +53,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'rustwasm-workload',
-      edgeApplication: 'rustwasm-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
 };

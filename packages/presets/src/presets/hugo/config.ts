@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'hugo',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'hugo-app',
       rules: {
@@ -20,18 +20,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'hugo-workload',
-      edgeApplication: 'hugo-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

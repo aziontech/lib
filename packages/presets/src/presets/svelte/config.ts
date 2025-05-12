@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'svelte',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'svelte-app',
       rules: {
@@ -38,18 +38,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  workload: [
-    {
-      name: 'svelte-workload',
-      edgeApplication: 'svelte-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
-    },
-  ],
+
   edgeConnectors: [
     {
       name: 'svelte-storage',

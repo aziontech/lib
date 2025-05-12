@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'jekyll',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'jekyll-app',
       rules: {
@@ -20,18 +20,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'jekyll-workload',
-      edgeApplication: 'jekyll-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

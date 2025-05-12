@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'vuepress',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'vuepress-app',
       rules: {
@@ -41,18 +41,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'vuepress-workload',
-      edgeApplication: 'vuepress-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

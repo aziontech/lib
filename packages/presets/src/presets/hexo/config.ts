@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'hexo',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'hexo-app',
       rules: {

@@ -6,7 +6,7 @@ const config: AzionConfig = {
     preset: 'vitepress',
     polyfills: false,
   },
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'vitepress-app',
       rules: {
@@ -52,18 +52,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  workload: [
-    {
-      name: 'vitepress-workload',
-      edgeApplication: 'vitepress-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
-    },
-  ],
+
   edgeConnectors: [
     {
       name: 'vitepress-storage',

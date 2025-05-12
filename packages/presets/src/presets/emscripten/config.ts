@@ -33,13 +33,13 @@ const config: AzionConfig = {
       return context;
     },
   } as AzionBuild,
-  functions: [
+  edgeFunctions: [
     {
       name: 'my-emscripten-function',
       path: '.edge/functions/handler.js',
     },
   ],
-  edgeApplication: [
+  edgeApplications: [
     {
       name: 'emscripten-app',
       edgeFunctionsEnabled: true,
@@ -54,18 +54,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'emscripten-workload',
-      edgeApplication: 'emscripten-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
 };
