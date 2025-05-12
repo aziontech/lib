@@ -1,7 +1,7 @@
-import { AzionBuild, defineConfig } from 'azion/config';
+import type { AzionBuild, AzionConfig } from 'azion/config';
 import webpack, { Configuration } from 'webpack';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     entry: 'handler.ts',
     preset: 'rustwasm',
@@ -33,21 +33,28 @@ export default defineConfig({
       return context;
     },
   } as AzionBuild,
-  functions: [
+  edgeFunctions: [
     {
       name: 'my-rustwasm-function',
       path: '.edge/functions/handler.js',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Execute Edge F nction',
-        match: '^\\/',
-        behavior: {
-          runFunction: 'my-rustwasm-function',
-        },
+  edgeApplications: [
+    {
+      name: 'rustwasm-app',
+      rules: {
+        request: [
+          {
+            name: 'Execute Edge Function',
+            match: '^\\/',
+            behavior: {
+              runFunction: 'my-rustwasm-function',
+            },
+          },
+        ],
       },
-    ],
-  },
-});
+    },
+  ],
+};
+
+export default config;

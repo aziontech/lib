@@ -1,18 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const requestBehaviors = {
-  setOrigin: {
+  setEdgeConnector: {
     transform: (value: any, payloadCDN: any) => {
-      const origin = payloadCDN.origin?.find((o: any) => o.name === value.name && o.origin_type === value.type);
+      const connector = payloadCDN.edgeConnectors?.find((o: any) => o.name === value.name);
 
-      if (!origin) {
-        throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
-      } else if (origin.origin_type !== value.type) {
-        throw new Error(`Rule setOrigin originType '${value.type}' does not match the origin settings`);
+      if (!connector) {
+        throw new Error(`Rule setEdgeConnector '${value.name}' not found in the edge connectors list`);
       }
 
       return {
-        name: 'set_origin',
-        target: origin.name,
+        name: 'set_edge_connector',
+        target: connector.name,
       };
     },
   },
@@ -265,17 +263,14 @@ export const responseBehaviors = {
 };
 
 export const revertRequestBehaviors = {
-  set_origin: {
+  set_edge_connector: {
     transform: (value: any, payloadCDN: any) => {
-      const origin = payloadCDN.origin?.find((o: any) => o.name === value);
-      if (!origin) {
-        throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
+      const connector = payloadCDN.edgeConnectors?.find((o: any) => o.name === value);
+      if (!connector) {
+        throw new Error(`Rule setEdgeConnector name '${value.name}' not found in the edge connectors list`);
       }
       return {
-        setOrigin: {
-          name: value,
-          type: origin.type,
-        },
+        setEdgeConnector: value,
       };
     },
   },

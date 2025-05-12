@@ -1,54 +1,62 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'vitepress',
     polyfills: false,
   },
-  origin: [
+  edgeApplications: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'vitepress-app',
+      rules: {
+        request: [
+          {
+            name: 'Set Storage Origin for All Requests',
+            match: '^\\/',
+            behavior: {
+              setEdgeConnector: 'vitepress-storage',
+            },
+          },
+          {
+            name: 'Deliver Static Assets',
+            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+            behavior: {
+              setEdgeConnector: 'vitepress-storage',
+              deliver: true,
+            },
+          },
+          {
+            name: 'Redirect to index.html',
+            match: '.*/$',
+            behavior: {
+              // eslint-disable-next-line no-template-curly-in-string
+              rewrite: '${uri}index.html',
+            },
+          },
+          {
+            name: 'Redirect to index.html for Subpaths',
+            match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
+            behavior: {
+              // eslint-disable-next-line no-template-curly-in-string
+              rewrite: '${uri}/index.html',
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
+
+  edgeConnectors: [
+    {
+      name: 'vitepress-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-      {
-        name: 'Redirect to index.html',
-        match: '.*/$',
-        behavior: {
-          rewrite: '${uri}index.html',
-        },
-      },
-      {
-        name: 'Redirect to index.html for Subpaths',
-        match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
-        behavior: {
-          rewrite: '${uri}/index.html',
-        },
-      },
-    ],
-  },
-});
+      type: 'edge_storage',
+    },
+  ],
+};
+
+export default config;

@@ -1,55 +1,60 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'next',
     polyfills: true,
   },
-  origin: [
+  edgeFunctions: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'next-function',
+      path: '.edge/functions/next-function.js',
     },
   ],
-  functions: [
+  edgeApplications: [
     {
-      name: 'handler',
-      path: '.edge/functions/handler.js',
+      name: 'next-app',
+      rules: {
+        request: [
+          {
+            name: 'Next.js Static Assets',
+            match: '^\\/_next\\/static\\/',
+            behavior: {
+              setEdgeConnector: 'next-storage',
+              deliver: true,
+            },
+          },
+          {
+            name: 'Deliver Static Assets',
+            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+            behavior: {
+              setEdgeConnector: 'next-storage',
+              deliver: true,
+            },
+          },
+          {
+            name: 'Execute Next.js Function',
+            match: '^\\/',
+            behavior: {
+              runFunction: 'next-function',
+              forwardCookies: true,
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/_next\\/static\\/', // starts with '/_next/static/'
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
+  edgeConnectors: [
+    {
+      name: 'next-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-      {
-        name: 'Execute Edge Function',
-        match: '^/',
-        behavior: {
-          runFunction: 'handler',
-          forwardCookies: true,
-        },
-      },
-    ],
-  },
-});
+      type: 'edge_storage',
+    },
+  ],
+};
+
+export default config;
