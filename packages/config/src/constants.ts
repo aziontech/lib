@@ -257,7 +257,7 @@ export const RULE_BEHAVIOR_NAMES = [
   'run_function',
   'set_cache_policy',
   'set_cookie',
-  'set_origin',
+  'set_edge_connector',
 ] as const;
 
 // Tipos para Rules

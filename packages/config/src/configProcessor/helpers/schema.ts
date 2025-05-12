@@ -164,24 +164,9 @@ const createRuleSchema = (isRequestPhase = false) => ({
     behavior: {
       type: 'object',
       properties: {
-        setOrigin: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              errorMessage: "The 'name' field must be a string.",
-            },
-            type: {
-              type: 'string',
-              errorMessage: "The 'type' field must be a string.",
-            },
-          },
-          required: ['name', 'type'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'setOrigin' object.",
-            required: "The 'name or type' field is required in the 'setOrigin' object.",
-          },
+        setEdgeConnector: {
+          type: 'string',
+          errorMessage: "The 'setEdgeConnector' field must be a string.",
         },
         rewrite: {
           type: 'string',
