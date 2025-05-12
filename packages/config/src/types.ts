@@ -190,9 +190,7 @@ export type AzionRequestRule = {
     /** Finish request phase */
     finishRequestPhase?: boolean;
     /** Set Edge connector */
-    setEdgeConnector?: {
-      name: string;
-    };
+    setEdgeConnector?: string;
     /** Add request header */
     addRequestHeader?: string[];
     /** Add request cookie */

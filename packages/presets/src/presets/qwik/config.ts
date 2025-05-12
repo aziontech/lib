@@ -15,23 +15,12 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '^\\/',
             behavior: {
+              setEdgeConnector: 'qwik-storage',
               deliver: true,
             },
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'qwik-workload',
-      edgeApplication: 'qwik-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

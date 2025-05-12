@@ -15,23 +15,12 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '^\\/',
             behavior: {
+              setEdgeConnector: 'stencil-storage',
               deliver: true,
             },
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'stencil-workload',
-      edgeApplication: 'stencil-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

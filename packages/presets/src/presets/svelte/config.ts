@@ -15,6 +15,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
             behavior: {
+              setEdgeConnector: 'svelte-storage',
               deliver: true,
             },
           },
@@ -23,6 +24,7 @@ const config: AzionConfig = {
             match: '.*/$',
             behavior: {
               // eslint-disable-next-line no-template-curly-in-string
+              setEdgeConnector: 'svelte-storage',
               rewrite: '${uri}index.html',
             },
           },
@@ -31,6 +33,7 @@ const config: AzionConfig = {
             match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
             behavior: {
               // eslint-disable-next-line no-template-curly-in-string
+              setEdgeConnector: 'svelte-storage',
               rewrite: '${uri}/index.html',
             },
           },

@@ -15,6 +15,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
             behavior: {
+              setEdgeConnector: 'react-storage',
               deliver: true,
             },
           },
@@ -22,6 +23,7 @@ const config: AzionConfig = {
             name: 'Redirect to index.html',
             match: '^\\/',
             behavior: {
+              setEdgeConnector: 'react-storage',
               rewrite: '/index.html',
             },
           },

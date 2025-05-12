@@ -15,20 +15,14 @@ const config: AzionConfig = {
             name: 'Set Storage Origin for All Requests',
             match: '^\\/',
             behavior: {
-              setOrigin: {
-                name: 'origin-storage-default',
-                type: 'object_storage',
-              },
+              setEdgeConnector: 'vue-storage',
             },
           },
           {
             name: 'Deliver Static Assets',
             match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
             behavior: {
-              setOrigin: {
-                name: 'origin-storage-default',
-                type: 'object_storage',
-              },
+              setEdgeConnector: 'vue-storage',
               deliver: true,
             },
           },
@@ -50,18 +44,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  workload: [
-    {
-      name: 'vue-workload',
-      edgeApplication: 'vue-app',
-      domains: [
-        {
-          domain: null,
-          allowAccess: true,
-        },
-      ],
     },
   ],
   edgeConnectors: [

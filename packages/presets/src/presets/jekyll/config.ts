@@ -15,6 +15,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '^\\/',
             behavior: {
+              setEdgeConnector: 'jekyll-storage',
               deliver: true,
             },
           },

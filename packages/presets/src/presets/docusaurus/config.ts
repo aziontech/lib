@@ -15,6 +15,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
             behavior: {
+              setEdgeConnector: 'docusaurus-storage',
               deliver: true,
             },
           },
@@ -22,6 +23,7 @@ const config: AzionConfig = {
             name: 'Redirect to index.html',
             match: '.*/$',
             behavior: {
+              setEdgeConnector: 'docusaurus-storage',
               rewrite: '${uri}index.html',
             },
           },
@@ -29,6 +31,7 @@ const config: AzionConfig = {
             name: 'Redirect to index.html for Subpaths',
             match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
             behavior: {
+              setEdgeConnector: 'docusaurus-storage',
               rewrite: '${uri}/index.html',
             },
           },

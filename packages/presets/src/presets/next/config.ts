@@ -21,6 +21,7 @@ const config: AzionConfig = {
             name: 'Next.js Static Assets',
             match: '^\\/_next\\/static\\/',
             behavior: {
+              setEdgeConnector: 'next-storage',
               deliver: true,
             },
           },
@@ -28,6 +29,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
             behavior: {
+              setEdgeConnector: 'next-storage',
               deliver: true,
             },
           },

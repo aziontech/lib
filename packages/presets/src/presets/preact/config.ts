@@ -15,6 +15,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '^\\/',
             behavior: {
+              setEdgeConnector: 'preact-storage',
               deliver: true,
             },
           },
