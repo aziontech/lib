@@ -9,7 +9,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
     if (!Array.isArray(config?.functions) || config?.functions.length === 0) {
-      return;
+      return {};
     }
 
     return config.functions.map((func) => ({

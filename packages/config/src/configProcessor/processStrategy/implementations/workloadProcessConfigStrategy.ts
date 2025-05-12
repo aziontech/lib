@@ -14,18 +14,17 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
     });
   }
 
-  transformToManifest(config: AzionConfig) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+  transformToManifest(config: AzionConfig, context: Record<string, any>) {
     const workloads = config?.workload;
-    if (!workloads || workloads.length === 0) {
-      return;
-    }
+    if (!workloads || workloads.length === 0) return [];
 
     this.validateApplicationReferences(config, workloads);
 
     return workloads.map((workload: AzionWorkload) => ({
       name: workload.name,
       alternate_domains: workload.alternateDomains || [],
-      edge_application: config.edgeApplication?.find((app) => app.name === workload.edgeApplication)?.name,
+      edge_application: workload.edgeApplication,
       active: workload.active ?? true,
       network_map: workload.networkMap || '1',
       edge_firewall: workload.edgeFirewall,

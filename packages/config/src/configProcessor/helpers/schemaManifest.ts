@@ -365,58 +365,57 @@ const schemaFirewallRule = {
 const schemaFirewallManifest = {
   type: ['object', 'null'],
   properties: {
-    main_settings: {
-      type: 'object',
-      properties: {
-        name: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        errorMessage: "The 'name' field must be a string.",
+      },
+      domains: {
+        type: 'array',
+        items: {
           type: 'string',
-          errorMessage: "The 'name' field must be a string.",
-        },
-        domains: {
-          type: 'array',
-          items: {
-            type: 'string',
-            errorMessage: "Each domain in the firewall's domains list must be a string",
-          },
-        },
-        is_active: {
-          type: 'boolean',
-          errorMessage: "The 'is_active' field must be a boolean.",
-        },
-        edge_functions_enabled: {
-          type: 'boolean',
-          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
-        },
-        network_protection_enabled: {
-          type: 'boolean',
-          errorMessage: "The 'network_protection_enabled' field must be a boolean.",
-        },
-        waf_enabled: {
-          type: 'boolean',
-          errorMessage: "The 'waf_enabled' field must be a boolean.",
-        },
-        debug_rules: {
-          type: 'boolean',
-          errorMessage: "The 'debug_rules' field must be a boolean.",
+          errorMessage: "Each domain in the firewall's domains list must be a string",
         },
       },
-      required: ['name'],
-      additionalProperties: false,
-      errorMessage: {
-        additionalProperties: 'No additional properties are allowed in firewall main settings.',
-        required: "The 'name' field is required in firewall main settings.",
+      is_active: {
+        type: 'boolean',
+        errorMessage: "The 'is_active' field must be a boolean.",
+      },
+      edge_functions_enabled: {
+        type: 'boolean',
+        errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+      },
+      network_protection_enabled: {
+        type: 'boolean',
+        errorMessage: "The 'network_protection_enabled' field must be a boolean.",
+      },
+      waf_enabled: {
+        type: 'boolean',
+        errorMessage: "The 'waf_enabled' field must be a boolean.",
+      },
+      debug_rules: {
+        type: 'boolean',
+        errorMessage: "The 'debug_rules' field must be a boolean.",
       },
     },
-    rules_engine: {
-      type: 'array',
-      items: schemaFirewallRule,
-      errorMessage: {
-        type: "The 'rules_engine' field must be an array",
-        required: "The 'rules_engine' field must be an array of firewall rules.",
-        additionalProperties: 'No additional properties are allowed in firewall rules.',
-      },
+    required: ['name'],
+    additionalProperties: false,
+    errorMessage: {
+      additionalProperties: 'No additional properties are allowed in firewall main settings.',
+      required: "The 'name' field is required in firewall main settings.",
     },
   },
+  rules_engine: {
+    type: 'array',
+    items: schemaFirewallRule,
+    errorMessage: {
+      type: "The 'rules_engine' field must be an array",
+      required: "The 'rules_engine' field must be an array of firewall rules.",
+      additionalProperties: 'No additional properties are allowed in firewall rules.',
+    },
+  },
+
   required: ['main_settings'],
   additionalProperties: false,
   errorMessage: {
@@ -555,93 +554,86 @@ const schemaApplicationRules = {
 const schemaApplicationManifest = {
   type: 'object',
   properties: {
-    main_settings: {
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          errorMessage: "The 'name' field must be a string.",
-        },
-        delivery_protocol: {
-          type: 'string',
-          enum: APPLICATION_DELIVERY_PROTOCOLS,
-          default: 'http',
-          errorMessage: "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
-        },
-        http3: {
-          type: 'boolean',
-          errorMessage: "The 'http3' field must be a boolean.",
-        },
-        http_port: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            enum: APPLICATION_HTTP_PORTS,
-          },
-          errorMessage: {
-            enum: "The 'http_port' field must be an array of valid HTTP ports.",
-            type: "The 'http_port' field must be an array",
-          },
-        },
-        https_port: {
-          type: 'array',
-          items: {
-            type: 'integer',
-            enum: APPLICATION_HTTPS_PORTS,
-          },
-          default: [443],
-          errorMessage: "The 'https_port' field must be an array of valid HTTPS ports.",
-        },
-        minimum_tls_version: {
-          type: 'string',
-          enum: APPLICATION_TLS_VERSIONS,
-          default: '',
-          errorMessage: "The 'minimum_tls_version' field must be a valid TLS version.",
-        },
-        supported_ciphers: {
-          type: 'string',
-          enum: APPLICATION_SUPPORTED_CIPHERS,
-          default: 'all',
-          errorMessage: "The 'supported_ciphers' field must be a valid cipher suite.",
-        },
-        active: {
-          type: 'boolean',
-          default: true,
-          errorMessage: "The 'active' field must be a boolean.",
-        },
-        debug: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'debug' field must be a boolean.",
-        },
-        edge_cache_enabled: {
-          type: 'boolean',
-          default: true,
-          errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
-        },
-        edge_functions_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
-        },
-        application_accelerator_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
-        },
-        image_processor_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'image_processor_enabled' field must be a boolean.",
-        },
-        tiered_cache_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
-        },
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string.",
+    },
+    delivery_protocol: {
+      type: 'string',
+      enum: APPLICATION_DELIVERY_PROTOCOLS,
+      default: 'http',
+      errorMessage: "The 'delivery_protocol' field must be either 'http,https' or 'http'.",
+    },
+    http3: {
+      type: 'boolean',
+      errorMessage: "The 'http3' field must be a boolean.",
+    },
+    http_port: {
+      type: 'array',
+      items: {
+        type: 'integer',
+        enum: APPLICATION_HTTP_PORTS,
       },
-      additionalProperties: false,
-      required: ['name'],
+      errorMessage: {
+        enum: "The 'http_port' field must be an array of valid HTTP ports.",
+        type: "The 'http_port' field must be an array",
+      },
+    },
+    https_port: {
+      type: 'array',
+      items: {
+        type: 'integer',
+        enum: APPLICATION_HTTPS_PORTS,
+      },
+      default: [443],
+      errorMessage: "The 'https_port' field must be an array of valid HTTPS ports.",
+    },
+    minimum_tls_version: {
+      type: 'string',
+      enum: APPLICATION_TLS_VERSIONS,
+      default: '',
+      errorMessage: "The 'minimum_tls_version' field must be a valid TLS version.",
+    },
+    supported_ciphers: {
+      type: 'string',
+      enum: APPLICATION_SUPPORTED_CIPHERS,
+      default: 'all',
+      errorMessage: "The 'supported_ciphers' field must be a valid cipher suite.",
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean.",
+    },
+    debug: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'debug' field must be a boolean.",
+    },
+    edge_cache_enabled: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
+    },
+    edge_functions_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+    },
+    application_accelerator_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
+    },
+    image_processor_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'image_processor_enabled' field must be a boolean.",
+    },
+    tiered_cache_enabled: {
+      type: 'boolean',
+      default: false,
+      errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
     },
     cache_settings: {
       type: 'array',
@@ -654,11 +646,11 @@ const schemaApplicationManifest = {
       errorMessage: "The 'rules' field must be an array of application rule items.",
     },
   },
-  required: ['main_settings'],
+  required: ['name'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in application items.',
-    required: "The 'name' and 'main_settings' fields are required.",
+    required: "The 'name field are required.",
   },
 };
 

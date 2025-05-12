@@ -17,8 +17,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
   processConfigContext.setStrategy('functions', new FunctionsProcessConfigStrategy());
-  const edgeApplicationStrategy = new EdgeApplicationProcessConfigStrategy();
-  processConfigContext.setStrategy('edgeApplication', edgeApplicationStrategy);
+  processConfigContext.setStrategy('edgeApplication', new EdgeApplicationProcessConfigStrategy());
   processConfigContext.setStrategy('workload', new WorkloadProcessConfigStrategy());
   processConfigContext.setStrategy('edgeConnectors', new EdgeConnectorProcessConfigStrategy());
   return processConfigContext;

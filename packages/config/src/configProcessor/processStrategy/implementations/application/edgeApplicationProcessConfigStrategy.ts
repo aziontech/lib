@@ -7,25 +7,22 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   private cacheStrategy = new CacheProcessConfigStrategy();
   private rulesStrategy = new RulesProcessConfigStrategy();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(config: AzionConfig, context: Record<string, any>) {
+  transformToManifest(config: AzionConfig) {
     if (!config.edgeApplication || !Array.isArray(config.edgeApplication)) {
-      return context;
+      return [];
     }
 
-    context.application = config.edgeApplication.map((app: AzionEdgeApplication) => {
+    return config.edgeApplication.map((app: AzionEdgeApplication) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const application: Record<string, any> = {
-        main_settings: {
-          name: app.name,
-          active: app.active ?? true,
-          debug: app.debug ?? false,
-          edge_cache_enabled: app.edgeCacheEnabled ?? true,
-          edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
-          application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
-          image_processor_enabled: app.imageProcessorEnabled ?? false,
-          tiered_cache_enabled: app.tieredCacheEnabled ?? false,
-        },
+        name: app.name,
+        active: app.active ?? true,
+        debug: app.debug ?? false,
+        edge_cache_enabled: app.edgeCacheEnabled ?? true,
+        edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
+        application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
+        image_processor_enabled: app.imageProcessorEnabled ?? false,
+        tiered_cache_enabled: app.tieredCacheEnabled ?? false,
       };
 
       if (app.cache) {
@@ -38,19 +35,17 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
 
       return application;
     });
-
-    return context;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!payload.application || !Array.isArray(payload.application)) {
+    if (!payload.edgeApplication || !Array.isArray(payload.edgeApplication)) {
       transformedPayload.edgeApplication = [];
       return transformedPayload;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeApplication = payload.application.map((app: any) => {
+    transformedPayload.edgeApplication = payload.edgeApplication.map((app: any) => {
       const mainSettings = app.main_settings || {};
 
       return {
