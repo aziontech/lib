@@ -30,7 +30,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       }
 
       if (app.rules) {
-        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.functions);
+        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.edgeFunction);
       }
 
       return application;
@@ -41,28 +41,26 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
     if (!payload.edgeApplication || !Array.isArray(payload.edgeApplication)) {
       transformedPayload.edgeApplication = [];
-      return transformedPayload;
+      return transformedPayload.edgeApplication;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformedPayload.edgeApplication = payload.edgeApplication.map((app: any) => {
-      const mainSettings = app.main_settings || {};
-
       return {
-        name: mainSettings.name,
-        active: mainSettings.active,
-        debug: mainSettings.debug,
-        edgeCacheEnabled: mainSettings.edge_cache_enabled,
-        edgeFunctionsEnabled: mainSettings.edge_functions_enabled,
-        applicationAcceleratorEnabled: mainSettings.application_accelerator_enabled,
-        imageProcessorEnabled: mainSettings.image_processor_enabled,
-        tieredCacheEnabled: mainSettings.tiered_cache_enabled,
+        name: app.name,
+        active: app.active,
+        debug: app.debug,
+        edgeCacheEnabled: app.edge_cache_enabled,
+        edgeFunctionsEnabled: app.edge_functions_enabled,
+        applicationAcceleratorEnabled: app.application_accelerator_enabled,
+        imageProcessorEnabled: app.image_processor_enabled,
+        tieredCacheEnabled: app.tiered_cache_enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
       };
     });
 
-    return transformedPayload;
+    return transformedPayload.edgeApplication;
   }
 }
 

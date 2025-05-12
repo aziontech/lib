@@ -3,7 +3,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
 
 class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    const edgeConnectors = config?.edgeConnectors;
+    const edgeConnectors = config?.edgeConnector;
     if (!edgeConnectors || edgeConnectors.length === 0) {
       return;
     }
@@ -43,7 +43,7 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
 
-    transformedPayload.edgeConnectors = payload.edge_connector.map((connector) => ({
+    transformedPayload.edgeConnector = payload.edge_connector.map((connector) => ({
       name: connector.name,
       modules: {
         loadBalancerEnabled: connector.modules.load_balancer_enabled,
@@ -72,7 +72,7 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       maxRetries: connector.max_retries,
     }));
 
-    return transformedPayload.edgeConnectors;
+    return transformedPayload.edgeConnector;
   }
 }
 

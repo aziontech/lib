@@ -313,7 +313,7 @@ export type AzionNetworkList = {
 /**
  * Function configuration for Azion.
  */
-export type AzionFunction = {
+export type AzionEdgeFunction = {
   /** Function name */
   name: string;
   /** Function path */
@@ -359,7 +359,9 @@ export type AzionConfig = {
   /** Edge Application configuration */
   edgeApplication?: AzionEdgeApplication[];
   /** Functions configurations */
-  functions?: AzionFunction[];
+  edgeFunction?: AzionEdgeFunction[];
+  /** Edge Connectors configuration */
+  edgeConnector?: AzionEdgeConnector[];
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
@@ -370,8 +372,6 @@ export type AzionConfig = {
   waf?: AzionWaf[];
   /** Workload configuration */
   workload?: AzionWorkload[];
-  /** Edge Connectors configuration */
-  edgeConnectors?: AzionEdgeConnector[];
 };
 
 /**

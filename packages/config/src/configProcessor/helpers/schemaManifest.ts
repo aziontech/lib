@@ -365,57 +365,58 @@ const schemaFirewallRule = {
 const schemaFirewallManifest = {
   type: ['object', 'null'],
   properties: {
-    type: 'object',
-    properties: {
-      name: {
-        type: 'string',
-        errorMessage: "The 'name' field must be a string.",
-      },
-      domains: {
-        type: 'array',
-        items: {
+    main_settings: {
+      type: 'object',
+      properties: {
+        name: {
           type: 'string',
-          errorMessage: "Each domain in the firewall's domains list must be a string",
+          errorMessage: "The 'name' field must be a string.",
+        },
+        domains: {
+          type: 'array',
+          items: {
+            type: 'string',
+            errorMessage: "Each domain in the firewall's domains list must be a string",
+          },
+        },
+        is_active: {
+          type: 'boolean',
+          errorMessage: "The 'is_active' field must be a boolean.",
+        },
+        edge_functions_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+        },
+        network_protection_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'network_protection_enabled' field must be a boolean.",
+        },
+        waf_enabled: {
+          type: 'boolean',
+          errorMessage: "The 'waf_enabled' field must be a boolean.",
+        },
+        debug_rules: {
+          type: 'boolean',
+          errorMessage: "The 'debug_rules' field must be a boolean.",
         },
       },
-      is_active: {
-        type: 'boolean',
-        errorMessage: "The 'is_active' field must be a boolean.",
-      },
-      edge_functions_enabled: {
-        type: 'boolean',
-        errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
-      },
-      network_protection_enabled: {
-        type: 'boolean',
-        errorMessage: "The 'network_protection_enabled' field must be a boolean.",
-      },
-      waf_enabled: {
-        type: 'boolean',
-        errorMessage: "The 'waf_enabled' field must be a boolean.",
-      },
-      debug_rules: {
-        type: 'boolean',
-        errorMessage: "The 'debug_rules' field must be a boolean.",
+      required: ['name'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in firewall main settings.',
+        required: "The 'name' field is required in firewall main settings.",
       },
     },
-    required: ['name'],
-    additionalProperties: false,
-    errorMessage: {
-      additionalProperties: 'No additional properties are allowed in firewall main settings.',
-      required: "The 'name' field is required in firewall main settings.",
+    rules_engine: {
+      type: 'array',
+      items: schemaFirewallRule,
+      errorMessage: {
+        type: "The 'rules_engine' field must be an array",
+        required: "The 'rules_engine' field must be an array of firewall rules.",
+        additionalProperties: 'No additional properties are allowed in firewall rules.',
+      },
     },
   },
-  rules_engine: {
-    type: 'array',
-    items: schemaFirewallRule,
-    errorMessage: {
-      type: "The 'rules_engine' field must be an array",
-      required: "The 'rules_engine' field must be an array of firewall rules.",
-      additionalProperties: 'No additional properties are allowed in firewall rules.',
-    },
-  },
-
   required: ['main_settings'],
   additionalProperties: false,
   errorMessage: {
@@ -670,10 +671,8 @@ const schemaWorkloadManifest = {
       errorMessage: "The 'alternate_domains' field must be an array of strings with max 50 items",
     },
     edge_application: {
-      type: 'integer',
-      minimum: 1,
-      maximum: 9007199254740991,
-      errorMessage: "The 'edge_application' field must be a valid integer",
+      type: 'string',
+      errorMessage: "The 'edgeApplication' field must be a string",
     },
     active: {
       type: 'boolean',
@@ -700,12 +699,12 @@ const schemaWorkloadManifest = {
         },
         ciphers: {
           type: ['string', 'null'],
-          enum: WORKLOAD_TLS_CIPHERS,
+          enum: [...WORKLOAD_TLS_CIPHERS, null],
           errorMessage: "The 'ciphers' must be a valid TLS cipher suite or null",
         },
         minimum_version: {
           type: ['string', 'null'],
-          enum: WORKLOAD_TLS_VERSIONS,
+          enum: [...WORKLOAD_TLS_VERSIONS, null],
           default: 'tls_1_2',
           errorMessage: "The 'minimum_version' must be a valid TLS version or null",
         },
@@ -803,7 +802,7 @@ const schemaWorkloadManifest = {
 };
 
 const schemaEdgeConnectorManifest = {
-  type: 'object',
+  type: ['object', 'null'],
   properties: {
     name: {
       type: 'string',
@@ -813,20 +812,27 @@ const schemaEdgeConnectorManifest = {
     },
     modules: {
       type: 'object',
-      required: true,
-      errorMessage: "The 'modules' field is required",
+      properties: {
+        load_balancer_enabled: {
+          type: 'boolean',
+          errorMessage: "'load_balancer_enabled' must be a boolean",
+        },
+        origin_shield_enabled: {
+          type: 'boolean',
+          errorMessage: "'origin_shield_enabled' must be a boolean",
+        },
+      },
+      required: ['load_balancer_enabled', 'origin_shield_enabled'],
+      additionalProperties: false,
+      errorMessage: {
+        required: "'load_balancer_enabled' and 'origin_shield_enabled' are required in modules",
+        additionalProperties: 'No additional properties are allowed in modules',
+      },
     },
     active: {
       type: 'boolean',
       default: true,
       errorMessage: "The 'active' field must be a boolean",
-    },
-    product_version: {
-      type: 'string',
-      pattern: '\\d+\\.\\d+',
-      minLength: 3,
-      maxLength: 50,
-      errorMessage: "The 'product_version' must match pattern \\d+\\.\\d+",
     },
     type: {
       type: 'string',

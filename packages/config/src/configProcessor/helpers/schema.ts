@@ -526,7 +526,7 @@ const azionConfigSchema = {
             additionalProperties: "No additional properties are allowed in the 'build' object",
           },
         },
-        functions: {
+        edgeFunction: {
           type: 'array',
           items: {
             type: 'object',
@@ -835,12 +835,12 @@ const azionConfigSchema = {
                   },
                   ciphers: {
                     type: ['string', 'null'],
-                    enum: WORKLOAD_TLS_CIPHERS,
+                    enum: [...WORKLOAD_TLS_CIPHERS, 'null'],
                     errorMessage: "The 'ciphers' must be a valid TLS cipher suite or null",
                   },
                   minimumVersion: {
                     type: ['string', 'null'],
-                    enum: WORKLOAD_TLS_VERSIONS,
+                    enum: [...WORKLOAD_TLS_VERSIONS, 'null'],
                     default: 'tls_1_2',
                     errorMessage: "The 'minimumVersion' must be a valid TLS version or null",
                   },
@@ -935,6 +935,14 @@ const azionConfigSchema = {
             },
             required: ['name', 'edgeApplication', 'domains'],
             additionalProperties: false,
+            errorMessage: {
+              required: {
+                name: "The 'name' field is required in workload",
+                edgeApplication: "The 'edgeApplication' field is required in workload",
+                domains: "The 'domains' field is required in workload",
+              },
+              additionalProperties: 'No additional properties are allowed in workload items',
+            },
           },
           errorMessage: "The 'workload' field must be an array of workload items.",
         },
@@ -1000,9 +1008,9 @@ const azionConfigSchema = {
               type: 'boolean',
               errorMessage: "The firewall's 'debugRules' field must be a boolean",
             },
-            edgeFunctions: {
+            edgeFunction: {
               type: 'boolean',
-              errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
+              errorMessage: "The firewall's 'edgeFunction' field must be a boolean",
             },
             networkProtection: {
               type: 'boolean',
@@ -1314,7 +1322,22 @@ const azionConfigSchema = {
               },
               modules: {
                 type: 'object',
-                errorMessage: "O campo 'modules' é obrigatório",
+                properties: {
+                  load_balancer_enabled: {
+                    type: 'boolean',
+                    errorMessage: "'load_balancer_enabled' must be a boolean",
+                  },
+                  origin_shield_enabled: {
+                    type: 'boolean',
+                    errorMessage: "'origin_shield_enabled' must be a boolean",
+                  },
+                },
+                required: ['load_balancer_enabled', 'origin_shield_enabled'],
+                additionalProperties: false,
+                errorMessage: {
+                  required: "'load_balancer_enabled' and 'origin_shield_enabled' are required in modules",
+                  additionalProperties: 'No additional properties are allowed in modules',
+                },
               },
               active: {
                 type: 'boolean',
@@ -1454,7 +1477,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, functions, edgeApplication, workload, purge, firewall, networkList, waf, edgeConnectors',
+          'Config can only contain the following properties: build, edgeFunction, edgeApplication, workload, purge, firewall, networkList, waf, edgeConnectors',
         type: 'Configuration must be an object',
       },
     },

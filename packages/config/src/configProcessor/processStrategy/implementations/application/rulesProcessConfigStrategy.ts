@@ -1,4 +1,4 @@
-import { AzionConfig, AzionFirewallCriteriaWithValue, AzionFunction, AzionRules } from '../../../../types';
+import { AzionConfig, AzionEdgeFunction, AzionFirewallCriteriaWithValue, AzionRules } from '../../../../types';
 import {
   requestBehaviors,
   responseBehaviors,
@@ -39,7 +39,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     }
   }
 
-  private validateFunctionReferences(applicationRules: AzionRules, functions?: AzionFunction[]) {
+  private validateFunctionReferences(applicationRules: AzionRules, functions?: AzionEdgeFunction[]) {
     if (!applicationRules?.request || !functions) {
       return;
     }
@@ -58,7 +58,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(applicationRules: AzionRules, functions?: AzionFunction[]) {
+  transformToManifest(applicationRules: AzionRules, functions?: AzionEdgeFunction[]) {
     // Validar referências de funções
     this.validateFunctionReferences(applicationRules, functions);
 
