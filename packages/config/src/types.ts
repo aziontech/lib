@@ -137,13 +137,6 @@ export type AzionRequestRule = {
   criteria?: AzionRuleCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior?: {
-    /** Set a new origin */
-    setOrigin?: {
-      /** Origin name */
-      name: string;
-      /** Origin type */
-      type: string;
-    };
     /** Rewrite the request */
     rewrite?: string;
     /** Bypass cache */
@@ -199,7 +192,6 @@ export type AzionRequestRule = {
     /** Set Edge connector */
     setEdgeConnector?: {
       name: string;
-      // outros campos necessários
     };
     /** Add request header */
     addRequestHeader?: string[];
