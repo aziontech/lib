@@ -357,11 +357,11 @@ export type AzionConfig = {
   /** Domain configuration */
   domain?: AzionDomain;
   /** Edge Application configuration */
-  edgeApplication?: AzionEdgeApplication[];
+  edgeApplications?: AzionEdgeApplication[];
   /** Functions configurations */
-  edgeFunction?: AzionEdgeFunction[];
+  edgeFunctions?: AzionEdgeFunction[];
   /** Edge Connectors configuration */
-  edgeConnector?: AzionEdgeConnector[];
+  edgeConnectors?: AzionEdgeConnector[];
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
@@ -371,7 +371,7 @@ export type AzionConfig = {
   /** WAF configuration */
   waf?: AzionWaf[];
   /** Workload configuration */
-  workload?: AzionWorkload[];
+  workloads?: AzionWorkload[];
 };
 
 /**

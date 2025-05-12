@@ -8,11 +8,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   private rulesStrategy = new RulesProcessConfigStrategy();
 
   transformToManifest(config: AzionConfig) {
-    if (!config.edgeApplication || !Array.isArray(config.edgeApplication)) {
+    if (!config.edgeApplications || !Array.isArray(config.edgeApplications)) {
       return [];
     }
 
-    return config.edgeApplication.map((app: AzionEdgeApplication) => {
+    return config.edgeApplications.map((app: AzionEdgeApplication) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const application: Record<string, any> = {
         name: app.name,
@@ -30,7 +30,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       }
 
       if (app.rules) {
-        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.edgeFunction);
+        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.edgeFunctions);
       }
 
       return application;
@@ -39,13 +39,13 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!payload.edgeApplication || !Array.isArray(payload.edgeApplication)) {
-      transformedPayload.edgeApplication = [];
-      return transformedPayload.edgeApplication;
+    if (!payload.edgeApplications || !Array.isArray(payload.edgeApplications)) {
+      transformedPayload.edgeApplications = [];
+      return transformedPayload.edgeApplications;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeApplication = payload.edgeApplication.map((app: any) => {
+    transformedPayload.edgeApplications = payload.edgeApplications.map((app: any) => {
       return {
         name: app.name,
         active: app.active,
@@ -60,7 +60,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       };
     });
 
-    return transformedPayload.edgeApplication;
+    return transformedPayload.edgeApplications;
   }
 }
 

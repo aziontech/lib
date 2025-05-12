@@ -8,11 +8,11 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    if (!Array.isArray(config?.edgeFunction) || config?.edgeFunction.length === 0) {
+    if (!Array.isArray(config?.edgeFunctions) || config?.edgeFunctions.length === 0) {
       return {};
     }
 
-    return config.edgeFunction.map((func) => ({
+    return config.edgeFunctions.map((func) => ({
       name: func.name,
       target: func.path,
       args: func.args || {},
@@ -25,13 +25,13 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeFunction = payload.edgeFunction.map((func: any) => ({
+    transformedPayload.edgeFunctions = payload.edgeFunctions.map((func: any) => ({
       name: func.name,
       path: func.target,
       args: func.args || {},
     }));
 
-    return transformedPayload.edgeFunction;
+    return transformedPayload.edgeFunctions;
   }
 }
 

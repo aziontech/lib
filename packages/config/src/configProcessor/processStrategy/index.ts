@@ -16,9 +16,9 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
   processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
-  processConfigContext.setStrategy('edgeFunction', new FunctionsProcessConfigStrategy());
-  processConfigContext.setStrategy('edgeApplication', new EdgeApplicationProcessConfigStrategy());
-  processConfigContext.setStrategy('workload', new WorkloadProcessConfigStrategy());
+  processConfigContext.setStrategy('edgeFunctions', new FunctionsProcessConfigStrategy());
+  processConfigContext.setStrategy('edgeApplications', new EdgeApplicationProcessConfigStrategy());
+  processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
   processConfigContext.setStrategy('edgeConnectors', new EdgeConnectorProcessConfigStrategy());
   return processConfigContext;
 }

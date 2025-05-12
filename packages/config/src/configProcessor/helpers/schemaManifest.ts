@@ -672,7 +672,7 @@ const schemaWorkloadManifest = {
     },
     edge_application: {
       type: 'string',
-      errorMessage: "The 'edgeApplication' field must be a string",
+      errorMessage: "The 'edge_application' field must be a string",
     },
     active: {
       type: 'boolean',
@@ -799,6 +799,10 @@ const schemaWorkloadManifest = {
   },
   required: ['name', 'edge_application', 'domains'],
   additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in workload items',
+    required: "The 'name', 'edge_application' and 'domains' fields are required in workload items",
+  },
 };
 
 const schemaEdgeConnectorManifest = {
@@ -984,21 +988,21 @@ const schemaManifest = {
         type: "The 'firewall' field must be an object",
       },
     },
-    application: {
+    edge_applications: {
       type: 'array',
       items: schemaApplicationManifest,
       errorMessage: "The 'application' field must be an array of application items.",
     },
-    workload: {
+    workloads: {
       type: 'array',
       items: schemaWorkloadManifest,
-      errorMessage: "The 'workload' field must be an array of workload items.",
+      errorMessage: "The 'workload' field must be an array of workloads items.",
     },
-    edge_connector: {
+    edge_connectors: {
       type: 'array',
       items: schemaEdgeConnectorManifest,
       errorMessage: {
-        type: "The 'edge_connector' field must be an array",
+        type: "The 'edge_connectors' field must be an array",
       },
     },
   },

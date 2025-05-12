@@ -526,7 +526,7 @@ const azionConfigSchema = {
             additionalProperties: "No additional properties are allowed in the 'build' object",
           },
         },
-        edgeFunction: {
+        edgeFunctions: {
           type: 'array',
           items: {
             type: 'object',
@@ -553,7 +553,7 @@ const azionConfigSchema = {
             },
           },
         },
-        edgeApplication: {
+        edgeApplications: {
           type: 'array',
           items: {
             type: 'object',
@@ -787,9 +787,9 @@ const azionConfigSchema = {
             required: ['name'],
             additionalProperties: false,
           },
-          errorMessage: "The 'edgeApplication' field must be an array of application objects",
+          errorMessage: "The 'edgeApplications' field must be an array of application objects",
         },
-        workload: {
+        workloads: {
           type: 'array',
           items: {
             type: 'object',
@@ -936,15 +936,15 @@ const azionConfigSchema = {
             required: ['name', 'edgeApplication', 'domains'],
             additionalProperties: false,
             errorMessage: {
-              required: {
-                name: "The 'name' field is required in workload",
-                edgeApplication: "The 'edgeApplication' field is required in workload",
-                domains: "The 'domains' field is required in workload",
-              },
               additionalProperties: 'No additional properties are allowed in workload items',
+              required: {
+                name: "The 'name' field is required in workloads",
+                edgeApplications: "The 'edgeApplications' field is required in workloads",
+                domains: "The 'domains' field is required in workloads",
+              },
             },
           },
-          errorMessage: "The 'workload' field must be an array of workload items.",
+          errorMessage: "The 'workloads' field must be an array of workloads items.",
         },
         purge: {
           type: 'array',
@@ -1008,9 +1008,9 @@ const azionConfigSchema = {
               type: 'boolean',
               errorMessage: "The firewall's 'debugRules' field must be a boolean",
             },
-            edgeFunction: {
+            edgeFunctions: {
               type: 'boolean',
-              errorMessage: "The firewall's 'edgeFunction' field must be a boolean",
+              errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
             },
             networkProtection: {
               type: 'boolean',
@@ -1477,7 +1477,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, edgeFunction, edgeApplication, workload, purge, firewall, networkList, waf, edgeConnectors',
+          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, firewall, networkList, waf, edgeConnectors',
         type: 'Configuration must be an object',
       },
     },

@@ -3,7 +3,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
 
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
   private validateApplicationReferences(config: AzionConfig, workloads: AzionWorkload[]) {
-    const applicationNames = config.edgeApplication?.map((app) => app.name) || [];
+    const applicationNames = config.edgeApplications?.map((app) => app.name) || [];
 
     workloads.forEach((workload) => {
       if (!applicationNames.includes(workload.edgeApplication)) {
@@ -16,7 +16,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   transformToManifest(config: AzionConfig, context: Record<string, any>) {
-    const workloads = config?.workload;
+    const workloads = config?.workloads;
     if (!workloads || workloads.length === 0) return [];
 
     this.validateApplicationReferences(config, workloads);
@@ -56,12 +56,12 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: { workload?: any[] }, transformedPayload: AzionConfig) {
-    if (!payload.workload || payload.workload.length === 0) {
+  transformToConfig(payload: { workloads?: any[] }, transformedPayload: AzionConfig) {
+    if (!payload.workloads || payload.workloads.length === 0) {
       return;
     }
 
-    transformedPayload.workload = payload.workload.map((workload) => ({
+    transformedPayload.workloads = payload.workloads.map((workload) => ({
       name: workload.name,
       alternateDomains: workload.alternate_domains,
       edgeApplication: workload.edge_application,
@@ -95,7 +95,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       })),
     }));
 
-    return transformedPayload.workload;
+    return transformedPayload.workloads;
   }
 }
 
