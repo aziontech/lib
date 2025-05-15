@@ -424,6 +424,86 @@ const createRuleSchema = (isRequestPhase = false) => ({
   },
 });
 
+const schemaStorage = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 6,
+      maxLength: 63,
+      pattern: '^.{6,63}$',
+      errorMessage: "The 'name' field must be a string between 6 and 63 characters.",
+    },
+    path: {
+      type: 'string',
+      errorMessage: "The 'path' field must be a string.",
+    },
+    edgeAcess: {
+      type: 'string',
+      enum: ['read_only', 'read_write', 'restricted'],
+      errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
+    },
+  },
+  required: ['name', 'path'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in storage items.',
+    required: "The 'name' and 'edge_access' fields are required.",
+  },
+};
+
+const schemaFunction = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string",
+    },
+    path: {
+      type: 'string',
+      errorMessage: "The 'path' field must be a string",
+    },
+    args: {
+      type: 'object',
+      errorMessage: "The 'args' field must be an object",
+    },
+    bindings: {
+      type: 'object',
+      properties: {
+        storage: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              bucket: {
+                type: 'string',
+                errorMessage: "The 'bucket' field must be a string",
+              },
+              prefix: {
+                type: 'string',
+                errorMessage: "The 'prefix' field must be a string",
+              },
+            },
+            required: ['bucket'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in storage items',
+              required: "The 'bucket' field is required",
+            },
+          },
+          errorMessage: "The 'storage' field must be an array of storage bindings",
+        },
+      },
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in bindings object',
+      },
+    },
+  },
+  required: ['name', 'path'],
+  additionalProperties: false,
+};
+
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
@@ -445,6 +525,38 @@ const azionConfigSchema = {
               type: 'string',
               enum: ['webpack', 'esbuild'],
               errorMessage: "The 'build.bundler' must be either 'webpack' or 'esbuild'",
+            },
+            bindings: {
+              type: 'object',
+              properties: {
+                edgeStorage: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      bucket: {
+                        type: 'string',
+                        errorMessage: "The 'bucket' field must be a string",
+                      },
+                      prefix: {
+                        type: 'string',
+                        errorMessage: "The 'prefix' field must be a string",
+                      },
+                    },
+                    required: ['bucket'],
+                    additionalProperties: false,
+                    errorMessage: {
+                      additionalProperties: 'No additional properties are allowed in edgeStorage items',
+                      required: "The 'bucket' field are required",
+                    },
+                  },
+                  errorMessage: "The 'edgeStorage' field must be an array of storage bindings",
+                },
+              },
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: 'No additional properties are allowed in bindings object',
+              },
             },
             preset: {
               anyOf: [
@@ -520,30 +632,7 @@ const azionConfigSchema = {
         },
         functions: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                errorMessage: "The function's 'name' field must be a string",
-              },
-              path: {
-                type: 'string',
-                errorMessage: "The function's 'path' field must be a string",
-              },
-              args: {
-                type: 'object',
-                additionalProperties: true,
-                errorMessage: "The function's 'args' field must be an object",
-              },
-            },
-            required: ['name', 'path'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in function items',
-              required: "Both 'name' and 'path' fields are required for each function",
-            },
-          },
+          items: schemaFunction,
         },
         rules: {
           type: 'object',
@@ -1294,6 +1383,11 @@ const azionConfigSchema = {
           errorMessage: {
             type: "The 'waf' field must be an array",
           },
+        },
+        storage: {
+          type: 'array',
+          items: schemaStorage,
+          errorMessage: "The 'storage' field must be an array of storage items.",
         },
       },
       additionalProperties: false,

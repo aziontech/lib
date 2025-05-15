@@ -351,6 +351,26 @@ export type AzionFunction = {
   path: string;
   /** Optional arguments to be passed to the function */
   args?: Record<string, unknown>;
+  bindings?: {
+    storage?: Array<{
+      /** Storage bucket name */
+      bucket: string;
+      /** Storage prefix */
+      prefix: string;
+    }>;
+  };
+};
+
+/**
+ * Storage configuration for Azion.
+ */
+export type AzionStorage = {
+  /** Storage name */
+  name: string;
+  /** Edge access type */
+  edgeAccess?: 'read_only' | 'read_write' | 'restricted';
+  /** Storage path */
+  path: string;
 };
 
 /**
@@ -377,6 +397,8 @@ export type AzionConfig = {
   networkList?: AzionNetworkList[];
   /** WAF configuration */
   waf?: AzionWaf[];
+  /** Storage configurations */
+  storage?: AzionStorage[];
 };
 
 /**

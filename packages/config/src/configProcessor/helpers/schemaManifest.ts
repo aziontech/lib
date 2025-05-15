@@ -719,7 +719,33 @@ const schemaApplicationRules = {
   additionalProperties: false,
 };
 
-// ... resto do arquivo mantido como está ...
+const schemaStorageManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 6,
+      maxLength: 63,
+      pattern: '^.{6,63}$',
+      errorMessage: "The 'name' field must be a string between 6 and 63 characters.",
+    },
+    path: {
+      type: 'string',
+      errorMessage: "The 'path' field must be a string.",
+    },
+    edge_access: {
+      type: 'string',
+      enum: ['read_only', 'read_write', 'restricted'],
+      errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
+    },
+  },
+  required: ['name', 'path'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in storage items.',
+    required: "The 'name' field are required.",
+  },
+};
 
 const schemaApplicationManifest = {
   type: 'object',
@@ -806,6 +832,58 @@ const schemaApplicationManifest = {
   },
 };
 
+const schemaFunctionManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string",
+    },
+    target: {
+      type: 'string',
+      errorMessage: "The 'target' field must be a string",
+    },
+    args: {
+      type: 'object',
+      errorMessage: "The 'args' field must be an object",
+    },
+    bindings: {
+      type: 'object',
+      properties: {
+        edge_storage: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              bucket: {
+                type: 'string',
+                errorMessage: "The 'bucket' field must be a string",
+              },
+              prefix: {
+                type: 'string',
+                errorMessage: "The 'prefix' field must be a string",
+              },
+            },
+            required: ['bucket'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in edge_storage items',
+              required: "The 'bucket' field is required",
+            },
+          },
+          errorMessage: "The 'edge_storage' field must be an array of storage bindings",
+        },
+      },
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in bindings object',
+      },
+    },
+  },
+  required: ['name', 'target'],
+  additionalProperties: false,
+};
+
 const schemaManifest = {
   type: 'object',
   properties: {
@@ -837,6 +915,16 @@ const schemaManifest = {
       type: 'array',
       items: schemaApplicationManifest,
       errorMessage: "The 'application' field must be an array of application items.",
+    },
+    storage: {
+      type: 'array',
+      items: schemaStorageManifest,
+      errorMessage: "The 'storage' field must be an array of storage items.",
+    },
+    function: {
+      type: 'array',
+      items: schemaFunctionManifest,
+      errorMessage: "The 'function' field must be an array of function items.",
     },
   },
 };
