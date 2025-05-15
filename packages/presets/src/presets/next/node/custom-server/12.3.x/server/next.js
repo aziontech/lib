@@ -56,6 +56,29 @@ export class NextServer {
 
   async handleFetchEvent(event) {
     const { req, res } = toReqRes(event.request);
+    // Consume the ReadableStream (req._stream) and populate req.body
+    if (req._stream) {
+      // Determine Content-Type
+      const contentType = req.headers['content-type'] || req.headers['Content-Type'];
+
+      if (contentType === 'application/json') {
+        try {
+          req.body = await event.request.json(); // Parse JSON if Content-Type is application/json
+        } catch (error) {
+          console.error('Invalid JSON body:', error);
+          req.body = null; // Handle invalid JSON gracefully
+        }
+      } else if (contentType === 'application/x-www-form-urlencoded') {
+        req.body = new URLSearchParams(await event.request.text()).toString(); // Parse URL-encoded data
+      } else if (contentType === 'text/plain' || !contentType) {
+        req.body = await event.request.text(); // Handle plain text or no Content-Type
+      } else {
+        console.warn(`Unhandled Content-Type: ${contentType}`);
+        req.body = event.request.body; // Default fallback: raw string
+      }
+    } else {
+      req.body = JSON.stringify({}); // Handle cases where there is no body
+    }
 
     const nextRequest = new ComputeJsNextRequest(req, event.client);
     const nextResponse = new ComputeJsNextResponse(res);

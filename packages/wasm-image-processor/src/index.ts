@@ -13,7 +13,10 @@ function resize(image: photon.PhotonImage, width: number, height: number, usePer
   const widthPercent = usePercent ? width : (width * 100.0) / imageWidth;
   const heightPercent = usePercent ? height : (height * 100.0) / imageHeight;
 
-  return photon.resize(image, (imageWidth * widthPercent) / 100, (imageHeight * heightPercent) / 100, 1);
+  const newWidth = (imageWidth * widthPercent) / 100;
+  const newHeight = (imageHeight * heightPercent) / 100;
+
+  return photon.resize(image, newWidth, newHeight, 1);
 }
 
 /**
@@ -105,7 +108,9 @@ async function loadImage(pathOrURL: string): Promise<WasmImage> {
      * Get the width of the image.
      * @returns {number} The width of the image in pixels.
      */
-    width: (): number => image.get_width(),
+    width: (): number => {
+      return image.get_width();
+    },
     /**
      * Get the height of the image.
      * @returns {number} The height of the image in pixels.
@@ -120,9 +125,26 @@ async function loadImage(pathOrURL: string): Promise<WasmImage> {
      */
     resize: (width: number, height: number, usePercent = true): WasmImage => {
       const resizedImage = resize(image, width, height, usePercent);
+
       return {
-        ...wrapper,
         image: resizedImage,
+        width: (): number => resizedImage.get_width(),
+        height: (): number => resizedImage.get_height(),
+        resize: (w: number, h: number, up = true): WasmImage => {
+          const newResizedImage = resize(resizedImage, w, h, up);
+          return {
+            image: newResizedImage,
+            width: (): number => newResizedImage.get_width(),
+            height: (): number => newResizedImage.get_height(),
+            resize: wrapper.resize,
+            getImageResponse: (format: SupportedImageFormat, quality = 100.0): Response =>
+              getImageResponse(newResizedImage, format, quality),
+            clean: () => clean(newResizedImage),
+          };
+        },
+        getImageResponse: (format: SupportedImageFormat, quality = 100.0): Response =>
+          getImageResponse(resizedImage, format, quality),
+        clean: () => clean(resizedImage),
       };
     },
     /**

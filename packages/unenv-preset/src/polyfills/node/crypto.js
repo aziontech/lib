@@ -65,3 +65,20 @@ export var randomUUID = function () {
     return (c ^ (getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16);
   });
 };
+
+export var generateKeyPair = function (type, options, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = undefined;
+  }
+  if (typeof type === 'function') {
+    callback = type;
+    type = undefined;
+  }
+
+  if (type === 'rsa') {
+    return crypto.generateKeyPair('rsa', options, callback);
+  } else {
+    throw new Error('Unsupported key type');
+  }
+};

@@ -9,6 +9,7 @@ export const {
   openSync,
   close,
   closeSync,
+  existsSync,
   stat,
   statSync,
   lstat,
@@ -55,6 +56,7 @@ localFs.open = open;
 localFs.openSync = openSync;
 localFs.close = close;
 localFs.closeSync = closeSync;
+localFs.existsSync = existsSync;
 localFs.stat = stat;
 localFs.statSync = statSync;
 localFs.lstat = lstat;

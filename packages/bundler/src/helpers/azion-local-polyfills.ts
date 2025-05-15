@@ -13,5 +13,6 @@ export default {
     ['azion:storage', `${externalPolyfillsPath}/storage/storage.polyfills.js`],
     ['Azion.env', `${externalPolyfillsPath}/env-vars/env-vars.polyfills.js`],
     ['Azion.networkList', `${externalPolyfillsPath}/network-list/network-list.polyfills.js`],
+    ['Azion.Storage', `${externalPolyfillsPath}/storage/storage.polyfills.js`],
   ]),
 };

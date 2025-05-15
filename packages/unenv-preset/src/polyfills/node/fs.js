@@ -4,7 +4,7 @@ import bPath from 'path';
 
 /* eslint-disable */
 
-const MEM_FILES = globalThis.bundler.__FILES__;
+var MEM_FILES = globalThis.bundler.__FILES__;
 
 globalThis.bundler.FS_PATHS_CHANGED = false;
 
@@ -13,12 +13,13 @@ globalThis.bundler.FS_PATHS_CHANGED = false;
  */
 function fixMappedFilesPaths() {
   const prefix = globalThis.bundler.FS_PATH_PREFIX_TO_REMOVE;
-  if (!globalThis.bundler.FS_PATHS_CHANGED && prefix !== '') {
+  if (!globalThis.bundler.FS_PATHS_CHANGED && (prefix !== undefined || prefix !== '""')) {
+    let CHANGED_PATHS = {};
     Object.keys(MEM_FILES).forEach((e) => {
       const newKey = e.replace(prefix, '');
-      MEM_FILES[newKey] = MEM_FILES[e];
-      delete MEM_FILES[e];
+      CHANGED_PATHS[newKey] = MEM_FILES[e];
     });
+    MEM_FILES = CHANGED_PATHS;
   }
 
   globalThis.bundler.FS_PATHS_CHANGED = true;
@@ -381,6 +382,17 @@ function readdirSync(path, options = {}) {
   return result;
 }
 
+function existsSync(path) {
+  path = getValidatedPath(path);
+  const filesInfos = getFilesInfos();
+
+  if (filesInfos.paths.includes(path)) {
+    return true;
+  }
+
+  return false;
+}
+
 // Use Cells node:fs API
 const fsPolyfill = Object.create(SRC_NODE_FS);
 fsPolyfill.close = close;
@@ -390,10 +402,11 @@ fsPolyfill.statSync = statSync;
 fsPolyfill.lstatSync = statSync;
 fsPolyfill.readFileSync = readFileSync;
 fsPolyfill.readdirSync = readdirSync;
+fsPolyfill.existsSync = existsSync;
 
 export default fsPolyfill;
 
-export { close, closeSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
+export { close, closeSync, existsSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
 
 export const {
   access,
@@ -414,7 +427,6 @@ export const {
   Dir,
   Dirent,
   exists,
-  existsSync,
   F_OK,
   fdatasync,
   fdatasyncSync,

@@ -304,15 +304,18 @@ Converts a Azion JSON configuration object to a AzionConfig object.
 
 Type definition for the build configuration.
 
+> ⚠️ \*Deprecation Notice:
+> Support for the webpack bundler will be discontinued in future releases. While it is still available for now, new features, fixes, and improvements will be focused exclusively on esbuild. We recommend migrating to esbuild as soon as possible to ensure compatibility and better performance in upcoming versions.
+
 **Properties:**
 
-- `bundler?: 'esbuild' | 'webpack'` - O empacotador a ser usado.
-- `preset?: string | AzionBuildPreset` - O preset a ser usado, pode ser uma string ou um objeto AzionBuildPreset.
-- `entry?: string | string[] | Record<string, string>` - O arquivo de entrada, pode ser uma string, array de strings ou um objeto.
-- `polyfills?: boolean` - Se deve incluir polyfills.
-- `worker?: boolean` - Se deve construir um worker.
-- `extend?: (context: T) => T` - Função para estender a configuração do bundler.
-- `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - Configuração do sistema de arquivos em memória.
+- \*`bundler?: 'esbuild' | 'webpack'` - The bundler to be used. Default is 'esbuild'.
+- `preset?: string | AzionBuildPreset` - The preset to be used, can be a string or an AzionBuildPreset object.
+- `entry?: string | string[] | Record<string, string>` - The entry file, can be a string, an array of strings, or an object.
+- `polyfills?: boolean` - Whether to include polyfills.
+- `worker?: boolean` - Whether to build a worker.
+- `extend?: (context: T) => T` - Function to extend the bundler configuration.
+- `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - In-memory file system configuration.
 
 ### `AzionBuildPreset`
 
@@ -320,14 +323,14 @@ Type definition for the build preset.
 
 **Properties:**
 
-- `config: AzionConfig` - A configuração do Azion.
-- `handler?: (event: FetchEvent) => Promise<Response>` - Manipulador de eventos opcional.
-- `prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>` - Hook executado antes da construção.
-- `postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>` - Hook executado após a construção.
-- `metadata: PresetMetadata` - Metadados do preset.
-  - `name: string` - Nome do preset.
-  - `registry?: string` - Registro do preset.
-  - `ext?: string` - Extensão do arquivo.
+- `config: AzionConfig` - The Azion configuration.
+- `handler?: (event: FetchEvent) => Promise<Response>` - Optional event handler.
+- `prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>` - Hook executed before the build process.
+- `postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>` - Hook executed after the build process.
+- `metadata: PresetMetadata` - Preset metadata.
+  - `name: string` - Preset name.
+  - `registry?: string` - Preset registry.
+  - `ext?: string` - File extension.
 
 ### `AzionPrebuildResult`
 
@@ -335,14 +338,14 @@ Type definition for the prebuild result.
 
 **Properties:**
 
-- `filesToInject: string[]` - Arquivos a serem injetados na memória durante o processo de construção.
-- `injection: object` - Configurações de injeção de código.
-  - `globals: object` - Variáveis globais a serem injetadas.
-  - `entry?: string` - Código no início do worker.
-  - `banner?: string` - Código no topo do worker.
-- `bundler: object` - Configurações do empacotador.
-  - `defineVars: object` - Variáveis a serem definidas.
-  - `plugins: (EsbuildPlugin | WebpackPlugin)[]` - Plugins a serem usados.
+- `filesToInject: string[]` - Files to be injected into memory during the build process.
+- `injection: object` - Code injection settings.
+  - `globals: object` - Global variables to be injected.
+  - `entry?: string` - Code to run at the start of the worker.
+  - `banner?: string` - Code to place at the top of the worker.
+- `bundler: object` - Bundler configuration.
+  - `defineVars: object` - Variables to be defined.
+  - `plugins: (EsbuildPlugin | WebpackPlugin)[]` - Plugins to be used.
 
 ### `BuildContext`
 
@@ -350,24 +353,27 @@ Type definition for the build context.
 
 **Properties:**
 
-- `production: boolean` - Se está em modo de produção.
-- `handler: BuildEntryPoint` - O ponto de entrada da construção.
+- `production: boolean` - Whether it is in production mode.
+- `handler: BuildEntryPoint` - The build entry point.
 
 ### `BuildConfiguration`
 
 Type definition for the build configuration.
 
+> ⚠️ \*Deprecation Notice:
+> Support for the webpack bundler will be discontinued in future releases. While it is still available for now, new features, fixes, and improvements will be focused exclusively on esbuild. We recommend migrating to esbuild as soon as possible to ensure compatibility and better performance in upcoming versions.
+
 **Properties:**
 
-- `entry: Record<string, string>` - Os pontos de entrada.
-- `baseOutputDir?: string` - Diretório base de saída.
-- `preset: AzionBuildPreset` - O preset a ser usado.
-- `setup: BundlerSetup` - Configuração do empacotador.
-- `bundler?: 'webpack' | 'esbuild'` - O empacotador a ser usado.
-- `polyfills?: boolean` - Se deve incluir polyfills.
-- `worker?: boolean` - Se deve construir um worker.
-- `extend?: (context: T) => T` - Função para estender a configuração do bundler.
-- `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - Configuração do sistema de arquivos em memória.
+- `entry: Record<string, string>` - The entry points.
+- `baseOutputDir?: string` - Base output directory.
+- `preset: AzionBuildPreset` - The preset to be used.
+- `setup: BundlerSetup` - Bundler configuration.
+- \*`bundler?: 'webpack' | 'esbuild'` - The bundler to be used.
+- `polyfills?: boolean` - Whether to include polyfills.
+- `worker?: boolean` - Whether to build a worker.
+- `extend?: (context: T) => T` - Function to extend the bundler configuration.
+- `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - In-memory file system configuration.
 
 ### `BundlerSetup`
 
@@ -375,8 +381,8 @@ Type definition for the bundler setup.
 
 **Properties:**
 
-- `contentToInject?: string` - Conteúdo a ser injetado.
-- `defineVars?: Record<string, string>` - Variáveis a serem definidas.
+- `contentToInject?: string` - Content to be injected.
+- `defineVars?: Record<string, string>` - Variables to be defined.
 
 ### `PresetMetadata`
 
@@ -384,9 +390,9 @@ Type definition for the preset metadata.
 
 **Properties:**
 
-- `name: string` - Nome do preset.
-- `registry?: string` - Registro do preset.
-- `ext?: string` - Extensão do arquivo.
+- `name: string` - Preset name.
+- `registry?: string` - Preset registry.
+- `ext?: string` - File extension.
 
 ### `AzionDomain`
 

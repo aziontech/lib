@@ -5,21 +5,6 @@ import { copyDirectory, feedback, getAbsoluteDirPath } from 'azion/utils/node';
 import BuildStatic from './statics/index.js';
 
 /**
- * If a relative path exists, copy public path to root
- * @param {string} pathPrefix - prefix
- * @param {string} rootDir - application root dir
- */
-function handlePublicDir(pathPrefix, rootDir) {
-  const validPathPrefix = pathPrefix && typeof pathPrefix === 'string' && pathPrefix !== '';
-
-  if (validPathPrefix) {
-    const srcPublicDir = path.resolve(pathPrefix, 'public');
-    const destPublicDir = path.resolve(rootDir, 'public');
-    copyDirectory(srcPublicDir, destPublicDir);
-  }
-}
-
-/**
  * Run actions to build next for node runtime.
  * @param {string} nextVersion - project next version in package.json
  * @param {object} buildContext - info about the build
@@ -45,12 +30,6 @@ async function run(nextVersion, buildContext) {
     feedback.prebuild.error(`Custom server path not found for version ${CURRENT_VERSION}!`);
     fs.rmSync(OUT_DIR_CUSTOM_SERVER, { recursive: true });
     process.exit(1);
-  }
-
-  // STATICS
-  // copy to root public dir if necessary
-  if (buildContext.memoryFS) {
-    handlePublicDir(buildContext.memoryFS.removePathPrefix, rootDir);
   }
 
   // It is necessary to replace the static directories for the .vercel output,

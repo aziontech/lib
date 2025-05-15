@@ -8,7 +8,7 @@ function unimplemented() {
   throw new Error('Not implemented yet!');
 }
 
-var builtinModules = [
+const builtinModules = [
   '_http_agent',
   '_http_client',
   '_http_common',
@@ -84,11 +84,8 @@ function _nodeModulePaths(...args) {
   /* EMPTY */
 }
 
-function _resolveFilename(...args) {
-  /* EMPTY */
-}
-
-export default {
+// Crie um objeto para exportação
+const moduleExports = {
   builtinModules: builtinModules,
   _cache: null,
   _pathCache: null,
@@ -99,7 +96,7 @@ export default {
   _nodeModulePaths: _nodeModulePaths,
   _resolveLookupPaths: unimplemented,
   _load: _load,
-  _resolveFilename: _resolveFilename,
+  _resolveFilename: unimplemented,
   createRequireFromPath: unimplemented,
   createRequire: createRequire,
   _initPaths: unimplemented,
@@ -111,28 +108,10 @@ export default {
   SourceMap: unimplemented,
 };
 
-export var _cache = null,
-  _pathCache = null,
-  _extensions = null,
-  globalPaths = null;
+Object.defineProperty(moduleExports, '_resolveFilename', {
+  value: unimplemented,
+  writable: true,
+  configurable: true,
+});
 
-export {
-  builtinModules,
-  unimplemented as _debug,
-  unimplemented as _findPath,
-  unimplemented as _nodeModulePaths,
-  unimplemented as _resolveLookupPaths,
-  unimplemented as _load,
-  unimplemented as _resolveFilename,
-  createRequire as createRequireFromPath,
-  createRequire as createRequire,
-  unimplemented as _initPaths,
-  unimplemented as _preloadModules,
-  unimplemented as syncBuiltinESMExports,
-  unimplemented as Module,
-  unimplemented as runMain,
-  unimplemented as findSourceMap,
-  unimplemented as SourceMap,
-};
-
-/* eslint-enable */
+export default moduleExports;
