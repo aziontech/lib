@@ -149,7 +149,7 @@ async function loadImage(pathOrURL: string): Promise<WasmImage> {
     },
     /**
      * Get the image as a Response object in the specified format.
-     * @param {SupportedImageFormat} format - The desired image forxmat ('webp', 'jpeg', or 'png').
+     * @param {SupportedImageFormat} format - The desired image format ('webp', 'jpeg', or 'png').
      * @param {number} [quality=100.0] - The quality of the image (0-100), only applicable for 'jpeg' format.
      * @returns {Response} The image as a Response object.
      * @throws {Error} If an unsupported image format is specified.
