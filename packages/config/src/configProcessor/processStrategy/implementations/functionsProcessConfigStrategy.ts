@@ -16,6 +16,14 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       name: func.name,
       target: func.path,
       args: func.args || {},
+      bindings: func.bindings
+        ? {
+            edge_storage: func.bindings.storage?.map((storage) => ({
+              bucket: storage.bucket,
+              prefix: storage.prefix,
+            })),
+          }
+        : undefined,
     }));
   }
 
@@ -29,6 +37,15 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       name: func.name,
       path: func.target,
       args: func.args || {},
+      bindings: func.bindings
+        ? {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            storage: func.bindings.edge_storage?.map((storage: any) => ({
+              bucket: storage.bucket,
+              prefix: storage.prefix,
+            })),
+          }
+        : undefined,
     }));
 
     return transformedPayload.functions;

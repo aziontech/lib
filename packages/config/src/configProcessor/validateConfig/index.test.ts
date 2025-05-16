@@ -8,9 +8,6 @@ describe('generate', () => {
         build: {
           preset: 'next',
           polyfills: true,
-          custom: {
-            minify: true,
-          },
         },
       };
       expect(() => validateConfig(config)).not.toThrow();

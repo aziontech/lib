@@ -9,9 +9,6 @@ describe('processConfig', () => {
         build: {
           preset: 'next',
           polyfills: true,
-          custom: {
-            minify: true,
-          },
         },
       };
       expect(processConfig(config)).toEqual(
@@ -19,9 +16,6 @@ describe('processConfig', () => {
           build: {
             preset: 'next',
             polyfills: true,
-            custom: {
-              minify: true,
-            },
           },
         }),
       );
