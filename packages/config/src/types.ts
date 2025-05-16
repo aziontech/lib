@@ -342,6 +342,24 @@ export type AzionNetworkList = {
 };
 
 /**
+ * Storage binding configuration for Azion.
+ */
+export type AzionStorageBinding = {
+  /** Storage bucket name */
+  bucket: string;
+  /** Storage prefix */
+  prefix: string;
+};
+
+/**
+ * Bindings configuration for Azion.
+ */
+export type AzionBindings = {
+  /** Storage bindings */
+  storage?: AzionStorageBinding;
+};
+
+/**
  * Function configuration for Azion.
  */
 export type AzionFunction = {
@@ -351,26 +369,20 @@ export type AzionFunction = {
   path: string;
   /** Optional arguments to be passed to the function */
   args?: Record<string, unknown>;
-  bindings?: {
-    storage?: Array<{
-      /** Storage bucket name */
-      bucket: string;
-      /** Storage prefix */
-      prefix: string;
-    }>;
-  };
+  /** Function bindings */
+  bindings?: AzionBindings;
 };
 
 /**
  * Storage configuration for Azion.
  */
-export type AzionStorage = {
+export type AzionBucket = {
   /** Storage name */
   name: string;
   /** Edge access type */
   edgeAccess?: 'read_only' | 'read_write' | 'restricted';
   /** Storage path */
-  path: string;
+  dir: string;
 };
 
 /**
@@ -398,7 +410,7 @@ export type AzionConfig = {
   /** WAF configuration */
   waf?: AzionWaf[];
   /** Storage configurations */
-  storage?: AzionStorage[];
+  storage?: AzionBucket[];
 };
 
 /**

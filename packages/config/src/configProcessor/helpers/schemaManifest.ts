@@ -729,9 +729,9 @@ const schemaStorageManifest = {
       pattern: '^.{6,63}$',
       errorMessage: "The 'name' field must be a string between 6 and 63 characters.",
     },
-    path: {
+    dir: {
       type: 'string',
-      errorMessage: "The 'path' field must be a string.",
+      errorMessage: "The 'dir' field must be a string.",
     },
     edge_access: {
       type: 'string',
@@ -739,11 +739,11 @@ const schemaStorageManifest = {
       errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
     },
   },
-  required: ['name', 'path'],
+  required: ['name', 'dir'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in storage items.',
-    required: "The 'name' field are required.",
+    required: "The 'name' and 'dir' fields are required.",
   },
 };
 
