@@ -575,6 +575,10 @@ const azionConfigSchema = {
                           type: 'string',
                           errorMessage: "The 'ext' field in preset metadata must be a string",
                         },
+                        registry: {
+                          type: 'string',
+                          errorMessage: "The 'registry' field in preset metadata must be a string",
+                        },
                       },
                       required: ['name'],
                       additionalProperties: false,
