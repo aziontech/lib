@@ -526,38 +526,6 @@ const azionConfigSchema = {
               enum: ['webpack', 'esbuild'],
               errorMessage: "The 'build.bundler' must be either 'webpack' or 'esbuild'",
             },
-            bindings: {
-              type: 'object',
-              properties: {
-                storage: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      bucket: {
-                        type: 'string',
-                        errorMessage: "The 'bucket' field must be a string",
-                      },
-                      prefix: {
-                        type: 'string',
-                        errorMessage: "The 'prefix' field must be a string",
-                      },
-                    },
-                    required: ['bucket'],
-                    additionalProperties: false,
-                    errorMessage: {
-                      additionalProperties: 'No additional properties are allowed in storage items',
-                      required: "The 'bucket' field are required",
-                    },
-                  },
-                  errorMessage: "The 'storage' field must be an array of storage bindings",
-                },
-              },
-              additionalProperties: false,
-              errorMessage: {
-                additionalProperties: 'No additional properties are allowed in bindings object',
-              },
-            },
             preset: {
               anyOf: [
                 { type: 'string' },
