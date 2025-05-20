@@ -529,7 +529,7 @@ const azionConfigSchema = {
             bindings: {
               type: 'object',
               properties: {
-                edgeStorage: {
+                storage: {
                   type: 'array',
                   items: {
                     type: 'object',
@@ -546,11 +546,11 @@ const azionConfigSchema = {
                     required: ['bucket'],
                     additionalProperties: false,
                     errorMessage: {
-                      additionalProperties: 'No additional properties are allowed in edgeStorage items',
+                      additionalProperties: 'No additional properties are allowed in storage items',
                       required: "The 'bucket' field are required",
                     },
                   },
-                  errorMessage: "The 'edgeStorage' field must be an array of storage bindings",
+                  errorMessage: "The 'storage' field must be an array of storage bindings",
                 },
               },
               additionalProperties: false,
