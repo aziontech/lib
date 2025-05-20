@@ -438,7 +438,7 @@ const schemaStorage = {
       type: 'string',
       errorMessage: "The 'dir' field must be a string.",
     },
-    edgeAcess: {
+    edgeAccess: {
       type: 'string',
       enum: ['read_only', 'read_write', 'restricted'],
       errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
