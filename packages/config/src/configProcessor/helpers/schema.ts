@@ -471,32 +471,30 @@ const schemaFunction = {
       type: 'object',
       properties: {
         storage: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              bucket: {
-                type: 'string',
-                errorMessage: "The 'bucket' field must be a string",
-              },
-              prefix: {
-                type: 'string',
-                errorMessage: "The 'prefix' field must be a string",
-              },
+          type: 'object',
+          properties: {
+            bucket: {
+              type: 'string',
+              errorMessage: "The 'bucket' field must be a string",
             },
-            required: ['bucket'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in storage items',
-              required: "The 'bucket' field is required",
+            prefix: {
+              type: 'string',
+              errorMessage: "The 'prefix' field must be a string",
             },
           },
-          errorMessage: "The 'storage' field must be an array of storage bindings",
+          required: ['bucket'],
+          additionalProperties: false,
+          errorMessage: {
+            type: "The 'storage' field must be an object",
+            additionalProperties: 'No additional properties are allowed in the storage object',
+            required: "The 'bucket' field is required in the storage object",
+          },
         },
       },
       additionalProperties: false,
       errorMessage: {
-        additionalProperties: 'No additional properties are allowed in bindings object',
+        type: "The 'bindings' field must be an object",
+        additionalProperties: 'No additional properties are allowed in the bindings object',
       },
     },
   },
