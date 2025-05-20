@@ -20,9 +20,9 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
   processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
   processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
+  processConfigContext.setStrategy('storage', new StorageProcessConfigStrategy());
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
   processConfigContext.setStrategy('functions', new FunctionsProcessConfigStrategy());
-  processConfigContext.setStrategy('storage', new StorageProcessConfigStrategy());
   // Rules must be last to apply to behaviors (origin, cache...)
   processConfigContext.setStrategy('rules', new RulesProcessConfigStrategy());
   return processConfigContext;
