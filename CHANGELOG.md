@@ -1,3 +1,17 @@
+## [1.20.0-stage.3](https://github.com/aziontech/lib/compare/v1.20.0-stage.2...v1.20.0-stage.3) (2025-05-15)
+
+
+### Bug Fixes
+
+* wasm-image-processor resize wrapper (#164) ([a02d941](https://github.com/aziontech/lib/commit/a02d941c90360f1b8c10076ccb2b761f3ce62f2e))
+
+## [1.20.0-stage.2](https://github.com/aziontech/lib/compare/v1.20.0-stage.1...v1.20.0-stage.2) (2025-05-13)
+
+
+### Bug Fixes
+
+* add Azion.Storage to globalThis for polyfill (#163) ([cd659db](https://github.com/aziontech/lib/commit/cd659dbd9afbbe5a7ed45e0d89f59e0fb76792d5))
+
 ## [1.20.0-stage.1](https://github.com/aziontech/lib/compare/v1.19.1...v1.20.0-stage.1) (2025-05-05)
 
 

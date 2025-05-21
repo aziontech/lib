@@ -197,3 +197,6 @@ export class StorageObjectList {
     this.entries = list;
   }
 }
+
+globalThis.Azion = globalThis.Azion || {};
+globalThis.Azion.Storage = Storage;

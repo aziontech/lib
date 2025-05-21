@@ -417,6 +417,84 @@ const createRuleSchema = (isRequestPhase = false) => ({
   },
 });
 
+const schemaFunction = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string",
+    },
+    path: {
+      type: 'string',
+      errorMessage: "The 'path' field must be a string",
+    },
+    args: {
+      type: 'object',
+      errorMessage: "The 'args' field must be an object",
+    },
+    bindings: {
+      type: 'object',
+      properties: {
+        storage: {
+          type: 'object',
+          properties: {
+            bucket: {
+              type: 'string',
+              errorMessage: "The 'bucket' field must be a string",
+            },
+            prefix: {
+              type: 'string',
+              errorMessage: "The 'prefix' field must be a string",
+            },
+          },
+          required: ['bucket'],
+          additionalProperties: false,
+          errorMessage: {
+            type: "The 'storage' field must be an object",
+            additionalProperties: 'No additional properties are allowed in the storage object',
+            required: "The 'bucket' field is required in the storage object",
+          },
+        },
+      },
+      additionalProperties: false,
+      errorMessage: {
+        type: "The 'bindings' field must be an object",
+        additionalProperties: 'No additional properties are allowed in the bindings object',
+      },
+    },
+  },
+  required: ['name', 'path'],
+  additionalProperties: false,
+};
+
+const schemaStorage = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 6,
+      maxLength: 63,
+      pattern: '^.{6,63}$',
+      errorMessage: "The 'name' field must be a string between 6 and 63 characters.",
+    },
+    dir: {
+      type: 'string',
+      errorMessage: "The 'dir' field must be a string.",
+    },
+    edgeAccess: {
+      type: 'string',
+      enum: ['read_only', 'read_write', 'restricted'],
+      errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
+    },
+  },
+  required: ['name', 'dir'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in storage items.',
+    required: "The 'name' and 'dir' fields are required.",
+  },
+};
+
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
@@ -1463,6 +1541,15 @@ const azionConfigSchema = {
             required: ['name', 'modules', 'type'],
             additionalProperties: false,
           },
+        },
+        functions: {
+          type: 'array',
+          items: schemaFunction,
+        },
+        storage: {
+          type: 'array',
+          items: schemaStorage,
+          errorMessage: "The 'storage' field must be an array of storage items.",
         },
       },
       additionalProperties: false,

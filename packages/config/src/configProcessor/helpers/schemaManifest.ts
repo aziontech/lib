@@ -225,6 +225,34 @@ const schemaFirewallRuleCriteria = {
   },
 };
 
+const schemaStorageManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 6,
+      maxLength: 63,
+      pattern: '^.{6,63}$',
+      errorMessage: "The 'name' field must be a string between 6 and 63 characters.",
+    },
+    dir: {
+      type: 'string',
+      errorMessage: "The 'dir' field must be a string.",
+    },
+    edge_access: {
+      type: 'string',
+      enum: ['read_only', 'read_write', 'restricted'],
+      errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
+    },
+  },
+  required: ['name', 'dir'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in storage items.',
+    required: "The 'name' and 'dir' fields are required.",
+  },
+};
+
 const schemaFirewallRuleBehaviorArguments = {
   set_rate_limit: {
     type: 'object',
@@ -360,6 +388,57 @@ const schemaFirewallRule = {
     required: "The 'name', 'criteria' and 'behaviors' fields are required in firewall rules.",
     additionalProperties: 'No additional properties are allowed in firewall rules.',
   },
+};
+const schemaFunctionManifest = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      errorMessage: "The 'name' field must be a string",
+    },
+    target: {
+      type: 'string',
+      errorMessage: "The 'target' field must be a string",
+    },
+    args: {
+      type: 'object',
+      errorMessage: "The 'args' field must be an object",
+    },
+    bindings: {
+      type: 'object',
+      properties: {
+        edge_storage: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              bucket: {
+                type: 'string',
+                errorMessage: "The 'bucket' field must be a string",
+              },
+              prefix: {
+                type: 'string',
+                errorMessage: "The 'prefix' field must be a string",
+              },
+            },
+            required: ['bucket'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in edge_storage items',
+              required: "The 'bucket' field is required",
+            },
+          },
+          errorMessage: "The 'edge_storage' field must be an array of storage bindings",
+        },
+      },
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in bindings object',
+      },
+    },
+  },
+  required: ['name', 'target'],
+  additionalProperties: false,
 };
 
 const schemaFirewallManifest = {
@@ -1000,6 +1079,16 @@ const schemaManifest = {
       items: schemaEdgeConnectorManifest,
       errorMessage: {
         type: "The 'edge_connectors' field must be an array",
+      },
+      storage: {
+        type: 'array',
+        items: schemaStorageManifest,
+        errorMessage: "The 'storage' field must be an array of storage items.",
+      },
+      function: {
+        type: 'array',
+        items: schemaFunctionManifest,
+        errorMessage: "The 'function' field must be an array of function items.",
       },
     },
   },
