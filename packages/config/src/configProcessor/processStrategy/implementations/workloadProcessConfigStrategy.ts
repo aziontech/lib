@@ -4,11 +4,20 @@ import ProcessConfigStrategy from '../processConfigStrategy';
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
   private validateApplicationReferences(config: AzionConfig, workloads: AzionWorkload[]) {
     const applicationNames = config.edgeApplications?.map((app) => app.name) || [];
+    const firewallNames = config.firewall?.map((firewall) => firewall.name) || [];
 
     workloads.forEach((workload) => {
       if (!applicationNames.includes(workload.edgeApplication)) {
         throw new Error(
           `Workload "${workload.name}" references non-existent Edge Application "${workload.edgeApplication}".`,
+        );
+      }
+    });
+
+    workloads.forEach((workload) => {
+      if (workload.edgeFirewall && !firewallNames.includes(workload.edgeFirewall)) {
+        throw new Error(
+          `Workload "${workload.name}" references non-existent Edge Firewall "${workload.edgeFirewall}".`,
         );
       }
     });

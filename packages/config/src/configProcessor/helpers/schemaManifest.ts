@@ -979,9 +979,10 @@ const schemaManifest = {
       },
     },
     firewall: {
-      ...schemaFirewallManifest,
+      type: 'array',
+      items: schemaFirewallManifest,
       errorMessage: {
-        type: "The 'firewall' field must be an object",
+        type: "The 'firewall' field must be an array of firewall objects",
       },
     },
     edge_applications: {

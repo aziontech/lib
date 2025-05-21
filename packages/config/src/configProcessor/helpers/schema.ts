@@ -968,154 +968,164 @@ const azionConfigSchema = {
           },
         },
         firewall: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              errorMessage: "The firewall configuration must have a 'name' field of type string",
-            },
-            domains: {
-              type: 'array',
-              items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'number',
+                errorMessage: "The 'id' field must be a number",
+              },
+              name: {
                 type: 'string',
-                errorMessage: "Each domain in the firewall's domains list must be a string",
+                errorMessage: "The firewall configuration must have a 'name' field of type string",
               },
-            },
-            active: {
-              type: 'boolean',
-              errorMessage: "The firewall's 'active' field must be a boolean",
-            },
-            debugRules: {
-              type: 'boolean',
-              errorMessage: "The firewall's 'debugRules' field must be a boolean",
-            },
-            edgeFunctions: {
-              type: 'boolean',
-              errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
-            },
-            networkProtection: {
-              type: 'boolean',
-              errorMessage: "The firewall's 'networkProtection' field must be a boolean",
-            },
-            waf: {
-              type: 'boolean',
-              errorMessage: "The firewall's 'waf' field must be a boolean",
-            },
-            variable: {
-              type: 'string',
-              enum: FIREWALL_VARIABLES,
-              errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
-            },
-            rules: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: {
-                    type: 'string',
-                    errorMessage: "Each firewall rule must have a 'name' field of type string",
-                  },
-                  description: {
-                    type: 'string',
-                    errorMessage: "The rule's 'description' field must be a string",
-                  },
-                  active: {
-                    type: 'boolean',
-                    errorMessage: "The rule's 'active' field must be a boolean",
-                  },
-                  match: {
-                    type: 'string',
-                    errorMessage: "The rule's 'match' field must be a string containing a valid regex pattern",
-                  },
-                  behavior: {
-                    type: 'object',
-                    properties: {
-                      runFunction: {
-                        type: 'string',
-                        errorMessage: "The 'runFunction' behavior must be a string",
-                      },
-                      setWafRuleset: {
-                        type: 'object',
-                        properties: {
-                          wafMode: {
-                            type: 'string',
-                            enum: FIREWALL_WAF_MODES,
-                          },
-                          wafId: { type: 'string' },
-                        },
-                        required: ['wafMode', 'wafId'],
-                      },
-                      setRateLimit: {
-                        type: 'object',
-                        properties: {
-                          type: {
-                            type: 'string',
-                            enum: FIREWALL_RATE_LIMIT_TYPES,
-                          },
-                          limitBy: {
-                            type: 'string',
-                            enum: FIREWALL_RATE_LIMIT_BY,
-                          },
-                          averageRateLimit: { type: 'string' },
-                          maximumBurstSize: { type: 'string' },
-                        },
-                        required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
-                      },
-                      deny: { type: 'boolean' },
-                      drop: { type: 'boolean' },
-                      setCustomResponse: {
-                        type: 'object',
-                        properties: {
-                          statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
-                          contentType: { type: 'string' },
-                          contentBody: { type: 'string' },
-                        },
-                        required: ['statusCode', 'contentType', 'contentBody'],
-                      },
-                    },
-                    not: {
-                      anyOf: [
-                        { required: ['deny', 'drop'] },
-                        { required: ['deny', 'setCustomResponse'] },
-                        { required: ['deny', 'setRateLimit'] },
-                        { required: ['drop', 'setCustomResponse'] },
-                        { required: ['drop', 'setRateLimit'] },
-                        { required: ['setCustomResponse', 'setRateLimit'] },
-                      ],
-                    },
-                    errorMessage: {
-                      not: 'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
-                    },
-                    additionalProperties: false,
-                  },
+              domains: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  errorMessage: "Each domain in the firewall's domains list must be a string",
                 },
-                required: ['name', 'behavior'],
-                oneOf: [
-                  {
-                    anyOf: [{ required: ['match'] }, { required: ['variable'] }],
-                    not: { required: ['criteria'] },
-                    errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
+              },
+              active: {
+                type: 'boolean',
+                errorMessage: "The firewall's 'active' field must be a boolean",
+              },
+              debugRules: {
+                type: 'boolean',
+                errorMessage: "The firewall's 'debugRules' field must be a boolean",
+              },
+              edgeFunctions: {
+                type: 'boolean',
+                errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
+              },
+              networkProtection: {
+                type: 'boolean',
+                errorMessage: "The firewall's 'networkProtection' field must be a boolean",
+              },
+              waf: {
+                type: 'boolean',
+                errorMessage: "The firewall's 'waf' field must be a boolean",
+              },
+              variable: {
+                type: 'string',
+                enum: FIREWALL_VARIABLES,
+                errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
+              },
+              rules: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string',
+                      errorMessage: "Each firewall rule must have a 'name' field of type string",
+                    },
+                    description: {
+                      type: 'string',
+                      errorMessage: "The rule's 'description' field must be a string",
+                    },
+                    active: {
+                      type: 'boolean',
+                      errorMessage: "The rule's 'active' field must be a boolean",
+                    },
+                    match: {
+                      type: 'string',
+                      errorMessage: "The rule's 'match' field must be a string containing a valid regex pattern",
+                    },
+                    behavior: {
+                      type: 'object',
+                      properties: {
+                        runFunction: {
+                          type: 'string',
+                          errorMessage: "The 'runFunction' behavior must be a string",
+                        },
+                        setWafRuleset: {
+                          type: 'object',
+                          properties: {
+                            wafMode: {
+                              type: 'string',
+                              enum: FIREWALL_WAF_MODES,
+                            },
+                            wafId: { type: 'string' },
+                          },
+                          required: ['wafMode', 'wafId'],
+                        },
+                        setRateLimit: {
+                          type: 'object',
+                          properties: {
+                            type: {
+                              type: 'string',
+                              enum: FIREWALL_RATE_LIMIT_TYPES,
+                            },
+                            limitBy: {
+                              type: 'string',
+                              enum: FIREWALL_RATE_LIMIT_BY,
+                            },
+                            averageRateLimit: { type: 'string' },
+                            maximumBurstSize: { type: 'string' },
+                          },
+                          required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+                        },
+                        deny: { type: 'boolean' },
+                        drop: { type: 'boolean' },
+                        setCustomResponse: {
+                          type: 'object',
+                          properties: {
+                            statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
+                            contentType: { type: 'string' },
+                            contentBody: { type: 'string' },
+                          },
+                          required: ['statusCode', 'contentType', 'contentBody'],
+                        },
+                      },
+                      not: {
+                        anyOf: [
+                          { required: ['deny', 'drop'] },
+                          { required: ['deny', 'setCustomResponse'] },
+                          { required: ['deny', 'setRateLimit'] },
+                          { required: ['drop', 'setCustomResponse'] },
+                          { required: ['drop', 'setRateLimit'] },
+                          { required: ['setCustomResponse', 'setRateLimit'] },
+                        ],
+                      },
+                      errorMessage: {
+                        not: 'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
+                      },
+                      additionalProperties: false,
+                    },
                   },
-                  {
-                    required: ['criteria'],
-                    not: {
+                  required: ['name', 'behavior'],
+                  oneOf: [
+                    {
                       anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                      not: { required: ['criteria'] },
+                      errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
                     },
-                    errorMessage: "Cannot use 'criteria' together with 'match' or 'variable'.",
+                    {
+                      required: ['criteria'],
+                      not: {
+                        anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                      },
+                      errorMessage: "Cannot use 'criteria' together with 'match' or 'variable'.",
+                    },
+                  ],
+                  errorMessage: {
+                    oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
                   },
-                ],
-                errorMessage: {
-                  oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
                 },
               },
+            },
+            required: ['name'],
+            additionalProperties: false,
+            errorMessage: {
+              type: 'Each firewall item must be an object',
+              additionalProperties: 'No additional properties are allowed in the firewall object',
+              required: "The 'name' field is required in each firewall object",
             },
           },
-          required: ['name'],
-          additionalProperties: false,
           errorMessage: {
-            type: "The 'firewall' field must be an object",
-            additionalProperties: 'No additional properties are allowed in the firewall object',
-            required: "The 'name' field is required in the firewall object",
+            type: "The 'firewall' field must be an array of firewall objects",
           },
         },
         networkList: {

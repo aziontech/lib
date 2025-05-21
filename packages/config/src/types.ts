@@ -355,7 +355,7 @@ export type AzionConfig = {
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
-  firewall?: AzionFirewall;
+  firewall?: AzionFirewall[];
   /** Network list configurations */
   networkList?: AzionNetworkList[];
   /** WAF configuration */
@@ -601,7 +601,7 @@ export type AzionWorkload = {
   edgeApplication: string;
   active?: boolean;
   networkMap?: WorkloadNetworkMap;
-  edgeFirewall?: number | null;
+  edgeFirewall?: string | null;
   tls?: AzionWorkloadTLS;
   protocols?: AzionWorkloadProtocols;
   mtls?: AzionWorkloadMTLS;
