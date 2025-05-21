@@ -595,11 +595,6 @@ export type AzionWorkloadMTLS = {
   crl?: number[] | null;
 };
 
-export type AzionWorkloadDomain = {
-  domain: string | null;
-  allowAccess: boolean;
-};
-
 export type AzionWorkload = {
   name: string;
   alternateDomains?: string[];
@@ -610,7 +605,8 @@ export type AzionWorkload = {
   tls?: AzionWorkloadTLS;
   protocols?: AzionWorkloadProtocols;
   mtls?: AzionWorkloadMTLS;
-  domains: AzionWorkloadDomain[];
+  domains: string[];
+  workloadHostnameAllowAccess?: boolean;
 };
 
 export type EdgeConnectorType = (typeof EDGE_CONNECTOR_TYPES)[number];

@@ -689,6 +689,22 @@ const schemaWorkloadManifest = {
       type: ['integer', 'null'],
       errorMessage: "The 'edge_firewall' must be an integer or null",
     },
+    workload_hostname_allow_access: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'workload_hostname_allow_access' field must be a boolean",
+    },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 250,
+        errorMessage: 'Each domain must be a string between 1 and 250 characters',
+      },
+      minItems: 1,
+      errorMessage: "The 'domains' field must be an array of domain strings",
+    },
     tls: {
       type: 'object',
       properties: {
@@ -775,26 +791,6 @@ const schemaWorkloadManifest = {
       },
       required: ['verification'],
       additionalProperties: false,
-    },
-    domains: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          domain: {
-            type: ['string', 'null'],
-            minLength: 1,
-            maxLength: 250,
-          },
-          allow_access: {
-            type: 'boolean',
-          },
-        },
-        required: ['allow_access'],
-        additionalProperties: false,
-      },
-      minItems: 1,
-      maxItems: 2,
     },
   },
   required: ['name', 'edge_application', 'domains'],

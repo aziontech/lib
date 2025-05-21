@@ -807,8 +807,24 @@ const azionConfigSchema = {
                 errorMessage: "The 'networkMap' must be either '1' or '2'",
               },
               edgeFirewall: {
-                type: ['integer', 'null'],
+                type: ['string', 'null'],
                 errorMessage: "The 'edgeFirewall' must be an integer or null",
+              },
+              workloadHostnameAllowAccess: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'workloadHostnameAllowAccess' field must be a boolean",
+              },
+              domains: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  minLength: 1,
+                  maxLength: 250,
+                  errorMessage: 'Each domain must be a string between 1 and 250 characters',
+                },
+                minItems: 1,
+                errorMessage: "The 'domains' field must be an array of domain strings",
               },
               tls: {
                 type: 'object',
@@ -897,26 +913,6 @@ const azionConfigSchema = {
                 required: ['verification'],
                 additionalProperties: false,
               },
-              domains: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    domain: {
-                      type: ['string', 'null'],
-                      minLength: 1,
-                      maxLength: 250,
-                    },
-                    allowAccess: {
-                      type: 'boolean',
-                    },
-                  },
-                  required: ['allowAccess'],
-                  additionalProperties: false,
-                },
-                minItems: 1,
-                maxItems: 2,
-              },
             },
             required: ['name', 'edgeApplication', 'domains'],
             additionalProperties: false,
@@ -924,7 +920,7 @@ const azionConfigSchema = {
               additionalProperties: 'No additional properties are allowed in workload items',
               required: {
                 name: "The 'name' field is required in workloads",
-                edgeApplications: "The 'edgeApplications' field is required in workloads",
+                edgeApplication: "The 'edgeApplication' field is required in workloads",
                 domains: "The 'domains' field is required in workloads",
               },
             },

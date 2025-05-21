@@ -1,4 +1,4 @@
-import { AzionConfig, AzionWorkload, AzionWorkloadDomain } from '../../../types';
+import { AzionConfig, AzionWorkload } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
@@ -28,6 +28,8 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       active: workload.active ?? true,
       network_map: workload.networkMap || '1',
       edge_firewall: workload.edgeFirewall,
+      workload_hostname_allow_access: workload.workloadHostnameAllowAccess ?? true,
+      domains: workload.domains || [],
       tls: {
         certificate: workload.tls?.certificate || null,
         ciphers: workload.tls?.ciphers || null,
@@ -48,10 +50,6 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
             crl: workload.mtls.crl,
           }
         : undefined,
-      domains: workload.domains?.map((domain: AzionWorkloadDomain) => ({
-        domain: domain.domain,
-        allow_access: domain.allowAccess,
-      })),
     }));
   }
 
@@ -68,6 +66,8 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       active: workload.active,
       networkMap: workload.network_map,
       edgeFirewall: workload.edge_firewall,
+      workloadHostnameAllowAccess: workload.workload_hostname_allow_access,
+      domains: workload.domains,
       tls: {
         certificate: workload.tls?.certificate,
         ciphers: workload.tls?.ciphers,
@@ -88,11 +88,6 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
             crl: workload.mtls.crl,
           }
         : undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      domains: workload.domains?.map((domain: any) => ({
-        domain: domain.domain,
-        allowAccess: domain.allow_access,
-      })),
     }));
 
     return transformedPayload.workloads;
