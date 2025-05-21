@@ -384,24 +384,24 @@ export type AzionConfig = {
   edgeFunctions?: AzionEdgeFunction[];
   /** Edge Connectors configuration */
   edgeConnectors?: AzionEdgeConnector[];
+  /** Storage configurations */
+  edgeStorage?: AzionBucket[];
   /** Purge configurations */
   purge?: AzionPurge[];
   /** Firewall configuration */
-  firewall?: AzionFirewall[];
+  edgeFirewall?: AzionEdgeFirewall[];
   /** Network list configurations */
   networkList?: AzionNetworkList[];
   /** WAF configuration */
   waf?: AzionWaf[];
   /** Workload configuration */
   workloads?: AzionWorkload[];
-  /** Storage configurations */
-  storage?: AzionBucket[];
 };
 
 /**
  * Firewall behavior configuration for Azion.
  */
-export type AzionFirewallBehavior = {
+export type AzionEdgeFirewallBehavior = {
   /** Run a serverless function */
   runFunction?: string;
   /** Set WAF ruleset */
@@ -437,31 +437,31 @@ export type AzionFirewallBehavior = {
   };
 };
 
-export type AzionFirewallCriteriaBase = {
+export type AzionEdgeFirewallCriteriaBase = {
   /** Variable to be evaluated */
   variable: RuleVariable;
   /** Conditional type */
   conditional: RuleConditional;
 };
 
-export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
   inputValue: string;
 };
 
-export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithoutValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that doesn't require input value */
   operator: RuleOperatorWithoutValue;
 };
 
-export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewallCriteriaWithoutValue;
+export type AzionEdgeFirewallCriteria = AzionEdgeFirewallCriteriaWithValue | AzionEdgeFirewallCriteriaWithoutValue;
 
 /**
  * Firewall rule configuration for Azion.
  */
-export type AzionFirewallRule = {
+export type AzionEdgeFirewallRule = {
   /** Rule name */
   name: string;
   /** Rule description */
@@ -473,15 +473,15 @@ export type AzionFirewallRule = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** Array of criteria for complex conditions */
-  criteria?: AzionFirewallCriteria[];
+  criteria?: AzionEdgeFirewallCriteria[];
   /** Behavior to be applied when the rule matches */
-  behavior: AzionFirewallBehavior;
+  behavior: AzionEdgeFirewallBehavior;
 };
 
 /**
  * Firewall configuration for Azion.
  */
-export type AzionFirewall = {
+export type AzionEdgeFirewall = {
   /** Firewall name */
   name: string;
   /** List of domains */
@@ -497,7 +497,7 @@ export type AzionFirewall = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** List of firewall rules */
-  rules?: AzionFirewallRule[];
+  rules?: AzionEdgeFirewallRule[];
   /** Debug mode */
   debugRules?: boolean;
 };

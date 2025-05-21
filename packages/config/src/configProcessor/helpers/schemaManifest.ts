@@ -248,7 +248,7 @@ const schemaStorageManifest = {
   required: ['name', 'dir'],
   additionalProperties: false,
   errorMessage: {
-    additionalProperties: 'No additional properties are allowed in storage items.',
+    additionalProperties: 'No additional properties are allowed in edge storage items.',
     required: "The 'name' and 'dir' fields are required.",
   },
 };
@@ -1057,17 +1057,17 @@ const schemaManifest = {
         type: "The 'waf' field must be an array",
       },
     },
-    firewall: {
+    edge_firewall: {
       type: 'array',
       items: schemaFirewallManifest,
       errorMessage: {
-        type: "The 'firewall' field must be an array of firewall objects",
+        type: "The 'edge_firewall' field must be an array of edge firewall objects",
       },
     },
     edge_applications: {
       type: 'array',
       items: schemaApplicationManifest,
-      errorMessage: "The 'application' field must be an array of application items.",
+      errorMessage: "The 'edge_applications' field must be an array of edge application items.",
     },
     workloads: {
       type: 'array',
@@ -1080,15 +1080,15 @@ const schemaManifest = {
       errorMessage: {
         type: "The 'edge_connectors' field must be an array",
       },
-      storage: {
+      edge_storage: {
         type: 'array',
         items: schemaStorageManifest,
-        errorMessage: "The 'storage' field must be an array of storage items.",
+        errorMessage: "The 'edge_storage' field must be an array of edge storage items.",
       },
-      function: {
+      edge_functions: {
         type: 'array',
         items: schemaFunctionManifest,
-        errorMessage: "The 'function' field must be an array of function items.",
+        errorMessage: "The 'edge_functions' field must be an array of edge function items.",
       },
     },
   },

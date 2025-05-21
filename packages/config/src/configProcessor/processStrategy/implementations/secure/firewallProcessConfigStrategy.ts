@@ -1,4 +1,9 @@
-import { AzionConfig, AzionFirewall, AzionFirewallCriteriaWithValue, AzionFirewallRule } from '../../../../types';
+import {
+  AzionConfig,
+  AzionEdgeFirewall,
+  AzionEdgeFirewallCriteriaWithValue,
+  AzionEdgeFirewallRule,
+} from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 
 /**
@@ -8,7 +13,7 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
  */
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    const firewalls = config?.firewall;
+    const firewalls = config?.edgeFirewall;
     if (!firewalls || firewalls.length === 0) {
       return;
     }
@@ -37,7 +42,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable,
@@ -130,8 +135,8 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.firewall = firewall.map((firewallPayload: any) => {
-      const firewallConfig: AzionFirewall = {
+    transformedPayload.edgeFirewall = firewall.map((firewallPayload: any) => {
+      const firewallConfig: AzionEdgeFirewall = {
         name: firewallPayload.main_settings?.name,
         domains: firewallPayload?.main_settings?.domains || [],
         active: firewallPayload?.main_settings?.is_active ?? true,
@@ -144,7 +149,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
       if (firewallPayload.rules_engine && firewallPayload.rules_engine.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         firewallConfig.rules = firewallPayload.rules_engine.map((rule: any) => {
-          const firewallRule: AzionFirewallRule = {
+          const firewallRule: AzionEdgeFirewallRule = {
             name: rule.name,
             description: rule.description || '',
             active: rule.is_active ?? true,
@@ -167,7 +172,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
       return firewallConfig;
     });
 
-    return transformedPayload.firewall;
+    return transformedPayload.edgeFirewall;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -11,7 +11,7 @@ describe('FirewallProcessConfigStrategy', () => {
   describe('transformToManifest', () => {
     it('should transform a complete firewall config to manifest', () => {
       const config: AzionConfig = {
-        firewall: [
+        edgeFirewall: [
           {
             name: 'Test Firewall',
             domains: ['example.com'],
@@ -80,7 +80,7 @@ describe('FirewallProcessConfigStrategy', () => {
 
     it('should handle firewall config without rules', () => {
       const config: AzionConfig = {
-        firewall: [
+        edgeFirewall: [
           {
             name: 'Test Firewall',
             domains: ['example.com'],
@@ -147,7 +147,7 @@ describe('FirewallProcessConfigStrategy', () => {
       ];
 
       const config = {};
-      const result = strategy.transformToConfig({ firewall: manifest }, config);
+      const result = strategy.transformToConfig({ edgeFirewall: manifest }, config);
 
       expect(result).toEqual([
         {
@@ -192,7 +192,7 @@ describe('FirewallProcessConfigStrategy', () => {
       ];
 
       const config = {};
-      const result = strategy.transformToConfig({ firewall: manifest }, config);
+      const result = strategy.transformToConfig({ edgeFirewall: manifest }, config);
       expect(result).toEqual([
         {
           name: 'Test Firewall',

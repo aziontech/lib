@@ -8,13 +8,13 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class StorageProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    if (!Array.isArray(config?.storage) || config?.storage.length === 0) {
+    if (!Array.isArray(config?.edgeStorage) || config?.edgeStorage.length === 0) {
       return;
     }
 
-    return config.storage.map((item) => ({
+    return config.edgeStorage.map((item) => ({
       name: item.name,
-      edge_access: item.edgeAccess || 'read_only',
+      edgeAccess: item.edgeAccess || 'read_only',
       dir: item.dir,
     }));
   }
@@ -26,13 +26,13 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
 
-    transformedPayload.storage = storageConfig.map((item) => ({
+    transformedPayload.edgeStorage = storageConfig.map((item) => ({
       name: item.name,
       edgeAccess: item.edge_access || 'read_only',
       dir: item.dir,
     }));
 
-    return transformedPayload.storage;
+    return transformedPayload.edgeStorage;
   }
 }
 

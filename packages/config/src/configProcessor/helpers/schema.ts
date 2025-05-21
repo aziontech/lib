@@ -589,33 +589,6 @@ const azionConfigSchema = {
             additionalProperties: "No additional properties are allowed in the 'build' object",
           },
         },
-        edgeFunctions: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                errorMessage: "The function's 'name' field must be a string",
-              },
-              path: {
-                type: 'string',
-                errorMessage: "The function's 'path' field must be a string",
-              },
-              args: {
-                type: 'object',
-                additionalProperties: true,
-                errorMessage: "The function's 'args' field must be an object",
-              },
-            },
-            required: ['name', 'path'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in function items',
-              required: "Both 'name' and 'path' fields are required for each function",
-            },
-          },
-        },
         edgeApplications: {
           type: 'array',
           items: {
@@ -1045,7 +1018,7 @@ const azionConfigSchema = {
             },
           },
         },
-        firewall: {
+        edgeFirewall: {
           type: 'array',
           items: {
             type: 'object',
@@ -1056,13 +1029,13 @@ const azionConfigSchema = {
               },
               name: {
                 type: 'string',
-                errorMessage: "The firewall configuration must have a 'name' field of type string",
+                errorMessage: "The edgeFirewall configuration must have a 'name' field of type string",
               },
               domains: {
                 type: 'array',
                 items: {
                   type: 'string',
-                  errorMessage: "Each domain in the firewall's domains list must be a string",
+                  errorMessage: "Each domain in the edge firewall's domains list must be a string",
                 },
               },
               active: {
@@ -1197,13 +1170,13 @@ const azionConfigSchema = {
             required: ['name'],
             additionalProperties: false,
             errorMessage: {
-              type: 'Each firewall item must be an object',
-              additionalProperties: 'No additional properties are allowed in the firewall object',
-              required: "The 'name' field is required in each firewall object",
+              type: 'Each edgeFirewall item must be an object',
+              additionalProperties: 'No additional properties are allowed in the edgeFirewall object',
+              required: "The 'name' field is required in each edge firewall object",
             },
           },
           errorMessage: {
-            type: "The 'firewall' field must be an array of firewall objects",
+            type: "The 'edgeFirewall' field must be an array of edge firewall objects",
           },
         },
         networkList: {
@@ -1542,20 +1515,20 @@ const azionConfigSchema = {
             additionalProperties: false,
           },
         },
-        functions: {
+        edgeFunctions: {
           type: 'array',
           items: schemaFunction,
         },
-        storage: {
+        edgeStorage: {
           type: 'array',
           items: schemaStorage,
-          errorMessage: "The 'storage' field must be an array of storage items.",
+          errorMessage: "The 'edgeStorage' field must be an array of edge storage items.",
         },
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, firewall, networkList, waf, edgeConnectors',
+          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, edgefirewall, networkList, waf, edgeConnectors',
         type: 'Configuration must be an object',
       },
     },
