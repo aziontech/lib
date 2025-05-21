@@ -8,7 +8,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
   private validateStorageBinding(config: AzionConfig, bucketName: string, functionName: string) {
-    if (!Array.isArray(config?.storage) || !config.storage.find((storage) => storage.name === bucketName)) {
+    if (!Array.isArray(config?.edgeStorage) || !config.edgeStorage.find((storage) => storage.name === bucketName)) {
       throw new Error(
         `Function "${functionName}" references storage bucket "${bucketName}" which is not defined in the storage configuration.`,
       );
