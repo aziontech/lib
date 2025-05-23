@@ -252,6 +252,10 @@ const createRuleSchema = (isRequestPhase = false) => ({
           },
           required: ['wafMode', 'wafId'],
           additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in the setWafRuleset object',
+            required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
+          },
         },
         setRateLimit: {
           type: 'object',
@@ -277,6 +281,11 @@ const createRuleSchema = (isRequestPhase = false) => ({
           },
           required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
           additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in the setRateLimit object',
+            required:
+              "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
+          },
         },
         deny: {
           type: 'boolean',
@@ -306,6 +315,10 @@ const createRuleSchema = (isRequestPhase = false) => ({
           },
           required: ['statusCode', 'contentType', 'contentBody'],
           additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in the setCustomResponse object',
+            required: "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
+          },
         },
         tagEvent: {
           type: 'object',
@@ -1023,10 +1036,6 @@ const azionConfigSchema = {
           items: {
             type: 'object',
             properties: {
-              id: {
-                type: 'number',
-                errorMessage: "The 'id' field must be a number",
-              },
               name: {
                 type: 'string',
                 errorMessage: "The edgeFirewall configuration must have a 'name' field of type string",
@@ -1097,10 +1106,19 @@ const azionConfigSchema = {
                             wafMode: {
                               type: 'string',
                               enum: FIREWALL_WAF_MODES,
+                              errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
                             },
-                            wafId: { type: 'string' },
+                            wafId: {
+                              type: 'string',
+                              errorMessage: 'The wafId must be a string',
+                            },
                           },
                           required: ['wafMode', 'wafId'],
+                          additionalProperties: false,
+                          errorMessage: {
+                            additionalProperties: 'No additional properties are allowed in the setWafRuleset object',
+                            required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
+                          },
                         },
                         setRateLimit: {
                           type: 'object',
@@ -1108,26 +1126,64 @@ const azionConfigSchema = {
                             type: {
                               type: 'string',
                               enum: FIREWALL_RATE_LIMIT_TYPES,
+                              errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
                             },
                             limitBy: {
                               type: 'string',
                               enum: FIREWALL_RATE_LIMIT_BY,
+                              errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
                             },
-                            averageRateLimit: { type: 'string' },
-                            maximumBurstSize: { type: 'string' },
+                            averageRateLimit: {
+                              type: 'string',
+                              errorMessage: 'The averageRateLimit must be a string',
+                            },
+                            maximumBurstSize: {
+                              type: 'string',
+                              errorMessage: 'The maximumBurstSize must be a string',
+                            },
                           },
                           required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+                          additionalProperties: false,
+                          errorMessage: {
+                            additionalProperties: 'No additional properties are allowed in the setRateLimit object',
+                            required:
+                              "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
+                          },
                         },
-                        deny: { type: 'boolean' },
-                        drop: { type: 'boolean' },
+                        deny: {
+                          type: 'boolean',
+                          errorMessage: 'The deny behavior must be a boolean',
+                        },
+                        drop: {
+                          type: 'boolean',
+                          errorMessage: 'The drop behavior must be a boolean',
+                        },
                         setCustomResponse: {
                           type: 'object',
                           properties: {
-                            statusCode: { type: ['integer', 'string'], minimum: 200, maximum: 499 },
-                            contentType: { type: 'string' },
-                            contentBody: { type: 'string' },
+                            statusCode: {
+                              type: ['integer', 'string'],
+                              minimum: 200,
+                              maximum: 499,
+                              errorMessage: 'The statusCode must be a number or string between 200 and 499',
+                            },
+                            contentType: {
+                              type: 'string',
+                              errorMessage: 'The contentType must be a string',
+                            },
+                            contentBody: {
+                              type: 'string',
+                              errorMessage: 'The contentBody must be a string',
+                            },
                           },
                           required: ['statusCode', 'contentType', 'contentBody'],
+                          additionalProperties: false,
+                          errorMessage: {
+                            additionalProperties:
+                              'No additional properties are allowed in the setCustomResponse object',
+                            required:
+                              "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
+                          },
                         },
                       },
                       not: {

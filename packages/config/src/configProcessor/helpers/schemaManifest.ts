@@ -284,32 +284,58 @@ const schemaFirewallRuleBehaviorArguments = {
   set_waf_ruleset: {
     type: 'object',
     properties: {
-      waf_id: { type: 'integer' },
+      waf_id: {
+        type: 'integer',
+        errorMessage: 'The waf_id must be an integer',
+      },
       mode: {
         type: 'string',
         enum: WAF_MODE,
+        errorMessage: `The mode must be one of: ${WAF_MODE.join(', ')}`,
       },
     },
     required: ['waf_id', 'mode'],
     additionalProperties: false,
+    errorMessage: {
+      additionalProperties: 'No additional properties are allowed in the set_waf_ruleset object',
+      required: "Both 'waf_id' and 'mode' fields are required in set_waf_ruleset",
+    },
   },
   set_custom_response: {
     type: 'object',
     properties: {
       status_code: {
         oneOf: [
-          { type: 'integer', minimum: 200, maximum: 499 },
-          { type: 'string', pattern: '^[2-4][0-9]{2}$' },
+          {
+            type: 'integer',
+            minimum: 200,
+            maximum: 499,
+            errorMessage: 'The status_code must be an integer between 200 and 499',
+          },
+          {
+            type: 'string',
+            pattern: '^[2-4][0-9]{2}$',
+            errorMessage: 'The status_code as string must be a valid HTTP status code (200-499)',
+          },
         ],
+        errorMessage: 'The status_code must be either an integer or string between 200 and 499',
       },
       content_body: {
         type: 'string',
         maxLength: 500,
+        errorMessage: 'The content_body must be a string with maximum 500 characters',
       },
-      content_type: { type: 'string' },
+      content_type: {
+        type: 'string',
+        errorMessage: 'The content_type must be a string',
+      },
     },
     required: ['status_code', 'content_body', 'content_type'],
     additionalProperties: false,
+    errorMessage: {
+      additionalProperties: 'No additional properties are allowed in the set_custom_response object',
+      required: "All fields ('status_code', 'content_body', 'content_type') are required in set_custom_response",
+    },
   },
 };
 
@@ -765,8 +791,8 @@ const schemaWorkloadManifest = {
       errorMessage: "The 'network_map' must be either '1' or '2'",
     },
     edge_firewall: {
-      type: ['integer', 'null'],
-      errorMessage: "The 'edge_firewall' must be an integer or null",
+      type: ['string', 'null'],
+      errorMessage: "The 'edge_firewall' must be an string or null",
     },
     workload_hostname_allow_access: {
       type: 'boolean',
@@ -1010,15 +1036,18 @@ const schemaEdgeConnectorManifest = {
       type: 'string',
       enum: EDGE_CONNECTOR_LOAD_BALANCE,
       default: 'off',
+      errorMessage: `The 'load_balance_method' must be one of: ${EDGE_CONNECTOR_LOAD_BALANCE.join(', ')}`,
     },
     connection_preference: {
       type: 'array',
       items: {
         type: 'string',
         enum: EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+        errorMessage: `Each connection preference must be one of: ${EDGE_CONNECTOR_CONNECTION_PREFERENCE.join(', ')}`,
       },
       maxItems: 2,
       default: ['IPv6', 'IPv4'],
+      errorMessage: "The 'connection_preference' field must be an array with maximum 2 items",
     },
     connection_timeout: {
       type: 'integer',
