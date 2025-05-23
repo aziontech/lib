@@ -1,47 +1,38 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
+    bundler: 'esbuild',
     preset: 'stencil',
+    polyfills: false,
   },
-  origin: [
+  edgeApplications: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'stencil-app',
+      rules: {
+        request: [
+          {
+            name: 'Deliver Static Assets',
+            match: '^\\/',
+            behavior: {
+              setEdgeConnector: 'stencil-storage',
+              deliver: true,
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
+  edgeConnectors: [
+    {
+      name: 'stencil-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
+      type: 'edge_storage',
+    },
+  ],
+};
 
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+export default config;

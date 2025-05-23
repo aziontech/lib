@@ -1,29 +1,38 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'html',
     polyfills: false,
   },
-  origin: [
+  edgeApplications: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'html-app',
+      rules: {
+        request: [
+          {
+            name: 'Deliver Static Assets',
+            match: '^\\/',
+            behavior: {
+              setEdgeConnector: 'html-storage',
+              deliver: true,
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
+  edgeConnectors: [
+    {
+      name: 'html-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
-    ],
-  },
-});
+      type: 'edge_storage',
+    },
+  ],
+};
+
+export default config;

@@ -1,46 +1,39 @@
-import { defineConfig } from 'azion/config';
-export default defineConfig({
+import type { AzionConfig } from 'azion/config';
+
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'preact',
     polyfills: false,
   },
-  origin: [
+  edgeApplications: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'preact-app',
+      rules: {
+        request: [
+          {
+            name: 'Deliver Static Assets',
+            match: '^\\/',
+            behavior: {
+              setEdgeConnector: 'preact-storage',
+              deliver: true,
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
+
+  edgeConnectors: [
+    {
+      name: 'preact-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+      type: 'edge_storage',
+    },
+  ],
+};
+
+export default config;

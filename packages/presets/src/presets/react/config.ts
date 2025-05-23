@@ -1,49 +1,47 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
     preset: 'react',
     polyfills: false,
   },
-  origin: [
+  edgeApplications: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: 'react-app',
+      rules: {
+        request: [
+          {
+            name: 'Deliver Static Assets',
+            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+            behavior: {
+              setEdgeConnector: 'react-storage',
+              deliver: true,
+            },
+          },
+          {
+            name: 'Redirect to index.html',
+            match: '^\\/',
+            behavior: {
+              setEdgeConnector: 'react-storage',
+              rewrite: '/index.html',
+            },
+          },
+        ],
+      },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
-      },
 
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
+  edgeConnectors: [
+    {
+      name: 'react-storage',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
+      type: 'edge_storage',
+    },
+  ],
+};
 
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+export default config;
