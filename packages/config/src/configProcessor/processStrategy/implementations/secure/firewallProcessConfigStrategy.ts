@@ -5,7 +5,6 @@ import {
   AzionEdgeFirewallRule,
 } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
-
 /**
  * FirewallProcessConfigStrategy
  * @class FirewallProcessConfigStrategy

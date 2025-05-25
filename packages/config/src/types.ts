@@ -370,6 +370,13 @@ export type AzionEdgeApplication = {
   rules?: AzionRules;
 };
 
+export interface AzionConfigParams {
+  edgeStorage: string;
+  edgeFunction: string;
+  edgeApplication: string;
+  edgeConnector: string;
+}
+
 /**
  * Main configuration type for Azion.
  */

@@ -1,40 +1,32 @@
 import type { AzionConfig } from 'azion/config';
+import { createSPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'angular',
-    polyfills: false,
+    preset: metadata.name,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeApplications: [
     {
-      name: 'angular-app',
-      edgeFunctionsEnabled: false,
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Deliver Static Assets',
-            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-            behavior: {
-              setEdgeConnector: 'angular-storage',
-              deliver: true,
-            },
-          },
-          {
-            name: 'Redirect to index.html',
-            match: '^\\/',
-            behavior: {
-              setEdgeConnector: 'angular-storage',
-              rewrite: `/index.html`,
-            },
-          },
-        ],
+        request: createSPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
   edgeConnectors: [
     {
-      name: 'angular-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

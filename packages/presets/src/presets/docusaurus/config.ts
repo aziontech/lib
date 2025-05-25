@@ -1,47 +1,32 @@
 import type { AzionConfig } from 'azion/config';
+import { createMPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'docusaurus',
-    polyfills: false,
+    preset: metadata.name,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeApplications: [
     {
-      name: 'docusaurus-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Deliver Static Assets',
-            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-            behavior: {
-              setEdgeConnector: 'docusaurus-storage',
-              deliver: true,
-            },
-          },
-          {
-            name: 'Redirect to index.html',
-            match: '.*/$',
-            behavior: {
-              setEdgeConnector: 'docusaurus-storage',
-              rewrite: '${uri}index.html',
-            },
-          },
-          {
-            name: 'Redirect to index.html for Subpaths',
-            match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
-            behavior: {
-              setEdgeConnector: 'docusaurus-storage',
-              rewrite: '${uri}/index.html',
-            },
-          },
-        ],
+        request: createMPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
   edgeConnectors: [
     {
-      name: 'docusaurus-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

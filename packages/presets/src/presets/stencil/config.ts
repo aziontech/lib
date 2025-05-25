@@ -1,31 +1,32 @@
 import type { AzionConfig } from 'azion/config';
+import { createSPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'stencil',
-    polyfills: false,
+    preset: metadata.name,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeApplications: [
     {
-      name: 'stencil-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Deliver Static Assets',
-            match: '^\\/',
-            behavior: {
-              setEdgeConnector: 'stencil-storage',
-              deliver: true,
-            },
-          },
-        ],
+        request: createSPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
   edgeConnectors: [
     {
-      name: 'stencil-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

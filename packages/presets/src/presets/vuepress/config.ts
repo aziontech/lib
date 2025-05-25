@@ -1,44 +1,32 @@
 import type { AzionConfig } from 'azion/config';
+import { createMPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'vuepress',
-    polyfills: false,
+    preset: metadata.name,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeApplications: [
     {
-      name: 'vuepress-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Set Storage Origin for All Requests',
-            match: '^\\/',
-            behavior: {
-              setEdgeConnector: 'vuepress-storage',
-            },
-          },
-          {
-            name: 'Deliver Static Assets',
-            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-            behavior: {
-              deliver: true,
-            },
-          },
-          {
-            name: 'Redirect to index.html',
-            match: '^\\/',
-            behavior: {
-              rewrite: '/index.html',
-            },
-          },
-        ],
+        request: createMPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
   edgeConnectors: [
     {
-      name: 'vuepress-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

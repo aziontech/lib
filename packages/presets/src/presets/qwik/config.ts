@@ -1,31 +1,32 @@
 import type { AzionConfig } from 'azion/config';
+import { createMPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'qwik',
-    polyfills: false,
+    preset: metadata.name,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeApplications: [
     {
-      name: 'qwik-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Deliver Static Assets',
-            match: '^\\/',
-            behavior: {
-              setEdgeConnector: 'qwik-storage',
-              deliver: true,
-            },
-          },
-        ],
+        request: createMPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
   edgeConnectors: [
     {
-      name: 'qwik-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

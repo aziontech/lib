@@ -1,31 +1,25 @@
 import type { AzionConfig } from 'azion/config';
+import { createMPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'jekyll',
-    polyfills: false,
+    preset: metadata.name,
   },
   edgeApplications: [
     {
-      name: 'jekyll-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Deliver Static Assets',
-            match: '^\\/',
-            behavior: {
-              setEdgeConnector: 'jekyll-storage',
-              deliver: true,
-            },
-          },
-        ],
+        request: createMPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
   edgeConnectors: [
     {
-      name: 'jekyll-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

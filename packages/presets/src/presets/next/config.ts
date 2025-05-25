@@ -1,11 +1,18 @@
 import type { AzionConfig } from 'azion/config';
-
+import metadata from './metadata';
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'next',
+    preset: metadata.name,
     polyfills: true,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeFunctions: [
     {
       name: 'next-function',
@@ -14,14 +21,14 @@ const config: AzionConfig = {
   ],
   edgeApplications: [
     {
-      name: 'next-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
         request: [
           {
             name: 'Next.js Static Assets',
             match: '^\\/_next\\/static\\/',
             behavior: {
-              setEdgeConnector: 'next-storage',
+              setEdgeConnector: '$EDGE_CONNECTOR_NAME',
               deliver: true,
             },
           },
@@ -29,7 +36,7 @@ const config: AzionConfig = {
             name: 'Deliver Static Assets',
             match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
             behavior: {
-              setEdgeConnector: 'next-storage',
+              setEdgeConnector: '$EDGE_CONNECTOR_NAME',
               deliver: true,
             },
           },
@@ -37,7 +44,7 @@ const config: AzionConfig = {
             name: 'Execute Next.js Function',
             match: '^\\/',
             behavior: {
-              runFunction: 'next-function',
+              runFunction: '$EDGE_FUNCTION_NAME',
               forwardCookies: true,
             },
           },
@@ -47,7 +54,7 @@ const config: AzionConfig = {
   ],
   edgeConnectors: [
     {
-      name: 'next-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

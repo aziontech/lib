@@ -1,28 +1,26 @@
 import type { AzionConfig } from 'azion/config';
-
+import metadata from './metadata';
 const config: AzionConfig = {
   build: {
-    entry: 'handler.ts',
-    preset: 'typescript',
-    polyfills: true,
+    entry: '$ENTRY_FILE',
+    preset: metadata.name,
   },
   edgeFunctions: [
     {
-      name: 'my-typescript-function',
-      path: '.edge/functions/handler.js',
+      name: '$EDGE_FUNCTION_NAME',
+      path: '$LOCAL_FUNCTION_PATH',
     },
   ],
   edgeApplications: [
     {
-      name: 'typescript-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
         request: [
           {
             name: 'Execute Edge Function',
             match: '^\\/',
             behavior: {
-              runFunction: 'my-typescript-function',
-              forwardCookies: true,
+              runFunction: '$EDGE_FUNCTION_NAME',
             },
           },
         ],

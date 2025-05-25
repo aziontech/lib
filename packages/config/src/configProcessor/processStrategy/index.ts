@@ -1,14 +1,14 @@
-import BuildProcessConfigStrategy from '../processStrategy/implementations/buildProcessConfigStrategy';
-import PurgeProcessConfigStrategy from '../processStrategy/implementations/purgeProcessConfigStrategy';
-import NetworkListProcessConfigStrategy from '../processStrategy/implementations/secure/networkListProcessConfigStrategy';
-import WafProcessConfigStrategy from '../processStrategy/implementations/secure/wafProcessConfigStrategy';
-import ProcessConfigContext from '../processStrategy/processConfigContext';
 import EdgeApplicationProcessConfigStrategy from './implementations/application/edgeApplicationProcessConfigStrategy';
+import BuildProcessConfigStrategy from './implementations/buildProcessConfigStrategy';
 import EdgeConnectorProcessConfigStrategy from './implementations/edgeConnectorProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
+import PurgeProcessConfigStrategy from './implementations/purgeProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
+import NetworkListProcessConfigStrategy from './implementations/secure/networkListProcessConfigStrategy';
+import WafProcessConfigStrategy from './implementations/secure/wafProcessConfigStrategy';
 import StorageProcessConfigStrategy from './implementations/storageProcessConfigStrategy';
 import WorkloadProcessConfigStrategy from './implementations/workloadProcessConfigStrategy';
+import ProcessConfigContext from './processConfigContext';
 
 function factoryProcessContext() {
   const processConfigContext = new ProcessConfigContext();

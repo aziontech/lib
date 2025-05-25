@@ -4,7 +4,7 @@ import ProcessConfigStrategy from '../processConfigStrategy';
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
   private validateApplicationReferences(config: AzionConfig, workloads: AzionWorkload[]) {
     const applicationNames = config.edgeApplications?.map((app) => app.name) || [];
-    const firewallNames = config.firewall?.map((firewall) => firewall.name) || [];
+    const firewallNames = config.edgeFirewall?.map((firewall) => firewall.name) || [];
 
     workloads.forEach((workload) => {
       if (!applicationNames.includes(workload.edgeApplication)) {

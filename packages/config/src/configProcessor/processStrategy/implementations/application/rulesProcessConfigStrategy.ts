@@ -1,4 +1,4 @@
-import { AzionConfig, AzionEdgeFunction, AzionFirewallCriteriaWithValue, AzionRules } from '../../../../types';
+import { AzionConfig, AzionEdgeFirewallCriteriaWithValue, AzionEdgeFunction, AzionRules } from '../../../../types';
 import {
   requestBehaviors,
   responseBehaviors,
@@ -81,7 +81,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
@@ -119,7 +119,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,

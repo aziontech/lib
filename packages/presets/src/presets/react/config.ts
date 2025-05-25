@@ -1,40 +1,32 @@
 import type { AzionConfig } from 'azion/config';
+import { createSPARules } from 'azion/config/rules';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'react',
-    polyfills: false,
+    preset: metadata.name,
   },
+  edgeStorage: [
+    {
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
+    },
+  ],
   edgeApplications: [
     {
-      name: 'react-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
-        request: [
-          {
-            name: 'Deliver Static Assets',
-            match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-            behavior: {
-              setEdgeConnector: 'react-storage',
-              deliver: true,
-            },
-          },
-          {
-            name: 'Redirect to index.html',
-            match: '^\\/',
-            behavior: {
-              setEdgeConnector: 'react-storage',
-              rewrite: '/index.html',
-            },
-          },
-        ],
+        request: createSPARules({
+          bucket: '$BUCKET_NAME',
+        }),
       },
     },
   ],
-
   edgeConnectors: [
     {
-      name: 'react-storage',
+      name: '$EDGE_CONNECTOR_NAME',
       modules: {
         loadBalancerEnabled: false,
         originShieldEnabled: false,

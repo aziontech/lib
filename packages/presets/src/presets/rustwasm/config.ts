@@ -1,11 +1,13 @@
 import type { AzionBuild, AzionConfig } from 'azion/config';
 import webpack, { Configuration } from 'webpack';
+import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
-    entry: 'handler.ts',
-    preset: 'rustwasm',
+    entry: '$ENTRY_FILE',
+    preset: metadata.name,
     polyfills: false,
+    bundler: 'webpack',
     extend: (context: Configuration) => {
       context = {
         ...context,
@@ -35,20 +37,20 @@ const config: AzionConfig = {
   } as AzionBuild,
   edgeFunctions: [
     {
-      name: 'my-rustwasm-function',
-      path: '.edge/functions/handler.js',
+      name: '$EDGE_FUNCTION_NAME',
+      path: '$LOCAL_FUNCTION_PATH',
     },
   ],
   edgeApplications: [
     {
-      name: 'rustwasm-app',
+      name: '$EDGE_APPLICATION_NAME',
       rules: {
         request: [
           {
             name: 'Execute Edge Function',
             match: '^\\/',
             behavior: {
-              runFunction: 'my-rustwasm-function',
+              runFunction: '$EDGE_FUNCTION_NAME',
             },
           },
         ],
