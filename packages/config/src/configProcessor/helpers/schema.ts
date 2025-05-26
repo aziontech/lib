@@ -1457,6 +1457,115 @@ const azionConfigSchema = {
                 enum: EDGE_CONNECTOR_TYPES,
                 errorMessage: "The 'type' field must be one of: http, s3, edge_storage, live_ingest",
               },
+              typeProperties: {
+                oneOf: [
+                  {
+                    type: 'object',
+                    properties: {
+                      versions: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        errorMessage: "The 'versions' field must be an array of strings",
+                      },
+                      host: {
+                        type: 'string',
+                        errorMessage: "The 'host' field must be a string",
+                      },
+                      path: {
+                        type: 'string',
+                        errorMessage: "The 'path' field must be a string",
+                      },
+                      followingRedirect: {
+                        type: 'boolean',
+                        errorMessage: "The 'followingRedirect' field must be a boolean",
+                      },
+                      realIpHeader: {
+                        type: 'string',
+                        errorMessage: "The 'realIpHeader' field must be a string",
+                      },
+                      realPortHeader: {
+                        type: 'string',
+                        errorMessage: "The 'realPortHeader' field must be a string",
+                      },
+                    },
+                    required: ['versions', 'host', 'path'],
+                    additionalProperties: false,
+                    errorMessage: {
+                      additionalProperties: 'No additional properties are allowed in HTTP type properties',
+                      required: "The 'versions', 'host', and 'path' fields are required for HTTP type",
+                    },
+                  },
+                  {
+                    type: 'object',
+                    properties: {
+                      endpoint: {
+                        type: 'string',
+                        errorMessage: "The 'endpoint' field must be a string",
+                      },
+                    },
+                    required: ['endpoint'],
+                    additionalProperties: false,
+                    errorMessage: {
+                      additionalProperties: 'No additional properties are allowed in Live Ingest type properties',
+                      required: "The 'endpoint' field is required for Live Ingest type",
+                    },
+                  },
+                  {
+                    type: 'object',
+                    properties: {
+                      host: {
+                        type: 'string',
+                        errorMessage: "The 'host' field must be a string",
+                      },
+                      bucket: {
+                        type: 'string',
+                        errorMessage: "The 'bucket' field must be a string",
+                      },
+                      path: {
+                        type: 'string',
+                        errorMessage: "The 'path' field must be a string",
+                      },
+                      region: {
+                        type: 'string',
+                        errorMessage: "The 'region' field must be a string",
+                      },
+                      accessKey: {
+                        type: 'string',
+                        errorMessage: "The 'accessKey' field must be a string",
+                      },
+                      secretKey: {
+                        type: 'string',
+                        errorMessage: "The 'secretKey' field must be a string",
+                      },
+                    },
+                    required: ['host', 'bucket', 'path', 'region', 'accessKey', 'secretKey'],
+                    additionalProperties: false,
+                    errorMessage: {
+                      additionalProperties: 'No additional properties are allowed in S3 type properties',
+                      required: 'All fields are required for S3 type',
+                    },
+                  },
+                  {
+                    type: 'object',
+                    properties: {
+                      bucket: {
+                        type: 'string',
+                        errorMessage: "The 'bucket' field must be a string",
+                      },
+                      prefix: {
+                        type: 'string',
+                        errorMessage: "The 'prefix' field must be a string",
+                      },
+                    },
+                    required: ['bucket'],
+                    additionalProperties: false,
+                    errorMessage: {
+                      additionalProperties: 'No additional properties are allowed in Storage type properties',
+                      required: "The 'bucket' field is required for Storage type",
+                    },
+                  },
+                ],
+              },
               addresses: {
                 type: 'array',
                 items: {

@@ -678,11 +678,45 @@ export interface EdgeConnectorAddress {
   };
 }
 
+export interface HttpTypeProperty {
+  versions: string[];
+  host: string;
+  path: string;
+  followingRedirect?: boolean;
+  realIpHeader?: string;
+  realPortHeader?: string;
+}
+
+export interface LiveIngestTypeProperty {
+  endpoint: string;
+}
+
+export interface S3TypeProperty {
+  host: string;
+  bucket: string;
+  path: string;
+  region: string;
+  accessKey: string;
+  secretKey: string;
+}
+
+export interface StorageTypeProperty {
+  bucket: string;
+  prefix?: string;
+}
+
+export type EdgeConnectorTypeProperty =
+  | HttpTypeProperty
+  | LiveIngestTypeProperty
+  | S3TypeProperty
+  | StorageTypeProperty;
+
 export interface AzionEdgeConnector {
   name: string;
   modules: EdgeConnectorModules;
   active?: boolean;
   type: EdgeConnectorType;
+  typeProperties: EdgeConnectorTypeProperty;
   addresses?: EdgeConnectorAddress[];
   tls?: EdgeConnectorTLS;
   loadBalanceMethod?: EdgeConnectorLoadBalance;

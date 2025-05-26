@@ -950,6 +950,115 @@ const schemaEdgeConnectorManifest = {
       enum: EDGE_CONNECTOR_TYPES,
       errorMessage: "The 'type' must be one of: http, s3, edge_storage, live_ingest",
     },
+    type_properties: {
+      oneOf: [
+        {
+          type: 'object',
+          properties: {
+            versions: {
+              type: 'array',
+              items: { type: 'string' },
+              errorMessage: "The 'versions' field must be an array of strings",
+            },
+            host: {
+              type: 'string',
+              errorMessage: "The 'host' field must be a string",
+            },
+            path: {
+              type: 'string',
+              errorMessage: "The 'path' field must be a string",
+            },
+            following_redirect: {
+              type: 'boolean',
+              errorMessage: "The 'following_redirect' field must be a boolean",
+            },
+            real_ip_header: {
+              type: 'string',
+              errorMessage: "The 'real_ip_header' field must be a string",
+            },
+            real_port_header: {
+              type: 'string',
+              errorMessage: "The 'real_port_header' field must be a string",
+            },
+          },
+          required: ['versions', 'host', 'path'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in HTTP type properties',
+            required: "The 'versions', 'host', and 'path' fields are required for HTTP type",
+          },
+        },
+        {
+          type: 'object',
+          properties: {
+            endpoint: {
+              type: 'string',
+              errorMessage: "The 'endpoint' field must be a string",
+            },
+          },
+          required: ['endpoint'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in Live Ingest type properties',
+            required: "The 'endpoint' field is required for Live Ingest type",
+          },
+        },
+        {
+          type: 'object',
+          properties: {
+            host: {
+              type: 'string',
+              errorMessage: "The 'host' field must be a string",
+            },
+            bucket: {
+              type: 'string',
+              errorMessage: "The 'bucket' field must be a string",
+            },
+            path: {
+              type: 'string',
+              errorMessage: "The 'path' field must be a string",
+            },
+            region: {
+              type: 'string',
+              errorMessage: "The 'region' field must be a string",
+            },
+            access_key: {
+              type: 'string',
+              errorMessage: "The 'access_key' field must be a string",
+            },
+            secret_key: {
+              type: 'string',
+              errorMessage: "The 'secret_key' field must be a string",
+            },
+          },
+          required: ['host', 'bucket', 'path', 'region', 'access_key', 'secret_key'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in S3 type properties',
+            required: 'All fields are required for S3 type',
+          },
+        },
+        {
+          type: 'object',
+          properties: {
+            bucket: {
+              type: 'string',
+              errorMessage: "The 'bucket' field must be a string",
+            },
+            prefix: {
+              type: 'string',
+              errorMessage: "The 'prefix' field must be a string",
+            },
+          },
+          required: ['bucket'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in Storage type properties',
+            required: "The 'bucket' field is required for Storage type",
+          },
+        },
+      ],
+    },
     addresses: {
       type: 'array',
       items: {

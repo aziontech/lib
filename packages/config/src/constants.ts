@@ -284,4 +284,19 @@ export type WorkloadHTTPVersion = (typeof WORKLOAD_HTTP_VERSIONS)[number];
 
 export const EDGE_CONNECTOR_TYPES = ['http', 's3', 'edge_storage', 'live_ingest'] as const;
 export const EDGE_CONNECTOR_LOAD_BALANCE = ['off', 'round_robin', 'ip_hash', 'least_conn'] as const;
+export const EDGE_CONNECTOR_SERVER_ROLE = ['primary', 'backup'] as const;
 export const EDGE_CONNECTOR_CONNECTION_PREFERENCE = ['IPv4', 'IPv6'] as const;
+
+export const EDGE_CONNECTOR_REQUIRED_PROPERTIES = {
+  http: ['versions', 'host', 'path'],
+  live_ingest: ['endpoint'],
+  s3: ['host', 'bucket', 'path', 'region', 'accessKey', 'secretKey'],
+  edge_storage: ['bucket'],
+} as const;
+
+export const EDGE_CONNECTOR_ALLOWED_PROPERTIES = {
+  http: ['versions', 'host', 'path', 'followingRedirect', 'realIpHeader', 'realPortHeader'],
+  live_ingest: ['endpoint'],
+  s3: ['host', 'bucket', 'path', 'region', 'accessKey', 'secretKey'],
+  edge_storage: ['bucket', 'prefix'],
+} as const;
