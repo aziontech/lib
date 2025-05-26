@@ -18,11 +18,13 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         name: app.name,
         active: app.active ?? true,
         debug: app.debug ?? false,
-        edge_cache_enabled: app.edgeCacheEnabled ?? true,
-        edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
-        application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
-        image_processor_enabled: app.imageProcessorEnabled ?? false,
-        tiered_cache_enabled: app.tieredCacheEnabled ?? false,
+        modules: {
+          edge_cache_enabled: app.edgeCacheEnabled ?? true,
+          edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
+          application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
+          image_processor_enabled: app.imageProcessorEnabled ?? false,
+          tiered_cache_enabled: app.tieredCacheEnabled ?? false,
+        },
       };
 
       if (app.cache) {
@@ -50,11 +52,13 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         name: app.name,
         active: app.active,
         debug: app.debug,
-        edgeCacheEnabled: app.edge_cache_enabled,
-        edgeFunctionsEnabled: app.edge_functions_enabled,
-        applicationAcceleratorEnabled: app.application_accelerator_enabled,
-        imageProcessorEnabled: app.image_processor_enabled,
-        tieredCacheEnabled: app.tiered_cache_enabled,
+        modules: {
+          edgeCacheEnabled: app.edge_cache_enabled,
+          edgeFunctionsEnabled: app.edge_functions_enabled,
+          applicationAcceleratorEnabled: app.application_accelerator_enabled,
+          imageProcessorEnabled: app.image_processor_enabled,
+          tieredCacheEnabled: app.tiered_cache_enabled,
+        },
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
       };

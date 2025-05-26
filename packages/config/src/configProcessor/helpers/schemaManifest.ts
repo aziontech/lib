@@ -712,30 +712,40 @@ const schemaApplicationManifest = {
       default: false,
       errorMessage: "The 'debug' field must be a boolean.",
     },
-    edge_cache_enabled: {
-      type: 'boolean',
-      default: true,
-      errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
-    },
-    edge_functions_enabled: {
-      type: 'boolean',
-      default: false,
-      errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
-    },
-    application_accelerator_enabled: {
-      type: 'boolean',
-      default: false,
-      errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
-    },
-    image_processor_enabled: {
-      type: 'boolean',
-      default: false,
-      errorMessage: "The 'image_processor_enabled' field must be a boolean.",
-    },
-    tiered_cache_enabled: {
-      type: 'boolean',
-      default: false,
-      errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+    modules: {
+      type: 'object',
+      properties: {
+        edge_cache_enabled: {
+          type: 'boolean',
+          default: true,
+          errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
+        },
+        edge_functions_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+        },
+        application_accelerator_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
+        },
+        image_processor_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'image_processor_enabled' field must be a boolean.",
+        },
+        tiered_cache_enabled: {
+          type: 'boolean',
+          default: false,
+          errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+        },
+      },
+      required: [],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in modules object.',
+      },
     },
     cache_settings: {
       type: 'array',
