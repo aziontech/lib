@@ -397,10 +397,10 @@ const schemaFirewallRule = {
       pattern: '^[\\u0000-\\uFFFF]*$',
       errorMessage: "The 'description' must not exceed 1000 characters and must not contain 4-byte unicode characters.",
     },
-    is_active: {
+    active: {
       type: 'boolean',
       default: true,
-      errorMessage: "The 'is_active' field must be a boolean.",
+      errorMessage: "The 'active' field must be a boolean.",
     },
     order: {
       type: 'integer',

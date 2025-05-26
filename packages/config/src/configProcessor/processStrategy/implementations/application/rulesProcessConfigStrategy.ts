@@ -75,7 +75,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           phase: 'request',
           description: rule.description ?? '',
-          is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
+          active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           order: index + 2, // index starts at 2, because the default rule is index 1
           criteria: rule.criteria
             ? [
@@ -113,7 +113,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           phase: 'response',
           description: rule.description ?? '',
-          is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
+          active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           order: index + 2, // index starts at 2, because the default rule is index 1
           criteria: rule.criteria
             ? [
@@ -193,7 +193,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
         rules.request!.push({
           name: rule.name,
           description: rule.description,
-          active: rule.is_active,
+          active: rule.active,
           criteria:
             // Verifica se criteria existe e é um array de arrays
             Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
@@ -213,7 +213,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
         rules.response!.push({
           name: rule.name,
           description: rule.description,
-          active: rule.is_active,
+          active: rule.active,
           criteria:
             Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any

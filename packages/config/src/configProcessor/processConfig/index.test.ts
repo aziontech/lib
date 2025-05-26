@@ -1242,17 +1242,17 @@ describe('processConfig', () => {
         expect.objectContaining({
           name: 'Example Rule',
           description: 'This rule redirects all traffic.',
-          is_active: false,
+          active: false,
         }),
         expect.objectContaining({
           name: 'Second Rule',
           description: '', // Should default to an empty string
-          is_active: true,
+          active: true,
         }),
         expect.objectContaining({
           name: 'Third Rule',
           description: 'This rule handles home traffic.',
-          is_active: true, // Should default to true
+          active: true, // Should default to true
         }),
       ]);
     });
