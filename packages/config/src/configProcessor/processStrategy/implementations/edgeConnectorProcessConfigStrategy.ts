@@ -53,6 +53,14 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   private transformTypePropertiesToSnakeCase(type: EdgeConnectorType, properties: EdgeConnectorTypeProperty) {
+    if (!properties) {
+      throw new Error(`Edge Connector of type '${type}' requires 'typeProperties'. Please add the required properties:
+        - For type 'http': { versions: string[], host: string, path: string }
+        - For type 'live_ingest': { endpoint: string }
+        - For type 's3': { host: string, bucket: string, path: string, region: string, accessKey: string, secretKey: string }
+        - For type 'edge_storage': { bucket: string }`);
+    }
+
     switch (type) {
       case 'http': {
         const httpProps = properties as HttpTypeProperty;
