@@ -383,8 +383,6 @@ export interface AzionConfigParams {
 export type AzionConfig = {
   /** Build configuration */
   build?: AzionBuild;
-  /** Domain configuration */
-  domain?: AzionDomain;
   /** Edge Application configuration */
   edgeApplications?: AzionEdgeApplication[];
   /** Functions configurations */
@@ -393,12 +391,12 @@ export type AzionConfig = {
   edgeConnectors?: AzionEdgeConnector[];
   /** Storage configurations */
   edgeStorage?: AzionBucket[];
-  /** Purge configurations */
-  purge?: AzionPurge[];
   /** Firewall configuration */
   edgeFirewall?: AzionEdgeFirewall[];
   /** Network list configurations */
   networkList?: AzionNetworkList[];
+  /** Purge configurations */
+  purge?: AzionPurge[];
   /** WAF configuration */
   waf?: AzionWaf[];
   /** Workload configuration */
