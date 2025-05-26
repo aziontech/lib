@@ -1014,18 +1014,6 @@ const schemaEdgeConnectorManifest = {
             default: 10,
             errorMessage: "The 'fail_timeout' must be between 1 and 60",
           },
-          tls: {
-            type: 'object',
-            properties: {
-              policy: {
-                type: 'string',
-                enum: ['off', 'on', 'preserve'],
-                default: 'preserve',
-                errorMessage: "The TLS 'policy' must be one of: off, on, preserve",
-              },
-            },
-            default: { policy: 'preserve' },
-          },
         },
         required: ['address'],
         additionalProperties: false,

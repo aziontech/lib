@@ -1521,18 +1521,6 @@ const azionConfigSchema = {
                       default: 10,
                       errorMessage: "O campo 'failTimeout' deve estar entre 1 e 60",
                     },
-                    tls: {
-                      type: 'object',
-                      properties: {
-                        policy: {
-                          type: 'string',
-                          enum: ['off', 'on', 'preserve'],
-                          default: 'preserve',
-                          errorMessage: "The TLS 'policy' field must be one of: off, on, preserve",
-                        },
-                      },
-                      default: { policy: 'preserve' },
-                    },
                   },
                   required: ['address'],
                   additionalProperties: false,
