@@ -70,13 +70,13 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
 
     // request
     if (Array.isArray(applicationRules?.request)) {
-      applicationRules.request.forEach((rule, index) => {
+      applicationRules.request.forEach((rule) => {
         const cdnRule = {
           name: rule.name,
           phase: 'request',
           description: rule.description ?? '',
           active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
-          order: index + 2, // index starts at 2, because the default rule is index 1
+
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
@@ -108,13 +108,12 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
 
     // response
     if (Array.isArray(applicationRules?.response)) {
-      applicationRules.response.forEach((rule, index) => {
+      applicationRules.response.forEach((rule) => {
         const cdnRule = {
           name: rule.name,
           phase: 'response',
           description: rule.description ?? '',
           active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
-          order: index + 2, // index starts at 2, because the default rule is index 1
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {

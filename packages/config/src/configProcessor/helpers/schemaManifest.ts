@@ -402,10 +402,6 @@ const schemaFirewallRule = {
       default: true,
       errorMessage: "The 'active' field must be a boolean.",
     },
-    order: {
-      type: 'integer',
-      errorMessage: "The 'order' field must be an integer.",
-    },
   },
   required: ['name', 'criteria', 'behaviors'],
   additionalProperties: false,

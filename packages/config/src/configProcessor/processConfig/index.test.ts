@@ -1275,25 +1275,21 @@ describe('processConfig', () => {
       expect(result.rules[0]).toEqual(
         expect.objectContaining({
           name: 'First Request Rule',
-          order: 2,
         }),
       );
       expect(result.rules[1]).toEqual(
         expect.objectContaining({
           name: 'Second Request Rule',
-          order: 3,
         }),
       );
       expect(result.rules[2]).toEqual(
         expect.objectContaining({
           name: 'First Response Rule',
-          order: 2,
         }),
       );
       expect(result.rules[3]).toEqual(
         expect.objectContaining({
           name: 'Second Response Rule',
-          order: 3,
         }),
       );
     });
