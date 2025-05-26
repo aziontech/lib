@@ -13,6 +13,19 @@ const config: AzionConfig = {
       edgeAccess: 'read_only',
     },
   ],
+  edgeConnectors: [
+    {
+      name: '$EDGE_CONNECTOR_NAME',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
+      },
+      type: 'edge_storage',
+      typeProperties: {
+        bucket: '$BUCKET_NAME',
+      },
+    },
+  ],
   edgeFunctions: [
     {
       name: 'next-function',
@@ -50,16 +63,6 @@ const config: AzionConfig = {
           },
         ],
       },
-    },
-  ],
-  edgeConnectors: [
-    {
-      name: '$EDGE_CONNECTOR_NAME',
-      modules: {
-        loadBalancerEnabled: false,
-        originShieldEnabled: false,
-      },
-      type: 'edge_storage',
     },
   ],
 };

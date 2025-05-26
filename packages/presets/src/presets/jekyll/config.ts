@@ -7,14 +7,11 @@ const config: AzionConfig = {
     bundler: 'esbuild',
     preset: metadata.name,
   },
-  edgeApplications: [
+  edgeStorage: [
     {
-      name: '$EDGE_APPLICATION_NAME',
-      rules: {
-        request: createMPARules({
-          bucket: '$BUCKET_NAME',
-        }),
-      },
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
     },
   ],
   edgeConnectors: [
@@ -25,6 +22,19 @@ const config: AzionConfig = {
         originShieldEnabled: false,
       },
       type: 'edge_storage',
+      typeProperties: {
+        bucket: '$BUCKET_NAME',
+      },
+    },
+  ],
+  edgeApplications: [
+    {
+      name: '$EDGE_APPLICATION_NAME',
+      rules: {
+        request: createMPARules({
+          bucket: '$BUCKET_NAME',
+        }),
+      },
     },
   ],
 };
