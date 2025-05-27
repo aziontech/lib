@@ -1,7 +1,7 @@
 import type { AzionConfig } from 'azion/config';
 const config: AzionConfig = {
   build: {
-    entry: '$ENTRY_FILE',
+    entry: 'handler.js',
   },
   edgeFunctions: [
     {

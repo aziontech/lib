@@ -3,7 +3,7 @@ import webpack, { Configuration } from 'webpack';
 
 const config: AzionConfig = {
   build: {
-    entry: '$ENTRY_FILE',
+    entry: 'handler.js',
     polyfills: false,
     bundler: 'webpack',
     extend: (context: Configuration) => {
