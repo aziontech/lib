@@ -26,8 +26,8 @@ const config: AzionConfig = {
   ],
   edgeFunctions: [
     {
-      name: 'next-function',
-      path: '.edge/functions/next-function.js',
+      name: '$EDGE_FUNCTION_NAME',
+      path: '$LOCAL_FUNCTION_PATH',
     },
   ],
   edgeApplications: [
