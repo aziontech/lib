@@ -32,7 +32,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       }
 
       if (app.rules) {
-        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.edgeFunctions);
+        application.rules = this.rulesStrategy.transformToManifest(
+          app.rules,
+          config.edgeFunctions,
+          config.edgeConnectors,
+        );
       }
 
       return application;
@@ -52,13 +56,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         name: app.name,
         active: app.active,
         debug: app.debug,
-        modules: {
-          edgeCacheEnabled: app.edge_cache_enabled,
-          edgeFunctionsEnabled: app.edge_functions_enabled,
-          applicationAcceleratorEnabled: app.application_accelerator_enabled,
-          imageProcessorEnabled: app.image_processor_enabled,
-          tieredCacheEnabled: app.tiered_cache_enabled,
-        },
+        edgeCacheEnabled: app.edge_cache_enabled,
+        edgeFunctionsEnabled: app.edge_functions_enabled,
+        applicationAcceleratorEnabled: app.application_accelerator_enabled,
+        imageProcessorEnabled: app.image_processor_enabled,
+        tieredCacheEnabled: app.tiered_cache_enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
       };

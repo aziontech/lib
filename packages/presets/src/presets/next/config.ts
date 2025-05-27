@@ -1,9 +1,7 @@
 import type { AzionConfig } from 'azion/config';
-import metadata from './metadata';
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: metadata.name,
     polyfills: true,
   },
   edgeStorage: [

@@ -1,11 +1,9 @@
 import type { AzionConfig } from 'azion/config';
 import { createSPARules } from 'azion/config/rules';
-import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: metadata.name,
   },
   edgeStorage: [
     {
@@ -30,11 +28,9 @@ const config: AzionConfig = {
   edgeApplications: [
     {
       name: '$EDGE_APPLICATION_NAME',
-      rules: {
-        request: createSPARules({
-          bucket: '$BUCKET_NAME',
-        }),
-      },
+      rules: createSPARules({
+        edgeConnector: '$EDGE_CONNECTOR_NAME',
+      }),
     },
   ],
 };

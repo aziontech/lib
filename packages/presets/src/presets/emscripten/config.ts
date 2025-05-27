@@ -1,10 +1,8 @@
 import type { AzionBuild, AzionConfig } from 'azion/config';
 import webpack, { Configuration } from 'webpack';
-import metadata from './metadata';
 
 const config: AzionConfig = {
   build: {
-    preset: metadata.name,
     entry: '$ENTRY_FILE',
     bundler: 'webpack',
     polyfills: false,

@@ -1,4 +1,10 @@
-import { AzionConfig, AzionEdgeFirewallCriteriaWithValue, AzionEdgeFunction, AzionRules } from '../../../../types';
+import {
+  AzionConfig,
+  AzionEdgeConnector,
+  AzionEdgeFirewallCriteriaWithValue,
+  AzionEdgeFunction,
+  AzionRules,
+} from '../../../../types';
 import {
   requestBehaviors,
   responseBehaviors,
@@ -58,7 +64,11 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(applicationRules: AzionRules, functions?: AzionEdgeFunction[]) {
+  transformToManifest(
+    applicationRules: AzionRules,
+    functions?: AzionEdgeFunction[],
+    edgeConnectors?: AzionEdgeConnector[],
+  ) {
     // Validar referências de funções
     this.validateFunctionReferences(applicationRules, functions);
 
@@ -101,7 +111,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
               ],
           behaviors: [],
         };
-        this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, functions);
+        this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, { edgeConnectors });
         payload.push(cdnRule);
       });
     }
@@ -138,7 +148,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
               ],
           behaviors: [],
         };
-        this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, functions);
+        this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, { edgeConnectors });
         payload.push(cdnRule);
       });
     }

@@ -1,3 +1,4 @@
+import type { AzionRules } from 'azion/config';
 import { ALL_EXTENSIONS } from '../constants';
 
 /**
@@ -16,28 +17,31 @@ import { ALL_EXTENSIONS } from '../constants';
  */
 export function createSPARules(
   options: {
-    bucket?: string;
+    edgeConnector?: string;
     staticExtensions?: string[];
   } = {},
-) {
-  const { bucket = 'storage', staticExtensions = ALL_EXTENSIONS } = options;
+): AzionRules {
+  const { edgeConnector = 'edge-connector', staticExtensions = ALL_EXTENSIONS } = options;
 
-  return [
-    {
-      name: 'Deliver Static Assets',
-      match: `\\.(${staticExtensions.join('|')})$`,
-      behavior: {
-        setEdgeConnector: bucket,
-        deliver: true,
+  return {
+    request: [
+      {
+        name: 'Deliver Static Assets',
+        match: `\\.(${staticExtensions.join('|')})$`,
+        behavior: {
+          setEdgeConnector: edgeConnector,
+          deliver: true,
+        },
       },
-    },
-    {
-      name: 'Redirect to index.html',
-      match: '^\\/',
-      behavior: {
-        setEdgeConnector: bucket,
-        rewrite: '/index.html',
+      {
+        name: 'Redirect to index.html',
+        match: '^\\/',
+        behavior: {
+          setEdgeConnector: edgeConnector,
+          rewrite: '/index.html',
+        },
       },
-    },
-  ];
+    ],
+    response: [],
+  };
 }

@@ -1,9 +1,7 @@
 import type { AzionConfig } from 'azion/config';
-import metadata from './metadata';
 const config: AzionConfig = {
   build: {
     entry: '$ENTRY_FILE',
-    preset: metadata.name,
   },
   edgeFunctions: [
     {
