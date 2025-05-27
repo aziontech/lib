@@ -5,4 +5,4 @@ import metadata from './metadata';
 // import prebuild from './prebuild';
 // import postbuild from './postbuild';
 
-export const preact: AzionBuildPreset = { config, metadata, handler };
+export const Preact: AzionBuildPreset = { config, metadata, handler };
