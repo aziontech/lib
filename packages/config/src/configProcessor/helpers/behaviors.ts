@@ -2,10 +2,10 @@
 export const requestBehaviors = {
   setEdgeConnector: {
     transform: (value: any, payloadCDN: any) => {
-      const connector = payloadCDN.edgeConnectors?.find((o: any) => o.name === value.name);
-
+      const connectorName = typeof value === 'string' ? value : value.name;
+      const connector = payloadCDN.edgeConnectors?.find((o: any) => o.name === connectorName);
       if (!connector) {
-        throw new Error(`Rule setEdgeConnector '${value.name}' not found in the edge connectors list`);
+        throw new Error(`Rule setEdgeConnector '${connectorName}' not found in the edge connectors list`);
       }
 
       return {
