@@ -1,11 +1,17 @@
-import { AzionConfig, AzionFirewallCriteriaWithValue } from '../../../types';
+import {
+  AzionConfig,
+  AzionEdgeConnector,
+  AzionEdgeFirewallCriteriaWithValue,
+  AzionEdgeFunction,
+  AzionRules,
+} from '../../../../types';
 import {
   requestBehaviors,
   responseBehaviors,
   revertRequestBehaviors,
   revertResponseBehaviors,
-} from '../../helpers/behaviors';
-import ProcessConfigStrategy from '../processConfigStrategy';
+} from '../../../helpers/behaviors';
+import ProcessConfigStrategy from '../../processConfigStrategy';
 
 /**
  * RulesProcessConfigStrategy
@@ -39,14 +45,14 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     }
   }
 
-  private validateFunctionReferences(config: AzionConfig) {
-    if (!config?.rules?.request || !config?.functions) {
+  private validateFunctionReferences(applicationRules: AzionRules, functions?: AzionEdgeFunction[]) {
+    if (!applicationRules?.request || !functions) {
       return;
     }
 
-    const definedFunctions = new Set(config.functions.map((f) => f.name));
+    const definedFunctions = new Set(functions.map((f) => f.name));
 
-    for (const rule of config.rules.request) {
+    for (const rule of applicationRules.request) {
       if (rule.behavior?.runFunction) {
         if (!definedFunctions.has(rule.behavior.runFunction)) {
           throw new Error(
@@ -58,29 +64,34 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(config: AzionConfig, context: any) {
-    // Validar referências de funções antes de transformar
-    this.validateFunctionReferences(config);
+  transformToManifest(
+    applicationRules: AzionRules,
+    functions?: AzionEdgeFunction[],
+    edgeConnectors?: AzionEdgeConnector[],
+  ) {
+    // Validar referências de funções
+    this.validateFunctionReferences(applicationRules, functions);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any[] = [];
-    if (config?.rules === undefined || Object.keys(config.rules).length === 0) {
+    if (!applicationRules || Object.keys(applicationRules).length === 0) {
       return;
     }
+
     // request
-    if (Array.isArray(config?.rules?.request)) {
-      config?.rules?.request?.forEach((rule, index) => {
+    if (Array.isArray(applicationRules?.request)) {
+      applicationRules.request.forEach((rule) => {
         const cdnRule = {
           name: rule.name,
           phase: 'request',
           description: rule.description ?? '',
-          is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
-          order: index + 2, // index starts at 2, because the default rule is index 1
+          active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
+
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
@@ -100,25 +111,24 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
               ],
           behaviors: [],
         };
-        this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, context);
+        this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, { edgeConnectors });
         payload.push(cdnRule);
       });
     }
 
     // response
-    if (Array.isArray(config?.rules?.response)) {
-      config?.rules?.response.forEach((rule, index) => {
+    if (Array.isArray(applicationRules?.response)) {
+      applicationRules.response.forEach((rule) => {
         const cdnRule = {
           name: rule.name,
           phase: 'response',
           description: rule.description ?? '',
-          is_active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
-          order: index + 2, // index starts at 2, because the default rule is index 1
+          active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
                   const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
@@ -138,7 +148,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
               ],
           behaviors: [],
         };
-        this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, context);
+        this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, { edgeConnectors });
         payload.push(cdnRule);
       });
     }
@@ -147,7 +157,16 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+  transformToConfig(rulesPayload: any[], transformedPayload: AzionConfig) {
+    if (!Array.isArray(rulesPayload)) {
+      return undefined;
+    }
+
+    const rules: AzionRules = {
+      request: [],
+      response: [],
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const addBehaviorsObject = (behaviors: any, behaviorDefinitions: any, context: any) => {
       if (behaviors && Array.isArray(behaviors)) {
@@ -177,23 +196,13 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
       return undefined;
     };
 
-    const rulesConfig = payload.rules;
-    if (!rulesConfig || Object.keys(rulesConfig).length === 0) {
-      return;
-    }
-
-    transformedPayload.rules = {
-      request: [],
-      response: [],
-    };
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rulesConfig.forEach((rule: any) => {
+    rulesPayload.forEach((rule: any) => {
       if (rule.phase === 'request') {
-        transformedPayload.rules!.request!.push({
+        rules.request!.push({
           name: rule.name,
           description: rule.description,
-          active: rule.is_active,
+          active: rule.active,
           criteria:
             // Verifica se criteria existe e é um array de arrays
             Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
@@ -210,10 +219,10 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           behavior: addBehaviorsObject(rule.behaviors, revertRequestBehaviors, transformedPayload),
         });
       } else if (rule.phase === 'response') {
-        transformedPayload.rules!.response!.push({
+        rules.response!.push({
           name: rule.name,
           description: rule.description,
-          active: rule.is_active,
+          active: rule.active,
           criteria:
             Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -231,7 +240,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
       }
     });
 
-    return transformedPayload.rules;
+    return rules;
   }
 }
 

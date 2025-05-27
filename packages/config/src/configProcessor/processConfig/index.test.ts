@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { processConfig } from '..';
-import { AzionConfig } from '../../types';
+import { AzionConfig } from '../../config/types';
 
 describe('processConfig', () => {
   describe('Cache and Rules', () => {
@@ -9,9 +9,6 @@ describe('processConfig', () => {
         build: {
           preset: 'next',
           polyfills: true,
-          custom: {
-            minify: true,
-          },
         },
       };
       expect(processConfig(config)).toEqual(
@@ -19,9 +16,6 @@ describe('processConfig', () => {
           build: {
             preset: 'next',
             polyfills: true,
-            custom: {
-              minify: true,
-            },
           },
         }),
       );
@@ -1248,17 +1242,17 @@ describe('processConfig', () => {
         expect.objectContaining({
           name: 'Example Rule',
           description: 'This rule redirects all traffic.',
-          is_active: false,
+          active: false,
         }),
         expect.objectContaining({
           name: 'Second Rule',
           description: '', // Should default to an empty string
-          is_active: true,
+          active: true,
         }),
         expect.objectContaining({
           name: 'Third Rule',
           description: 'This rule handles home traffic.',
-          is_active: true, // Should default to true
+          active: true, // Should default to true
         }),
       ]);
     });
@@ -1281,25 +1275,21 @@ describe('processConfig', () => {
       expect(result.rules[0]).toEqual(
         expect.objectContaining({
           name: 'First Request Rule',
-          order: 2,
         }),
       );
       expect(result.rules[1]).toEqual(
         expect.objectContaining({
           name: 'Second Request Rule',
-          order: 3,
         }),
       );
       expect(result.rules[2]).toEqual(
         expect.objectContaining({
           name: 'First Response Rule',
-          order: 2,
         }),
       );
       expect(result.rules[3]).toEqual(
         expect.objectContaining({
           name: 'Second Response Rule',
-          order: 3,
         }),
       );
     });

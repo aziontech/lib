@@ -4,11 +4,11 @@
  * @description This class is the base class for all process config strategies.
  */
 
-import { AzionConfig } from '../../types';
+import { AzionConfig } from '../../config/types';
 
 class ProcessConfigStrategy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(config: AzionConfig, context: any) {
+  transformToManifest(config: any, context: any) {
     return context;
   }
 

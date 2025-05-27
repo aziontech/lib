@@ -5,4 +5,4 @@ import metadata from './metadata';
 import prebuild from './prebuild';
 // import postbuild from './postbuild';
 
-export const eleventy: AzionBuildPreset = { config, metadata, handler, prebuild };
+export const Eleventy: AzionBuildPreset = { config, metadata, handler, prebuild };

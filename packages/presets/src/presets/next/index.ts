@@ -6,4 +6,4 @@ import postbuild from './postbuild';
 import prebuild from './prebuild';
 ``;
 
-export const next: AzionBuildPreset = { config, metadata, handler, prebuild, postbuild };
+export const Next: AzionBuildPreset = { config, metadata, handler, prebuild, postbuild };

@@ -1,47 +1,38 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
+import { createSPARules } from 'azion/config/rules';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
-    preset: 'stencil',
+    bundler: 'esbuild',
   },
-  origin: [
+  edgeStorage: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
+  edgeConnectors: [
+    {
+      name: '$EDGE_CONNECTOR_NAME',
+      modules: {
+        loadBalancerEnabled: false,
+        originShieldEnabled: false,
       },
+      type: 'edge_storage',
+      typeProperties: {
+        bucket: '$BUCKET_NAME',
+      },
+    },
+  ],
+  edgeApplications: [
+    {
+      name: '$EDGE_APPLICATION_NAME',
+      rules: createSPARules({
+        edgeConnector: '$EDGE_CONNECTOR_NAME',
+      }),
+    },
+  ],
+};
 
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+export default config;

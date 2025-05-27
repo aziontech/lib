@@ -1,4 +1,7 @@
 import {
+  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
+  EDGE_CONNECTOR_LOAD_BALANCE,
+  EDGE_CONNECTOR_TYPES,
   FirewallRateLimitBy,
   FirewallRateLimitType,
   FirewallWafMode,
@@ -9,6 +12,11 @@ import {
   RuleVariable,
   WafMode,
   WafSensitivity,
+  WorkloadHTTPVersion,
+  WorkloadMTLSVerification,
+  WorkloadNetworkMap,
+  WorkloadTLSCipher,
+  WorkloadTLSVersion,
 } from './constants';
 
 import { FetchEvent } from 'azion/types';
@@ -44,56 +52,6 @@ export type AzionDomain = {
     trustedCaCertificateId: number;
     /** List of CRL (Certificate Revocation List) IDs */
     crlList?: number[];
-  };
-};
-
-/**
- * Origin configuration for Azion.
- */
-export type AzionOrigin = {
-  /** Origin ID */
-  id?: number;
-  /** Origin key */
-  key?: string;
-  /** Origin name */
-  name: string;
-  /** Origin type */
-  type: string;
-  /** Bucket name for S3-like origins */
-  bucket?: string | null;
-  /** Prefix for S3-like origins */
-  prefix?: string | null;
-  /** Addresses for the origin */
-  addresses?:
-    | string[]
-    | {
-        /** Address of the origin */
-        address: string;
-        /** Weight for load balancing */
-        weight?: number;
-      }[];
-  /** Host header to be sent to the origin */
-  hostHeader?: string;
-  /** Protocol policy for communicating with the origin */
-  protocolPolicy?: 'http' | 'https' | 'preserve';
-  /** Indicates if redirection should be used */
-  redirection?: boolean;
-  /** Load balancing method */
-  method?: 'ip_hash' | 'least_connections' | 'round_robin';
-  /** Path to be appended to the origin address */
-  path?: string;
-  /** Connection timeout in seconds */
-  connectionTimeout?: number;
-  /** Timeout between bytes in seconds */
-  timeoutBetweenBytes?: number;
-  /** HMAC authentication configuration */
-  hmac?: {
-    /** AWS region */
-    region: string;
-    /** AWS access key */
-    accessKey: string;
-    /** AWS secret key */
-    secretKey: string;
   };
 };
 
@@ -179,17 +137,8 @@ export type AzionRequestRule = {
   criteria?: AzionRuleCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior?: {
-    /** Set a new origin */
-    setOrigin?: {
-      /** Origin name */
-      name: string;
-      /** Origin type */
-      type: string;
-    };
     /** Rewrite the request */
     rewrite?: string;
-    /** Set headers */
-    setHeaders?: string[];
     /** Bypass cache */
     bypassCache?: boolean | null;
     /** Force HTTPS */
@@ -238,6 +187,16 @@ export type AzionRequestRule = {
           /** CDN cache TTL */
           cdn_cache_settings_maximum_ttl?: number | null;
         };
+    /** Finish request phase */
+    finishRequestPhase?: boolean;
+    /** Set Edge connector */
+    setEdgeConnector?: string;
+    /** Add request header */
+    addRequestHeader?: string[];
+    /** Add request cookie */
+    addRequestCookie?: string;
+    /** Filter request cookie */
+    filterRequestCookie?: string;
   };
 };
 
@@ -259,8 +218,6 @@ export type AzionResponseRule = {
   criteria?: AzionRuleCriteria[];
   /** Behavior to be applied when the rule matches */
   behavior?: {
-    /** Set a cookie */
-    setCookie?: string | null;
     /** Set headers */
     setHeaders?: string[];
     /** Deliver the content */
@@ -276,8 +233,6 @@ export type AzionResponseRule = {
     };
     /** Enable GZIP compression */
     enableGZIP?: boolean | null;
-    /** Filter a cookie */
-    filterCookie?: string | null;
     /** Filter a header */
     filterHeader?: string | null;
     /** Run a serverless function */
@@ -286,6 +241,10 @@ export type AzionResponseRule = {
     redirectTo301?: string | null;
     /** Redirect with 302 status */
     redirectTo302?: string | null;
+    /** Add response header */
+    addResponseHeader?: string[];
+    /** Filter response cookie */
+    filterResponseCookie?: string;
   };
 };
 
@@ -342,47 +301,104 @@ export type AzionNetworkList = {
 };
 
 /**
+ * Storage binding configuration for Azion.
+ */
+export type AzionStorageBinding = {
+  /** Storage bucket name */
+  bucket: string;
+  /** Storage prefix */
+  prefix: string;
+};
+
+/**
+ * Bindings configuration for Azion.
+ */
+export type AzionBindings = {
+  /** Storage bindings */
+  storage?: AzionStorageBinding;
+};
+
+/**
  * Function configuration for Azion.
  */
-export type AzionFunction = {
+export type AzionEdgeFunction = {
   /** Function name */
   name: string;
   /** Function path */
   path: string;
   /** Optional arguments to be passed to the function */
   args?: Record<string, unknown>;
+  /** Function bindings */
+  bindings?: AzionBindings;
 };
 
+/**
+ * Storage configuration for Azion.
+ */
+export type AzionBucket = {
+  /** Storage name */
+  name: string;
+  /** Edge access type */
+  edgeAccess?: 'read_only' | 'read_write' | 'restricted';
+  /** Storage path */
+  dir: string;
+};
+
+/**
+ * Edge Application configuration for Azion.
+ */
+export type AzionEdgeApplication = {
+  /** Application name */
+  name: string;
+  /** Enable edge cache */
+  edgeCacheEnabled?: boolean;
+  /** Enable edge functions */
+  edgeFunctionsEnabled?: boolean;
+  /** Enable application accelerator */
+  applicationAcceleratorEnabled?: boolean;
+  /** Enable image processor */
+  imageProcessorEnabled?: boolean;
+  /** Enable tiered cache */
+  tieredCacheEnabled?: boolean;
+  /** Indicates if the application is active */
+  active?: boolean;
+  /** Enable debug mode */
+  debug?: boolean;
+  /** Cache settings */
+  cache?: AzionCache[];
+  /** Rules configuration */
+  rules?: AzionRules;
+};
 /**
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
   /** Build configuration */
   build?: AzionBuild;
-  /** Domain configuration */
-  domain?: AzionDomain;
-  /** Origin configurations */
-  origin?: AzionOrigin[];
-  /** Cache configurations */
-  cache?: AzionCache[];
+  /** Edge Application configuration */
+  edgeApplications?: AzionEdgeApplication[];
   /** Functions configurations */
-  functions?: AzionFunction[];
-  /** Rules configuration */
-  rules?: AzionRules;
-  /** Purge configurations */
-  purge?: AzionPurge[];
+  edgeFunctions?: AzionEdgeFunction[];
+  /** Edge Connectors configuration */
+  edgeConnectors?: AzionEdgeConnector[];
+  /** Storage configurations */
+  edgeStorage?: AzionBucket[];
   /** Firewall configuration */
-  firewall?: AzionFirewall;
+  edgeFirewall?: AzionEdgeFirewall[];
   /** Network list configurations */
   networkList?: AzionNetworkList[];
+  /** Purge configurations */
+  purge?: AzionPurge[];
   /** WAF configuration */
   waf?: AzionWaf[];
+  /** Workload configuration */
+  workloads?: AzionWorkload[];
 };
 
 /**
  * Firewall behavior configuration for Azion.
  */
-export type AzionFirewallBehavior = {
+export type AzionEdgeFirewallBehavior = {
   /** Run a serverless function */
   runFunction?: string;
   /** Set WAF ruleset */
@@ -418,31 +434,31 @@ export type AzionFirewallBehavior = {
   };
 };
 
-export type AzionFirewallCriteriaBase = {
+export type AzionEdgeFirewallCriteriaBase = {
   /** Variable to be evaluated */
   variable: RuleVariable;
   /** Conditional type */
   conditional: RuleConditional;
 };
 
-export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
   inputValue: string;
 };
 
-export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
+export type AzionEdgeFirewallCriteriaWithoutValue = AzionEdgeFirewallCriteriaBase & {
   /** Operator for comparison that doesn't require input value */
   operator: RuleOperatorWithoutValue;
 };
 
-export type AzionFirewallCriteria = AzionFirewallCriteriaWithValue | AzionFirewallCriteriaWithoutValue;
+export type AzionEdgeFirewallCriteria = AzionEdgeFirewallCriteriaWithValue | AzionEdgeFirewallCriteriaWithoutValue;
 
 /**
  * Firewall rule configuration for Azion.
  */
-export type AzionFirewallRule = {
+export type AzionEdgeFirewallRule = {
   /** Rule name */
   name: string;
   /** Rule description */
@@ -454,15 +470,15 @@ export type AzionFirewallRule = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** Array of criteria for complex conditions */
-  criteria?: AzionFirewallCriteria[];
+  criteria?: AzionEdgeFirewallCriteria[];
   /** Behavior to be applied when the rule matches */
-  behavior: AzionFirewallBehavior;
+  behavior: AzionEdgeFirewallBehavior;
 };
 
 /**
  * Firewall configuration for Azion.
  */
-export type AzionFirewall = {
+export type AzionEdgeFirewall = {
   /** Firewall name */
   name: string;
   /** List of domains */
@@ -478,7 +494,7 @@ export type AzionFirewall = {
   /** Variable to be used in the match */
   variable?: RuleVariable;
   /** List of firewall rules */
-  rules?: AzionFirewallRule[];
+  rules?: AzionEdgeFirewallRule[];
   /** Debug mode */
   debugRules?: boolean;
 };
@@ -587,4 +603,115 @@ export interface AzionPrebuildResult {
 
 export interface AzionConfigs {
   configs: AzionConfig[];
+}
+
+export type AzionWorkloadTLS = {
+  certificate?: number | null;
+  ciphers?: WorkloadTLSCipher | null;
+  minimumVersion?: WorkloadTLSVersion | null;
+};
+
+export type AzionWorkloadProtocols = {
+  http: {
+    versions: WorkloadHTTPVersion[];
+    httpPorts: number[];
+    httpsPorts: number[];
+    quicPorts?: number[] | null;
+  };
+};
+
+export type AzionWorkloadMTLS = {
+  verification: WorkloadMTLSVerification;
+  certificate?: number | null;
+  crl?: number[] | null;
+};
+
+export type AzionWorkload = {
+  name: string;
+  alternateDomains?: string[];
+  edgeApplication: string;
+  active?: boolean;
+  networkMap?: WorkloadNetworkMap;
+  edgeFirewall?: string | null;
+  tls?: AzionWorkloadTLS;
+  protocols?: AzionWorkloadProtocols;
+  mtls?: AzionWorkloadMTLS;
+  domains: string[];
+  workloadHostnameAllowAccess?: boolean;
+};
+
+export type EdgeConnectorType = (typeof EDGE_CONNECTOR_TYPES)[number];
+export type EdgeConnectorLoadBalance = (typeof EDGE_CONNECTOR_LOAD_BALANCE)[number];
+export type EdgeConnectorConnectionPreference = (typeof EDGE_CONNECTOR_CONNECTION_PREFERENCE)[number];
+
+export interface EdgeConnectorModules {
+  loadBalancerEnabled: boolean;
+  originShieldEnabled: boolean;
+}
+
+export interface EdgeConnectorTLS {
+  policy: string;
+}
+
+export interface EdgeConnectorAddress {
+  address: string;
+  plainPort?: number;
+  tlsPort?: number;
+  serverRole?: 'primary' | 'backup';
+  weight?: number;
+  active?: boolean;
+  maxConns?: number;
+  maxFails?: number;
+  failTimeout?: number;
+  tls?: {
+    policy: 'off' | 'on' | 'preserve';
+  };
+}
+
+export interface HttpTypeProperty {
+  versions: string[];
+  host: string;
+  path: string;
+  followingRedirect?: boolean;
+  realIpHeader?: string;
+  realPortHeader?: string;
+}
+
+export interface LiveIngestTypeProperty {
+  endpoint: string;
+}
+
+export interface S3TypeProperty {
+  host: string;
+  bucket: string;
+  path: string;
+  region: string;
+  accessKey: string;
+  secretKey: string;
+}
+
+export interface StorageTypeProperty {
+  bucket: string;
+  prefix?: string;
+}
+
+export type EdgeConnectorTypeProperty =
+  | HttpTypeProperty
+  | LiveIngestTypeProperty
+  | S3TypeProperty
+  | StorageTypeProperty;
+
+export interface AzionEdgeConnector {
+  name: string;
+  modules: EdgeConnectorModules;
+  active?: boolean;
+  type: EdgeConnectorType;
+  typeProperties: EdgeConnectorTypeProperty;
+  addresses?: EdgeConnectorAddress[];
+  tls?: EdgeConnectorTLS;
+  loadBalanceMethod?: EdgeConnectorLoadBalance;
+  connectionPreference?: EdgeConnectorConnectionPreference[];
+  connectionTimeout?: number;
+  readWriteTimeout?: number;
+  maxRetries?: number;
 }

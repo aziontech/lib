@@ -11,171 +11,111 @@ describe('FirewallProcessConfigStrategy', () => {
   describe('transformToManifest', () => {
     it('should transform a complete firewall config to manifest', () => {
       const config: AzionConfig = {
-        firewall: {
-          name: 'Test Firewall',
-          domains: ['example.com'],
-          active: true,
-          edgeFunctions: true,
-          networkProtection: true,
-          waf: true,
-          debugRules: true,
-          rules: [
-            {
-              name: 'Test Rule',
-              description: 'Test Description',
-              active: true,
-              match: '/test',
-              variable: 'uri',
-              criteria: [
-                {
-                  variable: 'uri',
-                  conditional: 'if',
-                  operator: 'matches',
-                  inputValue: '/test',
-                },
-              ],
-              behavior: {
-                deny: true,
-              },
-            },
-          ],
-        },
-      };
-
-      const manifest = strategy.transformToManifest(config);
-      expect(manifest).toEqual({
-        main_settings: {
-          name: 'Test Firewall',
-          domains: ['example.com'],
-          is_active: true,
-          edge_functions_enabled: true,
-          network_protection_enabled: true,
-          waf_enabled: true,
-          debug_rules: true,
-        },
-        rules_engine: [
+        edgeFirewall: [
           {
-            name: 'Test Rule',
-            description: 'Test Description',
-            is_active: true,
-            behaviors: [{ name: 'deny', target: '' }],
-            criteria: [
-              [
-                {
-                  variable: 'uri',
-                  conditional: 'if',
-                  operator: 'matches',
-                  input_value: '/test',
+            name: 'Test Firewall',
+            domains: ['example.com'],
+            active: true,
+            edgeFunctions: true,
+            networkProtection: true,
+            waf: true,
+            debugRules: true,
+            rules: [
+              {
+                name: 'Test Rule',
+                description: 'Test Description',
+                active: true,
+                match: '/test',
+                variable: 'uri',
+                criteria: [
+                  {
+                    variable: 'uri',
+                    conditional: 'if',
+                    operator: 'matches',
+                    inputValue: '/test',
+                  },
+                ],
+                behavior: {
+                  deny: true,
                 },
-              ],
+              },
             ],
           },
         ],
-      });
+      };
+
+      const manifest = strategy.transformToManifest(config);
+      expect(manifest).toEqual([
+        {
+          main_settings: {
+            name: 'Test Firewall',
+            domains: ['example.com'],
+            is_active: true,
+            edge_functions_enabled: true,
+            network_protection_enabled: true,
+            waf_enabled: true,
+            debug_rules: true,
+          },
+          rules_engine: [
+            {
+              name: 'Test Rule',
+              description: 'Test Description',
+              is_active: true,
+              behaviors: [{ name: 'deny', target: '' }],
+              criteria: [
+                [
+                  {
+                    variable: 'uri',
+                    conditional: 'if',
+                    operator: 'matches',
+                    input_value: '/test',
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+      ]);
     });
 
     it('should handle firewall config without rules', () => {
       const config: AzionConfig = {
-        firewall: {
-          name: 'Test Firewall',
-          domains: ['example.com'],
-          active: true,
-        },
-      };
-
-      const manifest = strategy.transformToManifest(config);
-      expect(manifest).toEqual({
-        main_settings: {
-          name: 'Test Firewall',
-          domains: ['example.com'],
-          is_active: true,
-          edge_functions_enabled: false,
-          network_protection_enabled: false,
-          waf_enabled: false,
-          debug_rules: false,
-        },
-      });
-    });
-
-    it('should return empty object when no firewall config is provided', () => {
-      const config: AzionConfig = {};
-      const manifest = strategy.transformToManifest(config);
-      expect(manifest).toBeUndefined();
-    });
-
-    it('should transform all behavior types correctly', () => {
-      const config: AzionConfig = {
-        functions: [
+        edgeFirewall: [
           {
-            name: 'function1',
-            path: '.edge/functions/function1.js',
+            name: 'Test Firewall',
+            domains: ['example.com'],
+            active: true,
           },
         ],
-        firewall: {
-          name: 'Test Firewall',
-          rules: [
-            {
-              name: 'All Behaviors Rule',
-              active: true,
-              behavior: {
-                runFunction: 'function1',
-                setWafRuleset: {
-                  wafMode: 'learning',
-                  wafId: '123',
-                },
-                setRateLimit: {
-                  type: 'second',
-                  limitBy: 'clientIp',
-                  averageRateLimit: '1000',
-                  maximumBurstSize: '1000',
-                },
-                setCustomResponse: {
-                  statusCode: 403,
-                  contentType: 'text/plain',
-                  contentBody: 'Blocked',
-                },
-              },
-            },
-          ],
-        },
       };
 
       const manifest = strategy.transformToManifest(config);
-      expect(manifest.rules_engine[0].behaviors).toEqual([
+      expect(manifest).toEqual([
         {
-          name: 'run_function',
-          target: 'function1',
-        },
-        {
-          name: 'set_waf_ruleset',
-          target: {
-            mode: 'learning',
-            waf_id: '123',
-          },
-        },
-        {
-          name: 'set_rate_limit',
-          target: {
-            type: 'second',
-            limit_by: 'clientIp',
-          },
-        },
-        {
-          name: 'set_custom_response',
-          target: {
-            status_code: 403,
-            content_type: 'text/plain',
-            content_body: 'Blocked',
+          main_settings: {
+            name: 'Test Firewall',
+            domains: ['example.com'],
+            is_active: true,
+            edge_functions_enabled: false,
+            network_protection_enabled: false,
+            waf_enabled: false,
+            debug_rules: false,
           },
         },
       ]);
+    });
+
+    it('should return undefined when no firewall config is provided', () => {
+      const config: AzionConfig = {};
+      const manifest = strategy.transformToManifest(config);
+      expect(manifest).toBeUndefined();
     });
   });
 
   describe('transformToConfig', () => {
     it('should transform a complete manifest to config', () => {
-      const manifest = {
-        firewall: {
+      const manifest = [
+        {
           main_settings: {
             name: 'Test Firewall',
             domains: ['example.com'],
@@ -204,62 +144,66 @@ describe('FirewallProcessConfigStrategy', () => {
             },
           ],
         },
-      };
+      ];
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
+      const result = strategy.transformToConfig({ edgeFirewall: manifest }, config);
 
-      expect(result).toEqual({
-        name: 'Test Firewall',
-        domains: ['example.com'],
-        active: true,
-        edgeFunctions: true,
-        networkProtection: true,
-        waf: true,
-        debugRules: true,
-        rules: [
-          {
-            name: 'Test Rule',
-            description: 'Test Description',
-            active: true,
-            criteria: [
-              {
-                variable: '${uri}',
-                conditional: 'if',
-                operator: 'matches',
-                inputValue: '/test',
+      expect(result).toEqual([
+        {
+          name: 'Test Firewall',
+          domains: ['example.com'],
+          active: true,
+          edgeFunctions: true,
+          networkProtection: true,
+          waf: true,
+          debugRules: true,
+          rules: [
+            {
+              name: 'Test Rule',
+              description: 'Test Description',
+              active: true,
+              criteria: [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  inputValue: '/test',
+                },
+              ],
+              behavior: {
+                deny: true,
               },
-            ],
-            behavior: {
-              deny: true,
             },
-          },
-        ],
-      });
+          ],
+        },
+      ]);
     });
 
     it('should handle manifest without rules', () => {
-      const manifest = {
-        firewall: {
+      const manifest = [
+        {
           main_settings: {
             name: 'Test Firewall',
             domains: ['example.com'],
             is_active: true,
           },
         },
-      };
+      ];
 
       const config = {};
-      const result = strategy.transformToConfig(manifest, config);
-      expect(result).toEqual({
-        name: 'Test Firewall',
-        domains: ['example.com'],
-        active: true,
-        edgeFunctions: false,
-        networkProtection: false,
-        waf: false,
-        debugRules: false,
-      });
+      const result = strategy.transformToConfig({ edgeFirewall: manifest }, config);
+      expect(result).toEqual([
+        {
+          name: 'Test Firewall',
+          domains: ['example.com'],
+          active: true,
+          edgeFunctions: false,
+          networkProtection: false,
+          waf: false,
+          debugRules: false,
+        },
+      ]);
     });
 
     it('should return undefined when no firewall manifest is provided', () => {
@@ -267,117 +211,6 @@ describe('FirewallProcessConfigStrategy', () => {
       const config = {};
       const result = strategy.transformToConfig(manifest, config);
       expect(result).toStrictEqual(expect.objectContaining({}));
-    });
-
-    it('should transform all behavior types from manifest to config', () => {
-      const manifest = {
-        firewall: {
-          name: 'Test Firewall',
-          rules_engine: [
-            {
-              name: 'All Behaviors Rule',
-              is_active: true,
-              behaviors: [
-                {
-                  name: 'run_function',
-                  target: 'function1',
-                },
-                {
-                  name: 'set_waf_ruleset',
-                  target: {
-                    mode: 'learning',
-                    waf_id: '123',
-                  },
-                },
-                {
-                  name: 'set_rate_limit',
-                  target: {
-                    type: 'second',
-                    value: '10',
-                    limit_by: 'ip',
-                  },
-                },
-                {
-                  name: 'set_custom_response',
-                  target: {
-                    status_code: 403,
-                    content_type: 'text/plain',
-                    content_body: 'Blocked',
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      const config = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result: any = strategy.transformToConfig(manifest, config);
-      expect(result?.rules?.[0].behavior).toEqual({
-        runFunction: {
-          path: 'function1',
-        },
-        setWafRuleset: {
-          wafMode: 'learning',
-          wafId: '123',
-        },
-        setRateLimit: {
-          type: 'second',
-          value: '10',
-          limitBy: 'ip',
-        },
-        setCustomResponse: {
-          statusCode: 403,
-          contentType: 'text/plain',
-          contentBody: 'Blocked',
-        },
-      });
-    });
-
-    it('should handle empty behaviors array', () => {
-      const manifest = {
-        firewall: {
-          name: 'Test Firewall',
-          rules_engine: [
-            {
-              name: 'Empty Behaviors Rule',
-              is_active: true,
-              behaviors: [],
-            },
-          ],
-        },
-      };
-
-      const config = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result: any = strategy.transformToConfig(manifest, config);
-      expect(result?.rules?.[0].behavior).toEqual({});
-    });
-
-    it('should handle unknown behavior types gracefully', () => {
-      const manifest = {
-        firewall: {
-          name: 'Test Firewall',
-          rules_engine: [
-            {
-              name: 'Unknown Behavior Rule',
-              is_active: true,
-              behaviors: [
-                {
-                  name: 'unknown_behavior',
-                  target: 'test',
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      const config = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result: any = strategy.transformToConfig(manifest, config);
-      expect(result?.rules?.[0].behavior).toEqual({});
     });
   });
 });

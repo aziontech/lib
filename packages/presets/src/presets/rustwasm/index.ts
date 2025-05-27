@@ -5,4 +5,4 @@ import metadata from './metadata';
 // import prebuild from './prebuild';
 // import postbuild from './postbuild';
 
-export const rustwasm: AzionBuildPreset = { config, metadata, handler };
+export const RustWASM: AzionBuildPreset = { config, metadata, handler };

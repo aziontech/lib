@@ -5,4 +5,4 @@ import metadata from './metadata';
 import prebuild from './prebuild';
 // import postbuild from './postbuild';
 
-export const svelte: AzionBuildPreset = { config, metadata, handler, prebuild };
+export const Svelte: AzionBuildPreset = { config, metadata, handler, prebuild };
