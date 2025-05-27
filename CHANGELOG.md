@@ -1,3 +1,10 @@
+## [1.20.0-stage.4](https://github.com/aziontech/lib/compare/v1.20.0-stage.3...v1.20.0-stage.4) (2025-05-27)
+
+
+### Features
+
+* **config:** azion api v4 (#161) ([49c3f02](https://github.com/aziontech/lib/commit/49c3f02aa39d5e24eb2141db2370a26e63f8fe10))
+
 ## [1.20.0-stage.3](https://github.com/aziontech/lib/compare/v1.20.0-stage.2...v1.20.0-stage.3) (2025-05-15)
 
 
