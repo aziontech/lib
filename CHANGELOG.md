@@ -1,3 +1,10 @@
+## [1.20.0-stage.5](https://github.com/aziontech/lib/compare/v1.20.0-stage.4...v1.20.0-stage.5) (2025-05-28)
+
+
+### Bug Fixes
+
+* revert exported name (presets) ([94a1739](https://github.com/aziontech/lib/commit/94a173990515dc17fcc954baa3542c4645a6fb59))
+
 ## [1.20.0-stage.4](https://github.com/aziontech/lib/compare/v1.20.0-stage.3...v1.20.0-stage.4) (2025-05-27)
 
 
