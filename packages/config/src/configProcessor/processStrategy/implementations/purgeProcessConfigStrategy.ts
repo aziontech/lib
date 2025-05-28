@@ -14,7 +14,7 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
     config?.purge.forEach((purge) => {
-      purge?.urls.forEach((value) => {
+      purge?.items.forEach((value) => {
         if (!value.includes('http://') && !value.includes('https://')) {
           throw new Error('The URL must contain the protocol (http:// or https://).');
         }
@@ -27,12 +27,11 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const purgeSetting: any = {
         type: purge.type,
-        urls: purge.urls || [],
-        method: purge.method || 'delete',
+        items: purge.items || [],
       };
 
-      if (purge?.type === 'cachekey') {
-        purgeSetting.layer = purge.layer || 'edge_caching';
+      if (purge?.layer) {
+        purgeSetting.layer = purge.layer;
       }
 
       payload.push(purgeSetting);
@@ -48,7 +47,7 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
     }
     transformedPayload.purge = [];
     purgeConfig.forEach((purge) => {
-      purge.urls.forEach((value: string) => {
+      purge.items.forEach((value: string) => {
         if (!value.includes('http://') && !value.includes('https://')) {
           throw new Error('The URL must contain the protocol (http:// or https://).');
         }
@@ -59,12 +58,11 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
       });
       const purgeSetting: AzionPurge = {
         type: purge.type,
-        urls: purge.urls || [],
-        method: purge.method || 'delete',
+        items: purge.items || [],
       };
 
-      if (purge?.type === 'cachekey') {
-        purgeSetting.layer = purge.layer || 'edge_caching';
+      if (purge?.layer) {
+        purgeSetting.layer = purge.layer;
       }
 
       transformedPayload.purge!.push(purgeSetting);
