@@ -4,4 +4,4 @@ import handler from './handler';
 import metadata from './metadata';
 import prebuild from './prebuild';
 
-export const Qwik: AzionBuildPreset = { config, metadata, handler, prebuild };
+export const qwik: AzionBuildPreset = { config, metadata, handler, prebuild };

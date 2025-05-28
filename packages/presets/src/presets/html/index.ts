@@ -3,4 +3,4 @@ import config from './config';
 import handler from './handler';
 import metadata from './metadata';
 
-export const HTML: AzionBuildPreset = { config, metadata, handler };
+export const html: AzionBuildPreset = { config, metadata, handler };

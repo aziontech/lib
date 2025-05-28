@@ -4,4 +4,4 @@ import handler from './handler';
 import metadata from './metadata';
 import prebuild from './prebuild';
 
-export const Angular: AzionBuildPreset = { config, metadata, handler, prebuild };
+export const angular: AzionBuildPreset = { config, metadata, handler, prebuild };

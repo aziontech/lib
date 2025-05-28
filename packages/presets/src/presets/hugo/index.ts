@@ -4,4 +4,4 @@ import handler from './handler';
 import metadata from './metadata';
 import prebuild from './prebuild';
 
-export const Hugo: AzionBuildPreset = { config, metadata, handler, prebuild };
+export const hugo: AzionBuildPreset = { config, metadata, handler, prebuild };

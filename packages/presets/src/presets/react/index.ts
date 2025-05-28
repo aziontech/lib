@@ -4,4 +4,4 @@ import handler from './handler';
 import metadata from './metadata';
 import prebuild from './prebuild';
 
-export const React: AzionBuildPreset = { config, metadata, handler, prebuild };
+export const react: AzionBuildPreset = { config, metadata, handler, prebuild };
