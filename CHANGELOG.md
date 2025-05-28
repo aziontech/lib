@@ -1,3 +1,10 @@
+## [1.20.0-stage.6](https://github.com/aziontech/lib/compare/v1.20.0-stage.5...v1.20.0-stage.6) (2025-05-28)
+
+
+### Features
+
+* purge api v4 (#167) ([f779d6a](https://github.com/aziontech/lib/commit/f779d6af4f2c9fd03fdce45d851f72347c21f3b9))
+
 ## [1.20.0-stage.5](https://github.com/aziontech/lib/compare/v1.20.0-stage.4...v1.20.0-stage.5) (2025-05-28)
 
 
