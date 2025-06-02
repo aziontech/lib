@@ -1,3 +1,10 @@
+## [1.20.0-stage.7](https://github.com/aziontech/lib/compare/v1.20.0-stage.6...v1.20.0-stage.7) (2025-06-02)
+
+
+### Bug Fixes
+
+* streamline stream polyfills and enhance process, module, setInterval (#169) ([118f7bb](https://github.com/aziontech/lib/commit/118f7bb5ae501df4eb1c8e96fed7a976fcbb7f5d))
+
 ## [1.20.0-stage.6](https://github.com/aziontech/lib/compare/v1.20.0-stage.5...v1.20.0-stage.6) (2025-05-28)
 
 
