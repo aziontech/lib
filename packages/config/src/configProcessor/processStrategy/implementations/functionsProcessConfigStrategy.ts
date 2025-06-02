@@ -28,7 +28,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
 
       return {
         name: func.name,
-        target: func.path,
+        argument: func.path,
         args: func.args || {},
         bindings: func.bindings
           ? {
@@ -54,7 +54,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
     transformedPayload.edgeFunctions = payload.functions.map((func: any) => {
       const config = {
         name: func.name,
-        path: func.target,
+        path: func.argument,
         args: func.args || {},
         bindings: func.bindings
           ? {

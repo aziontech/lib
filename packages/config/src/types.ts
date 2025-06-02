@@ -443,7 +443,7 @@ export type AzionEdgeFirewallCriteriaWithValue = AzionEdgeFirewallCriteriaBase &
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Input value for comparison */
-  argument: string;
+  inputValue: string;
 };
 
 export type AzionEdgeFirewallCriteriaWithoutValue = AzionEdgeFirewallCriteriaBase & {

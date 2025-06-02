@@ -418,9 +418,9 @@ const schemaFunctionManifest = {
       type: 'string',
       errorMessage: "The 'name' field must be a string",
     },
-    target: {
+    arguemnt: {
       type: 'string',
-      errorMessage: "The 'target' field must be a string",
+      errorMessage: "The 'argument' field must be a string",
     },
     args: {
       type: 'object',
@@ -594,9 +594,9 @@ const schemaApplicationRules = {
             enum: RULE_BEHAVIOR_NAMES,
             errorMessage: "The 'name' field must be a valid behavior name.",
           },
-          target: {
+          argument: {
             oneOf: [{ type: 'string' }, { type: 'null' }],
-            errorMessage: "The 'target' must be a string or null.",
+            errorMessage: "The 'argument' must be a string or null.",
           },
         },
         required: ['name'],

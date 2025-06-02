@@ -172,7 +172,7 @@ export interface AzionClient {
    *   const { data: newRule } = await app.rules.request.createRule({
    *     data: {
    *       name: 'My Rule',
-   *       behaviors: [{ name: 'set_origin', target: newOrigin.id }],
+   *       behaviors: [{ name: 'set_origin', argument: newOrigin.id }],
    *       criteria: [{ condition: 'starts_with', variable: '${uri}', input: '/api' }]
    *     }
    *   });
