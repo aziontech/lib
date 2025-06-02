@@ -12,7 +12,8 @@ export default {
     __dirname: `${polyfillsPath}/node/globals/path-dirname.js`,
     __filename: `${polyfillsPath}/node/globals/path-filename.js`,
     process: `${polyfillsPath}/node/globals/process.cjs`,
-    performance: `${polyfillsPath}/node/globals/performance.js`,
+    performance: `unenv/polyfill/performance`,
+    setInterval: `${polyfillsPath}/node/globals/set-interval.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',
