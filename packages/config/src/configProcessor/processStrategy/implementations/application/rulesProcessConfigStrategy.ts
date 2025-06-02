@@ -90,12 +90,12 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
-                  const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
+                  const isWithValue = 'argument' in criterion;
+                  const { argument, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
-                    ...(isWithValue && { input_value: inputValue }),
+                    ...(isWithValue && { argument: argument }),
                   };
                 }),
               ]
@@ -105,7 +105,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
                     variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: rule.match,
+                    argument: rule.match,
                   },
                 ],
               ],
@@ -127,12 +127,12 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
-                  const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
+                  const isWithValue = 'argument' in criterion;
+                  const { argument, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
-                    ...(isWithValue && { input_value: inputValue }),
+                    ...(isWithValue && { argument: argument }),
                   };
                 }),
               ]
@@ -142,7 +142,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
                     variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: rule.match,
+                    argument: rule.match,
                   },
                 ],
               ],
@@ -208,11 +208,11 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rule.criteria[0].map((criterion: any) => {
-                  const isWithValue = 'input_value' in criterion;
-                  const { input_value, ...rest } = criterion;
+                  const isWithValue = 'argument' in criterion;
+                  const { argument, ...rest } = criterion;
                   return {
                     ...rest,
-                    ...(isWithValue && { inputValue: input_value }),
+                    ...(isWithValue && { argument: argument }),
                   };
                 })
               : [],
@@ -227,11 +227,11 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
             Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rule.criteria[0].map((criterion: any) => {
-                  const isWithValue = 'input_value' in criterion;
-                  const { input_value, ...rest } = criterion;
+                  const isWithValue = 'argument' in criterion;
+                  const { argument, ...rest } = criterion;
                   return {
                     ...rest,
-                    ...(isWithValue && { inputValue: input_value }),
+                    ...(isWithValue && { argument: argument }),
                   };
                 })
               : [],

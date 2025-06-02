@@ -241,7 +241,7 @@ export default {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            inputValue: '^/',
+            argument: '^/',
           },
         ],
         behavior: {
@@ -258,7 +258,7 @@ export default {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            inputValue: '^/',
+            argument: '^/',
           },
         ],
         behavior: {
@@ -274,7 +274,7 @@ export default {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            inputValue: '^/login',
+            argument: '^/login',
           },
         ],
         behavior: {
@@ -356,7 +356,7 @@ export default {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            inputValue: '^/',
+            argument: '^/',
           },
         ],
         behavior: {
@@ -372,7 +372,7 @@ export default {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            inputValue: '^/',
+            argument: '^/',
           },
         ],
         behavior: {

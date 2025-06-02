@@ -212,9 +212,9 @@ const schemaFirewallRuleCriteria = {
       enum: FIREWALL_RULE_CONDITIONALS,
       errorMessage: "The 'conditional' field must be one of: if, and, or",
     },
-    input_value: {
+    argument: {
       type: 'string',
-      errorMessage: "The 'input_value' field must be a string.",
+      errorMessage: "The 'argument' field must be a string.",
     },
   },
   required: ['variable', 'operator', 'conditional'],
@@ -625,9 +625,9 @@ const schemaApplicationRules = {
               enum: RULE_CONDITIONALS,
               errorMessage: "The 'conditional' field must be one of: if, and, or.",
             },
-            input_value: {
+            argument: {
               type: 'string',
-              errorMessage: "The 'input_value' field must be a string.",
+              errorMessage: "The 'argument' field must be a string.",
             },
           },
           required: ['variable', 'operator', 'conditional'],
@@ -638,8 +638,8 @@ const schemaApplicationRules = {
                   properties: {
                     operator: { enum: RULE_OPERATORS_WITH_VALUE },
                   },
-                  required: ['input_value'],
-                  errorMessage: "The operator 'matches' requires an input_value.",
+                  required: ['argument'],
+                  errorMessage: "The operator 'matches' requires an argument.",
                 },
               ],
             },

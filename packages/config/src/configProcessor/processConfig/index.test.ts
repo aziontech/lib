@@ -171,7 +171,7 @@ describe('processConfig', () => {
             criteria: expect.arrayContaining([
               expect.arrayContaining([
                 expect.objectContaining({
-                  input_value: '/api',
+                  argument: '/api',
                 }),
               ]),
             ]),
@@ -1747,7 +1747,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/',
+                  argument: '^/',
                 },
               ],
               behavior: {
@@ -1765,7 +1765,7 @@ describe('processConfig', () => {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            input_value: '^/',
+            argument: '^/',
           },
         ],
       ]);
@@ -1783,7 +1783,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  input_value: '^/',
+                  argument: '^/',
                 },
               ],
               behavior: {
@@ -1816,13 +1816,13 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/',
+                  argument: '^/',
                 },
                 {
                   variable: '${device_group}',
                   operator: 'is_equal',
                   conditional: 'and',
-                  inputValue: 'mobile',
+                  argument: 'mobile',
                 },
               ],
               behavior: {
@@ -1840,13 +1840,13 @@ describe('processConfig', () => {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            input_value: '^/',
+            argument: '^/',
           },
           {
             variable: '${device_group}',
             operator: 'is_equal',
             conditional: 'and',
-            input_value: 'mobile',
+            argument: 'mobile',
           },
         ],
       ]);
@@ -1904,7 +1904,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/',
+                  argument: '^/',
                 },
               ],
               behavior: {
@@ -1944,7 +1944,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/',
+                  argument: '^/',
                 },
               ],
               behavior: {
@@ -1979,7 +1979,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/',
+                  argument: '^/',
                 },
               ],
               behavior: {
@@ -2014,7 +2014,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/images',
+                  argument: '^/images',
                 },
               ],
               behavior: {
@@ -2049,7 +2049,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  inputValue: '^/login',
+                  argument: '^/login',
                 },
               ],
               behavior: {
