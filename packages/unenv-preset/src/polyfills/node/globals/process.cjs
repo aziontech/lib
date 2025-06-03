@@ -1,5 +1,7 @@
 /* eslint-disable */
 // shim for using process in browser
+globalThis.startTime = globalThis.startTime || Date.now();
+
 var processShim = (module.exports = {});
 
 /*
@@ -188,6 +190,10 @@ processShim.removeAllListeners = noop;
 processShim.emit = noop;
 processShim.prependListener = noop;
 processShim.prependOnceListener = noop;
+
+processShim.uptime = function () {
+  return (Date.now() - globalThis.startTime) / 1000;
+};
 
 processShim.listeners = function (name) {
   return [];

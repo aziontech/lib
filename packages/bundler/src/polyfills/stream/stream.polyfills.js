@@ -1,29 +1,59 @@
 /* eslint-disable */
-/** This polyfill is referenced in #build/bundlers/polyfills/polyfills-manager.js
- *
+/**
  * STREAM_CONTEXT is defined in runtime.env.js for use on the local server
  */
 
-export var { Duplex } = STREAM_CONTEXT;
-export var { Writable } = STREAM_CONTEXT;
-export var { Readable } = STREAM_CONTEXT;
-export var { Transform } = STREAM_CONTEXT;
-export var { PassThrough } = STREAM_CONTEXT;
-export var { Stream } = STREAM_CONTEXT;
-export var { prototype } = STREAM_CONTEXT;
+const localStream = {};
+const { Duplex, Writable, Readable, Transform, PassThrough, Stream } = STREAM_CONTEXT;
+export const { prototype } = STREAM_CONTEXT;
+
+localStream.Duplex = Duplex;
+localStream.Writable = Writable;
+localStream.Readable = Readable;
+localStream.Transform = Transform;
+localStream.PassThrough = PassThrough;
+localStream.Stream = Stream;
+localStream.prototype = prototype;
 
 Readable.toWeb = function (readable) {
+  let onData, onEnd, onError;
+  let closed = false;
   const stream = new ReadableStream({
     start(controller) {
-      readable.on('data', (chunk) => {
-        controller.enqueue(chunk);
+      onData = (chunk) => {
+        if (!closed) controller.enqueue(chunk);
+      };
+      onEnd = () => {
+        if (!closed) {
+          closed = true;
+          controller.close();
+        }
+      };
+      onError = (error) => {
+        if (!closed) {
+          closed = true;
+          controller.error(error);
+        }
+      };
+
+      readable.on('data', onData);
+      readable.on('end', onEnd);
+      readable.on('error', onError);
+
+      readable.on('close', () => {
+        if (!closed) {
+          closed = true;
+          controller.close();
+        }
       });
-      readable.on('end', () => {
-        controller.close();
-      });
-      readable.on('error', (error) => {
-        controller.error(error);
-      });
+    },
+    cancel(reason) {
+      readable.off('data', onData);
+      readable.off('end', onEnd);
+      readable.off('error', onError);
+      if (typeof readable.destroy === 'function') {
+        readable.destroy(reason);
+      }
     },
   });
   return stream;
@@ -45,12 +75,14 @@ Readable.fromWeb = function (webStream) {
   });
 };
 
-Writable.toWeb = function (webStream) {
+Writable.fromWeb = function (webStream) {
   const writer = webStream.getWriter();
 
   writer.closed.catch((error) => {
-    console.error('WritableStream closed with error:', error);
-    console.error('Error details:', error?.message, error?.stack);
+    if (error) {
+      console.error('WritableStream closed with error:', error);
+      console.error('Error details:', error?.message, error?.stack);
+    }
   });
 
   return new Writable({
@@ -92,13 +124,6 @@ Writable.toWeb = function (webStream) {
   });
 };
 
-export default {
-  Duplex,
-  Writable,
-  Readable,
-  Transform,
-  PassThrough,
-  Stream,
-  stream: STREAM_CONTEXT,
-  prototype,
-};
+export { Duplex, PassThrough, Readable, Stream, Transform, Writable };
+
+export default localStream;
