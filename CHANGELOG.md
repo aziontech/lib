@@ -1,3 +1,10 @@
+## [1.20.0-stage.8](https://github.com/aziontech/lib/compare/v1.20.0-stage.7...v1.20.0-stage.8) (2025-06-03)
+
+
+### Bug Fixes
+
+* api v4  (#168) ([dc33e5a](https://github.com/aziontech/lib/commit/dc33e5a9cfe9bd069d5bb5fd61fe026ddde53dcb))
+
 ## [1.20.0-stage.7](https://github.com/aziontech/lib/compare/v1.20.0-stage.6...v1.20.0-stage.7) (2025-06-02)
 
 
