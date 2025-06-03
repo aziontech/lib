@@ -15,7 +15,7 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
     }
     config?.purge.forEach((purge) => {
       purge?.items.forEach((value) => {
-        if (!value.includes('http://') && !value.includes('https://')) {
+        if (purge.type === 'url' && !value.includes('http://') && !value.includes('https://')) {
           throw new Error('The URL must contain the protocol (http:// or https://).');
         }
 
@@ -48,7 +48,7 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
     transformedPayload.purge = [];
     purgeConfig.forEach((purge) => {
       purge.items.forEach((value: string) => {
-        if (!value.includes('http://') && !value.includes('https://')) {
+        if (purge.type === 'url' && !value.includes('http://') && !value.includes('https://')) {
           throw new Error('The URL must contain the protocol (http:// or https://).');
         }
 

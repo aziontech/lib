@@ -1,21 +1,16 @@
 /* eslint-disable */
 import stream from 'node:stream';
 
-export var { Duplex } = stream;
-export var { Writable } = stream;
-export var { Readable } = stream;
-export var { Transform } = stream;
-export var { PassThrough } = stream;
-export var { Stream } = stream;
-export var { prototype } = stream;
+const localStream = {};
+export const { Duplex, Writable, Readable, Transform, PassThrough, Stream } = stream;
+export const { prototype } = stream;
 
-export default {
-  Duplex,
-  Writable,
-  Readable,
-  Transform,
-  PassThrough,
-  Stream,
-  stream,
-  prototype,
-};
+localStream.Duplex = Duplex;
+localStream.Writable = Writable;
+localStream.Readable = Readable;
+localStream.Transform = Transform;
+localStream.PassThrough = PassThrough;
+localStream.Stream = Stream;
+localStream.prototype = prototype;
+
+export default localStream;

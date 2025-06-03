@@ -1,3 +1,24 @@
+## [1.20.0-stage.7](https://github.com/aziontech/lib/compare/v1.20.0-stage.6...v1.20.0-stage.7) (2025-06-02)
+
+
+### Bug Fixes
+
+* streamline stream polyfills and enhance process, module, setInterval (#169) ([118f7bb](https://github.com/aziontech/lib/commit/118f7bb5ae501df4eb1c8e96fed7a976fcbb7f5d))
+
+## [1.20.0-stage.6](https://github.com/aziontech/lib/compare/v1.20.0-stage.5...v1.20.0-stage.6) (2025-05-28)
+
+
+### Features
+
+* purge api v4 (#167) ([f779d6a](https://github.com/aziontech/lib/commit/f779d6af4f2c9fd03fdce45d851f72347c21f3b9))
+
+## [1.20.0-stage.5](https://github.com/aziontech/lib/compare/v1.20.0-stage.4...v1.20.0-stage.5) (2025-05-28)
+
+
+### Bug Fixes
+
+* revert exported name (presets) ([94a1739](https://github.com/aziontech/lib/commit/94a173990515dc17fcc954baa3542c4645a6fb59))
+
 ## [1.20.0-stage.4](https://github.com/aziontech/lib/compare/v1.20.0-stage.3...v1.20.0-stage.4) (2025-05-27)
 
 
