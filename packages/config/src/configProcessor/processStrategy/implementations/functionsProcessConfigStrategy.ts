@@ -17,7 +17,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
 
   transformToManifest(config: AzionConfig) {
     if (!Array.isArray(config?.edgeFunctions) || config?.edgeFunctions.length === 0) {
-      return {};
+      return [];
     }
 
     return config.edgeFunctions.map((func) => {
