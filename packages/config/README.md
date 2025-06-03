@@ -129,7 +129,7 @@ const config = defineConfig({
             variable: 'remote_addr',
             operator: 'in',
             conditional: 'if',
-            inputValue: 'suspicious_ips',
+            argument: 'suspicious_ips',
           },
         ],
         behavior: {
@@ -145,7 +145,7 @@ const config = defineConfig({
             variable: 'uri',
             operator: 'starts_with',
             conditional: 'if',
-            inputValue: '/api/',
+            argument: '/api/',
           },
         ],
         behavior: {
@@ -597,7 +597,7 @@ Type definition for the response rule configuration.
   - `variable: RuleVariable` - Variable to be evaluated.
   - `conditional: RuleConditional` - Conditional type.
   - `operator: RuleOperatorWithValue | RuleOperatorWithoutValue` - Comparison operator.
-  - `inputValue?: string` - Input value for comparison (required for operators with value).
+  - `argument?: string` - Input value for comparison (required for operators with value).
 
   ### `AzionWaf`
 

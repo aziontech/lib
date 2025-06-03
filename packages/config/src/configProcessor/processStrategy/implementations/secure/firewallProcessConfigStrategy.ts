@@ -40,12 +40,12 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
-                  const isWithValue = 'inputValue' in criterion;
-                  const { inputValue, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
+                  const isWithValue = 'argument' in criterion;
+                  const { argument, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
                   return {
                     ...rest,
                     variable: criterion.variable,
-                    ...(isWithValue && { input_value: inputValue }),
+                    ...(isWithValue && { argument: argument }),
                   };
                 }),
               ]
@@ -55,7 +55,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
                     variable: rule.variable,
                     operator: 'matches',
                     conditional: 'if',
-                    input_value: rule.match,
+                    argument: rule.match,
                   },
                 ],
               ],
@@ -156,11 +156,11 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
             criteria:
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               rule.criteria?.[0].map((criterion: any) => {
-                const isWithValue = 'input_value' in criterion;
-                const { input_value, ...rest } = criterion;
+                const isWithValue = 'argument' in criterion;
+                const { argument, ...rest } = criterion;
                 return {
                   ...rest,
-                  ...(isWithValue && { inputValue: input_value }),
+                  ...(isWithValue && { argument: argument }),
                 };
               }) || [],
           };

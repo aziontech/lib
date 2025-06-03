@@ -212,9 +212,9 @@ const schemaFirewallRuleCriteria = {
       enum: FIREWALL_RULE_CONDITIONALS,
       errorMessage: "The 'conditional' field must be one of: if, and, or",
     },
-    input_value: {
+    argument: {
       type: 'string',
-      errorMessage: "The 'input_value' field must be a string.",
+      errorMessage: "The 'argument' field must be a string.",
     },
   },
   required: ['variable', 'operator', 'conditional'],
@@ -418,9 +418,9 @@ const schemaFunctionManifest = {
       type: 'string',
       errorMessage: "The 'name' field must be a string",
     },
-    target: {
+    arguemnt: {
       type: 'string',
-      errorMessage: "The 'target' field must be a string",
+      errorMessage: "The 'argument' field must be a string",
     },
     args: {
       type: 'object',
@@ -594,9 +594,9 @@ const schemaApplicationRules = {
             enum: RULE_BEHAVIOR_NAMES,
             errorMessage: "The 'name' field must be a valid behavior name.",
           },
-          target: {
+          argument: {
             oneOf: [{ type: 'string' }, { type: 'null' }],
-            errorMessage: "The 'target' must be a string or null.",
+            errorMessage: "The 'argument' must be a string or null.",
           },
         },
         required: ['name'],
@@ -625,9 +625,9 @@ const schemaApplicationRules = {
               enum: RULE_CONDITIONALS,
               errorMessage: "The 'conditional' field must be one of: if, and, or.",
             },
-            input_value: {
+            argument: {
               type: 'string',
-              errorMessage: "The 'input_value' field must be a string.",
+              errorMessage: "The 'argument' field must be a string.",
             },
           },
           required: ['variable', 'operator', 'conditional'],
@@ -638,8 +638,8 @@ const schemaApplicationRules = {
                   properties: {
                     operator: { enum: RULE_OPERATORS_WITH_VALUE },
                   },
-                  required: ['input_value'],
-                  errorMessage: "The operator 'matches' requires an input_value.",
+                  required: ['argument'],
+                  errorMessage: "The operator 'matches' requires an argument.",
                 },
               ],
             },
