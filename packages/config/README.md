@@ -19,7 +19,7 @@ This module provides a function to configure and validate options for the Azion 
   - [`AzionDomain`](#aziondomain)
   - [`AzionOrigin`](#azionorigin)
   - [`AzionCache`](#azioncache)
-  - [`AzionRequestRule`](#azionrequestrule)
+  - [`AzionRuntimeRequestRule`](#AzionRuntimeRequestrule)
   - [`AzionResponseRule`](#azionresponserule)
   - [`AzionRules`](#azionrules)
   - [`AzionPurge`](#azionpurge)
@@ -458,7 +458,7 @@ Type definition for the cache configuration.
   - `option: 'ignore' | 'varies' | 'whitelist' | 'blacklist'` - Cache by query string option.
   - `list?: string[]` - List of query string parameters to use for caching.
 
-### `AzionRequestRule`
+### `AzionRuntimeRequestRule`
 
 Type definition for the request rule configuration.
 
@@ -514,7 +514,7 @@ Type definition for the response rule configuration.
 
   **Properties:**
 
-  - `request: AzionRequestRule[]` - Ruleset for Request phase.
+  - `request: AzionRuntimeRequestRule[]` - Ruleset for Request phase.
   - `response?: AzionResponseRule[]` - Ruleset for Response phase.
 
   ### `AzionPurge`

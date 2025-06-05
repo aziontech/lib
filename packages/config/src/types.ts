@@ -19,7 +19,7 @@ import {
   WorkloadTLSVersion,
 } from './constants';
 
-import { FetchEvent } from 'azion/types';
+import { AzionRuntimeModule } from 'azion/types';
 
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
@@ -122,7 +122,7 @@ export type AzionRuleCriteria = AzionRuleCriteriaWithValue | AzionRuleCriteriaWi
 /**
  * Request rule configuration for Azion.
  */
-export type AzionRequestRule = {
+export type AzionRuntimeRequestRule = {
   /** Rule name */
   name: string;
   /** Rule description */
@@ -253,7 +253,7 @@ export type AzionResponseRule = {
  */
 export type AzionRules = {
   /** Request rules */
-  request?: AzionRequestRule[];
+  request?: AzionRuntimeRequestRule[];
   /** Response rules */
   response?: AzionResponseRule[];
 };
@@ -567,7 +567,7 @@ export type PresetMetadata = {
 
 export interface AzionBuildPreset {
   config: AzionConfig;
-  handler?: (event: FetchEvent) => Promise<Response>;
+  handler?: AzionRuntimeModule;
   prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>;
   postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>;
   metadata: PresetMetadata;
