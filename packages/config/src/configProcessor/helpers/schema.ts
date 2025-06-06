@@ -576,10 +576,6 @@ const azionConfigSchema = {
               type: 'boolean',
               errorMessage: "The 'build.polyfills' must be a boolean",
             },
-            worker: {
-              type: 'boolean',
-              errorMessage: "The 'build.worker' must be a boolean",
-            },
             extend: {
               instanceof: 'Function',
               errorMessage: "The 'build.extend' must be a function",

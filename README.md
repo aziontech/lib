@@ -211,7 +211,6 @@ const config = {
     entry: './src/index.js',
     preset: 'react',
     polyfills: true,
-    worker: true,
   },
   domain: {
     name: 'example.com',
@@ -302,7 +301,6 @@ const config = defineConfig({
       },
     },
     polyfills: true,
-    worker: true,
     extend: (config) => {
       // Customize bundler configuration
       return {
@@ -394,7 +392,6 @@ export default defineConfig({
     // Other build configurations
     entry: './src/index.ts',
     polyfills: true,
-    worker: true,
     memoryFS: {
       injectionDirs: ['./src/inject'],
       removePathPrefix: './src',

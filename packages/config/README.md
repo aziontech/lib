@@ -313,7 +313,6 @@ Type definition for the build configuration.
 - `preset?: string | AzionBuildPreset` - The preset to be used, can be a string or an AzionBuildPreset object.
 - `entry?: string | string[] | Record<string, string>` - The entry file, can be a string, an array of strings, or an object.
 - `polyfills?: boolean` - Whether to include polyfills.
-- `worker?: boolean` - Whether to build a worker.
 - `extend?: (context: T) => T` - Function to extend the bundler configuration.
 - `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - In-memory file system configuration.
 
@@ -371,7 +370,6 @@ Type definition for the build configuration.
 - `setup: BundlerSetup` - Bundler configuration.
 - \*`bundler?: 'webpack' | 'esbuild'` - The bundler to be used.
 - `polyfills?: boolean` - Whether to include polyfills.
-- `worker?: boolean` - Whether to build a worker.
 - `extend?: (context: T) => T` - Function to extend the bundler configuration.
 - `memoryFS?: { injectionDirs: string[], removePathPrefix: string }` - In-memory file system configuration.
 

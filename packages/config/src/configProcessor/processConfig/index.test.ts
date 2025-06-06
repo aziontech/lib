@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { processConfig } from '..';
-import { AzionConfig } from '../../config/types';
+import { AzionConfig } from '../../types';
 
 describe('processConfig', () => {
   describe('Cache and Rules', () => {
