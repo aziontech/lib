@@ -4,4 +4,4 @@
  */
 import promisesContext from './context/index.js';
 
-export default { promisesContext };
+export default promisesContext;
