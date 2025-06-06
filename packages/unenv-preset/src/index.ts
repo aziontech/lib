@@ -26,6 +26,8 @@ export default {
     module: `${polyfillsPath}/node/module.js`,
     string_decoder: 'string_decoder/lib/string_decoder.js',
     timers: 'timers-browserify/',
+    util: `${polyfillsPath}/node/util.js`,
+    'util/types': `${polyfillsPath}/node/internal/util/types.js`,
   },
   external: ['node:async_hooks', 'node:fs/promises', 'node:stream', 'node:crypto'],
   polyfill: [

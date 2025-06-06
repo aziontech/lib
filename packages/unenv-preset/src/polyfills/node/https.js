@@ -1,3 +1,4 @@
+/* eslint-disable */
 // https://nodejs.org/api/https.html
 import { EventEmitter } from 'node:events';
 
@@ -41,46 +42,53 @@ export const get = notImplemented('https.get');
 
 export const createServer = notImplemented('https.createServer');
 
-export const request = (options, callback) => {
-  let fullUrl;
-  let headers = {};
-  let method;
+export const request = (urlOrOptions, optionsOrCallback, maybeCallback) => {
+  let url, options, callback;
+  if (typeof urlOrOptions === 'string' || urlOrOptions instanceof URL) {
+    url = urlOrOptions;
+    if (typeof optionsOrCallback === 'object' && optionsOrCallback !== null) {
+      options = optionsOrCallback;
+      callback = maybeCallback;
+    } else {
+      options = {};
+      callback = optionsOrCallback;
+    }
+  } else {
+    url = undefined;
+    options = urlOrOptions || {};
+    callback = optionsOrCallback;
+  }
 
-  if (typeof options === 'object') {
+  let fullUrl, headers, method, body;
+  if (url) {
+    fullUrl = url.toString();
+    headers = { ...(options.headers || {}) };
+    method = (options.method || 'GET').toUpperCase();
+    body = options.body;
+  } else {
     const protocol = options.protocol || 'https:';
     const hostname = options.hostname || 'localhost';
     const port = options.port ? `:${options.port}` : '';
     const path = options.path || '/';
-    method = options.method || 'GET';
-
-    // Adiciona os query params, se existirem
+    body = options.body;
     const queryParams = options.query ? new URLSearchParams(options.query).toString() : '';
     const queryString = queryParams ? `?${queryParams}` : '';
-
     fullUrl = `${protocol}//${hostname}${port}${path}${queryString}`;
-    headers = { ...options.headers };
-  } else {
-    fullUrl = options;
-    headers = options.headers || {};
+    headers = { ...(options.headers || {}) };
+    method = (options.method || 'GET').toUpperCase();
   }
 
-  const { body } = options;
-
-  // Verifica o tipo de conteúdo e formata o corpo adequadamente
   let formattedBody;
   if (headers['Content-Type'] === 'application/json') {
     formattedBody = body ? JSON.stringify(body) : undefined;
+    if (!options.method && body) method = 'POST';
   } else if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
     formattedBody = body ? new URLSearchParams(body).toString() : undefined;
+    if (!options.method && body) method = 'POST';
   } else {
-    formattedBody = body; // Envia o corpo como está para outros tipos de conteúdo
+    formattedBody = body;
+    if (!options.method && body) method = 'POST';
   }
-
-  const fetchOptions = {
-    method,
-    headers,
-    body: JSON.stringify(formattedBody) || JSON.stringify({}),
-  };
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -90,7 +98,7 @@ export const request = (options, callback) => {
     timeoutId = setTimeout(() => {
       controller.abort();
       reqEvents.emit('error', new Error('Request timed out'));
-    }, 5000);
+    }, options.timeout);
   }
 
   const reqEvents = new EventEmitter();
@@ -99,9 +107,21 @@ export const request = (options, callback) => {
 
   const req = {
     _bodyBuffer: [],
+    removeHeader: (name) => {
+      if (headers && typeof name === 'string') {
+        delete headers[name];
+        delete headers[name.toLowerCase()];
+      }
+    },
+    setHeader: (name, value) => {
+      if (headers && typeof name === 'string') {
+        headers[name] = value;
+        headers[name.toLowerCase()] = value;
+      }
+    },
     write: (chunk) => {
       if (typeof chunk === 'string' || chunk instanceof Buffer) {
-        req._bodyBuffer.push(chunk); // Adiciona o chunk ao buffer
+        req._bodyBuffer.push(chunk);
       } else {
         throw new Error('Invalid chunk type. Expected string or Buffer.');
       }
@@ -125,37 +145,69 @@ export const request = (options, callback) => {
       }
       endCalled = true;
 
-      // Concatena os chunks do buffer para formar o corpo completo
-      const body = req._bodyBuffer.length > 0 ? req._bodyBuffer.join('') : undefined;
+      let bodyFinal;
+      if (req._bodyBuffer.length > 0) {
+        if (Buffer.isBuffer(req._bodyBuffer[0])) {
+          bodyFinal = Buffer.concat(req._bodyBuffer).toString();
+        } else {
+          bodyFinal = req._bodyBuffer.join('');
+        }
+      } else {
+        bodyFinal = formattedBody;
+      }
 
-      fetch(fullUrl, { ...fetchOptions, body, signal })
+      const fetchOptions = {
+        method,
+        headers,
+        signal,
+      };
+
+      if (method !== 'GET' && method !== 'HEAD' && bodyFinal !== undefined) {
+        fetchOptions.body = bodyFinal;
+      }
+
+      fetch(fullUrl, fetchOptions)
         .then(async (response) => {
           clearTimeout(timeoutId);
-
           const res = new EventEmitter();
           res.statusCode = response.status;
           res.headers = Object.fromEntries(response.headers.entries());
+
+          const chunks = [];
+          res[Symbol.asyncIterator] = async function* () {
+            let ended = false;
+            this.on('end', () => {
+              ended = true;
+            });
+            let idx = 0;
+            while (!ended || idx < chunks.length) {
+              if (idx < chunks.length) {
+                yield chunks[idx++];
+              } else {
+                await new Promise((resolve) => this.once('data', resolve));
+              }
+            }
+          };
 
           const reader = response.body?.getReader();
 
           const processStream = async () => {
             try {
               if (!reader) {
-                console.log('No reader available');
-                res.emit('end'); // Emite 'end' se não houver corpo na resposta
+                res.emit('end');
                 return;
               }
-              // eslint-disable-next-line no-constant-condition
               while (true) {
                 const { done, value } = await reader.read();
                 if (done) {
                   res.emit('end');
                   break;
                 }
-                res.emit('data', Buffer.from(value));
+                const buf = Buffer.from(value);
+                chunks.push(buf);
+                res.emit('data', buf);
               }
             } catch (err) {
-              console.error('Error processing stream:', err);
               res.emit('error', err);
             }
           };
@@ -172,7 +224,7 @@ export const request = (options, callback) => {
 
           reqEvents.emit('response', res);
 
-          if (callback) {
+          if (typeof callback === 'function') {
             callback(res);
           }
         })
