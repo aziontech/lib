@@ -1295,7 +1295,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, functions, rules, origin, cache, networkList, domain, purge, firewall',
+          'Config can only contain the following properties: build, edgeFunctions, edgeFirewall, edgeApplications, edgeConnectors, edgeStorage, workloads, purge, networkList and waf',
         type: 'Configuration must be an object',
       },
     },
