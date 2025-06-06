@@ -1,3 +1,10 @@
+## [1.20.0-stage.9](https://github.com/aziontech/lib/compare/v1.20.0-stage.8...v1.20.0-stage.9) (2025-06-06)
+
+
+### Bug Fixes
+
+* polyfills for Node.js compatibility (#170) ([329f4c4](https://github.com/aziontech/lib/commit/329f4c41af43f8bf9ccede25a14605a8f34bdc35))
+
 ## [1.20.0-stage.8](https://github.com/aziontech/lib/compare/v1.20.0-stage.7...v1.20.0-stage.8) (2025-06-03)
 
 
