@@ -6,8 +6,8 @@ const handler: AzionRuntimeModule = {
   /**
    * Handles the 'fetch' event using Rust WASM.
    * @param {Request} request - The request object with metadata.
-   * @param {Object} ctx - The execution context.
    * @param {Object} env - The environment context containing Azion services.
+   * @param {Object} ctx - The execution context.
    * @returns {Promise<Response>} The response for the request.
    */
   fetch: async (request: AzionRuntimeRequest): Promise<Response> => {

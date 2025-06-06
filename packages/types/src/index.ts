@@ -132,6 +132,6 @@ export type AzionRuntimeRequest = Request & {
  * Generic module type that can handle any combination of fetch and firewall events
  */
 export interface AzionRuntimeModule {
-  fetch?: (request: AzionRuntimeRequest, ctx: AzionRuntimeCtx, env?: null) => Promise<Response>;
-  firewall?: (request: AzionRuntimeRequest, ctx: AzionRuntimeCtx, env?: null) => Promise<Response>;
+  fetch?: (request: AzionRuntimeRequest, env?: null, ctx?: AzionRuntimeCtx) => Promise<Response>;
+  firewall?: (request: AzionRuntimeRequest, env?: null, ctx?: AzionRuntimeCtx) => Promise<Response>;
 }

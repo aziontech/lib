@@ -6,6 +6,7 @@ const handler: AzionRuntimeModule = {
   /**
    * Handles the 'fetch' event using Azion Workers pattern.
    * @param {Request} request - The request object with metadata.
+   * @param {Object} env - The environment context containing Azion services.
    * @param {Object} ctx - The execution context.
    * @returns {Promise<Response>} The response for the request.
    */
