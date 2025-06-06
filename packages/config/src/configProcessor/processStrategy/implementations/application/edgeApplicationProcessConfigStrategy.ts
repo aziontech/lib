@@ -19,7 +19,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         active: app.active ?? true,
         debug: app.debug ?? false,
         modules: {
-          edge_cache_enabled: app.edgeCacheEnabled ?? true,
+          edge_cache_enabled: app.edgeCacheEnabled ?? false,
           edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
           application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
           image_processor_enabled: app.imageProcessorEnabled ?? false,
@@ -52,15 +52,20 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformedPayload.edgeApplications = payload.edgeApplications.map((app: any) => {
+      // Handle both formats: direct properties or nested in modules
+      const modules = app.modules || app;
+
       return {
         name: app.name,
         active: app.active,
         debug: app.debug,
-        edgeCacheEnabled: app.edge_cache_enabled,
-        edgeFunctionsEnabled: app.edge_functions_enabled,
-        applicationAcceleratorEnabled: app.application_accelerator_enabled,
-        imageProcessorEnabled: app.image_processor_enabled,
-        tieredCacheEnabled: app.tiered_cache_enabled,
+        modules: {
+          edgeCacheEnabled: modules.edge_cache_enabled ?? false,
+          edgeFunctionsEnabled: modules.edge_functions_enabled ?? false,
+          applicationAcceleratorEnabled: modules.application_accelerator_enabled ?? false,
+          imageProcessorEnabled: modules.image_processor_enabled ?? false,
+          tieredCacheEnabled: modules.tiered_cache_enabled ?? false,
+        },
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
       };
