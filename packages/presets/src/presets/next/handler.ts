@@ -81,11 +81,11 @@ async function handlerDefault(request: AzionRuntimeRequest, ctx: AzionRuntimeCtx
   return main(adjustedRequest, env, context);
 }
 
-async function handleFetch(request: AzionRuntimeRequest, ctx: AzionRuntimeCtx): Promise<Response> {
+async function handleFetch(request: AzionRuntimeRequest, env?: null, ctx?: AzionRuntimeCtx): Promise<Response> {
   if ((globalThis as any).bundler?.nextBuildStatic) {
     return handlerStatic.fetch(request);
   }
-  return handlerDefault(request, ctx);
+  return handlerDefault(request, ctx!);
 }
 
 export default { fetch: handleFetch };
