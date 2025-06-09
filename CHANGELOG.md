@@ -1,3 +1,10 @@
+## [1.20.0-stage.10](https://github.com/aziontech/lib/compare/v1.20.0-stage.9...v1.20.0-stage.10) (2025-06-09)
+
+
+### Bug Fixes
+
+* add polyfill for clearInterval and update injection in unenv preset (#172) ([ea99874](https://github.com/aziontech/lib/commit/ea99874afcab25e0144b374938f704b2e9205987))
+
 ## [1.20.0-stage.9](https://github.com/aziontech/lib/compare/v1.20.0-stage.8...v1.20.0-stage.9) (2025-06-06)
 
 
