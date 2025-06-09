@@ -14,6 +14,7 @@ export default {
     process: `${polyfillsPath}/node/globals/process.cjs`,
     performance: `unenv/polyfill/performance`,
     setInterval: `${polyfillsPath}/node/globals/set-interval.js`,
+    clearInterval: `${polyfillsPath}/node/globals/clear-interval.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',
@@ -27,7 +28,6 @@ export default {
     string_decoder: 'string_decoder/lib/string_decoder.js',
     timers: 'timers-browserify/',
     util: `${polyfillsPath}/node/util.js`,
-    'util/types': `${polyfillsPath}/node/internal/util/types.js`,
   },
   external: ['node:async_hooks', 'node:fs/promises', 'node:stream', 'node:crypto'],
   polyfill: [
