@@ -365,12 +365,8 @@ const getObjectByKey = async (
     const headers = buildHeaders(token);
     const options = buildFetchOptions('GET', headers);
 
-    const data = await fetchWithErrorHandling(`${baseUrl}/${bucketName}/objects/${key}`, options, debug);
-
-    if (data.error) {
-      const error = handleApiError(['detail'], data, 'get object by key');
-      return { error };
-    }
+    // Get object content directly (not JSON response)
+    const data = await fetchWithErrorHandling(`${baseUrl}/${bucketName}/objects/${key}`, options, debug, false);
 
     if (debug) console.log('Response:', data);
     return { data };
