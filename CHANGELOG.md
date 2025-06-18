@@ -1,3 +1,10 @@
+## [1.20.0-stage.12](https://github.com/aziontech/lib/compare/v1.20.0-stage.11...v1.20.0-stage.12) (2025-06-18)
+
+
+### Reverts
+
+* api v4  (#176) ([e93e073](https://github.com/aziontech/lib/commit/e93e07306609e3df88ffce7e4a56cf2f414f2640))
+
 ## [1.20.0-stage.11](https://github.com/aziontech/lib/compare/v1.20.0-stage.10...v1.20.0-stage.11) (2025-06-18)
 
 
