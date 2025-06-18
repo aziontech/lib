@@ -43,7 +43,7 @@ export interface Criterion {
   variable: string;
   operator: string;
   conditional: 'if' | 'and' | 'or';
-  argument: string;
+  input_value: string;
 }
 
 export interface ApiCreateRulePayload {
@@ -107,7 +107,7 @@ export interface Criterion {
   variable: string;
   operator: string;
   conditional: 'if' | 'and' | 'or';
-  argument: string;
+  input_value: string;
 }
 
 export interface ApiCreateRulePayload {

@@ -64,11 +64,11 @@ const criteriaBaseSchema = {
         },
       },
       then: {
-        required: ['argument'],
+        required: ['inputValue'],
         properties: {
-          argument: {
+          inputValue: {
             type: 'string',
-            errorMessage: "The 'argument' field must be a string",
+            errorMessage: "The 'inputValue' field must be a string",
           },
         },
       },
@@ -81,7 +81,7 @@ const criteriaBaseSchema = {
       },
       then: {
         not: {
-          required: ['argument'],
+          required: ['inputValue'],
         },
       },
     },

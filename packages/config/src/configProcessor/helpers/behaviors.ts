@@ -10,7 +10,7 @@ export const requestBehaviors = {
 
       return {
         name: 'set_edge_connector',
-        argument: connector.name,
+        target: connector.name,
       };
     },
   },
@@ -19,7 +19,7 @@ export const requestBehaviors = {
       const behaviors = [];
       behaviors.push({
         name: 'rewrite_request',
-        argument: value,
+        target: value,
       });
       return behaviors;
     },
@@ -27,20 +27,20 @@ export const requestBehaviors = {
   deliver: {
     transform: () => ({
       name: 'deliver',
-      argument: null,
+      target: null,
     }),
   },
   setCookie: {
     transform: (value: any) => ({
       name: 'add_request_cookie',
-      argument: value,
+      target: value,
     }),
   },
   setHeaders: {
     transform: (value: any) =>
       value.map((header: any) => ({
         name: 'add_request_header',
-        argument: header,
+        target: header,
       })),
   },
   setCache: {
@@ -48,7 +48,7 @@ export const requestBehaviors = {
       if (typeof value === 'string') {
         return {
           name: 'set_cache_policy',
-          argument: value,
+          target: value,
         };
       }
       if (typeof value === 'object') {
@@ -60,7 +60,7 @@ export const requestBehaviors = {
         payloadCDN.cache.push(cacheSetting);
         return {
           name: 'set_cache_policy',
-          argument: value.name,
+          target: value.name,
         };
       }
       return undefined;
@@ -71,7 +71,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'forward_cookies',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
@@ -80,7 +80,7 @@ export const requestBehaviors = {
   runFunction: {
     transform: (value: string) => ({
       name: 'run_function',
-      argument: value,
+      target: value,
     }),
   },
   enableGZIP: {
@@ -88,7 +88,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'enable_gzip',
-          argument: '',
+          target: '',
         };
       }
       return undefined;
@@ -99,7 +99,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'bypass_cache_phase',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
@@ -110,7 +110,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'redirect_http_to_https',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
@@ -119,19 +119,19 @@ export const requestBehaviors = {
   redirectTo301: {
     transform: (value: any) => ({
       name: 'redirect_to_301',
-      argument: value,
+      target: value,
     }),
   },
   redirectTo302: {
     transform: (value: any) => ({
       name: 'redirect_to_302',
-      argument: value,
+      target: value,
     }),
   },
   capture: {
     transform: (value: any) => ({
       name: 'capture_match_groups',
-      argument: {
+      target: {
         regex: value.match,
         captured_array: value.captured,
         subject: `\${${value.subject ?? 'uri'}}`,
@@ -141,13 +141,13 @@ export const requestBehaviors = {
   filterCookie: {
     transform: (value: any) => ({
       name: 'filter_request_cookie',
-      argument: value,
+      target: value,
     }),
   },
   filterHeader: {
     transform: (value: any) => ({
       name: 'filter_request_header',
-      argument: value,
+      target: value,
     }),
   },
   noContent: {
@@ -155,7 +155,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'no_content',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
@@ -166,7 +166,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'optimize_images',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
@@ -177,7 +177,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'deny',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
@@ -188,14 +188,14 @@ export const responseBehaviors = {
   setCookie: {
     transform: (value: any) => ({
       name: 'set_cookie',
-      argument: value,
+      target: value,
     }),
   },
   setHeaders: {
     transform: (value: any) =>
       value.map((header: any) => ({
         name: 'add_response_header',
-        argument: header,
+        target: header,
       })),
   },
   enableGZIP: {
@@ -203,7 +203,7 @@ export const responseBehaviors = {
       if (value) {
         return {
           name: 'enable_gzip',
-          argument: '',
+          target: '',
         };
       }
       return undefined;
@@ -212,37 +212,37 @@ export const responseBehaviors = {
   filterCookie: {
     transform: (value: any) => ({
       name: 'filter_response_cookie',
-      argument: value,
+      target: value,
     }),
   },
   filterHeader: {
     transform: (value: any) => ({
       name: 'filter_response_header',
-      argument: value,
+      target: value,
     }),
   },
   runFunction: {
     transform: (value: string) => ({
       name: 'run_function',
-      argument: value,
+      target: value,
     }),
   },
   redirectTo301: {
     transform: (value: any) => ({
       name: 'redirect_to_301',
-      argument: value,
+      target: value,
     }),
   },
   redirectTo302: {
     transform: (value: any) => ({
       name: 'redirect_to_302',
-      argument: value,
+      target: value,
     }),
   },
   capture: {
     transform: (value: any) => ({
       name: 'capture_match_groups',
-      argument: {
+      target: {
         regex: value.match,
         captured_array: value.captured,
         subject: `\${${value.subject ?? 'uri'}}`,
@@ -254,7 +254,7 @@ export const responseBehaviors = {
       if (value) {
         return {
           name: 'deliver',
-          argument: null,
+          target: null,
         };
       }
       return undefined;
