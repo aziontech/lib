@@ -1,3 +1,10 @@
+## [1.20.0-stage.11](https://github.com/aziontech/lib/compare/v1.20.0-stage.10...v1.20.0-stage.11) (2025-06-18)
+
+
+### Bug Fixes
+
+* **presets:** add missing prebuild command in preact preset ([8674785](https://github.com/aziontech/lib/commit/86747855fc8f7297d9a937a3c1eff190eb8a5def))
+
 ## [1.20.0-stage.10](https://github.com/aziontech/lib/compare/v1.20.0-stage.9...v1.20.0-stage.10) (2025-06-09)
 
 
