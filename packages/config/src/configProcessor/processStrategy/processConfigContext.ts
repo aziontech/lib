@@ -1,4 +1,4 @@
-import { AzionConfig } from '../../config/types';
+import { AzionConfig } from '../../types';
 import ProcessConfigStrategy from './processConfigStrategy';
 
 /**

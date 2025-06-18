@@ -115,10 +115,6 @@
       "require": "./packages/config/dist/index.js",
       "import": "./packages/config/dist/index.mjs"
     },
-    "./config/rules": {
-      "require": "./packages/config/dist/rules/index.js",
-      "import": "./packages/config/dist/rules/index.mjs"
-    },
     "./sql": {
       "require": "./packages/sql/dist/index.js",
       "import": "./packages/sql/dist/index.mjs"
@@ -168,12 +164,6 @@
     "*": {
       "ai": [
         "./packages/ai/dist/index.d.ts"
-      ],
-      "config": [
-        "./packages/config/dist/index.d.ts"
-      ],
-      "config/rules": [
-        "./packages/config/dist/rules/index.d.ts"
       ],
       "presets": [
         "./packages/presets/dist/index.d.ts"
