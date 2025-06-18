@@ -1,16 +1,16 @@
-import { FetchEvent } from 'azion/types';
+import { AzionRuntimeRequest } from 'azion/types';
 import { ParsedRequest, ParseRequestFunction } from '../types';
 
 /**
  * @function
  * @description The `parseRequest` function is designed to parse and log the details of an incoming request.
- * This function extracts key information such as headers, cookies, body, and client data from the incoming FetchEvent,
+ * This function extracts key information such as headers, cookies, body, and client data from the incoming request,
  * providing a structured object with all these details for further processing or logging purposes.
- * @param {FetchEvent} event - The incoming FetchEvent object representing the request.
+ * @param {AzionRuntimeRequest} request - The incoming request object with metadata.
  * @returns {Promise<object>} A promise that resolves to an object containing detailed information about the request.
  * @example
  * // Parse a GET request
- * // Input: parseRequest(event);
+ * // Input: parseRequest(request);
  * // Output: {
  * //   timestamp: "2024-08-14T12:34:56.789Z",
  * //   metadata: {
@@ -49,8 +49,7 @@ import { ParsedRequest, ParseRequestFunction } from '../types';
  * //   authorization: "Not Present"
  * // }
  */
-const parseRequest: ParseRequestFunction = async (event: FetchEvent): Promise<ParsedRequest> => {
-  const { request } = event;
+const parseRequest: ParseRequestFunction = async (request: AzionRuntimeRequest): Promise<ParsedRequest> => {
   const headers = new Headers(request.headers);
   const url = new URL(request.url);
 

@@ -21,7 +21,7 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    const storageConfig = payload.storage;
+    const storageConfig = payload.edgeStorage;
     if (!Array.isArray(storageConfig) || storageConfig.length === 0) {
       return;
     }

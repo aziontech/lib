@@ -1,18 +1,33 @@
-import { FetchEvent } from 'azion/types';
+import { AzionFetchModule, AzionRuntimeRequest } from 'azion/types';
 import { mountMPA } from 'azion/utils/edge';
-
+import metadata from './metadata';
 /**
- * Handles the 'fetch' event.
- * @param {import('azion/types').FetchEvent} event - The fetch event.
+ * Handles the 'fetch' event using Azion Workers pattern.
+ * @param {Request} request - The request object with metadata.
+ * @param {Object} ctx - The execution context.
  * @returns {Promise<Response>} The response for the request.
  */
-async function handler(event: FetchEvent): Promise<Response> {
-  try {
-    const myApp = await mountMPA(event.request.url);
-    return myApp;
-  } catch (e) {
-    return new Response('Not Found', { status: 500 });
-  }
-}
+const handler: AzionFetchModule = {
+  fetch: async (request: AzionRuntimeRequest): Promise<Response> => {
+    try {
+      const myApp: Response = await mountMPA(request.url);
+      return myApp;
+    } catch (e) {
+      return new Response(
+        JSON.stringify({
+          error: `Failed to mount ${metadata.name} application`,
+          message: e instanceof Error ? e.message : 'Unknown error occurred',
+          path: request.url,
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+    }
+  },
+};
 
 export default handler;

@@ -576,10 +576,6 @@ const azionConfigSchema = {
               type: 'boolean',
               errorMessage: "The 'build.polyfills' must be a boolean",
             },
-            worker: {
-              type: 'boolean',
-              errorMessage: "The 'build.worker' must be a boolean",
-            },
             extend: {
               instanceof: 'Function',
               errorMessage: "The 'build.extend' must be a function",
@@ -1687,7 +1683,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, edgefirewall, networkList, waf, edgeConnectors',
+          'Config can only contain the following properties: build, edgeFunctions, edgeFirewall, edgeApplications, edgeConnectors, edgeStorage, workloads, purge, networkList and waf',
         type: 'Configuration must be an object',
       },
     },
