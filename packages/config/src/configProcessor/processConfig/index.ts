@@ -1,4 +1,5 @@
 import { AzionConfig } from '../../types';
+import convertLegacyConfig from '../helpers/convertLegacyConfig';
 import { factoryProcessContext } from '../processStrategy';
 import { validateConfig } from '../validateConfig';
 
@@ -26,8 +27,9 @@ import { validateConfig } from '../validateConfig';
  * const payloadCDN = processConfig(config);
  * console.log(payloadCDN);
  */
-function processConfig(config: AzionConfig) {
+function processConfig(inputConfig: AzionConfig) {
   /*  Converts legacy configuration properties to the new `behavior` format. */
+  const config = convertLegacyConfig(inputConfig);
   validateConfig(config);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const payloadCDN: any = {};

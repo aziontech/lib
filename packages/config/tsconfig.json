@@ -13,8 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "azion/types": ["../types/src/index.ts"],
-      "azion/bundler": ["../bundler/src/index.ts"],
-      "azion/config": ["../config/src/index.ts"]
+      "azion/bundler": ["../bundler/src/index.ts"]
     }
   }
 }

@@ -1,10 +1,6 @@
-import {
-  AzionConfig,
-  AzionEdgeFirewall,
-  AzionEdgeFirewallCriteriaWithValue,
-  AzionEdgeFirewallRule,
-} from '../../../../types';
+import { AzionConfig, AzionFirewall, AzionFirewallCriteriaWithValue, AzionFirewallRule } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
+
 /**
  * FirewallProcessConfigStrategy
  * @class FirewallProcessConfigStrategy
@@ -12,58 +8,56 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
  */
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    const firewalls = config?.edgeFirewall;
-    if (!firewalls || firewalls.length === 0) {
+    const firewall = config?.firewall;
+    if (!firewall || Object.keys(firewall).length === 0) {
       return;
     }
 
-    return firewalls.map((firewall) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = {
-        main_settings: {
-          name: firewall.name,
-          domains: firewall.domains || [],
-          is_active: firewall.active ?? true,
-          edge_functions_enabled: firewall.edgeFunctions ?? false,
-          network_protection_enabled: firewall.networkProtection ?? false,
-          waf_enabled: firewall.waf ?? false,
-          debug_rules: firewall.debugRules ?? false,
-        },
-      };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload: any = {
+      main_settings: {
+        name: firewall.name,
+        domains: firewall.domains || [],
+        is_active: firewall.active ?? true,
+        edge_functions_enabled: firewall.edgeFunctions ?? false,
+        network_protection_enabled: firewall.networkProtection ?? false,
+        waf_enabled: firewall.waf ?? false,
+        debug_rules: firewall.debugRules ?? false,
+      },
+    };
 
-      if (firewall.rules && firewall.rules.length > 0) {
-        payload.rules_engine = firewall.rules.map((rule) => ({
-          name: rule.name,
-          description: rule.description || '',
-          is_active: rule.active ?? true,
-          behaviors: this.transformBehaviorsToManifest(rule.behavior),
-          criteria: rule.criteria
-            ? [
-                rule.criteria.map((criterion) => {
-                  const isWithValue = 'argument' in criterion;
-                  const { argument, ...rest } = criterion as AzionEdgeFirewallCriteriaWithValue;
-                  return {
-                    ...rest,
-                    variable: criterion.variable,
-                    ...(isWithValue && { argument: argument }),
-                  };
-                }),
-              ]
-            : [
-                [
-                  {
-                    variable: rule.variable,
-                    operator: 'matches',
-                    conditional: 'if',
-                    argument: rule.match,
-                  },
-                ],
+    if (firewall.rules && firewall.rules.length > 0) {
+      payload.rules_engine = firewall.rules.map((rule) => ({
+        name: rule.name,
+        description: rule.description || '',
+        is_active: rule.active ?? true,
+        behaviors: this.transformBehaviorsToManifest(rule.behavior),
+        criteria: rule.criteria
+          ? [
+              rule.criteria.map((criterion) => {
+                const isWithValue = 'inputValue' in criterion;
+                const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                return {
+                  ...rest,
+                  variable: criterion.variable,
+                  ...(isWithValue && { input_value: inputValue }),
+                };
+              }),
+            ]
+          : [
+              [
+                {
+                  variable: rule.variable,
+                  operator: 'matches',
+                  conditional: 'if',
+                  input_value: rule.match,
+                },
               ],
-        }));
-      }
+            ],
+      }));
+    }
 
-      return payload;
-    });
+    return payload;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,49 +123,45 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
     const firewall = payload.firewall;
-    if (!firewall || firewall.length === 0) {
+    if (!firewall || Object.keys(firewall).length === 0) {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeFirewall = firewall.map((firewallPayload: any) => {
-      const firewallConfig: AzionEdgeFirewall = {
-        name: firewallPayload.main_settings?.name,
-        domains: firewallPayload?.main_settings?.domains || [],
-        active: firewallPayload?.main_settings?.is_active ?? true,
-        edgeFunctions: firewallPayload?.main_settings?.edge_functions_enabled ?? false,
-        networkProtection: firewallPayload?.main_settings?.network_protection_enabled ?? false,
-        waf: firewallPayload?.main_settings?.waf_enabled ?? false,
-        debugRules: firewallPayload?.main_settings?.debug_rules ?? false,
-      };
+    const firewallConfig: AzionFirewall = {
+      name: firewall.main_settings?.name,
+      domains: firewall?.main_settings?.domains || [],
+      active: firewall?.main_settings?.is_active ?? true,
+      edgeFunctions: firewall?.main_settings?.edge_functions_enabled ?? false,
+      networkProtection: firewall?.main_settings?.network_protection_enabled ?? false,
+      waf: firewall?.main_settings?.waf_enabled ?? false,
+      debugRules: firewall?.main_settings?.debug_rules ?? false,
+    };
 
-      if (firewallPayload.rules_engine && firewallPayload.rules_engine.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        firewallConfig.rules = firewallPayload.rules_engine.map((rule: any) => {
-          const firewallRule: AzionEdgeFirewallRule = {
-            name: rule.name,
-            description: rule.description || '',
-            active: rule.is_active ?? true,
-            behavior: this.transformBehaviorsToConfig(rule.behaviors),
-            criteria:
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              rule.criteria?.[0].map((criterion: any) => {
-                const isWithValue = 'argument' in criterion;
-                const { argument, ...rest } = criterion;
-                return {
-                  ...rest,
-                  ...(isWithValue && { argument: argument }),
-                };
-              }) || [],
-          };
-          return firewallRule;
-        });
-      }
+    if (firewall.rules_engine && firewall.rules_engine.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      firewallConfig.rules = firewall.rules_engine.map((rule: any) => {
+        const firewallRule: AzionFirewallRule = {
+          name: rule.name,
+          description: rule.description || '',
+          active: rule.is_active ?? true,
+          behavior: this.transformBehaviorsToConfig(rule.behaviors),
+          criteria:
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            rule.criteria?.[0].map((criterion: any) => {
+              const isWithValue = 'input_value' in criterion;
+              const { input_value, ...rest } = criterion;
+              return {
+                ...rest,
+                ...(isWithValue && { inputValue: input_value }),
+              };
+            }) || [],
+        };
+        return firewallRule;
+      });
+    }
 
-      return firewallConfig;
-    });
-
-    return transformedPayload.edgeFirewall;
+    transformedPayload.firewall = firewallConfig;
+    return transformedPayload.firewall;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

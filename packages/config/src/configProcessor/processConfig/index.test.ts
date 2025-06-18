@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { processConfig } from '..';
-import { AzionConfig } from '../../config/types';
+import { AzionConfig } from '../../types';
 
 describe('processConfig', () => {
   describe('Cache and Rules', () => {
@@ -9,6 +9,9 @@ describe('processConfig', () => {
         build: {
           preset: 'next',
           polyfills: true,
+          custom: {
+            minify: true,
+          },
         },
       };
       expect(processConfig(config)).toEqual(
@@ -16,6 +19,9 @@ describe('processConfig', () => {
           build: {
             preset: 'next',
             polyfills: true,
+            custom: {
+              minify: true,
+            },
           },
         }),
       );
@@ -84,7 +90,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'rewrite_request',
-            argument: '/new-path',
+            target: '/new-path',
           }),
         ]),
       );
@@ -171,14 +177,14 @@ describe('processConfig', () => {
             criteria: expect.arrayContaining([
               expect.arrayContaining([
                 expect.objectContaining({
-                  argument: '/api',
+                  input_value: '/api',
                 }),
               ]),
             ]),
             behaviors: expect.arrayContaining([
               expect.objectContaining({
                 name: 'set_origin',
-                argument: 'my origin storage',
+                target: 'my origin storage',
               }),
             ]),
           }),
@@ -246,7 +252,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'forward_cookies',
-            argument: null, // Updated from 'params' to 'argument'
+            target: null, // Updated from 'params' to 'target'
           }),
         ]),
       );
@@ -323,7 +329,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'set_origin',
-            argument: 'my origin storage',
+            target: 'my origin storage',
           }),
         ]),
       );
@@ -393,7 +399,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'run_function',
-            argument: 'handler',
+            target: 'handler',
           }),
         ]),
       );
@@ -547,7 +553,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'add_request_cookie',
-            argument: 'sessionId=abc123',
+            target: 'sessionId=abc123',
           }),
         ]),
       );
@@ -573,7 +579,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'add_request_header',
-            argument: 'Authorization: Bearer abc123',
+            target: 'Authorization: Bearer abc123',
           }),
         ]),
       );
@@ -962,7 +968,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'set_origin',
-            argument: 'my single origin',
+            target: 'my single origin',
           }),
         ]),
       );
@@ -1003,7 +1009,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'bypass_cache_phase',
-            argument: null,
+            target: null,
           }),
         ]),
       );
@@ -1029,7 +1035,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'redirect_to_301',
-            argument: 'https://example.com',
+            target: 'https://example.com',
           }),
         ]),
       );
@@ -1055,7 +1061,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'redirect_to_302',
-            argument: 'https://example.com',
+            target: 'https://example.com',
           }),
         ]),
       );
@@ -1085,7 +1091,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'capture_match_groups',
-            argument: {
+            target: {
               regex: '^/user/(.*)',
               captured_array: 'userId',
               // eslint-disable-next-line no-template-curly-in-string
@@ -1116,7 +1122,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'filter_response_cookie',
-            argument: '_cookie',
+            target: '_cookie',
           }),
         ]),
       );
@@ -1142,7 +1148,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'add_response_header',
-            argument: 'X-Test-Header: value',
+            target: 'X-Test-Header: value',
           }),
         ]),
       );
@@ -1168,11 +1174,11 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'add_response_header',
-            argument: 'X-Frame-Options: DENY',
+            target: 'X-Frame-Options: DENY',
           }),
           expect.objectContaining({
             name: 'add_response_header',
-            argument: "Content-Security-Policy: default-src 'self'",
+            target: "Content-Security-Policy: default-src 'self'",
           }),
         ]),
       );
@@ -1198,7 +1204,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'enable_gzip',
-            argument: '',
+            target: '',
           }),
         ]),
       );
@@ -1242,17 +1248,17 @@ describe('processConfig', () => {
         expect.objectContaining({
           name: 'Example Rule',
           description: 'This rule redirects all traffic.',
-          active: false,
+          is_active: false,
         }),
         expect.objectContaining({
           name: 'Second Rule',
           description: '', // Should default to an empty string
-          active: true,
+          is_active: true,
         }),
         expect.objectContaining({
           name: 'Third Rule',
           description: 'This rule handles home traffic.',
-          active: true, // Should default to true
+          is_active: true, // Should default to true
         }),
       ]);
     });
@@ -1275,21 +1281,25 @@ describe('processConfig', () => {
       expect(result.rules[0]).toEqual(
         expect.objectContaining({
           name: 'First Request Rule',
+          order: 2,
         }),
       );
       expect(result.rules[1]).toEqual(
         expect.objectContaining({
           name: 'Second Request Rule',
+          order: 3,
         }),
       );
       expect(result.rules[2]).toEqual(
         expect.objectContaining({
           name: 'First Response Rule',
+          order: 2,
         }),
       );
       expect(result.rules[3]).toEqual(
         expect.objectContaining({
           name: 'Second Response Rule',
+          order: 3,
         }),
       );
     });
@@ -1326,14 +1336,14 @@ describe('processConfig', () => {
       expect(result.rules[0].behaviors).toEqual([
         expect.objectContaining({
           name: 'add_request_header',
-          argument: 'Authorization: Bearer abc123',
+          target: 'Authorization: Bearer abc123',
         }),
         expect.objectContaining({
           name: 'deliver',
         }),
         expect.objectContaining({
           name: 'set_origin',
-          argument: 'my origin storage',
+          target: 'my origin storage',
         }),
       ]);
     });
@@ -1387,11 +1397,11 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'set_origin',
-            argument: 'legacy origin',
+            target: 'legacy origin',
           }),
           expect.objectContaining({
             name: 'add_request_header',
-            argument: 'Authorization: Bearer legacy',
+            target: 'Authorization: Bearer legacy',
           }),
         ]),
       );
@@ -1416,11 +1426,11 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'add_response_header',
-            argument: 'X-Legacy-Header: legacy',
+            target: 'X-Legacy-Header: legacy',
           }),
           expect.objectContaining({
             name: 'enable_gzip',
-            argument: '',
+            target: '',
           }),
         ]),
       );
@@ -1456,11 +1466,11 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'set_origin',
-            argument: 'mixed origin',
+            target: 'mixed origin',
           }),
           expect.objectContaining({
             name: 'add_request_header',
-            argument: 'Authorization: Bearer mixed',
+            target: 'Authorization: Bearer mixed',
           }),
         ]),
       );
@@ -1487,11 +1497,11 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'add_response_header',
-            argument: 'X-Mixed-Header: mixed',
+            target: 'X-Mixed-Header: mixed',
           }),
           expect.objectContaining({
             name: 'enable_gzip',
-            argument: '',
+            target: '',
           }),
         ]),
       );
@@ -1747,7 +1757,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/',
+                  inputValue: '^/',
                 },
               ],
               behavior: {
@@ -1765,7 +1775,7 @@ describe('processConfig', () => {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            argument: '^/',
+            input_value: '^/',
           },
         ],
       ]);
@@ -1783,7 +1793,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/',
+                  input_value: '^/',
                 },
               ],
               behavior: {
@@ -1816,13 +1826,13 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/',
+                  inputValue: '^/',
                 },
                 {
                   variable: '${device_group}',
                   operator: 'is_equal',
                   conditional: 'and',
-                  argument: 'mobile',
+                  inputValue: 'mobile',
                 },
               ],
               behavior: {
@@ -1840,13 +1850,13 @@ describe('processConfig', () => {
             variable: '${uri}',
             operator: 'matches',
             conditional: 'if',
-            argument: '^/',
+            input_value: '^/',
           },
           {
             variable: '${device_group}',
             operator: 'is_equal',
             conditional: 'and',
-            argument: 'mobile',
+            input_value: 'mobile',
           },
         ],
       ]);
@@ -1904,7 +1914,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/',
+                  inputValue: '^/',
                 },
               ],
               behavior: {
@@ -1921,11 +1931,11 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'filter_request_header',
-            argument: 'X-Test-Header',
+            target: 'X-Test-Header',
           }),
           expect.objectContaining({
             name: 'filter_request_cookie',
-            argument: '_cookie',
+            target: '_cookie',
           }),
         ]),
       );
@@ -1944,7 +1954,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/',
+                  inputValue: '^/',
                 },
               ],
               behavior: {
@@ -1960,7 +1970,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'no_content',
-            argument: null,
+            target: null,
           }),
         ]),
       );
@@ -1979,7 +1989,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/',
+                  inputValue: '^/',
                 },
               ],
               behavior: {
@@ -1995,7 +2005,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'deliver',
-            argument: null,
+            target: null,
           }),
         ]),
       );
@@ -2014,7 +2024,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/images',
+                  inputValue: '^/images',
                 },
               ],
               behavior: {
@@ -2030,7 +2040,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'optimize_images',
-            argument: null,
+            target: null,
           }),
         ]),
       );
@@ -2049,7 +2059,7 @@ describe('processConfig', () => {
                   variable: '${uri}',
                   operator: 'matches',
                   conditional: 'if',
-                  argument: '^/login',
+                  inputValue: '^/login',
                 },
               ],
               behavior: {
@@ -2065,7 +2075,7 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'deny',
-            argument: null,
+            target: null,
           }),
         ]),
       );
