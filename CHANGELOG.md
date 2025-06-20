@@ -1,3 +1,10 @@
+## [1.20.0-stage.13](https://github.com/aziontech/lib/compare/v1.20.0-stage.12...v1.20.0-stage.13) (2025-06-20)
+
+
+### Bug Fixes
+
+* **preset:** update ruleset of html preset ([90b0def](https://github.com/aziontech/lib/commit/90b0def35c64370cc67c523f5ef95bb2979663b6))
+
 ## [1.20.0-stage.12](https://github.com/aziontech/lib/compare/v1.20.0-stage.11...v1.20.0-stage.12) (2025-06-18)
 
 
