@@ -1,3 +1,10 @@
+## [1.20.0-stage.16](https://github.com/aziontech/lib/compare/v1.20.0-stage.15...v1.20.0-stage.16) (2025-06-20)
+
+
+### Bug Fixes
+
+* rename skipProjectBuild to skipFrameworkBuild in BuildContext (#180) ([5252f0a](https://github.com/aziontech/lib/commit/5252f0acfb43a296bcdd291524a5b62de01df75d))
+
 ## [1.20.0-stage.15](https://github.com/aziontech/lib/compare/v1.20.0-stage.14...v1.20.0-stage.15) (2025-06-20)
 
 
