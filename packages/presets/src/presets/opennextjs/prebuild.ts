@@ -27,8 +27,8 @@ async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Pro
     });
   }
   // Run OpenNextjs command build
-  if (ctx.production || !ctx.skipProjectBuild) {
-    const skipBuild = ctx.skipProjectBuild ? '--skipBuild' : '';
+  if (ctx.production || !ctx.skipFrameworkBuild) {
+    const skipBuild = ctx.skipFrameworkBuild ? '--skipBuild' : '';
     await exec(`${openNextjsCommand} build -- ${skipBuild}`, {
       scope: 'OpenNextjs',
       verbose: true,

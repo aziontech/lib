@@ -543,7 +543,7 @@ export interface BundlerSetup {
 export interface BuildContext {
   production: boolean;
   handler: BuildEntryPoint;
-  skipProjectBuild?: boolean;
+  skipFrameworkBuild?: boolean;
 }
 
 export type PresetMetadata = {
