@@ -1,3 +1,11 @@
+## [1.20.0-stage.15](https://github.com/aziontech/lib/compare/v1.20.0-stage.14...v1.20.0-stage.15) (2025-06-20)
+
+
+### Bug Fixes
+
+* **presets:** astro prebuild ([846990f](https://github.com/aziontech/lib/commit/846990f63f4b194e5f9b3e82c687be8f9ede1a65))
+* rm worker property ([8673494](https://github.com/aziontech/lib/commit/8673494eb1cf86de4544a7791db9524866b7ddbb))
+
 ## [1.20.0-stage.14](https://github.com/aziontech/lib/compare/v1.20.0-stage.13...v1.20.0-stage.14) (2025-06-20)
 
 
