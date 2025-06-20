@@ -39,7 +39,7 @@ async function prebuild(): Promise<void> {
 
     copyDirectory(outDir, newOutDir);
   } catch (error) {
-    throw new Error(`Erro durante o prebuild do Astro: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Error during Astro prebuild: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
