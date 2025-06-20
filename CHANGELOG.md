@@ -1,3 +1,10 @@
+## [1.20.0-stage.14](https://github.com/aziontech/lib/compare/v1.20.0-stage.13...v1.20.0-stage.14) (2025-06-20)
+
+
+### Features
+
+* add OpenNextjs preset (#179) ([ca726ad](https://github.com/aziontech/lib/commit/ca726adc772783520e3fa9aa7f39b5beb812c8b1))
+
 ## [1.20.0-stage.13](https://github.com/aziontech/lib/compare/v1.20.0-stage.12...v1.20.0-stage.13) (2025-06-20)
 
 
