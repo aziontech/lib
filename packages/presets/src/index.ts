@@ -11,6 +11,7 @@ export * from './presets/javascript';
 export * from './presets/jekyll';
 export * from './presets/next';
 export * from './presets/nuxt';
+export * from './presets/opennextjs';
 export * from './presets/preact';
 export * from './presets/qwik';
 export * from './presets/react';
