@@ -22,7 +22,7 @@ const config: AzionConfig = {
   rules: {
     request: [
       {
-        name: 'Set Storage Origin for All Requests',
+        name: 'Set storage origin for all requests _next_static',
         match: '^\\/_next\\/static\\/', // starts with '/_next/static/'
         behavior: {
           setOrigin: {
