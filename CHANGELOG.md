@@ -1,3 +1,10 @@
+## [1.20.0-stage.17](https://github.com/aziontech/lib/compare/v1.20.0-stage.16...v1.20.0-stage.17) (2025-06-24)
+
+
+### Bug Fixes
+
+* streamline OpenNextjs prebuild execution by removing conditional checks for production (#181) ([8d513d9](https://github.com/aziontech/lib/commit/8d513d9e902225b949fe34354807b7a7a50a2a5d))
+
 ## [1.20.0-stage.16](https://github.com/aziontech/lib/compare/v1.20.0-stage.15...v1.20.0-stage.16) (2025-06-20)
 
 
