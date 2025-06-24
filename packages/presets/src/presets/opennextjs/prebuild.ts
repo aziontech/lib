@@ -27,30 +27,20 @@ async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Pro
     });
   }
   // Run OpenNextjs command build
-  if (ctx.production || !ctx.skipFrameworkBuild) {
-    const skipBuild = ctx.skipFrameworkBuild ? '--skipBuild' : '';
-    await exec(`${openNextjsCommand} build -- ${skipBuild}`, {
-      scope: 'OpenNextjs',
-      verbose: true,
-      interactive: true,
-    });
-  }
-
-  // Run OpenNextjs commands to populate assets
-  if (ctx.production) {
-    await exec(`${openNextjsCommand} populateAssets`, {
-      scope: 'OpenNextjs',
-      verbose: true,
-    });
-  }
-
-  // Run OpenNextjs commands to populate cache
-  if (ctx.production) {
-    await exec(`${openNextjsCommand} populateCache`, {
-      scope: 'OpenNextjs',
-      verbose: true,
-    });
-  }
+  const skipBuild = ctx.skipFrameworkBuild ? '--skipBuild' : '';
+  await exec(`${openNextjsCommand} build -- ${skipBuild}`, {
+    scope: 'OpenNextjs',
+    verbose: true,
+    interactive: true,
+  });
+  await exec(`${openNextjsCommand} populateAssets`, {
+    scope: 'OpenNextjs',
+    verbose: true,
+  });
+  await exec(`${openNextjsCommand} populateCache`, {
+    scope: 'OpenNextjs',
+    verbose: true,
+  });
 }
 
 async function checkIfOpenNextjsIsInstalled(): Promise<boolean> {
