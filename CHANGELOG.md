@@ -1,3 +1,10 @@
+## [1.20.0-stage.18](https://github.com/aziontech/lib/compare/v1.20.0-stage.17...v1.20.0-stage.18) (2025-06-25)
+
+
+### Features
+
+* add type safety for storage edge_access parameter ([a450f78](https://github.com/aziontech/lib/commit/a450f78a63a7cb4263ddf29a1f4679cbe92416af))
+
 ## [1.20.0-stage.17](https://github.com/aziontech/lib/compare/v1.20.0-stage.16...v1.20.0-stage.17) (2025-06-24)
 
 
