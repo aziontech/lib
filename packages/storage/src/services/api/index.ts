@@ -13,7 +13,7 @@ import {
   ApiListObjectsResponse,
 } from './types';
 
-import { AzionEnvironment } from '../../types';
+import { AzionEnvironment, EdgeAccessType } from '../../types';
 
 /**
  * Gets base URL based on environment
@@ -132,7 +132,7 @@ const getBuckets = async (
 const postBucket = async (
   token: string,
   name: string,
-  edge_access: string,
+  edge_access: EdgeAccessType,
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateBucketResponse> => {
@@ -176,7 +176,7 @@ const postBucket = async (
 const patchBucket = async (
   token: string,
   name: string,
-  edge_access: string,
+  edge_access: EdgeAccessType,
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiEditBucketResponse> => {
