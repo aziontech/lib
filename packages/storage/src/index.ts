@@ -23,6 +23,7 @@ import {
   AzionStorageClient,
   AzionStorageResponse,
   CreateAzionStorageClient,
+  EdgeAccessType,
 } from './types';
 
 import { InternalStorageClient, isInternalStorageAvailable } from './services/runtime/index';
@@ -107,7 +108,7 @@ const createInternalOrExternalMethod = <T extends (...args: any[]) => any>(inter
 export const createBucketMethod = async (
   token: string,
   name: string,
-  edge_access: string,
+  edge_access: EdgeAccessType,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
   const resolvedOptions = resolveClientOptions(options);
@@ -122,6 +123,7 @@ export const createBucketMethod = async (
     return {
       data: {
         ...apiResponse.data,
+        edge_access: apiResponse.data.edge_access as EdgeAccessType,
         getObjects: ({
           params,
         }: {
@@ -197,6 +199,7 @@ export const getBucketsMethod = async (
   if (apiResponse?.results && apiResponse.results.length > 0) {
     const buckets = apiResponse.results?.map((bucket) => ({
       ...bucket,
+      edge_access: bucket.edge_access as EdgeAccessType,
       getObjects: ({
         params,
       }: {
@@ -314,7 +317,7 @@ const getBucketMethod = createInternalOrExternalMethod(
     return {
       data: {
         name: bucket.data.name,
-        edge_access: bucket.data?.edge_access,
+        edge_access: bucket.data?.edge_access as EdgeAccessType,
         getObjects: ({
           params,
         }: {
@@ -357,7 +360,7 @@ const getBucketMethod = createInternalOrExternalMethod(
 export const updateBucketMethod = async (
   token: string,
   name: string,
-  edge_access: string,
+  edge_access: EdgeAccessType,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
   const resolvedOptions = resolveClientOptions(options);
@@ -372,6 +375,7 @@ export const updateBucketMethod = async (
     return {
       data: {
         ...apiResponse.data,
+        edge_access: apiResponse.data.edge_access as EdgeAccessType,
         getObjects: ({
           params,
         }: {
@@ -716,7 +720,7 @@ const createBucketWrapper = ({
   options,
 }: {
   name: string;
-  edge_access: string;
+  edge_access: EdgeAccessType;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
   createBucketMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
@@ -818,7 +822,7 @@ const updateBucketWrapper = ({
   options,
 }: {
   name: string;
-  edge_access: string;
+  edge_access: EdgeAccessType;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
   updateBucketMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
@@ -1006,7 +1010,7 @@ const client: CreateAzionStorageClient = (
       edge_access,
     }: {
       name: string;
-      edge_access: string;
+      edge_access: EdgeAccessType;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
       createBucketMethod(tokenValue, name, edge_access, resolvedOptions),
     updateBucket: ({
@@ -1014,7 +1018,7 @@ const client: CreateAzionStorageClient = (
       edge_access,
     }: {
       name: string;
-      edge_access: string;
+      edge_access: EdgeAccessType;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
       updateBucketMethod(tokenValue, name, edge_access, resolvedOptions),
     deleteBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionDeletedBucket>> =>

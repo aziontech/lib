@@ -321,7 +321,6 @@ export interface AzionBuild<T extends WebpackConfig | ESBuildConfig | unknown = 
   bundler?: 'webpack' | 'esbuild';
   preset?: PresetInput;
   polyfills?: boolean;
-  worker?: boolean;
   extend?: (context: T) => T;
   memoryFS?: {
     injectionDirs: string[];
@@ -543,6 +542,7 @@ export interface BundlerSetup {
 export interface BuildContext {
   production: boolean;
   handler: BuildEntryPoint;
+  skipFrameworkBuild?: boolean;
 }
 
 export type PresetMetadata = {

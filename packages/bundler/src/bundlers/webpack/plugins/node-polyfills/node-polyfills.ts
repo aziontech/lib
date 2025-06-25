@@ -3,12 +3,20 @@ import { getAbsoluteDirPath } from 'azion/utils/node';
 import fs from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
-import { env, nodeless } from 'unenv';
+import { defineEnv } from 'unenv';
 import { Compiler, WebpackPluginInstance } from 'webpack';
 
 const require = createRequire(import.meta.url);
 
-const { alias, inject, polyfill, external } = env(nodeless, unenvPresetAzion);
+const { env } = defineEnv({
+  nodeCompat: true,
+  resolve: false,
+  overrides: {
+    ...unenvPresetAzion,
+  },
+});
+
+const { alias, inject, polyfill, external } = env;
 
 class NodePolyfillPlugin implements WebpackPluginInstance {
   private INTERNAL_POLYFILL_PATH = '/polyfills';

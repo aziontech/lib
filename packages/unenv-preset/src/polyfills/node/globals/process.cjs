@@ -1,5 +1,7 @@
 /* eslint-disable */
 // shim for using process in browser
+globalThis.startTime = globalThis.startTime || Date.now();
+
 var processShim = (module.exports = {});
 
 /*
@@ -154,8 +156,25 @@ Item.prototype.run = function () {
 };
 processShim.title = 'browser';
 processShim.browser = true;
-processShim.env = processShim.env =
-  typeof globalThis.process !== 'undefined' && globalThis.process.env ? globalThis.process.env : {};
+const initialValues = globalThis.process !== 'undefined' && globalThis.process?.env ? globalThis.process.env : {};
+Object.defineProperty(processShim, 'env', {
+  value: new Proxy(
+    { ...initialValues },
+    {
+      get(target, prop) {
+        return target[prop] || undefined;
+      },
+      set(target, prop, value) {
+        target[prop] = value;
+        return true;
+      },
+    },
+  ),
+  writable: true,
+  enumerable: true,
+  configurable: true,
+});
+
 processShim.argv = [];
 processShim.version = ''; // empty string to avoid regexp issues
 processShim.versions = { node: '18.3.1' };
@@ -172,6 +191,10 @@ processShim.emit = noop;
 processShim.prependListener = noop;
 processShim.prependOnceListener = noop;
 
+processShim.uptime = function () {
+  return (Date.now() - globalThis.startTime) / 1000;
+};
+
 processShim.listeners = function (name) {
   return [];
 };
@@ -185,11 +208,12 @@ processShim.cwd = function () {
 };
 
 processShim.chdir = function (dir) {
-  throw new Error('process.chdir is not supported');
+  return dir ?? '/';
 };
 processShim.umask = function () {
   return 0;
 };
 
 globalThis.process = processShim;
-globalThis.process.env = processShim.env;
+
+module.exports = processShim;

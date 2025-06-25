@@ -1,5 +1,15 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 
+/**
+ * Edge access configuration for storage buckets.
+ *
+ * @type {'read_only' | 'read_write' | 'restricted'}
+ * @property {'read_only'} read_only - Allows only read operations
+ * @property {'read_write'} read_write - Allows both read and write operations
+ * @property {'restricted'} restricted - Restricted access with limited permissions
+ */
+export type EdgeAccessType = 'read_only' | 'read_write' | 'restricted';
+
 export type AzionStorageResponse<T> = {
   data?: T;
   error?: {
@@ -14,12 +24,12 @@ export type AzionStorageResponse<T> = {
  * @interface AzionBucket
  *
  * @property {string} name - The name of the bucket.
- * @property {string} edge_access - The edge access configuration for the bucket.
+ * @property {EdgeAccessType} edge_access - The edge access configuration for the bucket.
  * @property {'executed' | 'executed-runtime' | 'pending'} [state] - The current state of the bucket.
  */
 export interface AzionBucket {
   name: string;
-  edge_access: string;
+  edge_access: EdgeAccessType;
   state?: 'executed' | 'executed-runtime' | 'pending';
 
   /**
@@ -148,19 +158,19 @@ export interface AzionStorageClient {
    * Creates a new bucket.
    * @param {Object} params - Parameters for creating a bucket.
    * @param {string} params.name - Name of the new bucket.
-   * @param {string} params.edge_access - Edge access configuration for the bucket.
+   * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket.
    * @returns {Promise<AzionStorageResponse>} The created bucket or error message.
    */
-  createBucket: (params: { name: string; edge_access: string }) => Promise<AzionStorageResponse<AzionBucket>>;
+  createBucket: (params: { name: string; edge_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
 
   /**
    * Updates a bucket by its name.
    * @param {Object} params - Parameters for updating a bucket.
    * @param {string} params.name - Name of the bucket to update.
-   * @param {string} params.edge_access - New edge access configuration for the bucket.
+   * @param {EdgeAccessType} params.edge_access - New edge access configuration for the bucket.
    * @returns {Promise<AzionStorageResponse<AzionBucket>>} The updated bucket or error message.
    */
-  updateBucket: (params: { name: string; edge_access: string }) => Promise<AzionStorageResponse<AzionBucket>>;
+  updateBucket: (params: { name: string; edge_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
   /**
    * Deletes a bucket by its name.
    * @param {Object} params - Parameters for deleting a bucket.
@@ -257,7 +267,7 @@ export type AzionClientOptions = {
  * // Use the Storage client to create a bucket
  * const newBucket = await storageClient.createBucket({
  *   name: 'my-new-bucket',
- *   edge_access: 'public'
+ *   edge_access: 'read_write'
  * });
  */
 export type CreateAzionStorageClient = (

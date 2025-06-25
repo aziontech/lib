@@ -88,28 +88,43 @@ function _resolveFilename(...args) {
   /* EMPTY */
 }
 
-export default {
-  builtinModules: builtinModules,
-  _cache: null,
-  _pathCache: null,
-  _extensions: null,
-  globalPaths: null,
-  _debug: unimplemented,
-  _findPath: unimplemented,
-  _nodeModulePaths: _nodeModulePaths,
-  _resolveLookupPaths: unimplemented,
-  _load: _load,
-  _resolveFilename: _resolveFilename,
-  createRequireFromPath: unimplemented,
-  createRequire: createRequire,
-  _initPaths: unimplemented,
-  _preloadModules: unimplemented,
-  syncBuiltinESMExports: unimplemented,
-  Module: unimplemented,
-  runMain: unimplemented,
-  findSourceMap: unimplemented,
-  SourceMap: unimplemented,
+const Module = {};
+
+// Adicione as propriedades estáticas esperadas
+Module.builtinModules = builtinModules;
+Module._cache = null;
+Module._pathCache = null;
+Module._extensions = null;
+Module.globalPaths = null;
+Module._debug = unimplemented;
+Module._findPath = unimplemented;
+Module._nodeModulePaths = _nodeModulePaths;
+Module._resolveLookupPaths = unimplemented;
+Module._load = _load;
+Module._resolveFilename = _resolveFilename;
+Module.createRequireFromPath = unimplemented;
+Module.createRequire = createRequire;
+Module._initPaths = unimplemented;
+Module._preloadModules = unimplemented;
+Module.syncBuiltinESMExports = unimplemented;
+Module.runMain = unimplemented;
+Module.findSourceMap = unimplemented;
+Module.SourceMap = unimplemented;
+Module.require = unimplemented;
+const _prototype = {
+  require: unimplemented,
+  resolve: unimplemented,
+  paths: [],
+  id: '',
+  filename: '',
+  loaded: false,
+  children: [],
+  exports: {},
+  _compile: unimplemented,
+  _resolveFilename: unimplemented,
 };
+
+export default Module;
 
 export var _cache = null,
   _pathCache = null,
@@ -117,22 +132,24 @@ export var _cache = null,
   globalPaths = null;
 
 export {
-  builtinModules,
   unimplemented as _debug,
   unimplemented as _findPath,
-  unimplemented as _nodeModulePaths,
-  unimplemented as _resolveLookupPaths,
-  unimplemented as _load,
-  unimplemented as _resolveFilename,
-  createRequire as createRequireFromPath,
-  createRequire as createRequire,
   unimplemented as _initPaths,
+  unimplemented as _load,
+  unimplemented as _nodeModulePaths,
   unimplemented as _preloadModules,
-  unimplemented as syncBuiltinESMExports,
-  unimplemented as Module,
-  unimplemented as runMain,
+  unimplemented as _resolveFilename,
+  unimplemented as _resolveLookupPaths,
+  builtinModules,
+  createRequire as createRequire,
+  createRequire as createRequireFromPath,
   unimplemented as findSourceMap,
+  Module,
+  _prototype as prototype,
+  unimplemented as require,
+  unimplemented as runMain,
   unimplemented as SourceMap,
+  unimplemented as syncBuiltinESMExports,
 };
 
 /* eslint-enable */
