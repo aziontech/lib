@@ -1,3 +1,36 @@
+## [1.20.0](https://github.com/aziontech/lib/compare/v1.19.1...v1.20.0) (2025-06-25)
+
+
+### Features
+
+* add OpenNextjs preset (#179) ([ca726ad](https://github.com/aziontech/lib/commit/ca726adc772783520e3fa9aa7f39b5beb812c8b1))
+* add type safety for storage edge_access parameter ([a450f78](https://github.com/aziontech/lib/commit/a450f78a63a7cb4263ddf29a1f4679cbe92416af))
+* **config:** azion api v4 (#161) ([49c3f02](https://github.com/aziontech/lib/commit/49c3f02aa39d5e24eb2141db2370a26e63f8fe10))
+* purge api v4 (#167) ([f779d6a](https://github.com/aziontech/lib/commit/f779d6af4f2c9fd03fdce45d851f72347c21f3b9))
+* upgrade unenv 1.x to 2.x (#159) ([60ef725](https://github.com/aziontech/lib/commit/60ef7255d78c4f922b8d3efdc8cd4518a54ffaff))
+
+
+### Bug Fixes
+
+* add Azion.Storage to globalThis for polyfill (#163) ([cd659db](https://github.com/aziontech/lib/commit/cd659dbd9afbbe5a7ed45e0d89f59e0fb76792d5))
+* add polyfill for clearInterval and update injection in unenv preset (#172) ([ea99874](https://github.com/aziontech/lib/commit/ea99874afcab25e0144b374938f704b2e9205987))
+* api v4  (#168) ([dc33e5a](https://github.com/aziontech/lib/commit/dc33e5a9cfe9bd069d5bb5fd61fe026ddde53dcb))
+* polyfills for Node.js compatibility (#170) ([329f4c4](https://github.com/aziontech/lib/commit/329f4c41af43f8bf9ccede25a14605a8f34bdc35))
+* **presets:** add missing prebuild command in preact preset ([8674785](https://github.com/aziontech/lib/commit/86747855fc8f7297d9a937a3c1eff190eb8a5def))
+* **presets:** astro prebuild ([846990f](https://github.com/aziontech/lib/commit/846990f63f4b194e5f9b3e82c687be8f9ede1a65))
+* **preset:** update ruleset of html preset ([90b0def](https://github.com/aziontech/lib/commit/90b0def35c64370cc67c523f5ef95bb2979663b6))
+* rename skipProjectBuild to skipFrameworkBuild in BuildContext (#180) ([5252f0a](https://github.com/aziontech/lib/commit/5252f0acfb43a296bcdd291524a5b62de01df75d))
+* revert exported name (presets) ([94a1739](https://github.com/aziontech/lib/commit/94a173990515dc17fcc954baa3542c4645a6fb59))
+* rm worker property ([8673494](https://github.com/aziontech/lib/commit/8673494eb1cf86de4544a7791db9524866b7ddbb))
+* streamline OpenNextjs prebuild execution by removing conditional checks for production (#181) ([8d513d9](https://github.com/aziontech/lib/commit/8d513d9e902225b949fe34354807b7a7a50a2a5d))
+* streamline stream polyfills and enhance process, module, setInterval (#169) ([118f7bb](https://github.com/aziontech/lib/commit/118f7bb5ae501df4eb1c8e96fed7a976fcbb7f5d))
+* wasm-image-processor resize wrapper (#164) ([a02d941](https://github.com/aziontech/lib/commit/a02d941c90360f1b8c10076ccb2b761f3ce62f2e))
+
+
+### Reverts
+
+* api v4  (#176) ([e93e073](https://github.com/aziontech/lib/commit/e93e07306609e3df88ffce7e4a56cf2f414f2640))
+
 ## [1.20.0-stage.18](https://github.com/aziontech/lib/compare/v1.20.0-stage.17...v1.20.0-stage.18) (2025-06-25)
 
 
