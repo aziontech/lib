@@ -2,88 +2,29 @@ import { convertJsonConfigToObject, processConfig, validateConfig } from './conf
 import { AzionConfig } from './types';
 
 /**
- * Configures and validates the options for the Azion Platform.
+ * Helper function to provide IntelliSense for Azion configuration.
+ * Similar to Vite's defineConfig - provides type safety without runtime overhead.
  *
  * @param {AzionConfig} config - The configuration object for the Azion Platform.
- * @returns {AzionConfig} The validated configuration object.
+ * @returns {AzionConfig} The same configuration object (no validation or processing)
  *
  * @example
- * const config = defineConfig({
+ * import { defineConfig } from 'azion/config';
+ *
+ * export default defineConfig({
  *   build: {
- *    preset: 'typescript',
+ *     preset: 'typescript',
  *   },
  *   domain: {
  *     name: 'example.com',
- *     cnameAccessOnly: false,
- *     cnames: ['www.example.com', 'cdn.example.com'],
- *     Id: 12345,
- *     edgeFirewallId: 67890,
- *     digitalCertificateId: null,
- *     mtls: {
- *       verification: 'enforce',
- *       trustedCaCertificateId: 98765,
- *     },
  *   },
- *   origin: [
- *     {
- *       name: 'My Origin',
- *       type: 'single_origin',
- *       addresses: [
- *         {
- *           address: 'origin.example.com',
- *           weight: 100,
- *         },
- *       ],
- *       protocolPolicy: 'https',
- *     },
- *   ],
- *   cache: [
- *     {
- *       name: 'Default Cache',
- *       browser: {
- *         maxAgeSeconds: 3600,
- *       },
- *       edge: {
- *         maxAgeSeconds: 7200,
- *       },
- *     },
- *   ],
- *   rules: {
- *     request: [
- *       {
- *         name: 'Example Rule',
- *         match: 'path',
- *         behavior: {
- *           setOrigin: {
- *             name: 'My Origin',
- *             type: 'single_origin',
- *           },
- *         },
- *       },
- *     ],
- *   },
- *   purge: [
- *     {
- *       type: 'url',
- *       urls: ['https://example.com/path/to/purge'],
- *       method: 'delete',
- *       layer: 'edge_caching',
- *     },
- *   ],
  *   // ... other configurations
  * });
  */
 function defineConfig(config: AzionConfig): AzionConfig {
-  try {
-    validateConfig(config);
-  } catch (error) {
-    const errorNoStack = new Error((error as Error).message);
-    errorNoStack.stack = undefined;
-    throw errorNoStack;
-  }
   return config;
 }
 
-export { convertJsonConfigToObject, defineConfig, processConfig };
+export { convertJsonConfigToObject, defineConfig, processConfig, validateConfig };
 
 export type * from './types';

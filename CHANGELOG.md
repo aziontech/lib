@@ -1,3 +1,10 @@
+### [1.20.1-stage.1](https://github.com/aziontech/lib/compare/v1.20.0...v1.20.1-stage.1) (2025-06-27)
+
+
+### Bug Fixes
+
+* **config:** rm validation function from defineConfig method (#184) ([f4e6a22](https://github.com/aziontech/lib/commit/f4e6a2288ec75763af2296757dd0c0fde29d9bcd))
+
 ## [1.20.0](https://github.com/aziontech/lib/compare/v1.19.1...v1.20.0) (2025-06-25)
 
 
