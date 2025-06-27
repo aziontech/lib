@@ -2,7 +2,7 @@ import { defineConfig } from 'azion/config';
 
 export default defineConfig({
   build: {
-    entry: 'handler.ts',
+    entry: 'handler.js',
     preset: 'javascript',
     polyfills: true,
   },
