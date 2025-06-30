@@ -107,6 +107,59 @@ async function realpath(src, ...args) {
   return FS_CONTEXT.realpath(src, ...args);
 }
 
+// File watching functions - stub implementations for edge runtime compatibility
+function watchFile(filename, options, listener) {
+  // In edge runtime, file watching is not supported, so we provide a no-op implementation
+  if (typeof options === 'function') {
+    listener = options;
+    options = {};
+  }
+
+  // Return a stub watcher object
+  return {
+    close() {
+      // no-op
+    },
+  };
+}
+
+function unwatchFile(filename, listener) {
+  // In edge runtime, file watching is not supported, so we provide a no-op implementation
+  // This function just returns without doing anything
+  return;
+}
+
+function watch(filename, options, listener) {
+  // In edge runtime, file watching is not supported, so we provide a stub implementation
+  if (typeof options === 'function') {
+    listener = options;
+    options = {};
+  }
+
+  // Return a stub FSWatcher-like object
+  return {
+    close() {
+      // no-op
+    },
+    on(event, callback) {
+      // no-op
+      return this;
+    },
+    addListener(event, callback) {
+      // no-op
+      return this;
+    },
+    removeListener(event, callback) {
+      // no-op
+      return this;
+    },
+    removeAllListeners(event) {
+      // no-op
+      return this;
+    },
+  };
+}
+
 const constants = {
   COPYFILE_EXCL: 1,
   COPYFILE_FICLONE: 2,
@@ -199,7 +252,10 @@ export {
   rmdir,
   stat,
   statSync,
+  unwatchFile,
   W_OK,
+  watch,
+  watchFile,
   writeFile,
   X_OK,
 };
@@ -226,6 +282,9 @@ localFs.cp = cp;
 localFs.writeFile = writeFile;
 localFs.rename = rename;
 localFs.realpath = realpath;
+localFs.watchFile = watchFile;
+localFs.unwatchFile = unwatchFile;
+localFs.watch = watch;
 localFs.constants = constants;
 localFs.F_OK = F_OK;
 localFs.O_APPEND = O_APPEND;

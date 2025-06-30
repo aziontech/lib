@@ -25,6 +25,9 @@ export const {
   writeFile,
   rename,
   realpath,
+  watchFile,
+  unwatchFile,
+  watch,
   Dir,
   Dirent,
   Stats,
@@ -72,6 +75,9 @@ localFs.cp = cp;
 localFs.writeFile = writeFile;
 localFs.rename = rename;
 localFs.realpath = realpath;
+localFs.watchFile = watchFile;
+localFs.unwatchFile = unwatchFile;
+localFs.watch = watch;
 localFs.Dir = Dir;
 localFs.Dirent = Dirent;
 localFs.Stats = Stats;
