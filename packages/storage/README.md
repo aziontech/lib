@@ -214,6 +214,45 @@ if (bucket) {
 }
 ```
 
+#### Setup Storage
+
+The `setupStorage` function provides a convenient way to ensure a bucket exists. It first tries to get an existing bucket, and if it doesn't exist, creates it automatically. This is perfect for initialization scripts or ensuring your storage is ready to use.
+
+**JavaScript:**
+
+```javascript
+import { setupStorage } from 'azion/storage';
+
+const { data: bucket, error } = await setupStorage({
+  name: 'my-app-bucket',
+  edge_access: 'read_write',
+});
+if (bucket) {
+  console.log(`Storage ready: ${bucket.name}`);
+  console.log(`Edge access: ${bucket.edge_access}`);
+} else {
+  console.error('Failed to setup storage', error);
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { setupStorage, AzionBucket, AzionStorageResponse } from 'azion/storage';
+
+const { data: bucket, error }: AzionStorageResponse<AzionBucket> = await setupStorage({
+  name: 'my-app-bucket',
+  edge_access: 'read_write',
+});
+if (bucket) {
+  console.log(`Storage ready: ${bucket.name}`);
+  // Now you can safely use the bucket for operations
+  await bucket.createObject({ key: 'config.json', content: '{}' });
+} else {
+  console.error('Failed to setup storage', error);
+}
+```
+
 #### Update Bucket
 
 **JavaScript:**

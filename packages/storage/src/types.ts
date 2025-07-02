@@ -188,6 +188,14 @@ export interface AzionStorageClient {
    * @returns {Promise<AzionStorageResponse<AzionBucket>>} The retrieved bucket or error message.
    */
   getBucket: (params: { name: string }) => Promise<AzionStorageResponse<AzionBucket>>;
+  /**
+   * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+   * @param {Object} params - Parameters for setting up storage.
+   * @param {string} params.name - Name of the bucket to setup.
+   * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket (used only if creating).
+   * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+   */
+  setupStorage: (params: { name: string; edge_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
 }
 
 export type AzionBucketCollectionParams = {

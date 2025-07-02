@@ -378,6 +378,44 @@ export const updateBucketMethod = async (
 };
 
 /**
+ * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+ * This is a convenient wrapper that ensures a bucket exists before use.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {string} name - Name of the bucket to setup.
+ * @param {EdgeAccessType} edge_access - Edge access configuration for the bucket (used only if creating).
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+ */
+export const setupStorageMethod = async (
+  token: string,
+  name: string,
+  edge_access: EdgeAccessType,
+  options?: AzionClientOptions,
+): Promise<AzionStorageResponse<AzionBucket>> => {
+  const resolvedOptions = resolveClientOptions(options);
+  const getResult = await getBucketMethod(token, name, resolvedOptions);
+
+  if (getResult.data) {
+    if (resolvedOptions.debug) console.log(`Bucket '${name}' already exists`);
+    return getResult;
+  }
+  if (resolvedOptions.debug) console.log(`Bucket '${name}' not found, creating...`);
+  const createResult = await createBucketMethod(token, name, edge_access, resolvedOptions);
+
+  if (createResult.data) {
+    if (resolvedOptions.debug) console.log(`Bucket '${name}' created successfully`);
+    return createResult;
+  }
+  return {
+    error: {
+      message: createResult.error?.message ?? `Failed to setup storage bucket '${name}'`,
+      operation: 'setup storage',
+    },
+  };
+};
+
+/**
  * Retrieves a list of objects in a specific bucket.
  *
  * @param {string} token - Authentication token for Azion API.
@@ -796,6 +834,39 @@ const updateBucketWrapper = ({
   updateBucketMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
 
 /**
+ * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+ * This is a convenient wrapper that ensures a bucket exists before use.
+ *
+ * @param {Object} params - Parameters for setting up storage.
+ * @param {string} params.name - Name of the bucket to setup.
+ * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket (used only if creating).
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+ *
+ * @example
+ * const { data: bucket, error } = await setupStorage({
+ *   name: 'my-bucket',
+ *   edge_access: 'read_write',
+ *   options: { debug: true }
+ * });
+ * if (bucket) {
+ *   console.log(`Storage ready: ${bucket.name}`);
+ * } else {
+ *   console.error('Failed to setup storage', error);
+ * }
+ */
+const setupStorageWrapper = ({
+  name,
+  edge_access,
+  options,
+}: {
+  name: string;
+  edge_access: EdgeAccessType;
+  options?: AzionClientOptions;
+}): Promise<AzionStorageResponse<AzionBucket>> =>
+  setupStorageMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
+
+/**
  * Retrieves a list of objects in a specific bucket.
  *
  * @param {Object} params - Parameters for retrieving objects.
@@ -993,6 +1064,14 @@ const client: CreateAzionStorageClient = (
       deleteBucketMethod(tokenValue, name, resolvedOptions),
     getBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionBucket>> =>
       getBucketMethod(tokenValue, name, resolvedOptions),
+    setupStorage: ({
+      name,
+      edge_access,
+    }: {
+      name: string;
+      edge_access: EdgeAccessType;
+    }): Promise<AzionStorageResponse<AzionBucket>> =>
+      setupStorageMethod(tokenValue, name, edge_access, resolvedOptions),
   } as const;
 
   return client;
@@ -1008,6 +1087,7 @@ export {
   getBucketsWrapper as getBuckets,
   getObjectByKeyWrapper as getObjectByKey,
   getObjectsWrapper as getObjects,
+  setupStorageWrapper as setupStorage,
   updateBucketWrapper as updateBucket,
   updateObjectWrapper as updateObject,
 };

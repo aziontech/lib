@@ -8,6 +8,7 @@ import {
   getBuckets,
   getObjectByKey,
   getObjects,
+  setupStorage,
   updateBucket,
   updateObject,
 } from '../src/index';
@@ -38,6 +39,7 @@ describe('Storage Module', () => {
       expect(client).toHaveProperty('updateBucket');
       expect(client).toHaveProperty('deleteBucket');
       expect(client).toHaveProperty('getBucket');
+      expect(client).toHaveProperty('setupStorage');
     });
 
     it('should create a client with custom configuration', () => {
@@ -47,6 +49,7 @@ describe('Storage Module', () => {
       expect(client).toHaveProperty('updateBucket');
       expect(client).toHaveProperty('deleteBucket');
       expect(client).toHaveProperty('getBucket');
+      expect(client).toHaveProperty('setupStorage');
     });
   });
 
@@ -344,6 +347,45 @@ describe('Storage Module', () => {
 
       await client.getBucket({ name: 'test-bucket' });
       expect(services.getBuckets).toHaveBeenCalledWith('custom-token', { page_size: 1000000 }, debug, env);
+    });
+
+    it('should call setupStorage method', async () => {
+      const mockBucketResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      (services.getBucketByName as jest.Mock).mockResolvedValue(mockBucketResponse);
+
+      await client.setupStorage({ name: 'test-bucket', edge_access: 'read_write' });
+      expect(services.getBucketByName).toHaveBeenCalledWith('custom-token', 'test-bucket', undefined, debug, env);
+    });
+  });
+
+  describe('setupStorage', () => {
+    it('should return existing bucket if it already exists', async () => {
+      const mockBucketResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      (services.getBucketByName as jest.Mock).mockResolvedValue(mockBucketResponse);
+
+      const result = await setupStorage({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      expect(services.getBucketByName).toHaveBeenCalledWith(mockToken, 'test-bucket', undefined, debug, env);
+      expect(services.postBucket).not.toHaveBeenCalled();
+    });
+
+    it('should create bucket if it does not exist', async () => {
+      (services.getBucketByName as jest.Mock).mockResolvedValue({ error: { message: 'Bucket not found' } });
+      const mockCreateResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      (services.postBucket as jest.Mock).mockResolvedValue(mockCreateResponse);
+
+      const result = await setupStorage({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      expect(services.getBucketByName).toHaveBeenCalledWith(mockToken, 'test-bucket', undefined, debug, env);
+      expect(services.postBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'read_write', debug, env);
+    });
+
+    it('should return error if both get and create fail', async () => {
+      (services.getBucketByName as jest.Mock).mockResolvedValue({ error: { message: 'Bucket not found' } });
+      (services.postBucket as jest.Mock).mockResolvedValue({ error: { message: 'Creation failed' } });
+
+      const result = await setupStorage({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      expect(result.error).toEqual({ message: 'Creation failed', operation: 'setup storage' });
     });
   });
 });
