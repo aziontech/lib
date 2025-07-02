@@ -7,6 +7,9 @@ export type ApiBucketObject = {
 export interface ApiBucket {
   name: string;
   edge_access: string;
+  last_editor?: string;
+  last_modified?: string;
+  product_version?: string;
 }
 
 export type ApiError = {
@@ -15,10 +18,12 @@ export type ApiError = {
 };
 
 export interface ApiGetBucket {
-  data?: {
-    name: string;
-    edge_access: string;
-  };
+  data?: ApiBucket;
+  error?: ApiError;
+}
+
+export interface ApiGetBucketResponse {
+  data?: ApiBucket;
   error?: ApiError;
 }
 
@@ -82,6 +87,9 @@ export interface ApiUpdateObjectResponse {
 export type ApiListBucketsParams = {
   page?: number;
   page_size?: number;
+  search?: string;
+  ordering?: string;
+  fields?: string;
 };
 
 export type ApiListObjectsParams = {

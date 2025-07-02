@@ -52,12 +52,12 @@ describe('Storage Module', () => {
 
   describe('createBucket', () => {
     it('should successfully create a bucket', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'public' } };
+      const mockResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
       (services.postBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await createBucket({ name: 'test-bucket', edge_access: 'public', options: { debug, env } });
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'public' }));
-      expect(services.postBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'public', debug, env);
+      const result = await createBucket({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      expect(services.postBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'read_write', debug, env);
     });
 
     it('should return error on failure', async () => {
@@ -65,7 +65,7 @@ describe('Storage Module', () => {
         error: { message: 'token invalid', operation: 'create bucket' },
       });
 
-      const result = await createBucket({ name: 'test-bucket', edge_access: 'public', options: { debug, env } });
+      const result = await createBucket({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
       expect(result).toEqual({ error: { message: 'token invalid', operation: 'create bucket' } });
     });
   });
@@ -113,11 +113,11 @@ describe('Storage Module', () => {
 
   describe('getBucket', () => {
     it('should successfully get a bucket by name', async () => {
-      const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'public' }] };
+      const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'read_write' }] };
       (services.getBuckets as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await getBucket({ name: 'test-bucket', options: { debug, env } });
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'public' }));
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
       expect(services.getBuckets).toHaveBeenCalledWith(mockToken, { page_size: 1000000 }, debug, env);
     });
 
@@ -132,12 +132,12 @@ describe('Storage Module', () => {
 
   describe('updateBucket', () => {
     it('should successfully update a bucket', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'private' } };
+      const mockResponse = { data: { name: 'test-bucket', edge_access: 'restricted' } };
       (services.patchBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await updateBucket({ name: 'test-bucket', edge_access: 'private', options: { debug, env } });
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'private' }));
-      expect(services.patchBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'private', debug, env);
+      const result = await updateBucket({ name: 'test-bucket', edge_access: 'restricted', options: { debug, env } });
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'restricted' }));
+      expect(services.patchBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'restricted', debug, env);
     });
 
     it('should return error on failure', async () => {
@@ -145,7 +145,7 @@ describe('Storage Module', () => {
         error: { message: 'token invalid', operation: 'update bucket' },
       });
 
-      const result = await updateBucket({ name: 'test-bucket', edge_access: 'private', options: { debug, env } });
+      const result = await updateBucket({ name: 'test-bucket', edge_access: 'restricted', options: { debug, env } });
       expect(result.error).toEqual({ message: 'token invalid', operation: 'update bucket' });
     });
   });
@@ -315,19 +315,19 @@ describe('Storage Module', () => {
     });
 
     it('should call createBucket method', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'public' } };
+      const mockResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
       (services.postBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      await client.createBucket({ name: 'test-bucket', edge_access: 'public' });
-      expect(services.postBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', 'public', debug, env);
+      await client.createBucket({ name: 'test-bucket', edge_access: 'read_write' });
+      expect(services.postBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', 'read_write', debug, env);
     });
 
     it('should call updateBucket method', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'private' } };
+      const mockResponse = { data: { name: 'test-bucket', edge_access: 'restricted' } };
       (services.patchBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      await client.updateBucket({ name: 'test-bucket', edge_access: 'private' });
-      expect(services.patchBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', 'private', debug, env);
+      await client.updateBucket({ name: 'test-bucket', edge_access: 'restricted' });
+      expect(services.patchBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', 'restricted', debug, env);
     });
 
     it('should call deleteBucket method', async () => {
@@ -339,7 +339,7 @@ describe('Storage Module', () => {
     });
 
     it('should call getBucket method', async () => {
-      const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'public' }] };
+      const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'read_write' }] };
       (services.getBuckets as jest.Mock).mockResolvedValue(mockResponse);
 
       await client.getBucket({ name: 'test-bucket' });

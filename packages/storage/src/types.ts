@@ -31,6 +31,9 @@ export interface AzionBucket {
   name: string;
   edge_access: EdgeAccessType;
   state?: 'executed' | 'executed-runtime' | 'pending';
+  last_editor?: string;
+  last_modified?: string;
+  product_version?: string;
 
   /**
    * Retrieves a list of objects in the bucket.
@@ -190,6 +193,9 @@ export interface AzionStorageClient {
 export type AzionBucketCollectionParams = {
   page?: number;
   page_size?: number;
+  search?: string;
+  ordering?: string;
+  fields?: string;
 };
 
 export type AzionObjectCollectionParams = {
