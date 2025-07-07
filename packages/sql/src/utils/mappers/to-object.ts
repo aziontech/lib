@@ -1,41 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AzionDatabaseQueryResponse } from '../../types';
+import { AzionDatabaseQueryResponse, ToObjectQueryExecution } from '../../types';
 
-export type JsonObjectQueryExecutionResponse = {
-  results?: {
-    statement?: string;
-    rows: { [key: string]: any }[];
-  }[];
-};
+export const toObjectQueryExecutionResponse = ({ data }: AzionDatabaseQueryResponse) => {
+  const transformedData: ToObjectQueryExecution = {
+    data: [],
+  };
 
-export const toObjectQueryExecutionResponse = ({ results }: AzionDatabaseQueryResponse) => {
-  let transformedData: any = [];
-  if (results instanceof Array) {
-    if (results.length === 0) {
-      return {
-        results: [],
-      };
-    }
-    let transformedRows: any = null;
-    transformedData = results?.map((item) => {
-      if (item?.rows) {
-        transformedRows = item.rows.map((row) => {
-          const obj: { [key: string]: any } = {};
-          if (item?.columns) {
-            item.columns.forEach((col: string, index: number) => {
-              obj[col] = row[index];
-            });
-          }
-          return obj;
+  let transformedRows: any = [];
+  if (data?.rows && data?.columns) {
+    transformedRows = data.rows.map((row: any[]) => {
+      const obj: { [key: string]: any } = {};
+      if (data.columns) {
+        data.columns.forEach((col: string, index: number) => {
+          obj[col] = row[index];
         });
       }
-      return {
-        statement: item.statement,
-        rows: transformedRows,
-      };
+      return obj;
     });
+    transformedData.data = transformedRows;
   }
-  return {
-    results: transformedData,
-  };
+  return transformedData;
 };

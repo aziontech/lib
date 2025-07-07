@@ -1,22 +1,20 @@
-import { JsonObjectQueryExecutionResponse } from './utils/mappers/to-object';
-
-export type AzionDatabaseResponse<T> = {
-  data?: T;
-  error?: {
-    message: string;
-    operation: string;
-  };
-};
-
-/* eslint-disable no-unused-vars */
-export interface AzionDatabase {
+export type Database = {
   id: number;
   name: string;
-  clientId: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+  status: 'creating' | 'created' | 'deleting';
+  active: boolean;
+  lastModified: string;
+  lastEditor: string | null;
+  productVersion: string;
+};
+
+export type AzionSQLError = {
+  message: string;
+  operation: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type AzionDatabase = Database & {
   /**
    * Executes a query or multiple queries on the database.
    *
@@ -63,25 +61,45 @@ export interface AzionDatabase {
    * const { data: tables, error } = await database.getTables({ debug: true });
    */
   getTables: (options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>;
-}
-
-export type AzionQueryParams = string | number | boolean | null;
-
-export type AzionQueryExecutionParams = {
-  statements: string[];
-  params?: (AzionQueryParams | Record<string, AzionQueryParams>)[];
 };
 
 export type QueryResult = {
   columns?: string[];
-  rows?: (number | string)[][];
+  rows?: (string | number)[][];
   statement?: string;
 };
 
+export type ToObjectQueryExecution = {
+  data: Array<{
+    statement?: string;
+    rows: Record<string, string | number>[];
+  }>;
+};
+
 export type AzionDatabaseQueryResponse = {
-  state?: 'pending' | 'failed' | 'executed' | 'executed-runtime';
-  results?: QueryResult[];
-  toObject: () => JsonObjectQueryExecutionResponse | null;
+  state: 'pending' | 'failed' | 'executed' | 'executed-runtime';
+  data: QueryResult;
+  toObject: () => ToObjectQueryExecution | null;
+};
+
+export type AzionDatabaseResponse<T> = {
+  data?: T;
+  error?: AzionSQLError;
+};
+
+export type AzionQueryParams =
+  | string
+  | number
+  | boolean
+  | null
+  | {
+      type: string;
+      value: string | number | boolean | null;
+    };
+
+export type AzionQueryExecutionParams = {
+  statements: string[];
+  params: Array<AzionQueryParams | Record<string, AzionQueryParams>>;
 };
 
 export type AzionDatabaseExecutionResponse = AzionDatabaseQueryResponse;
@@ -100,7 +118,6 @@ export type AzionDatabaseCollections = {
 
 export type AzionDatabaseDeleteResponse = {
   state: 'pending' | 'failed' | 'executed';
-  id: number;
 };
 
 export interface AzionSQLClient {
