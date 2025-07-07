@@ -43,27 +43,19 @@ export const apiQuery = async (
 
   let resultStatements: AzionDatabaseQueryResponse = {
     state: 'executed',
-    results: undefined,
+    data: {},
     toObject: () => null,
   };
 
-  const isData = data && data.length > 0;
-  if (isData) {
+  if (data && Object.keys(data).length > 0) {
     resultStatements = {
-      state,
-      results: data.map((result, index) => {
-        return {
-          statement: statements[index]?.split(' ')[0],
-          columns:
-            result?.results?.columns && result?.results?.columns.length > 0 ? result?.results?.columns : undefined,
-          rows: result?.results?.rows && result?.results?.rows.length > 0 ? result?.results?.rows : undefined,
-        };
-      }),
+      state: state as AzionDatabaseQueryResponse['state'],
+      data,
       toObject: () => toObjectQueryExecutionResponse(resultStatements),
     };
   }
   return {
-    data: isData ? resultStatements : undefined,
+    data: data && Object.keys(data).length > 0 ? resultStatements : undefined,
     error,
   };
 };
@@ -81,31 +73,32 @@ export const runtimeQuery = async (
     const internalSql = new InternalAzionSql();
     const internalResult = await internalSql.query(name, statements, options);
     const resultStatements: AzionDatabaseQueryResponse = {
-      results: [],
+      state: 'executed-runtime',
+      data: {},
       toObject: () => null,
     };
     const data = await internalSql.mapperQuery(internalResult);
     if (data && data.length > 0) {
       resultStatements.state = 'executed-runtime';
-      resultStatements.results = data;
+      resultStatements.data = data as AzionDatabaseQueryResponse['data'];
     }
     if (options?.debug) {
       // limit the size of the array to 10
       const limitedData: AzionDatabaseQueryResponse = {
         ...resultStatements,
-        results: (resultStatements.results as QueryResult[]).map((data) => {
+        data: (resultStatements.data as QueryResult[]).map((data) => {
           return {
             ...data,
             rows: limitArraySize(data?.rows || [], 10),
           };
-        }),
+        })[0],
       };
       console.log('Response Query:', JSON.stringify(limitedData));
     }
     return {
       data: {
         ...resultStatements,
-        toObject: () => toObjectQueryExecutionResponse(resultStatements),
+        toObject: () => toObjectQueryExecutionResponse(resultStatements.data as AzionDatabaseQueryResponse),
       },
     };
   } catch (error) {

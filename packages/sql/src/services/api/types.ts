@@ -1,54 +1,51 @@
-/* eslint-disable no-unused-vars */
-export interface ApiDatabaseResponse {
+export type ApiDatabase = {
   id: number;
   name: string;
-  clientId: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  isActive: boolean;
-}
-
-export interface ApiListDatabasesResponse {
-  count?: number;
-  links?: {
-    first: string | null;
-    last: string | null;
-    next: string | null;
-    prev: string | null;
-  };
-  results?: ApiDatabaseResponse[];
-  error?: ApiError;
-}
+  status: 'creating' | 'created' | 'deleting';
+  active: boolean;
+  last_modified: string;
+  last_editor: string | null;
+  product_version: string;
+};
 
 export type ApiError = {
   message: string;
   operation: string;
+  metadata?: Record<string, unknown>;
 };
 
-export interface ApiQueryExecutionResponse {
-  state?: 'executed' | 'pending' | 'failed';
-  data?: {
-    results: {
-      columns: string[];
-      rows: (number | string)[][];
-      rows_read?: number;
-      rows_written?: number;
-      query_duration_ms?: number;
-    };
-  }[];
+export type ApiDatabaseListResponse = {
+  count?: number;
+  results?: ApiDatabase[];
   error?: ApiError;
-}
+};
 
-export interface ApiCreateDatabaseResponse {
-  state?: 'executed' | 'pending' | 'failed';
-  data?: ApiDatabaseResponse;
+export type ApiRetrieveDatabaseResponse = {
+  data?: ApiDatabase;
   error?: ApiError;
-}
+};
 
-export interface ApiDeleteDatabaseResponse {
+export type ApiCreateDatabaseResponse = {
+  state?: 'executed' | 'pending' | 'failed';
+  data?: ApiDatabase;
+  error?: ApiError;
+};
+
+export type ApiDeleteDatabaseResponse = {
   state?: 'executed' | 'pending';
-  data?: { id: number };
   error?: ApiError;
-}
+};
+
+export type ApiQueryExecutionData = {
+  columns: string[];
+  rows: (number | string)[][];
+  rows_read?: number;
+  rows_written?: number;
+  query_duration_ms?: number;
+};
+
+export type ApiQueryExecutionResponse = {
+  state?: 'executed' | 'pending' | 'failed';
+  data?: ApiQueryExecutionData;
+  error?: ApiError;
+};
