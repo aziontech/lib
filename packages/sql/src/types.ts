@@ -1,3 +1,5 @@
+import { JsonObjectQueryExecutionResponse } from './utils/mappers/to-object';
+
 export type Database = {
   id: number;
   name: string;
@@ -67,6 +69,7 @@ export type QueryResult = {
   columns?: string[];
   rows?: (string | number)[][];
   statement?: string;
+  error?: string;
 };
 
 export type ToObjectQueryExecution = {
@@ -78,8 +81,8 @@ export type ToObjectQueryExecution = {
 
 export type AzionDatabaseQueryResponse = {
   state: 'pending' | 'failed' | 'executed' | 'executed-runtime';
-  data: QueryResult;
-  toObject: () => ToObjectQueryExecution | null;
+  results?: QueryResult[];
+  toObject: () => JsonObjectQueryExecutionResponse | null;
 };
 
 export type AzionDatabaseResponse<T> = {

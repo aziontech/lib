@@ -1,4 +1,4 @@
-import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase, retrieveEdgeDatabase } from './services/api/index';
+import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase } from './services/api/index';
 import { ApiDatabase } from './services/api/types';
 import { apiQuery, runtimeQuery } from './services/index';
 import { getAzionSql } from './services/runtime/index';
@@ -142,6 +142,7 @@ const deleteDatabaseMethod = async (
  * @param debug Debug mode for detailed logging.
  * @returns The retrieved database object or null if not found.
  */
+// TODO: Breaking change: removed clientId, createdAt, updatedAt, deletedAt, isActive
 const getDatabaseMethod = async (
   token: string,
   name: string,
@@ -149,25 +150,25 @@ const getDatabaseMethod = async (
 ): Promise<AzionDatabaseResponse<AzionDatabase>> => {
   try {
     const resolvedOptions = resolveClientOptions(options);
-    // TODO: Validate the name format if needed
-    // >= 6 characters <= 50 characters Match pattern: ^[A-Za-z0-9-]{6,50}$
-    if (!name || name === '') {
-      return {
-        error: {
-          message: 'Database name is required',
-          operation: 'get database',
-        },
-      };
-    }
-    const apiResponse = await retrieveEdgeDatabase(
+
+    const apiResponse = await getEdgeDatabases(
       resolveToken(token),
-      name,
+      { search: name, page_size: 1 },
       resolvedOptions.debug,
       resolvedOptions.env,
     );
 
-    if (apiResponse.data) {
-      const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(apiResponse.data);
+    if (apiResponse.results && apiResponse.results.length > 0) {
+      const filteredResults = apiResponse.results.filter((db: ApiDatabase) => db.name === name);
+      if (filteredResults.length === 0) {
+        return {
+          error: {
+            message: `Database ${name} not found`,
+            operation: 'get database',
+          },
+        };
+      }
+      const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(filteredResults[0]);
       // TODO: Breaking change: removed clientId, createdAt, updatedAt, deletedAt, isActive
       return {
         data: {
