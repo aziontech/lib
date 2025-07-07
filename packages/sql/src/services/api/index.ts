@@ -172,11 +172,13 @@ const postQueryEdgeDatabase = async (
     if (debug) {
       const limitedData: ApiQueryExecutionResponse = {
         ...result,
-        data: {
-          ...result.data,
-          rows: limitArraySize(result.data.rows, 10),
-          columns: result.data.columns.slice(0, 10), // Limit columns to first 10
-        },
+        data: (result as ApiQueryExecutionResponse)?.data?.map((data) => ({
+          ...data,
+          results: {
+            ...data.results,
+            rows: limitArraySize(data.results?.rows, 10),
+          },
+        })),
       };
       console.log('Response Query:', JSON.stringify(limitedData));
     }
@@ -251,7 +253,7 @@ const getEdgeDatabases = async (
  */
 const retrieveEdgeDatabase = async (
   token: string,
-  name: string,
+  id: number,
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiRetrieveDatabaseResponse> => {
@@ -259,7 +261,7 @@ const retrieveEdgeDatabase = async (
     const baseUrl = getBaseUrl(env);
     const url = new URL(baseUrl);
 
-    url.pathname += `/${name}`;
+    url.pathname += `/${id}`;
 
     const headers = buildHeaders(token);
     const options = buildFetchOptions('GET', headers);

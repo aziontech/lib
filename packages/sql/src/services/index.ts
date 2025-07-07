@@ -11,7 +11,7 @@ export const apiQuery = async (
   statements: string[],
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
-  const databaseResponse = await getEdgeDatabases(token, { search: name }, options?.debug);
+  const databaseResponse = await getEdgeDatabases(token, { search: name, page_size: 1 }, options?.debug);
 
   if (databaseResponse?.error) {
     return {
@@ -41,23 +41,29 @@ export const apiQuery = async (
 
   const { state, data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
 
-  let resultStatements: AzionDatabaseQueryResponse = {
-    state: 'executed',
-    data: {},
-    toObject: () => null,
-  };
-
-  if (data && Object.keys(data).length > 0) {
-    resultStatements = {
-      state: state as AzionDatabaseQueryResponse['state'],
-      data,
-      toObject: () => toObjectQueryExecutionResponse(resultStatements),
+  if (error) {
+    return {
+      error: {
+        message: error.message || 'Error executing query',
+        operation: 'apiQuery',
+      },
     };
   }
+
   return {
-    data: data && Object.keys(data).length > 0 ? resultStatements : undefined,
-    error,
-  };
+    data: {
+      state: state as AzionDatabaseQueryResponse['state'],
+      results: data?.map((result, index) => {
+        return {
+          statement: statements[index]?.split(' ')[0],
+          columns:
+            result?.results?.columns && result?.results?.columns.length > 0 ? result?.results?.columns : undefined,
+          rows: result?.results?.rows && result?.results?.rows.length > 0 ? result?.results?.rows : undefined,
+          error: result?.error || undefined,
+        };
+      }),
+    },
+  } as AzionDatabaseResponse<AzionDatabaseQueryResponse>;
 };
 
 // Runtime Query Internal Method to execute a query on a database
@@ -74,31 +80,31 @@ export const runtimeQuery = async (
     const internalResult = await internalSql.query(name, statements, options);
     const resultStatements: AzionDatabaseQueryResponse = {
       state: 'executed-runtime',
-      data: {},
+      results: [],
       toObject: () => null,
     };
     const data = await internalSql.mapperQuery(internalResult);
     if (data && data.length > 0) {
       resultStatements.state = 'executed-runtime';
-      resultStatements.data = data as AzionDatabaseQueryResponse['data'];
+      resultStatements.results = data;
     }
     if (options?.debug) {
       // limit the size of the array to 10
       const limitedData: AzionDatabaseQueryResponse = {
         ...resultStatements,
-        data: (resultStatements.data as QueryResult[]).map((data) => {
+        results: (resultStatements.results as QueryResult[]).map((data) => {
           return {
             ...data,
             rows: limitArraySize(data?.rows || [], 10),
           };
-        })[0],
+        }),
       };
       console.log('Response Query:', JSON.stringify(limitedData));
     }
     return {
       data: {
         ...resultStatements,
-        toObject: () => toObjectQueryExecutionResponse(resultStatements.data as AzionDatabaseQueryResponse),
+        toObject: () => toObjectQueryExecutionResponse(resultStatements),
       },
     };
   } catch (error) {

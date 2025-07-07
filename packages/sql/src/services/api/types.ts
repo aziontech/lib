@@ -46,6 +46,9 @@ export type ApiQueryExecutionData = {
 
 export type ApiQueryExecutionResponse = {
   state?: 'executed' | 'pending' | 'failed';
-  data?: ApiQueryExecutionData;
+  data?: {
+    results: ApiQueryExecutionData;
+    error?: string;
+  }[];
   error?: ApiError;
 };
