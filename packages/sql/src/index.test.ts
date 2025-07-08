@@ -94,40 +94,48 @@ describe('SQL Module', () => {
 
   describe('getDatabase', () => {
     const mockApiResponse = {
-      data: {
-        active: true,
-        id: 1,
-        name: 'test-db',
-        last_editor: 'test-user',
-        last_modified: '2023-10-01T00:00:00Z',
-        product_version: '1.0.0',
-        status: 'created',
-      },
+      count: 1,
+      results: [
+        {
+          id: 0,
+          name: 'db-1',
+          status: 'created',
+          active: true,
+          last_modified: '2019-08-24T14:15:22Z',
+          last_editor: 'string',
+          product_version: 'string',
+        },
+      ],
     };
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
 
     it('should successfully retrieve a database', async () => {
-      (servicesApi.retrieveEdgeDatabase as jest.Mock).mockResolvedValue(mockApiResponse);
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockApiResponse);
 
-      const result = await getDatabase('test-db', { debug: mockDebug });
-      expect(servicesApi.retrieveEdgeDatabase).toHaveBeenCalledWith(mockToken, 'test-db', true, 'production');
+      const result = await getDatabase('db-1', { debug: mockDebug });
+      expect(servicesApi.getEdgeDatabases).toHaveBeenCalledWith(
+        mockToken,
+        { page_size: 1, search: 'db-1' },
+        true,
+        'production',
+      );
       expect(result.data).toEqual(
         expect.objectContaining({
-          id: 1,
-          name: 'test-db',
-          active: true,
-          lastEditor: 'test-user',
-          lastModified: '2023-10-01T00:00:00Z',
-          productVersion: '1.0.0',
+          id: 0,
+          name: 'db-1',
           status: 'created',
+          active: true,
+          lastModified: '2019-08-24T14:15:22Z',
+          lastEditor: 'string',
+          productVersion: 'string',
         }),
       );
     });
 
     it('should return error if database not found', async () => {
-      (servicesApi.retrieveEdgeDatabase as jest.Mock).mockResolvedValue({
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue({
         error: { message: 'Not found.', operation: 'retrieve database' },
       });
 
@@ -634,6 +642,73 @@ describe('SQL Module', () => {
         { page: 1, page_size: 10 },
         false,
         'production',
+      );
+    });
+  });
+
+  describe('toJson method', () => {
+    beforeAll(() => {
+      jest.spyOn(console, 'log').mockImplementation();
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should convert query execution response to JSON object', async () => {
+      const mockResponse = {
+        state: 'executed',
+        data: [
+          {
+            results: {
+              columns: ['id', 'name'],
+              rows: [
+                [1, 'test'],
+                [2, 'example'],
+              ],
+            },
+          },
+        ],
+      };
+      const mockDBResponse = {
+        count: 1,
+        results: [
+          {
+            id: 0,
+            name: 'db-1',
+            status: 'created',
+            active: true,
+            last_modified: '2019-08-24T14:15:22Z',
+            last_editor: 'string',
+            product_version: 'string',
+          },
+        ],
+      };
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockDBResponse);
+
+      const resultDatabase = await getDatabase('db-1', { debug: mockDebug });
+      (servicesApi.getEdgeDatabases as jest.Mock).mockResolvedValue(mockDBResponse);
+      (servicesApi.postQueryEdgeDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      const result = await resultDatabase.data?.query(['SELECT * FROM test'], { debug: mockDebug });
+      const toObjectResponse = result?.data?.toObject();
+      expect(toObjectResponse).toEqual(
+        expect.objectContaining({
+          results: [
+            {
+              rows: [
+                {
+                  id: 1,
+                  name: 'test',
+                },
+                {
+                  id: 2,
+                  name: 'example',
+                },
+              ],
+              statement: 'SELECT',
+            },
+          ],
+        }),
       );
     });
   });
