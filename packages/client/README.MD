@@ -141,7 +141,7 @@ if (allDatabases) {
 
 const queryResult = await client.sql.query('SELECT * FROM users');
 if (queryResult.data) {
-  console.log(`Query executed. Rows returned: ${queryResult?.data?.rows.length}`);
+  console.log(`Query executed. Rows returned: ${queryResult.data.results?.rows?.length}`);
 }
 ```
 
