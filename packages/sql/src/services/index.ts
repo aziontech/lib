@@ -11,7 +11,7 @@ export const apiQuery = async (
   statements: string[],
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
-  const databaseResponse = await getEdgeDatabases(token, { search: name, page_size: 1 }, options?.debug);
+  const databaseResponse = await getEdgeDatabases(token, { search: name, page_size: 1 }, options?.debug, options?.env);
 
   if (databaseResponse?.error) {
     return { error: databaseResponse.error };
@@ -28,7 +28,13 @@ export const apiQuery = async (
   }
 
   // call the postQueryEdgeDatabase function to execute the query
-  const { state, data, error } = await postQueryEdgeDatabase(token, database.id, statements, options?.debug);
+  const { state, data, error } = await postQueryEdgeDatabase(
+    token,
+    database.id,
+    statements,
+    options?.debug,
+    options?.env,
+  );
 
   if (error) {
     return {
@@ -63,6 +69,11 @@ export const apiQuery = async (
       }),
     );
   }
+
+  // Check if there are any errors in the results
+  const someErrorInStatements =
+    resultsWithStatements && resultsWithStatements.filter((result) => result?.error !== undefined);
+
   return {
     data: {
       state: state as AzionDatabaseQueryResponse['state'],
@@ -74,6 +85,14 @@ export const apiQuery = async (
           toObject: () => null,
         }),
     },
+    // If there are, return an error response
+    error:
+      someErrorInStatements && someErrorInStatements.length > 0
+        ? {
+            message: someErrorInStatements.map((result) => result?.error || 'Error executing query').join(', '),
+            operation: 'apiQuery',
+          }
+        : undefined,
   } as AzionDatabaseResponse<AzionDatabaseQueryResponse>;
 };
 
