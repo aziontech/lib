@@ -268,7 +268,13 @@ describe('SQL Module', () => {
           results: [{ columns: ['id', 'name'], rows: [[1, 'test']], statement: 'SELECT' }],
         }),
       );
-      expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['SELECT * FROM test'], true);
+      expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(
+        mockToken,
+        1,
+        ['SELECT * FROM test'],
+        true,
+        'production',
+      );
     });
 
     it('should throw an error if useQuery is called with an invalid statement', async () => {
@@ -380,6 +386,10 @@ describe('SQL Module', () => {
               expect.anything(),
               expect.objectContaining({ error: 'no such table: main' }),
             ]),
+          }),
+          error: expect.objectContaining({
+            message: 'no such table: main',
+            operation: 'apiQuery',
           }),
         }),
       );
@@ -511,6 +521,7 @@ describe('SQL Module', () => {
         1,
         ["INSERT INTO users (id, name) VALUES (1, 'John Doe')"],
         true,
+        'production',
       );
     });
 
@@ -578,7 +589,13 @@ describe('SQL Module', () => {
           ],
         }),
       );
-      expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(mockToken, 1, ['PRAGMA table_list'], true);
+      expect(servicesApi.postQueryEdgeDatabase).toHaveBeenCalledWith(
+        mockToken,
+        1,
+        ['PRAGMA table_list'],
+        true,
+        'production',
+      );
     });
   });
 
