@@ -522,13 +522,13 @@ const client: CreateAzionSQLClient = (
 
   const client: AzionSQLClient = {
     createDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
-      createDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
+      createDatabaseMethod(tokenValue, name, { ...config?.options, debug: debugValue }),
     deleteDatabase: (id: number): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> =>
-      deleteDatabaseMethod(tokenValue, id, { ...config, debug: debugValue }),
+      deleteDatabaseMethod(tokenValue, id, { ...config?.options, debug: debugValue }),
     getDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
-      getDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
+      getDatabaseMethod(tokenValue, name, { ...config?.options, debug: debugValue }),
     getDatabases: (params?: AzionDatabaseCollectionOptions): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> =>
-      getDatabasesMethod(tokenValue, params, { ...config, debug: debugValue }),
+      getDatabasesMethod(tokenValue, params, { ...config?.options, debug: debugValue }),
   } as const;
 
   return client;
