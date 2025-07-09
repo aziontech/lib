@@ -85,7 +85,6 @@ const createDatabaseMethod = async (
     const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolvedOptions.debug, resolvedOptions.env);
     if (apiResponse.data) {
       const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(apiResponse.data);
-      // TODO: Breaking change: removed clientId, createdAt, updatedAt, deletedAt, isActive
       return {
         data: {
           state: apiResponse.state ?? 'executed',
@@ -142,7 +141,6 @@ const deleteDatabaseMethod = async (
  * @param debug Debug mode for detailed logging.
  * @returns The retrieved database object or null if not found.
  */
-// TODO: Breaking change: removed clientId, createdAt, updatedAt, deletedAt, isActive
 const getDatabaseMethod = async (
   token: string,
   name: string,
@@ -169,7 +167,6 @@ const getDatabaseMethod = async (
         };
       }
       const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(filteredResults[0]);
-      // TODO: Breaking change: removed clientId, createdAt, updatedAt, deletedAt, isActive
       return {
         data: {
           ...databaseTransformed,
@@ -258,7 +255,6 @@ const queryDatabaseMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   const resolvedOptions = resolveClientOptions(options);
-  // TODO: Validate the name format if needed
   if (!name || name === '') {
     return {
       error: {
