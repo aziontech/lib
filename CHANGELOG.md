@@ -1,3 +1,21 @@
+## [2.0.0-stage.1](https://github.com/aziontech/lib/compare/v1.21.0-stage.1...v2.0.0-stage.1) (2025-07-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* - Remove `clientId`, `createdAt`, `updatedAt`, and `deletedAt` from the `AzionDatabase` interface.
+- Add `active`, `lastModified`, `lastEditor`, and `productVersion` to the `AzionDatabase` interface.
+- Update `useExecute` and `useQuery` hooks to reflect the new API structure.
+- Update `AzionDatabaseQueryResponse` and `AzionDatabaseExecutionResponse` to include the new fields.
+- Add an `error` field to `QueryResult` to capture errors when any statement fails during query execution.
+- Remove `id` from the `AzionDatabaseDeleteResponse` interface.
+- Update `status` in `AzionDatabase` interface to `creating | created | deleting`
+- Update README examples to reflect the new API structure and usage patterns.
+
+### Code Refactoring
+
+* major enhancements and breaking changes in `packages/sql` with SQL API v4 update (#187) ([55188ee](https://github.com/aziontech/lib/commit/55188eefd6f42cdd0185c22eea77c6dd084f7f59))
+
 ## [1.21.0-stage.1](https://github.com/aziontech/lib/compare/v1.20.1...v1.21.0-stage.1) (2025-07-07)
 
 
