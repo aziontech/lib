@@ -1,19 +1,20 @@
 import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase } from './services/api/index';
-import { ApiDatabaseResponse } from './services/api/types';
+import { ApiDatabase } from './services/api/types';
 import { apiQuery, runtimeQuery } from './services/index';
 import { getAzionSql } from './services/runtime/index';
-import type {
-  AzionClientOptions,
-  AzionDatabase,
-  AzionDatabaseCollectionOptions,
-  AzionDatabaseCollections,
-  AzionDatabaseDeleteResponse,
-  AzionDatabaseQueryResponse,
-  AzionDatabaseResponse,
-  AzionEnvironment,
-  AzionSQLClient,
-  CreateAzionSQLClient,
+import {
+  type AzionClientOptions,
+  type AzionDatabase,
+  type AzionDatabaseCollectionOptions,
+  type AzionDatabaseCollections,
+  type AzionDatabaseDeleteResponse,
+  type AzionDatabaseQueryResponse,
+  type AzionDatabaseResponse,
+  type AzionEnvironment,
+  type AzionSQLClient,
+  type CreateAzionSQLClient,
 } from './types';
+import { handleUnknownError } from './utils/validations/error-response';
 
 /**
  * Determines if the code is running in a browser environment.
@@ -55,6 +56,18 @@ const resolveClientOptions = (options?: AzionClientOptions): AzionClientOptions 
   env: resolveEnv(options?.env),
 });
 
+const AzionDatabaseTransform = {
+  parse: (data: ApiDatabase): Partial<AzionDatabase> => ({
+    id: data.id,
+    name: data.name,
+    status: data.status,
+    active: data.active,
+    lastModified: data.last_modified,
+    lastEditor: data.last_editor,
+    productVersion: data.product_version,
+  }),
+};
+
 /**
  * Creates a new database.
  * @param token Token to authenticate with the API.
@@ -67,27 +80,32 @@ const createDatabaseMethod = async (
   name: string,
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabase>> => {
-  const resolvedOptions = resolveClientOptions(options);
-  const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolvedOptions.debug, resolvedOptions.env);
-  if (apiResponse.data) {
+  try {
+    const resolvedOptions = resolveClientOptions(options);
+    const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolvedOptions.debug, resolvedOptions.env);
+    if (apiResponse.data) {
+      const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(apiResponse.data);
+      return {
+        data: {
+          state: apiResponse.state ?? 'executed',
+          ...databaseTransformed,
+          query: (statements: string[]) => queryDatabaseMethod(resolveToken(token), name, statements, resolvedOptions),
+          execute: (statements: string[]) =>
+            executeDatabaseMethod(resolveToken(token), name, statements, resolvedOptions),
+          getTables: (options?: AzionClientOptions) =>
+            listTablesWrapper(name, {
+              ...options,
+              debug: resolvedOptions.debug,
+            }),
+        },
+      } as AzionDatabaseResponse<AzionDatabase>;
+    }
     return {
-      data: {
-        state: apiResponse.state,
-        ...apiResponse.data,
-        query: (statements: string[]) => queryDatabaseMethod(resolveToken(token), name, statements, resolvedOptions),
-        execute: (statements: string[]) =>
-          executeDatabaseMethod(resolveToken(token), name, statements, resolvedOptions),
-        getTables: (options?: AzionClientOptions) =>
-          listTablesWrapper(name, {
-            ...options,
-            debug: resolvedOptions.debug,
-          }),
-      },
-    } as AzionDatabaseResponse<AzionDatabase>;
+      error: apiResponse.error,
+    };
+  } catch (error) {
+    return handleUnknownError(error, 'create database');
   }
-  return {
-    error: apiResponse.error,
-  };
 };
 
 /**
@@ -104,11 +122,10 @@ const deleteDatabaseMethod = async (
 ): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> => {
   const resolvedOptions = resolveClientOptions(options);
   const apiResponse = await deleteEdgeDatabase(resolveToken(token), id, resolvedOptions.debug, resolvedOptions.env);
-  if (apiResponse?.data) {
+  if (apiResponse?.state) {
     return {
       data: {
         state: apiResponse.state ?? 'executed',
-        id: apiResponse.data.id,
       },
     };
   }
@@ -129,52 +146,48 @@ const getDatabaseMethod = async (
   name: string,
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabase>> => {
-  const resolvedOptions = resolveClientOptions(options);
-  if (!name || name === '') {
+  try {
+    const resolvedOptions = resolveClientOptions(options);
+
+    const apiResponse = await getEdgeDatabases(
+      resolveToken(token),
+      { search: name, page_size: 1 },
+      resolvedOptions.debug,
+      resolvedOptions.env,
+    );
+
+    if (apiResponse.results && apiResponse.results.length > 0) {
+      const filteredResults = apiResponse.results.filter((db: ApiDatabase) => db.name === name);
+      if (filteredResults.length === 0) {
+        return {
+          error: {
+            message: `Database ${name} not found`,
+            operation: 'get database',
+          },
+        };
+      }
+      const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(filteredResults[0]);
+      return {
+        data: {
+          ...databaseTransformed,
+          query: (statements: string[]) => queryDatabaseMethod(resolveToken(token), name, statements, resolvedOptions),
+          execute: (statements: string[]) =>
+            executeDatabaseMethod(resolveToken(token), name, statements, resolvedOptions),
+          getTables: (options?: AzionClientOptions) =>
+            listTablesWrapper(name, {
+              ...options,
+              debug: resolvedOptions.debug,
+            }),
+        },
+      } as AzionDatabaseResponse<AzionDatabase>;
+    }
+
     return {
-      error: {
-        message: 'Database name is required',
-        operation: 'get database',
-      },
+      error: apiResponse.error,
     };
+  } catch (error) {
+    return handleUnknownError(error, 'get database');
   }
-  const databaseResponse = await getEdgeDatabases(
-    resolveToken(token),
-    { search: name },
-    resolvedOptions.debug,
-    resolvedOptions.env,
-  );
-  if (!databaseResponse?.results || databaseResponse?.results?.length === 0) {
-    return {
-      error: {
-        message: `Database with name '${name}' not found`,
-        operation: 'get database',
-      },
-    };
-  }
-  const databaseResult = databaseResponse?.results[0];
-  if (!databaseResult || databaseResult.id === undefined || databaseResult.name !== name) {
-    return {
-      error: {
-        message: `Database with name '${name}' not found`,
-        operation: 'get database',
-      },
-    };
-  }
-  return {
-    data: {
-      ...databaseResult,
-      query: (statements: string[]) =>
-        queryDatabaseMethod(resolveToken(token), databaseResult.name, statements, resolvedOptions),
-      execute: (statements: string[]) =>
-        executeDatabaseMethod(resolveToken(token), databaseResult.name, statements, resolvedOptions),
-      getTables: (options?: AzionClientOptions) =>
-        listTablesWrapper(databaseResult.name, {
-          ...options,
-          debug: resolvedOptions.debug,
-        }),
-    },
-  } as AzionDatabaseResponse<AzionDatabase>;
 };
 
 /**
@@ -191,10 +204,28 @@ const getDatabasesMethod = async (
 ): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> => {
   const resolvedOptions = resolveClientOptions(options);
   const apiResponse = await getEdgeDatabases(resolveToken(token), params, resolvedOptions.debug, resolvedOptions.env);
-  if (apiResponse?.results && apiResponse.results.length > 0) {
-    const databases = apiResponse.results.map((db: ApiDatabaseResponse) => {
-      return {
-        ...db,
+
+  // If the API response contains an error, return it
+  if (apiResponse.error) {
+    return {
+      error: apiResponse.error,
+    };
+  }
+  // If no results are found, return an empty collection with count
+  if (!apiResponse?.results || apiResponse?.results?.length === 0) {
+    return {
+      data: {
+        count: apiResponse.count ?? 0,
+        databases: [],
+      },
+    };
+  }
+
+  return {
+    data: {
+      count: apiResponse.count ?? 0,
+      databases: apiResponse.results.map((db: ApiDatabase) => ({
+        ...AzionDatabaseTransform.parse(db),
         query: (statements: string[]): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
           queryDatabaseMethod(resolveToken(token), db.name, statements, resolvedOptions),
         execute: (statements: string[]): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> =>
@@ -204,18 +235,9 @@ const getDatabasesMethod = async (
             ...options,
             debug: resolvedOptions.debug,
           }),
-      };
-    });
-    return {
-      data: {
-        count: apiResponse.count,
-        databases,
-      },
-    };
-  }
-  return {
-    error: apiResponse.error,
-  };
+      })),
+    },
+  } as AzionDatabaseResponse<AzionDatabaseCollections>;
 };
 
 /**
@@ -496,13 +518,13 @@ const client: CreateAzionSQLClient = (
 
   const client: AzionSQLClient = {
     createDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
-      createDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
+      createDatabaseMethod(tokenValue, name, { ...config?.options, debug: debugValue }),
     deleteDatabase: (id: number): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> =>
-      deleteDatabaseMethod(tokenValue, id, { ...config, debug: debugValue }),
+      deleteDatabaseMethod(tokenValue, id, { ...config?.options, debug: debugValue }),
     getDatabase: (name: string): Promise<AzionDatabaseResponse<AzionDatabase>> =>
-      getDatabaseMethod(tokenValue, name, { ...config, debug: debugValue }),
+      getDatabaseMethod(tokenValue, name, { ...config?.options, debug: debugValue }),
     getDatabases: (params?: AzionDatabaseCollectionOptions): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> =>
-      getDatabasesMethod(tokenValue, params, { ...config, debug: debugValue }),
+      getDatabasesMethod(tokenValue, params, { ...config?.options, debug: debugValue }),
   } as const;
 
   return client;
