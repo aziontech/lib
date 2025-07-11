@@ -1,3 +1,10 @@
+## [2.0.0-stage.2](https://github.com/aziontech/lib/compare/v2.0.0-stage.1...v2.0.0-stage.2) (2025-07-11)
+
+
+### Bug Fixes
+
+* reorder exports in storage polyfills for consistency (#188) ([8f2fb71](https://github.com/aziontech/lib/commit/8f2fb71ec45a213c4a7834d70faf084eb24f50f6))
+
 ## [2.0.0-stage.1](https://github.com/aziontech/lib/compare/v1.21.0-stage.1...v2.0.0-stage.1) (2025-07-09)
 
 
