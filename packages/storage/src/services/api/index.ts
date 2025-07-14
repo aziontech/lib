@@ -7,6 +7,7 @@ import {
   ApiDeleteObjectResponse,
   ApiEditBucketResponse,
   ApiError,
+  ApiGetBucketResponse,
   ApiListBucketsParams,
   ApiListBucketsResponse,
   ApiListObjectsParams,
@@ -20,9 +21,9 @@ import { AzionEnvironment, EdgeAccessType } from '../../types';
  */
 const getBaseUrl = (env: AzionEnvironment = 'production'): string => {
   const urls: Record<AzionEnvironment, string> = {
-    production: 'https://api.azion.com/v4/storage/buckets',
-    development: '/v4/storage/buckets',
-    staging: 'https://stage-api.azion.com/v4/storage/buckets',
+    production: 'https://api.azion.com/v4/edge_storage/buckets',
+    development: '/v4/edge_storage/buckets',
+    staging: 'https://stage-api.azion.com/v4/edge_storage/buckets',
   };
   return urls[env];
 };
@@ -96,8 +97,11 @@ const getBuckets = async (
   env: AzionEnvironment = 'production',
 ): Promise<ApiListBucketsResponse> => {
   try {
-    const { page_size = 10, page = 1 } = params || {};
+    const { page_size = 10, page = 1, search, ordering, fields } = params || {};
     const queryParams = new URLSearchParams({ page_size: String(page_size), page: String(page) });
+    if (search) queryParams.append('search', search);
+    if (ordering) queryParams.append('ordering', ordering);
+    if (fields) queryParams.append('fields', fields);
     const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
     const options = buildFetchOptions('GET', headers);
     const baseUrl = getBaseUrl(env);
@@ -115,6 +119,53 @@ const getBuckets = async (
     if (debug) console.error('Error getting all buckets:', error);
     return {
       error: { message: error.toString(), operation: 'get all buckets' },
+    };
+  }
+};
+
+/**
+ * Retrieves details from a specific bucket by name using the new dedicated endpoint.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {string} name - Name of the bucket to retrieve.
+ * @param {string} [fields] - Comma-separated list of field names to include in the response.
+ * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
+ * @returns {Promise<ApiGetBucketResponse>} The bucket details or an error if retrieval failed.
+ */
+const getBucketByName = async (
+  token: string,
+  name: string,
+  fields?: string,
+  debug?: boolean,
+  env: AzionEnvironment = 'production',
+): Promise<ApiGetBucketResponse> => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (fields) queryParams.append('fields', fields);
+
+    const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
+    const options = buildFetchOptions('GET', headers);
+    const baseUrl = getBaseUrl(env);
+    const url = `${baseUrl}/${name}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    if (debug) console.log(`GET bucket URL: ${url}`);
+
+    const data = await fetchWithErrorHandling(url, options, debug);
+
+    if (!data.data) {
+      const error = handleApiError(['detail'], data, 'get bucket by name');
+      return {
+        error: error,
+      };
+    }
+
+    if (debug) console.log('Response:', data);
+    return data;
+  } catch (error: any) {
+    if (debug) console.error('Error getting bucket by name:', error);
+    return {
+      error: { message: error.toString(), operation: 'get bucket by name' },
     };
   }
 };
@@ -472,6 +523,7 @@ const deleteObject = async (
 export {
   deleteBucket,
   deleteObject,
+  getBucketByName,
   getBuckets,
   getObjectByKey,
   getObjects,
