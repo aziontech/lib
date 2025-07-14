@@ -2,7 +2,6 @@
 import { AzionRuntimeCtx, AzionRuntimeRequest } from 'azion/types';
 import { handleImageResizingRequest } from './default/handler/images.js';
 import { adjustRequestForVercel } from './default/handler/routing/http.js';
-import { handleRequest } from './default/handler/routing/index.js';
 import handlerStatic from './static/handler.js';
 
 const getStorageAsset = async (request: Request) => {
@@ -41,7 +40,8 @@ async function main(request: Request, env: Record<string, any>, ctx: any) {
     }
 
     const adjustedRequest = adjustRequestForVercel(request);
-    return handleRequest(
+    const importHandleDefault = await import('./default/handler/routing/index.js');
+    return importHandleDefault.handleRequest(
       {
         request: adjustedRequest,
         ctx,
