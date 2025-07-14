@@ -1,3 +1,15 @@
+## [2.0.0-stage.4](https://github.com/aziontech/lib/compare/v2.0.0-stage.3...v2.0.0-stage.4) (2025-07-14)
+
+
+### Features
+
+* **storage:** setupBucket method ([92c77da](https://github.com/aziontech/lib/commit/92c77da6ecda5b782c87fe0d68404246574b0529))
+
+
+### Bug Fixes
+
+* **storage:** migrate to v4 API with search params and direct bucket endpoint ([a7d6974](https://github.com/aziontech/lib/commit/a7d6974b78b7c15b64c6470908b15f1e7c523e41))
+
 ## [2.0.0-stage.3](https://github.com/aziontech/lib/compare/v2.0.0-stage.2...v2.0.0-stage.3) (2025-07-14)
 
 
