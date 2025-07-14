@@ -1,3 +1,10 @@
+## [2.0.0-stage.3](https://github.com/aziontech/lib/compare/v2.0.0-stage.2...v2.0.0-stage.3) (2025-07-14)
+
+
+### Bug Fixes
+
+* dynamically import handleRequest function in Next.js handler (#189) ([6279bfa](https://github.com/aziontech/lib/commit/6279bfa8f5d7e2766e5d424e3b354be6be13da55))
+
 ## [2.0.0-stage.2](https://github.com/aziontech/lib/compare/v2.0.0-stage.1...v2.0.0-stage.2) (2025-07-11)
 
 
