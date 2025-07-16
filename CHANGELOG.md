@@ -1,53 +1,9 @@
-## [2.0.0-stage.4](https://github.com/aziontech/lib/compare/v2.0.0-stage.3...v2.0.0-stage.4) (2025-07-14)
-
-
-### Features
-
-* **storage:** setupBucket method ([92c77da](https://github.com/aziontech/lib/commit/92c77da6ecda5b782c87fe0d68404246574b0529))
+### [1.20.2](https://github.com/aziontech/lib/compare/v1.20.1...v1.20.2) (2025-07-16)
 
 
 ### Bug Fixes
 
-* **storage:** migrate to v4 API with search params and direct bucket endpoint ([a7d6974](https://github.com/aziontech/lib/commit/a7d6974b78b7c15b64c6470908b15f1e7c523e41))
-
-## [2.0.0-stage.3](https://github.com/aziontech/lib/compare/v2.0.0-stage.2...v2.0.0-stage.3) (2025-07-14)
-
-
-### Bug Fixes
-
-* dynamically import handleRequest function in Next.js handler (#189) ([6279bfa](https://github.com/aziontech/lib/commit/6279bfa8f5d7e2766e5d424e3b354be6be13da55))
-
-## [2.0.0-stage.2](https://github.com/aziontech/lib/compare/v2.0.0-stage.1...v2.0.0-stage.2) (2025-07-11)
-
-
-### Bug Fixes
-
-* reorder exports in storage polyfills for consistency (#188) ([8f2fb71](https://github.com/aziontech/lib/commit/8f2fb71ec45a213c4a7834d70faf084eb24f50f6))
-
-## [2.0.0-stage.1](https://github.com/aziontech/lib/compare/v1.21.0-stage.1...v2.0.0-stage.1) (2025-07-09)
-
-
-### ⚠ BREAKING CHANGES
-
-* - Remove `clientId`, `createdAt`, `updatedAt`, and `deletedAt` from the `AzionDatabase` interface.
-- Add `active`, `lastModified`, `lastEditor`, and `productVersion` to the `AzionDatabase` interface.
-- Update `useExecute` and `useQuery` hooks to reflect the new API structure.
-- Update `AzionDatabaseQueryResponse` and `AzionDatabaseExecutionResponse` to include the new fields.
-- Add an `error` field to `QueryResult` to capture errors when any statement fails during query execution.
-- Remove `id` from the `AzionDatabaseDeleteResponse` interface.
-- Update `status` in `AzionDatabase` interface to `creating | created | deleting`
-- Update README examples to reflect the new API structure and usage patterns.
-
-### Code Refactoring
-
-* major enhancements and breaking changes in `packages/sql` with SQL API v4 update (#187) ([55188ee](https://github.com/aziontech/lib/commit/55188eefd6f42cdd0185c22eea77c6dd084f7f59))
-
-## [1.21.0-stage.1](https://github.com/aziontech/lib/compare/v1.20.1...v1.21.0-stage.1) (2025-07-07)
-
-
-### Features
-
-*  azion api v4 (#171) ([ad875f1](https://github.com/aziontech/lib/commit/ad875f1214df3988098399a70b106f54321fd2f9))
+* add getRandomValues, randomUUID and generateKeyPair crypto to runtime dev ([033957d](https://github.com/aziontech/lib/commit/033957d4982de299f2a62cb7988ff8590bf9c836))
 
 ### [1.20.1](https://github.com/aziontech/lib/compare/v1.20.0...v1.20.1) (2025-06-27)
 

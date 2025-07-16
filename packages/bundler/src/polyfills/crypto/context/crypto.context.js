@@ -32,6 +32,9 @@ export var { publicEncrypt } = crypto;
 export var { randomBytes } = crypto;
 export var { randomFill } = crypto;
 export var { randomFillSync } = crypto;
+export var { getRandomValues } = crypto;
+export var { randomUUID } = crypto;
+export var { generateKeyPair } = crypto;
 
 export default {
   Cipher,
@@ -65,4 +68,7 @@ export default {
   randomBytes,
   randomFill,
   randomFillSync,
+  getRandomValues,
+  randomUUID,
+  generateKeyPair,
 };
