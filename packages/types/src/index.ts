@@ -15,7 +15,7 @@ export namespace Azion {
 
     export interface StorageObject {
       arrayBuffer(): Promise<ArrayBuffer>;
-      metadata: Map<string, string>;
+      AzionRuntimeRequestMetadata: Map<string, string>;
       contentType: string;
       contentLength: number;
     }
@@ -46,7 +46,7 @@ export namespace Azion {
   }
 }
 
-export interface Metadata {
+export interface AzionRuntimeRequestMetadata {
   // GeoIP
   geoip_asn: string;
   geoip_city: string;
@@ -76,31 +76,62 @@ export interface Metadata {
 }
 
 /**
- * Represents the FetchEvent interface.
+ * Base event interface for Azion
  */
-export interface FetchEvent extends Event {
+export interface AzionFetchEvent extends Event {
   request: Request & {
-    metadata: Metadata;
+    AzionRuntimeRequestMetadata: AzionRuntimeRequestMetadata;
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  waitUntil(promise: Promise<any>): void;
-  respondWith(response: Response | Promise<Response>): void;
+  waitUntil: (promise: Promise<unknown>) => void;
+  respondWith: (response: Response | Promise<Response>) => void;
 }
 
 /**
- * Represents the FirewallEvent interface.
+ * Firewall event interface
  */
-export interface FirewallEvent extends Event {
-  request: Request & {
-    headers: Headers;
-    metadata: Metadata;
-  };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  waitUntil(promise: Promise<any>): void;
-  deny(): void;
-  drop(): void;
-  addRequestHeader(name: string, value: string): void;
-  addResponseHeader(name: string, value: string): void;
-  respondWith(response: Response | Promise<Response>): void;
-  continue(): void;
+export interface AzionFirewallEvent extends AzionFetchEvent {
+  deny: () => void;
+  drop: () => void;
+  continue: () => void;
+}
+
+/**
+ * Event listener type for fetch events
+ */
+export type FetchEventListener = (event: AzionFetchEvent, args?: Record<string, unknown>) => void | Promise<void>;
+
+/**
+ * Event listener type for firewall events
+ */
+export type FirewallEventListener = (event: AzionFirewallEvent, args?: Record<string, unknown>) => void | Promise<void>;
+/**
+ * Base context for Azion modules
+ */
+export interface AzionRuntimeCtx {
+  waitUntil: (promise: Promise<unknown>) => void;
+  args?: Record<string, unknown>;
+}
+
+/**
+ * Specific context for firewall modules
+ */
+export interface AzionRuntimeFirewallCtx extends AzionRuntimeCtx {
+  deny: () => void;
+  continue: () => void;
+  drop: () => void;
+}
+
+/**
+ * Type for Azion request with metadata
+ */
+export type AzionRuntimeRequest = Request & {
+  metadata: AzionRuntimeRequestMetadata;
+};
+
+/**
+ * Generic module type that can handle any combination of fetch and firewall events
+ */
+export interface AzionRuntimeModule {
+  fetch?: (request: AzionRuntimeRequest, env?: null, ctx?: AzionRuntimeCtx) => Promise<Response>;
+  firewall?: (request: AzionRuntimeRequest, env?: null, ctx?: AzionRuntimeCtx) => Promise<Response>;
 }

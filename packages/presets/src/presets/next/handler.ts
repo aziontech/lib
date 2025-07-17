@@ -1,8 +1,7 @@
 /* eslint-disable */
-import { FetchEvent } from 'azion/types';
+import { AzionRuntimeCtx, AzionRuntimeRequest } from 'azion/types';
 import { handleImageResizingRequest } from './default/handler/images.js';
 import { adjustRequestForVercel } from './default/handler/routing/http.js';
-import { handleRequest } from './default/handler/routing/index.js';
 import handlerStatic from './static/handler.js';
 
 const getStorageAsset = async (request: Request) => {
@@ -41,7 +40,8 @@ async function main(request: Request, env: Record<string, any>, ctx: any) {
     }
 
     const adjustedRequest = adjustRequestForVercel(request);
-    return handleRequest(
+    const importHandleDefault = await import('./default/handler/routing/index.js');
+    return importHandleDefault.handleRequest(
       {
         request: adjustedRequest,
         ctx,
@@ -58,11 +58,12 @@ async function main(request: Request, env: Record<string, any>, ctx: any) {
 }
 
 /**
- * Handles the 'fetch' event.
- * @param {import('azion/types').FetchEvent} event - The fetch event.
+ * Handles the request.
+ * @param {AzionRuntimeRequest} request - The request.
+ * @param {AzionRuntimeCtx} ctx - The context.
  * @returns {Promise<Response>} The response for the request.
  */
-async function handlerDefault(event: FetchEvent): Promise<Response> {
+async function handlerDefault(request: AzionRuntimeRequest, ctx: AzionRuntimeCtx): Promise<Response> {
   const env = {
     ASSETS: {
       fetch: getStorageAsset,
@@ -70,21 +71,21 @@ async function handlerDefault(event: FetchEvent): Promise<Response> {
   };
 
   const context = {
-    waitUntil: event.waitUntil.bind(event),
+    waitUntil: ctx.waitUntil,
     passThroughOnException: () => null,
   };
 
-  const url = new URL(decodeURI(event.request.url));
-  const request = new Request(url, event.request);
+  const url = new URL(decodeURI(request.url));
+  const adjustedRequest = new Request(url, request);
 
-  return main(request, env, context);
+  return main(adjustedRequest, env, context);
 }
 
-async function handler(event: FetchEvent): Promise<Response> {
+async function handleFetch(request: AzionRuntimeRequest, env?: null, ctx?: AzionRuntimeCtx): Promise<Response> {
   if ((globalThis as any).bundler?.nextBuildStatic) {
-    return handlerStatic(event);
+    return handlerStatic.fetch(request);
   }
-  return handlerDefault(event);
+  return handlerDefault(request, ctx!);
 }
 
-export default handler;
+export default { fetch: handleFetch };

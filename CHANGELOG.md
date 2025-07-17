@@ -1,3 +1,10 @@
+### [1.20.2](https://github.com/aziontech/lib/compare/v1.20.1...v1.20.2) (2025-07-16)
+
+
+### Bug Fixes
+
+* add getRandomValues, randomUUID and generateKeyPair crypto to runtime dev ([033957d](https://github.com/aziontech/lib/commit/033957d4982de299f2a62cb7988ff8590bf9c836))
+
 ### [1.20.1](https://github.com/aziontech/lib/compare/v1.20.0...v1.20.1) (2025-06-27)
 
 

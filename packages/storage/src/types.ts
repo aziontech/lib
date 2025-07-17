@@ -31,6 +31,9 @@ export interface AzionBucket {
   name: string;
   edge_access: EdgeAccessType;
   state?: 'executed' | 'executed-runtime' | 'pending';
+  last_editor?: string;
+  last_modified?: string;
+  product_version?: string;
 
   /**
    * Retrieves a list of objects in the bucket.
@@ -185,11 +188,22 @@ export interface AzionStorageClient {
    * @returns {Promise<AzionStorageResponse<AzionBucket>>} The retrieved bucket or error message.
    */
   getBucket: (params: { name: string }) => Promise<AzionStorageResponse<AzionBucket>>;
+  /**
+   * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+   * @param {Object} params - Parameters for setting up storage.
+   * @param {string} params.name - Name of the bucket to setup.
+   * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket (used only if creating).
+   * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+   */
+  setupStorage: (params: { name: string; edge_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
 }
 
 export type AzionBucketCollectionParams = {
   page?: number;
   page_size?: number;
+  search?: string;
+  ordering?: string;
+  fields?: string;
 };
 
 export type AzionObjectCollectionParams = {

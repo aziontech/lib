@@ -191,6 +191,10 @@ import { getBucket } from 'azion/storage';
 const { data: bucket, error } = await getBucket({ name: 'my-bucket' });
 if (bucket) {
   console.log(`Retrieved bucket: ${bucket.name}`);
+  console.log(`Edge access: ${bucket.edge_access}`);
+  console.log(`Last editor: ${bucket.last_editor}`);
+  console.log(`Last modified: ${bucket.last_modified}`);
+  console.log(`Product version: ${bucket.product_version}`);
 } else {
   console.error('Bucket not found', error);
 }
@@ -199,13 +203,53 @@ if (bucket) {
 **TypeScript:**
 
 ```typescript
-import { getBucket, AzionBucket } from 'azion/storage';
+import { getBucket, AzionBucket, AzionStorageResponse } from 'azion/storage';
 
 const { data: bucket, error }: AzionStorageResponse<AzionBucket> = await getBucket({ name: 'my-bucket' });
 if (bucket) {
   console.log(`Retrieved bucket: ${bucket.name}`);
+  console.log(`Edge access: ${bucket.edge_access}`);
 } else {
   console.error('Bucket not found', error);
+}
+```
+
+#### Setup Storage
+
+The `setupStorage` function provides a convenient way to ensure a bucket exists. It first tries to get an existing bucket, and if it doesn't exist, creates it automatically. This is perfect for initialization scripts or ensuring your storage is ready to use.
+
+**JavaScript:**
+
+```javascript
+import { setupStorage } from 'azion/storage';
+
+const { data: bucket, error } = await setupStorage({
+  name: 'my-app-bucket',
+  edge_access: 'read_write',
+});
+if (bucket) {
+  console.log(`Storage ready: ${bucket.name}`);
+  console.log(`Edge access: ${bucket.edge_access}`);
+} else {
+  console.error('Failed to setup storage', error);
+}
+```
+
+**TypeScript:**
+
+```typescript
+import { setupStorage, AzionBucket, AzionStorageResponse } from 'azion/storage';
+
+const { data: bucket, error }: AzionStorageResponse<AzionBucket> = await setupStorage({
+  name: 'my-app-bucket',
+  edge_access: 'read_write',
+});
+if (bucket) {
+  console.log(`Storage ready: ${bucket.name}`);
+  // Now you can safely use the bucket for operations
+  await bucket.createObject({ key: 'config.json', content: '{}' });
+} else {
+  console.error('Failed to setup storage', error);
 }
 ```
 
@@ -526,6 +570,9 @@ Retrieves a list of buckets with optional filtering and pagination.
 - `options?: AzionBucketCollectionOptions` - Optional parameters for filtering and pagination.
   - `page?: number` - Page number for pagination.
   - `page_size?: number` - Number of items per page.
+  - `search?: string` - Search term to filter buckets by name.
+  - `ordering?: string` - Field name to use when ordering the results.
+  - `fields?: string` - Comma-separated list of field names to include in the response.
 - `debug?: boolean` - Enable debug mode for detailed logging.
 
 **Returns:**
@@ -674,7 +721,10 @@ The bucket object.
 
 - `name: string`
 - `edge_access?: string`
-- `state?: 'executed' | 'pending'`
+- `state?: 'executed' | 'executed-runtime' | 'pending'`
+- `last_editor?: string`
+- `last_modified?: string`
+- `product_version?: string`
 - `getObjects?: () => Promise<AzionStorageResponse<AzionBucketObjects>>`
 - `getObjectByKey?: (objectKey: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
 - `createObject?: (objectKey: string, file: string) => Promise<AzionStorageResponse<AzionBucketObject>>`

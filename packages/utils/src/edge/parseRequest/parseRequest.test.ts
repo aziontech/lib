@@ -1,9 +1,9 @@
-import { FetchEvent, Metadata } from 'azion/types';
+import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from 'azion/types';
 import parseRequest from './parseRequest';
 
 describe('parseRequest', () => {
-  let mockFetchEvent: FetchEvent;
-  let mockMetadata: Metadata;
+  let mockRequest: AzionRuntimeRequest;
+  let mockMetadata: AzionRuntimeRequestMetadata;
 
   beforeEach(() => {
     mockMetadata = {
@@ -25,23 +25,21 @@ describe('parseRequest', () => {
       ssl_protocol: 'TLSv1.3',
     };
 
-    mockFetchEvent = {
-      request: Object.assign(
-        new Request('https://example.com/path?query=value', {
-          method: 'GET',
-          headers: {
-            'User-Agent': 'Mozilla/5.0',
-            'X-Forwarded-For': '192.168.1.1',
-            Cookie: 'session=123; user=john',
-          },
-        }),
-        { metadata: mockMetadata },
-      ),
-    } as FetchEvent;
+    mockRequest = Object.assign(
+      new Request('https://example.com/path?query=value', {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0',
+          'X-Forwarded-For': '192.168.1.1',
+          Cookie: 'session=123; user=john',
+        },
+      }),
+      { metadata: mockMetadata },
+    ) as AzionRuntimeRequest;
   });
 
   it('should parse a GET request correctly', async () => {
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result).toMatchObject({
       method: 'GET',
@@ -64,16 +62,16 @@ describe('parseRequest', () => {
   });
 
   it('should handle POST requests with body', async () => {
-    mockFetchEvent.request = Object.assign(
+    mockRequest = Object.assign(
       new Request('https://example.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: 'value' }),
       }),
       { metadata: mockMetadata },
-    );
+    ) as AzionRuntimeRequest;
 
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.method).toBe('POST');
     expect(result.body).toBe('{"key":"value"}');
@@ -81,30 +79,30 @@ describe('parseRequest', () => {
   });
 
   it('should handle requests without cookies', async () => {
-    mockFetchEvent.request = Object.assign(new Request('https://example.com'), { metadata: mockMetadata });
+    mockRequest = Object.assign(new Request('https://example.com'), { metadata: mockMetadata }) as AzionRuntimeRequest;
 
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.cookies).toEqual({});
   });
 
   it('should handle requests with authorization header', async () => {
-    mockFetchEvent.request = Object.assign(
+    mockRequest = Object.assign(
       new Request('https://example.com', {
         headers: { Authorization: 'Bearer token' },
       }),
       { metadata: mockMetadata },
-    );
+    ) as AzionRuntimeRequest;
 
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.authorization).toBe('Present');
   });
 
   it('should handle requests without optional headers', async () => {
-    mockFetchEvent.request = Object.assign(new Request('https://example.com'), { metadata: mockMetadata });
+    mockRequest = Object.assign(new Request('https://example.com'), { metadata: mockMetadata }) as AzionRuntimeRequest;
 
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.referer).toBe('Unknown');
     expect(result.origin).toBe('Unknown');
@@ -119,32 +117,32 @@ describe('parseRequest', () => {
   });
 
   it('should handle error when reading body', async () => {
-    mockFetchEvent.request = Object.assign(
+    mockRequest = Object.assign(
       new Request('https://example.com', {
         method: 'POST',
         body: 'test',
       }),
       { metadata: mockMetadata },
-    );
+    ) as AzionRuntimeRequest;
 
     // Mock the clone method to throw an error
-    mockFetchEvent.request.clone = jest.fn().mockImplementation(() => {
+    mockRequest.clone = jest.fn().mockImplementation(() => {
       throw new Error('Clone failed');
     });
 
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.body).toBe('Unable to read body');
   });
 
   it('should include metadata in the parsed request', async () => {
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.metadata).toEqual(mockMetadata);
   });
 
   it('should correctly parse geoip information from metadata', async () => {
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.metadata.geoip_city).toBe('Sao Paulo');
     expect(result.metadata.geoip_country_name).toBe('Brazil');
@@ -152,7 +150,7 @@ describe('parseRequest', () => {
   });
 
   it('should correctly parse connection information from metadata', async () => {
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.metadata.remote_addr).toBe('192.168.1.1');
     expect(result.metadata.remote_port).toBe('12345');
@@ -160,7 +158,7 @@ describe('parseRequest', () => {
   });
 
   it('should correctly parse SSL information from metadata', async () => {
-    const result = await parseRequest(mockFetchEvent);
+    const result = await parseRequest(mockRequest);
 
     expect(result.metadata.ssl_cipher).toBe('TLS_AES_256_GCM_SHA384');
     expect(result.metadata.ssl_protocol).toBe('TLSv1.3');

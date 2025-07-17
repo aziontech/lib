@@ -37,6 +37,9 @@ export var { publicEncrypt } = CRYPTO_CONTEXT.cryptoContext;
 export var { randomBytes } = CRYPTO_CONTEXT.cryptoContext;
 export var { randomFill } = CRYPTO_CONTEXT.cryptoContext;
 export var { randomFillSync } = CRYPTO_CONTEXT.cryptoContext;
+export var { getRandomValues } = CRYPTO_CONTEXT.cryptoContext;
+export var { randomUUID } = CRYPTO_CONTEXT.cryptoContext;
+export var { generateKeyPair } = CRYPTO_CONTEXT.cryptoContext;
 
 export default {
   Cipher,
@@ -70,4 +73,7 @@ export default {
   randomBytes,
   randomFill,
   randomFillSync,
+  getRandomValues,
+  randomUUID,
+  generateKeyPair,
 };
