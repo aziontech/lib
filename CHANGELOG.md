@@ -1,3 +1,11 @@
+## [2.0.0-stage.5](https://github.com/aziontech/lib/compare/v2.0.0-stage.4...v2.0.0-stage.5) (2025-07-17)
+
+
+### Bug Fixes
+
+* add getRandomValues, randomUUID and generateKeyPair crypto to runtime dev ([033957d](https://github.com/aziontech/lib/commit/033957d4982de299f2a62cb7988ff8590bf9c836))
+* updated error feedback according to Azion's new API (#192) ([cdd84e4](https://github.com/aziontech/lib/commit/cdd84e43a01a6afaca9c8e499be51d1740c0731d))
+
 ### [1.20.2](https://github.com/aziontech/lib/compare/v1.20.1...v1.20.2) (2025-07-16)
 
 
