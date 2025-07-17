@@ -61,20 +61,37 @@ const buildFetchOptions = (method: string, headers: Record<string, string>, body
   return options;
 };
 
-const handleApiError = (errors: Record<string, unknown>[], operation: string): ApiError => {
-  const message = errors.length > 0 ? errors[0].detail || 'Unknown error' : 'An error occurred';
-  return {
-    message: message as string,
-    operation,
-    metadata: errors.reduce((acc, error) => {
-      Object.entries(error).forEach(([key, value]) => {
-        if (key !== 'detail') {
-          acc[key] = value;
-        }
-      });
-      return acc;
-    }, {}) as Record<string, any>,
-  };
+const handleApiError = (fields: string[], data: any, operation: string): ApiError => {
+  let error: ApiError = { message: 'Error unknown', operation: operation };
+
+  if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+    const firstError = data.errors[0];
+    if (firstError.detail) {
+      error = {
+        message: firstError.detail,
+        operation: operation,
+      };
+      return error;
+    }
+    if (firstError.title) {
+      error = {
+        message: firstError.title,
+        operation: operation,
+      };
+      return error;
+    }
+  }
+
+  fields.forEach((field: string) => {
+    if (data[field]) {
+      const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
+      error = {
+        message: message,
+        operation: operation,
+      };
+    }
+  });
+  return error;
 };
 
 /**
@@ -95,7 +112,7 @@ const postEdgeDatabase = async (
 
     if (result.errors) {
       return {
-        error: handleApiError(result.errors, 'post database'),
+        error: handleApiError([], result, 'post database'),
       };
     }
 
@@ -132,7 +149,7 @@ const deleteEdgeDatabase = async (
 
     if (result.errors) {
       return {
-        error: handleApiError(result.errors, 'delete database'),
+        error: handleApiError([], result, 'delete database'),
       };
     }
     return result;
@@ -163,7 +180,7 @@ const postQueryEdgeDatabase = async (
 
     if (result.errors) {
       return {
-        error: handleApiError(result.errors, 'post query'),
+        error: handleApiError([], result, 'post query'),
       };
     }
 
@@ -222,7 +239,7 @@ const getEdgeDatabases = async (
 
     if (data.errors) {
       return {
-        error: handleApiError(data.errors, 'get databases'),
+        error: handleApiError([], data, 'get databases'),
       };
     }
 
@@ -270,7 +287,7 @@ const retrieveEdgeDatabase = async (
 
     if (result.errors) {
       return {
-        error: handleApiError(result.errors, 'retrieve database'),
+        error: handleApiError([], result, 'retrieve database'),
       };
     }
 

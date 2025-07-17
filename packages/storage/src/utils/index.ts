@@ -102,6 +102,11 @@ export async function fetchWithErrorHandling(
         console.log('Error response body:', errorBody);
       }
 
+      if (errorBody.errors && Array.isArray(errorBody.errors) && errorBody.errors.length > 0) {
+        return errorBody;
+      }
+
+      // Handle other error formats
       if (errorBody.detail || errorBody.message) {
         return errorBody;
       }
