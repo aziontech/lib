@@ -247,7 +247,11 @@ const { data: bucket, error }: AzionStorageResponse<AzionBucket> = await setupSt
 if (bucket) {
   console.log(`Storage ready: ${bucket.name}`);
   // Now you can safely use the bucket for operations
-  await bucket.createObject({ key: 'config.json', content: '{}' });
+  await bucket.createObject({
+    key: 'config.json',
+    content: '{}',
+    params: { content_type: 'application/json' },
+  });
 } else {
   console.error('Failed to setup storage', error);
 }
@@ -292,9 +296,11 @@ if (updatedBucket) {
 import { createObject } from 'azion/storage';
 
 const { data: newObject, error } = await createObject({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
   key: 'new-file.txt',
-  file: 'File content',
+  content: 'File content',
+  params: { content_type: 'text/plain' },
+  options: { debug: true },
 });
 if (newObject) {
   console.log(`Object created with key: ${newObject.key}`);
@@ -310,9 +316,11 @@ if (newObject) {
 import { createObject, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
 
 const { data: newObject, error }: AzionStorageResponse<AzionBucketObject> = await createObject({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
   key: 'new-file.txt',
-  file: 'File content',
+  content: 'File content',
+  params: { content_type: 'text/plain' },
+  options: { debug: true },
 });
 if (newObject) {
   console.log(`Object created with key: ${newObject.key}`);
@@ -329,7 +337,7 @@ if (newObject) {
 ```javascript
 import { getObjectByKey } from 'azion/storage';
 
-const { data: object, error } = await getObjectByKey({ bucketName: 'my-bucket', key: 'file.txt' });
+const { data: object, error } = await getObjectByKey({ bucket: 'my-bucket', key: 'file.txt' });
 if (object) {
   console.log(`Retrieved object: ${object.key}`);
 } else {
@@ -343,7 +351,7 @@ if (object) {
 import { getObjectByKey, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
 
 const { data: object, error }: AzionStorageResponse<AzionBucketObject> = await getObjectByKey({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
   key: 'file.txt',
 });
 if (object) {
@@ -360,7 +368,7 @@ if (object) {
 ```javascript
 import { getObjects } from 'azion/storage';
 
-const { data: objectsResult, error } = await getObjects({ bucketName: 'my-bucket' });
+const { data: objectsResult, error } = await getObjects({ bucket: 'my-bucket' });
 if (objectsResult) {
   console.log(`Retrieved ${objectsResult.count} objects from the bucket`);
 } else {
@@ -374,7 +382,7 @@ if (objectsResult) {
 import { getObjects, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
 
 const { data: objectResult, error }: AzionStorageResponse<AzionBucketObjects> = await getObjects({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
 });
 if (objectResult) {
   console.log(`Retrieved ${objectResult.count} objects from the bucket`);
@@ -391,9 +399,11 @@ if (objectResult) {
 import { updateObject } from 'azion/storage';
 
 const { data: updatedObject, error } = await updateObject({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
   key: 'file.txt',
-  file: 'Updated content',
+  content: 'Updated content',
+  params: { content_type: 'text/plain' },
+  options: { debug: true },
 });
 if (updatedObject) {
   console.log(`Object updated: ${updatedObject.key}`);
@@ -409,9 +419,11 @@ if (updatedObject) {
 import { updateObject, AzionBucketObject } from 'azion/storage';
 
 const { data: updatedObject, error }: AzionStorageResponse<AzionBucketObject> = await updateObject({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
   key: 'file.txt',
-  file: 'Updated content',
+  content: 'Updated content',
+  params: { content_type: 'text/plain' },
+  options: { debug: true },
 });
 if (updatedObject) {
   console.log(`Object updated: ${updatedObject.key}`);
@@ -428,7 +440,7 @@ if (updatedObject) {
 ```javascript
 import { deleteObject } from 'azion/storage';
 
-const { data: result, error } = await deleteObject({ bucketName: 'my-bucket', key: 'file.txt' });
+const { data: result, error } = await deleteObject({ bucket: 'my-bucket', key: 'file.txt' });
 if (result) {
   console.log(`Object ${result.key} deleted successfully`);
 } else {
@@ -442,7 +454,7 @@ if (result) {
 import { deleteObject, AzionDeletedBucketObject, AzionStorageResponse } from 'azion/storage';
 
 const { data: result, error }: AzionStorageResponse<AzionDeletedBucketObject> = await deleteObject({
-  bucketName: 'my-bucket',
+  bucket: 'my-bucket',
   key: 'file.txt',
 });
 if (result) {
@@ -471,18 +483,28 @@ if (allBuckets) {
   console.log(`Retrieved ${allBuckets.count} buckets`);
 }
 
-const { data: newObject } = await client.createObject({
-  bucketName: 'my-new-bucket',
-  key: 'new-file.txt',
-  file: 'File content',
-});
-if (newObject) {
-  console.log(`Object created with key: ${newObject.key}`);
-}
+// Get a bucket first
+const { data: bucket } = await client.getBucket({ name: 'my-new-bucket' });
+if (bucket) {
+  // Create an object in the bucket
+  const { data: newObject } = await bucket.createObject({
+    key: 'new-file.txt',
+    content: 'File content',
+    params: { content_type: 'text/plain' },
+  });
+  if (newObject) {
+    console.log(`Object created with key: ${newObject.key}`);
+  }
 
-const { data: updateResult } = await newObject.updateObject({ key: 'new-file.txt', file: 'Updated content' });
-if (updateResult) {
-  console.log(`Object updated with key: ${updateResult.key}`);
+  // Update the object
+  const { data: updateResult } = await bucket.updateObject({
+    key: 'new-file.txt',
+    content: 'Updated content',
+    params: { content_type: 'text/plain' },
+  });
+  if (updateResult) {
+    console.log(`Object updated with key: ${updateResult.key}`);
+  }
 }
 ```
 
@@ -513,22 +535,28 @@ if (allBuckets) {
   console.log(`Retrieved ${allBuckets.count} buckets`);
 }
 
-const { data: newObject }: AzionStorageResponse<AzionBucketObject> = await client.createObject({
-  bucketName: 'my-new-bucket',
-  key: 'new-file.txt',
-  file: 'File content',
-});
-if (newObject) {
-  console.log(`Object created with key: ${newObject.key}`);
-}
+// Get a bucket first
+const { data: bucket }: AzionStorageResponse<AzionBucket> = await client.getBucket({ name: 'my-new-bucket' });
+if (bucket) {
+  // Create an object in the bucket
+  const { data: newObject }: AzionStorageResponse<AzionBucketObject> = await bucket.createObject({
+    key: 'new-file.txt',
+    content: 'File content',
+    params: { content_type: 'text/plain' },
+  });
+  if (newObject) {
+    console.log(`Object created with key: ${newObject.key}`);
+  }
 
-const { data: updateResult }: AzionStorageResponse<AzionBucketObject> = await client.updateObject({
-  bucketName: 'my-new-bucket',
-  key: 'new-file.txt',
-  file: 'Updated content',
-});
-if (updateResult) {
-  console.log(`Object updated with key: ${updateResult.key}`);
+  // Update the object
+  const { data: updateResult }: AzionStorageResponse<AzionBucketObject> = await bucket.updateObject({
+    key: 'new-file.txt',
+    content: 'Updated content',
+    params: { content_type: 'text/plain' },
+  });
+  if (updateResult) {
+    console.log(`Object updated with key: ${updateResult.key}`);
+  }
 }
 ```
 
@@ -612,14 +640,16 @@ Creates a new object in a specific bucket.
 
 **Parameters:**
 
-- `bucketName: string` - Name of the bucket to create the object in.
-- `objectKey: string` - Key (name) of the object to create.
-- `file: string` - Content of the file to upload.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `bucket: string` - Name of the bucket to create the object in.
+- `key: string` - Key (name) of the object to create.
+- `content: string` - Content of the object to upload.
+- `params?: Object` - Object parameters.
+- `params.content_type?: string` - Content type of the object (defaults to 'application/octet-stream').
+- `options?: AzionClientOptions` - Optional parameters including debug mode.
 
 **Returns:**
 
-- `Promise<AzionBucketObject | null>` - The created object or null if creation failed.
+- `Promise<AzionStorageResponse<AzionBucketObject>>` - The created object or error message.
 
 ### `getObjectByKey`
 
@@ -627,9 +657,9 @@ Retrieves an object from a specific bucket by its key.
 
 **Parameters:**
 
-- `bucketName: string` - Name of the bucket containing the object.
-- `objectKey: string` - Key of the object to retrieve.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `bucket: string` - Name of the bucket containing the object.
+- `key: string` - Key of the object to retrieve.
+- `options?: AzionClientOptions` - Optional parameters including debug mode.
 
 **Returns:**
 
@@ -641,8 +671,9 @@ Retrieves a list of objects in a specific bucket.
 
 **Parameters:**
 
-- `bucketName: string` - Name of the bucket to retrieve objects from.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `bucket: string` - Name of the bucket to retrieve objects from.
+- `params?: AzionObjectCollectionParams` - Optional parameters for object collection.
+- `options?: AzionClientOptions` - Optional parameters including debug mode.
 
 **Returns:**
 
@@ -654,14 +685,16 @@ Updates an existing object in a specific bucket.
 
 **Parameters:**
 
-- `bucketName: string` - Name of the bucket containing the object.
-- `objectKey: string` - Key of the object to update.
-- `file: string` - New content of the file.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `bucket: string` - Name of the bucket containing the object.
+- `key: string` - Key of the object to update.
+- `content: string` - New content of the object.
+- `params?: Object` - Object parameters.
+- `params.content_type?: string` - Content type of the object (defaults to 'application/octet-stream').
+- `options?: AzionClientOptions` - Optional parameters including debug mode.
 
 **Returns:**
 
-- `Promise<AzionStorageResponse<AzionBucketObject>>` - The updated object or error if update failed.
+- `Promise<AzionStorageResponse<AzionBucketObject>>` - The updated object or error message.
 
 ### `deleteObject`
 
@@ -669,9 +702,9 @@ Deletes an object from a specific bucket.
 
 **Parameters:**
 
-- `bucketName: string` - Name of the bucket containing the object.
-- `objectKey: string` - Key of the object to delete.
-- `debug?: boolean` - Enable debug mode for detailed logging.
+- `bucket: string` - Name of the bucket containing the object.
+- `key: string` - Key of the object to delete.
+- `options?: AzionClientOptions` - Optional parameters including debug mode.
 
 **Returns:**
 
@@ -725,11 +758,11 @@ The bucket object.
 - `last_editor?: string`
 - `last_modified?: string`
 - `product_version?: string`
-- `getObjects?: () => Promise<AzionStorageResponse<AzionBucketObjects>>`
-- `getObjectByKey?: (objectKey: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
-- `createObject?: (objectKey: string, file: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
-- `updateObject?: (objectKey: string, file: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
-- `deleteObject?: (objectKey: string) => Promise<AzionStorageResponse<AzionDeletedBucketObject>>`
+- `getObjects?: (params: { params: AzionObjectCollectionParams }) => Promise<AzionStorageResponse<AzionBucketObjects>>`
+- `getObjectByKey?: (params: { key: string }) => Promise<AzionStorageResponse<AzionBucketObject>>`
+- `createObject?: (params: { key: string, content: string, params?: { content_type?: string } }) => Promise<AzionStorageResponse<AzionBucketObject>>`
+- `updateObject?: (params: { key: string, content: string, params?: { content_type?: string } }) => Promise<AzionStorageResponse<AzionBucketObject>>`
+- `deleteObject?: (params: { key: string }) => Promise<AzionStorageResponse<AzionDeletedBucketObject>>`
 
 ### `AzionBucketObject`
 
