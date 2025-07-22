@@ -137,8 +137,7 @@ export class InternalStorageClient implements AzionBucket {
           key: removeLeadingSlash(key),
           size: storageObject.contentLength,
           content: content,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          content_type: (storageObject as any).metadata?.get('content-type'),
+          content_type: storageObject.metadata?.get('content-type'),
         },
       };
     } catch (error) {
