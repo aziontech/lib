@@ -40,6 +40,11 @@ export const createBundlerPlugins = <
       config.plugins = [
         ...(config.plugins || []),
         pluginsClasses.NodePolyfillsPlugin(buildEnv.production),
+        // Add optional chaining assignment plugin if available (esbuild only)
+        ...('OptionalChainingAssignmentPlugin' in pluginsClasses
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            [(pluginsClasses as any).OptionalChainingAssignmentPlugin()]
+          : []),
       ] as unknown as typeof config.plugins;
       return config;
     };

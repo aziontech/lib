@@ -6,6 +6,7 @@ import { applyDefineVars, createBundlerPlugins, extendConfig, getBannerContent }
 import { ESBuildConfiguration } from '../../types';
 import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
+import OptionalChainingAssignmentPlugin from './plugins/babel-custom';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 
 interface ESBuildConfig extends esbuild.BuildOptions {}
@@ -20,12 +21,14 @@ interface ESBuildBundler {
 interface ESBuildPluginClasses {
   NodePolyfillsPlugin: (isProduction: boolean) => ESBuildPlugin;
   AzionPolyfillsPlugin: (isProduction: boolean) => ESBuildPlugin;
+  OptionalChainingAssignmentPlugin: () => ESBuildPlugin;
 }
 
 // Create esbuild-specific plugins
 const bundlerPlugins = createBundlerPlugins<ESBuildPluginClasses, ESBuildConfiguration>({
   NodePolyfillsPlugin: NodePolyfillPlugin,
   AzionPolyfillsPlugin: AzionPolyfillPlugin,
+  OptionalChainingAssignmentPlugin: OptionalChainingAssignmentPlugin,
 });
 
 /**
