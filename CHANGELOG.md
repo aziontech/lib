@@ -1,3 +1,10 @@
+## [2.0.0-stage.6](https://github.com/aziontech/lib/compare/v2.0.0-stage.5...v2.0.0-stage.6) (2025-07-22)
+
+
+### Bug Fixes
+
+* **bundler:** add optional chaining assignment support for esbuild (#194) ([a4523c9](https://github.com/aziontech/lib/commit/a4523c95e283b9901184e0c12298dfbb5b834bbb))
+
 ## [2.0.0-stage.5](https://github.com/aziontech/lib/compare/v2.0.0-stage.4...v2.0.0-stage.5) (2025-07-17)
 
 
