@@ -8,7 +8,7 @@ import { AzionConfig } from '../../types';
 
 class ProcessConfigStrategy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(config: AzionConfig, context: any) {
+  transformToManifest(config: any, context: any) {
     return context;
   }
 

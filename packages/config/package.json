@@ -6,13 +6,25 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "tsup --config ./tsup.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
     "test": "jest --clearCache && jest -c jest.config.js .",
     "test:watch": "jest -c jest.config.js . --watch",
     "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./rules": {
+      "types": "./dist/rules/index.d.ts",
+      "require": "./dist/rules/index.cjs",
+      "import": "./dist/rules/index.js"
+    }
   },
   "author": "aziontech",
   "license": "MIT",
