@@ -117,21 +117,21 @@ export default {
       functions: [
         {
           name: 'auth-function-instance',
-          ref: 'my-edge-function',
+          ref: 'my-edge-function', // Using name reference
           args: {
             environment: 'production',
             apiUrl: 'https://api.example.com',
           },
           bindings: {
             storage: {
-              bucket: 'my-storage',
+              bucket: 'my-storage', // Using name reference
               prefix: 'auth-data/',
             },
           },
         },
         {
           name: 'analytics-function-instance',
-          ref: 'my-edge-function',
+          ref: 12345, // Using ID reference (no validation needed)
           args: {
             environment: 'production',
             trackingId: 'UA-12345',
@@ -394,7 +394,7 @@ export default {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: 'my-edge-app',
+              edgeApplication: 67890, // Using ID reference (no validation needed)
               edgeFirewall: null, // No firewall for staging
               customPage: null,
             },

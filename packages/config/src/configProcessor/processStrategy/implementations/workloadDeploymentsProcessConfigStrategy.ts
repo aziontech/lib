@@ -12,13 +12,16 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
    */
   private validateEdgeApplicationReference(
     edgeApplications: AzionEdgeApplication[] | undefined,
-    applicationName: string,
+    applicationNameOrId: string | number,
     deploymentName: string,
   ) {
-    if (!Array.isArray(edgeApplications) || !edgeApplications.find((app) => app.name === applicationName)) {
-      throw new Error(
-        `Workload deployment "${deploymentName}" references non-existent Edge Application "${applicationName}".`,
-      );
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof applicationNameOrId === 'string') {
+      if (!Array.isArray(edgeApplications) || !edgeApplications.find((app) => app.name === applicationNameOrId)) {
+        throw new Error(
+          `Workload deployment "${deploymentName}" references non-existent Edge Application "${applicationNameOrId}".`,
+        );
+      }
     }
   }
 
@@ -27,13 +30,16 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
    */
   private validateEdgeFirewallReference(
     edgeFirewalls: AzionEdgeFirewall[] | undefined,
-    firewallName: string,
+    firewallNameOrId: string | number,
     deploymentName: string,
   ) {
-    if (!Array.isArray(edgeFirewalls) || !edgeFirewalls.find((firewall) => firewall.name === firewallName)) {
-      throw new Error(
-        `Workload deployment "${deploymentName}" references non-existent Edge Firewall "${firewallName}".`,
-      );
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof firewallNameOrId === 'string') {
+      if (!Array.isArray(edgeFirewalls) || !edgeFirewalls.find((firewall) => firewall.name === firewallNameOrId)) {
+        throw new Error(
+          `Workload deployment "${deploymentName}" references non-existent Edge Firewall "${firewallNameOrId}".`,
+        );
+      }
     }
   }
 
@@ -83,8 +89,10 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
         strategy: {
           type: deployment.strategy.type,
           attributes: {
-            edge_application: deployment.strategy.attributes.edgeApplication, // CLI will resolve name to ID
-            edge_firewall: deployment.strategy.attributes.edgeFirewall || null, // CLI will resolve name to ID
+            edge_application: String(deployment.strategy.attributes.edgeApplication), // Convert to string for API manifest
+            edge_firewall: deployment.strategy.attributes.edgeFirewall
+              ? String(deployment.strategy.attributes.edgeFirewall)
+              : null, // Convert to string for API manifest
             custom_page: deployment.strategy.attributes.customPage || null,
           },
         },

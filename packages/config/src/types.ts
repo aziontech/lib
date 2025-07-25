@@ -225,13 +225,14 @@ export type AzionRequestRule = {
       subject: string;
     };
     /** Run a serverless function */
-    runFunction?: string;
+    runFunction?: string | number;
     /** Set cache configuration */
     setCache?:
       | string
+      | number
       | {
           /** Cache name */
-          name: string;
+          name: string | number;
           /** Browser cache TTL */
           browser_cache_settings_maximum_ttl?: number | null;
           /** CDN cache TTL */
@@ -240,7 +241,7 @@ export type AzionRequestRule = {
     /** Finish request phase */
     finishRequestPhase?: boolean;
     /** Set Edge connector */
-    setEdgeConnector?: string;
+    setEdgeConnector?: string | number;
     /** Add request header */
     addRequestHeader?: string[];
     /** Add request cookie */
@@ -286,7 +287,7 @@ export type AzionResponseRule = {
     /** Filter a header */
     filterHeader?: string | null;
     /** Run a serverless function */
-    runFunction?: string;
+    runFunction?: string | number;
     /** Redirect with 301 status */
     redirectTo301?: string | null;
     /** Redirect with 302 status */
@@ -354,8 +355,8 @@ export type AzionNetworkList = {
  * Storage binding configuration for Azion.
  */
 export type AzionStorageBinding = {
-  /** Storage bucket name */
-  bucket: string;
+  /** Storage bucket name or ID */
+  bucket: string | number;
   /** Storage prefix */
   prefix: string;
 };
@@ -374,8 +375,8 @@ export type AzionBindings = {
 export type AzionFunctionInstance = {
   /** Function instance name */
   name: string;
-  /** Reference to Edge Function name */
-  ref: string;
+  /** Reference to Edge Function name or ID */
+  ref: string | number;
   /** Instance-specific arguments */
   args?: Record<string, unknown>;
   /** Function bindings (moved from Edge Function to instance) */
@@ -447,13 +448,13 @@ export type AzionEdgeApplication = {
  */
 export type AzionEdgeFirewallBehavior = {
   /** Run a serverless function */
-  runFunction?: string;
+  runFunction?: string | number;
   /** Set WAF ruleset */
   setWafRuleset?: {
     /** WAF mode */
     wafMode: FirewallWafMode;
     /** WAF ID */
-    wafId: string;
+    wafId: string | number;
   };
   /** Set rate limit */
   setRateLimit?: {
@@ -669,10 +670,10 @@ export interface AzionWorkloadDeploymentStrategy {
   type: string;
   /** Strategy attributes */
   attributes: {
-    /** Edge Application name reference */
-    edgeApplication: string;
-    /** Edge Firewall name reference (optional) */
-    edgeFirewall?: string | null;
+    /** Edge Application name or ID reference */
+    edgeApplication: string | number;
+    /** Edge Firewall name or ID reference (optional) */
+    edgeFirewall?: string | number | null;
     /** Custom page reference (optional, to be implemented later) */
     customPage?: number | null;
   };

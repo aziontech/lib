@@ -160,8 +160,8 @@ const createRuleSchema = (isRequestPhase = false) => ({
       type: 'object',
       properties: {
         setEdgeConnector: {
-          type: 'string',
-          errorMessage: "The 'setEdgeConnector' field must be a string.",
+          type: ['string', 'number'],
+          errorMessage: "The 'setEdgeConnector' field must be a string or number.",
         },
         rewrite: {
           type: 'string',
@@ -229,8 +229,8 @@ const createRuleSchema = (isRequestPhase = false) => ({
           },
         },
         runFunction: {
-          type: 'string',
-          errorMessage: "The 'runFunction' behavior must be a string",
+          type: ['string', 'number'],
+          errorMessage: "The 'runFunction' behavior must be a string or number",
         },
         setWafRuleset: {
           type: 'object',
@@ -241,8 +241,8 @@ const createRuleSchema = (isRequestPhase = false) => ({
               errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
             },
             wafId: {
-              type: 'string',
-              errorMessage: 'The wafId must be a string',
+              type: ['string', 'number'],
+              errorMessage: 'The wafId must be a string or number',
             },
           },
           required: ['wafMode', 'wafId'],
@@ -329,15 +329,15 @@ const createRuleSchema = (isRequestPhase = false) => ({
         setCache: {
           oneOf: [
             {
-              type: 'string',
-              errorMessage: "The 'setCache' field must be a string.",
+              type: ['string', 'number'],
+              errorMessage: "The 'setCache' field must be a string or number.",
             },
             {
               type: 'object',
               properties: {
                 name: {
-                  type: 'string',
-                  errorMessage: "The 'name' field must be a string.",
+                  type: ['string', 'number'],
+                  errorMessage: "The 'name' field must be a string or number.",
                 },
                 browserCacheSettingsMaximumTtl: {
                   type: 'number',
@@ -862,8 +862,9 @@ const azionConfigSchema = {
                       errorMessage: "The 'name' field must be a string between 1 and 100 characters",
                     },
                     ref: {
-                      type: 'string',
-                      errorMessage: "The 'ref' field must be a string referencing an existing Edge Function name",
+                      type: ['string', 'number'],
+                      errorMessage:
+                        "The 'ref' field must be a string or number referencing an existing Edge Function name or ID",
                     },
                     args: {
                       type: 'object',
@@ -877,8 +878,8 @@ const azionConfigSchema = {
                           type: 'object',
                           properties: {
                             bucket: {
-                              type: 'string',
-                              errorMessage: "The 'bucket' field must be a string",
+                              type: ['string', 'number'],
+                              errorMessage: "The 'bucket' field must be a string or number",
                             },
                             prefix: {
                               type: 'string',
@@ -1078,14 +1079,14 @@ const azionConfigSchema = {
                           type: 'object',
                           properties: {
                             edgeApplication: {
-                              type: 'string',
+                              type: ['string', 'number'],
                               errorMessage:
-                                "The 'edgeApplication' field must be a string referencing an existing Edge Application name",
+                                "The 'edgeApplication' field must be a string or number referencing an existing Edge Application name or ID",
                             },
                             edgeFirewall: {
-                              type: ['string', 'null'],
+                              type: ['string', 'number', 'null'],
                               errorMessage:
-                                "The 'edgeFirewall' field must be a string referencing an existing Edge Firewall name or null",
+                                "The 'edgeFirewall' field must be a string or number referencing an existing Edge Firewall name/ID or null",
                             },
                             customPage: {
                               type: ['integer', 'null'],
@@ -1233,8 +1234,8 @@ const azionConfigSchema = {
                       type: 'object',
                       properties: {
                         runFunction: {
-                          type: 'string',
-                          errorMessage: "The 'runFunction' behavior must be a string",
+                          type: ['string', 'number'],
+                          errorMessage: "The 'runFunction' behavior must be a string or number",
                         },
                         setWafRuleset: {
                           type: 'object',
@@ -1245,8 +1246,8 @@ const azionConfigSchema = {
                               errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
                             },
                             wafId: {
-                              type: 'string',
-                              errorMessage: 'The wafId must be a string',
+                              type: ['string', 'number'],
+                              errorMessage: 'The wafId must be a string or number',
                             },
                           },
                           required: ['wafMode', 'wafId'],

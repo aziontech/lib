@@ -54,7 +54,8 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
 
     for (const rule of applicationRules.request) {
       if (rule.behavior?.runFunction) {
-        if (!definedFunctions.has(rule.behavior.runFunction)) {
+        // Only validate if it's a string (name), skip validation for numbers (IDs)
+        if (typeof rule.behavior.runFunction === 'string' && !definedFunctions.has(rule.behavior.runFunction)) {
           throw new Error(
             `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the functions array.`,
           );

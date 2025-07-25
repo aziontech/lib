@@ -12,24 +12,33 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
    */
   private validateEdgeFunctionReference(
     edgeFunctions: AzionEdgeFunction[] | undefined,
-    functionName: string,
+    functionNameOrId: string | number,
     instanceName: string,
   ) {
-    if (!Array.isArray(edgeFunctions) || !edgeFunctions.find((func) => func.name === functionName)) {
-      throw new Error(
-        `Function instance "${instanceName}" references Edge Function "${functionName}" which is not defined in the edgeFunctions array.`,
-      );
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof functionNameOrId === 'string') {
+      if (!Array.isArray(edgeFunctions) || !edgeFunctions.find((func) => func.name === functionNameOrId)) {
+        throw new Error(
+          `Function instance "${instanceName}" references non-existent Edge Function "${functionNameOrId}".`,
+        );
+      }
     }
   }
 
   /**
    * Validate storage binding reference
    */
-  private validateStorageBinding(config: AzionConfig, bucketName: string, instanceName: string) {
-    if (!Array.isArray(config?.edgeStorage) || !config.edgeStorage.find((storage) => storage.name === bucketName)) {
-      throw new Error(
-        `Function instance "${instanceName}" references storage bucket "${bucketName}" which is not defined in the edgeStorage configuration.`,
-      );
+  private validateStorageBinding(config: AzionConfig, bucketNameOrId: string | number, instanceName: string) {
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof bucketNameOrId === 'string') {
+      if (
+        !Array.isArray(config?.edgeStorage) ||
+        !config.edgeStorage.find((storage) => storage.name === bucketNameOrId)
+      ) {
+        throw new Error(
+          `Function instance "${instanceName}" references storage bucket "${bucketNameOrId}" which is not defined in the edgeStorage configuration.`,
+        );
+      }
     }
   }
 
@@ -52,7 +61,7 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
 
       return {
         name: instance.name,
-        edge_function: instance.ref, // Will be resolved to ID by CLI/API
+        edge_function: String(instance.ref), // Convert to string for API manifest
         args: instance.args || {},
       };
     });
