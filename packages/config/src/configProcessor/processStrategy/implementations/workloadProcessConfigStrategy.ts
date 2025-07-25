@@ -1,48 +1,27 @@
 import { AzionConfig, AzionWorkload } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
+/**
+ * WorkloadProcessConfigStrategy V4
+ * @class WorkloadProcessConfigStrategy
+ * @description This class is implementation of the Workload ProcessConfig Strategy for API V4.
+ */
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
-  private validateApplicationReferences(config: AzionConfig, workloads: AzionWorkload[]) {
-    const applicationNames = config.edgeApplications?.map((app) => app.name) || [];
-    const firewallNames = config.edgeFirewall?.map((firewall) => firewall.name) || [];
-
-    workloads.forEach((workload) => {
-      if (!applicationNames.includes(workload.edgeApplication)) {
-        throw new Error(
-          `Workload "${workload.name}" references non-existent Edge Application "${workload.edgeApplication}".`,
-        );
-      }
-    });
-
-    workloads.forEach((workload) => {
-      if (workload.edgeFirewall && !firewallNames.includes(workload.edgeFirewall)) {
-        throw new Error(
-          `Workload "${workload.name}" references non-existent Edge Firewall "${workload.edgeFirewall}".`,
-        );
-      }
-    });
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   transformToManifest(config: AzionConfig, context: Record<string, any>) {
     const workloads = config?.workloads;
     if (!workloads || workloads.length === 0) return [];
 
-    this.validateApplicationReferences(config, workloads);
-
     return workloads.map((workload: AzionWorkload) => ({
       name: workload.name,
-      alternate_domains: workload.alternateDomains || [],
-      edge_application: workload.edgeApplication,
       active: workload.active ?? true,
-      network_map: workload.networkMap || '1',
-      edge_firewall: workload.edgeFirewall,
-      workload_hostname_allow_access: workload.workloadHostnameAllowAccess ?? true,
+      infrastructure: workload.infrastructure || 1,
+      workload_domain_allow_access: workload.workloadDomainAllowAccess ?? true,
       domains: workload.domains || [],
       tls: {
         certificate: workload.tls?.certificate || null,
         ciphers: workload.tls?.ciphers || null,
-        minimum_version: workload.tls?.minimumVersion || 'tls_1_2',
+        minimum_version: workload.tls?.minimumVersion || 'tls_1_3',
       },
       protocols: {
         http: {
@@ -70,12 +49,9 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
 
     transformedPayload.workloads = payload.workloads.map((workload) => ({
       name: workload.name,
-      alternateDomains: workload.alternate_domains,
-      edgeApplication: workload.edge_application,
       active: workload.active,
-      networkMap: workload.network_map,
-      edgeFirewall: workload.edge_firewall,
-      workloadHostnameAllowAccess: workload.workload_hostname_allow_access,
+      infrastructure: workload.infrastructure,
+      workloadDomainAllowAccess: workload.workload_domain_allow_access,
       domains: workload.domains,
       tls: {
         certificate: workload.tls?.certificate,

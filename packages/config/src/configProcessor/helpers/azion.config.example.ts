@@ -348,4 +348,59 @@ export default {
       ],
     },
   ],
+  workloads: [
+    {
+      name: 'my-production-workload',
+      active: true,
+      infrastructure: 1, // Production Infrastructure
+      domains: ['example.com', 'www.example.com'],
+      workloadDomainAllowAccess: true,
+      tls: {
+        certificate: 12345,
+        ciphers: 1, // TLS cipher suite 1
+        minimumVersion: 'tls_1_3',
+      },
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
+        },
+      },
+      mtls: {
+        verification: 'enforce',
+        certificate: 67890,
+        crl: [1, 2, 3],
+      },
+      deployments: [
+        {
+          name: 'production-deployment',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: 'my-edge-app', // Reference to edge application name
+              edgeFirewall: 'my-edge-firewall', // Reference to edge firewall name
+              customPage: null, // To be implemented later
+            },
+          },
+        },
+        {
+          name: 'staging-deployment',
+          current: false,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: 'my-edge-app',
+              edgeFirewall: null, // No firewall for staging
+              customPage: null,
+            },
+          },
+        },
+      ],
+    },
+  ],
 };

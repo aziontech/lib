@@ -58,7 +58,7 @@ export type EdgeFunctionExecutionEnvironment =
   (typeof import('./constants').EDGE_FUNCTION_EXECUTION_ENVIRONMENTS)[number];
 
 // Workload types
-export type WorkloadNetworkMap = (typeof import('./constants').WORKLOAD_NETWORK_MAP)[number];
+export type WorkloadInfrastructure = (typeof import('./constants').WORKLOAD_INFRASTRUCTURE)[number];
 export type WorkloadTLSCipher = (typeof import('./constants').WORKLOAD_TLS_CIPHERS)[number];
 export type WorkloadTLSVersion = (typeof import('./constants').WORKLOAD_TLS_VERSIONS)[number];
 export type WorkloadMTLSVerification = (typeof import('./constants').WORKLOAD_MTLS_VERIFICATION)[number];
@@ -661,18 +661,48 @@ export type AzionWorkloadMTLS = {
   crl?: number[] | null;
 };
 
+/**
+ * Workload Deployment Strategy configuration for Azion V4.
+ */
+export interface AzionWorkloadDeploymentStrategy {
+  /** Strategy type */
+  type: string;
+  /** Strategy attributes */
+  attributes: {
+    /** Edge Application name reference */
+    edgeApplication: string;
+    /** Edge Firewall name reference (optional) */
+    edgeFirewall?: string | null;
+    /** Custom page reference (optional, to be implemented later) */
+    customPage?: number | null;
+  };
+}
+
+/**
+ * Workload Deployment configuration for Azion V4.
+ */
+export interface AzionWorkloadDeployment {
+  /** Deployment name */
+  name: string;
+  /** Whether this is the current deployment */
+  current?: boolean;
+  /** Active status */
+  active?: boolean;
+  /** Deployment strategy */
+  strategy: AzionWorkloadDeploymentStrategy;
+}
+
 export type AzionWorkload = {
   name: string;
-  alternateDomains?: string[];
-  edgeApplication: string;
   active?: boolean;
-  networkMap?: WorkloadNetworkMap;
-  edgeFirewall?: string | null;
+  infrastructure?: WorkloadInfrastructure;
   tls?: AzionWorkloadTLS;
   protocols?: AzionWorkloadProtocols;
   mtls?: AzionWorkloadMTLS;
   domains: string[];
-  workloadHostnameAllowAccess?: boolean;
+  workloadDomainAllowAccess?: boolean;
+  /** Workload deployments */
+  deployments?: AzionWorkloadDeployment[];
 };
 
 // Edge Connector V4 Types

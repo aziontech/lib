@@ -298,10 +298,10 @@ export const RULE_BEHAVIOR_NAMES = [
 export type RulePhase = (typeof RULE_PHASES)[number];
 export type RuleBehaviorName = (typeof RULE_BEHAVIOR_NAMES)[number];
 
-// Workload Constants
-export const WORKLOAD_NETWORK_MAP = ['1', '2'] as const;
+// Workload Constants V4
+export const WORKLOAD_INFRASTRUCTURE = [1, 2] as const;
 
-export const WORKLOAD_TLS_CIPHERS = ['TLSv1.2_2018', 'TLSv1.2_2019', 'TLSv1.3_2022', 'TLSv1.2_2021'] as const;
+export const WORKLOAD_TLS_CIPHERS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
 
 export const WORKLOAD_TLS_VERSIONS = ['', 'tls_1_0', 'tls_1_1', 'tls_1_2', 'tls_1_3'] as const;
 
@@ -309,8 +309,8 @@ export const WORKLOAD_MTLS_VERIFICATION = ['enforce', 'permissive'] as const;
 
 export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
 
-// Tipos para Workload
-export type WorkloadNetworkMap = (typeof WORKLOAD_NETWORK_MAP)[number];
+// Tipos para Workload V4
+export type WorkloadInfrastructure = (typeof WORKLOAD_INFRASTRUCTURE)[number];
 export type WorkloadTLSCipher = (typeof WORKLOAD_TLS_CIPHERS)[number];
 export type WorkloadTLSVersion = (typeof WORKLOAD_TLS_VERSIONS)[number];
 export type WorkloadMTLSVerification = (typeof WORKLOAD_MTLS_VERIFICATION)[number];

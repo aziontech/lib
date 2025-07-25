@@ -33,8 +33,6 @@ import {
   WAF_MODE,
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_MTLS_VERIFICATION,
-  WORKLOAD_NETWORK_MAP,
-  WORKLOAD_TLS_CIPHERS,
   WORKLOAD_TLS_VERSIONS,
 } from '../../constants';
 
@@ -1000,37 +998,24 @@ const schemaWorkloadManifest = {
       type: 'string',
       minLength: 1,
       maxLength: 100,
+      pattern: '.*',
       errorMessage: "The 'name' field must be a string between 1 and 100 characters",
-    },
-    alternate_domains: {
-      type: 'array',
-      items: { type: 'string' },
-      maxItems: 50,
-      errorMessage: "The 'alternate_domains' field must be an array of strings with max 50 items",
-    },
-    edge_application: {
-      type: 'string',
-      errorMessage: "The 'edge_application' field must be a string",
     },
     active: {
       type: 'boolean',
       default: true,
       errorMessage: "The 'active' field must be a boolean",
     },
-    network_map: {
-      type: 'string',
-      enum: WORKLOAD_NETWORK_MAP,
-      default: '1',
-      errorMessage: "The 'network_map' must be either '1' or '2'",
+    infrastructure: {
+      type: 'integer',
+      enum: [1, 2],
+      default: 1,
+      errorMessage: "The 'infrastructure' must be either 1 or 2",
     },
-    edge_firewall: {
-      type: ['string', 'null'],
-      errorMessage: "The 'edge_firewall' must be an string or null",
-    },
-    workload_hostname_allow_access: {
+    workload_domain_allow_access: {
       type: 'boolean',
       default: true,
-      errorMessage: "The 'workload_hostname_allow_access' field must be a boolean",
+      errorMessage: "The 'workload_domain_allow_access' field must be a boolean",
     },
     domains: {
       type: 'array',
@@ -1052,18 +1037,18 @@ const schemaWorkloadManifest = {
           errorMessage: "The 'certificate' must be an integer >= 1 or null",
         },
         ciphers: {
-          type: ['string', 'null'],
-          enum: [...WORKLOAD_TLS_CIPHERS, null],
-          errorMessage: "The 'ciphers' must be a valid TLS cipher suite or null",
+          type: ['integer', 'null'],
+          enum: [1, 2, 3, 4, 5, 6, 7, 8, null],
+          errorMessage: "The 'ciphers' must be an integer between 1-8 or null",
         },
         minimum_version: {
           type: ['string', 'null'],
           enum: [...WORKLOAD_TLS_VERSIONS, null],
-          default: 'tls_1_2',
+          default: 'tls_1_3',
           errorMessage: "The 'minimum_version' must be a valid TLS version or null",
         },
       },
-      default: { certificate: null, ciphers: null, minimum_version: 'tls_1_2' },
+      default: { certificate: null, ciphers: null, minimum_version: 'tls_1_3' },
       additionalProperties: false,
     },
     protocols: {
@@ -1131,11 +1116,11 @@ const schemaWorkloadManifest = {
       additionalProperties: false,
     },
   },
-  required: ['name', 'edge_application', 'domains'],
+  required: ['name', 'domains'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in workload items',
-    required: "The 'name', 'edge_application' and 'domains' fields are required in workload items",
+    required: "The 'name' and 'domains' fields are required in workload items",
   },
 };
 
@@ -1446,6 +1431,82 @@ const schemaManifest = {
       type: 'array',
       items: schemaWorkloadManifest,
       errorMessage: "The 'workload' field must be an array of workloads items.",
+    },
+    workload_deployments: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 254,
+            pattern: '.*',
+            errorMessage: "The 'name' field must be a string between 1 and 254 characters.",
+          },
+          current: {
+            type: 'boolean',
+            default: true,
+            errorMessage: "The 'current' field must be a boolean.",
+          },
+          active: {
+            type: 'boolean',
+            default: true,
+            errorMessage: "The 'active' field must be a boolean.",
+          },
+          strategy: {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 255,
+                pattern: '.*',
+                errorMessage: "The 'type' field must be a string between 1 and 255 characters.",
+              },
+              attributes: {
+                type: 'object',
+                properties: {
+                  edge_application: {
+                    type: 'integer',
+                    minimum: 1,
+                    errorMessage: "The 'edge_application' field must be an integer >= 1.",
+                  },
+                  edge_firewall: {
+                    type: ['integer', 'null'],
+                    minimum: 1,
+                    errorMessage: "The 'edge_firewall' field must be an integer >= 1 or null.",
+                  },
+                  custom_page: {
+                    type: ['integer', 'null'],
+                    minimum: 1,
+                    errorMessage: "The 'custom_page' field must be an integer >= 1 or null.",
+                  },
+                },
+                required: ['edge_application'],
+                additionalProperties: false,
+                errorMessage: {
+                  additionalProperties: 'No additional properties are allowed in strategy attributes.',
+                  required: "The 'edge_application' field is required in strategy attributes.",
+                },
+              },
+            },
+            required: ['type', 'attributes'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in strategy.',
+              required: "The 'type' and 'attributes' fields are required in strategy.",
+            },
+          },
+        },
+        required: ['name', 'strategy'],
+        additionalProperties: false,
+        errorMessage: {
+          additionalProperties: 'No additional properties are allowed in workload deployment objects.',
+          required: "The 'name' and 'strategy' fields are required in each workload deployment.",
+        },
+      },
+      errorMessage: "The 'workload_deployments' field must be an array of workload deployment objects.",
     },
     edge_connectors: {
       type: 'array',
