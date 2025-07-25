@@ -1,4 +1,4 @@
-import { AzionConfig, AzionEdgeApplication } from '../../../../types';
+import { AzionConfig, AzionDeviceGroup, AzionEdgeApplication } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
@@ -49,6 +49,13 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         );
       }
 
+      if (app.deviceGroups) {
+        application.device_groups = app.deviceGroups.map((deviceGroup) => ({
+          name: deviceGroup.name,
+          user_agent: deviceGroup.userAgent,
+        }));
+      }
+
       return application;
     });
   }
@@ -73,6 +80,14 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
+        deviceGroups: app.device_groups
+          ? app.device_groups.map(
+              (deviceGroup: { name: string; user_agent: string }): AzionDeviceGroup => ({
+                name: deviceGroup.name,
+                userAgent: deviceGroup.user_agent,
+              }),
+            )
+          : undefined,
       };
     });
 

@@ -104,6 +104,16 @@ export default {
           },
         ],
       },
+      deviceGroups: [
+        {
+          name: 'mobile-devices',
+          userAgent: '(Mobile|Android|iPhone|iPad)',
+        },
+        {
+          name: 'desktop-browsers',
+          userAgent: '(Chrome|Firefox|Safari).*(?!Mobile)',
+        },
+      ],
     },
   ],
   edgeConnectors: [

@@ -923,6 +923,35 @@ const schemaApplicationManifest = {
       items: schemaApplicationRules,
       errorMessage: "The 'rules' field must be an array of application rule items.",
     },
+    device_groups: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 250,
+            pattern: '.*',
+            errorMessage: "The 'name' field must be a string between 1 and 250 characters.",
+          },
+          user_agent: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 512,
+            pattern: '.*',
+            errorMessage: "The 'user_agent' field must be a valid regex pattern between 1 and 512 characters.",
+          },
+        },
+        required: ['name', 'user_agent'],
+        additionalProperties: false,
+        errorMessage: {
+          additionalProperties: 'No additional properties are allowed in device group objects.',
+          required: "The 'name' and 'user_agent' fields are required in each device group.",
+        },
+      },
+      errorMessage: "The 'device_groups' field must be an array of device group objects.",
+    },
   },
   required: ['name'],
   additionalProperties: false,

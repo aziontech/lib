@@ -138,6 +138,16 @@ export type AzionCache = {
   };
 };
 
+/**
+ * Device Group configuration for Azion V4.
+ */
+export type AzionDeviceGroup = {
+  /** Device group name */
+  name: string;
+  /** User agent regex pattern */
+  userAgent: string;
+};
+
 export type AzionRuleCriteriaBase = {
   /** Variable to be evaluated */
   variable: RuleVariable;
@@ -414,6 +424,8 @@ export type AzionEdgeApplication = {
   cache?: AzionCache[];
   /** Rules configuration */
   rules?: AzionRules;
+  /** Device groups */
+  deviceGroups?: AzionDeviceGroup[];
 };
 
 /**
