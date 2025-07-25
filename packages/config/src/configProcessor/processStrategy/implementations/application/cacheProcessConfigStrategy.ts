@@ -5,9 +5,9 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
 const math = create(all);
 
 /**
- * CacheProcessConfigStrategy
+ * CacheProcessConfigStrategy V4
  * @class CacheProcessConfigStrategy
- * @description This class is implementation of the Cache ProcessConfig Strategy.
+ * @description This class is implementation of the Cache ProcessConfig Strategy for API V4.
  */
 class CacheProcessConfigStrategy extends ProcessConfigStrategy {
   // Helper function to safely evaluate mathematical expressions
@@ -22,6 +22,9 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
     throw new Error(`Expression is not purely mathematical: ${expression}`);
   };
 
+  /**
+   * Transform azion.config cache settings to V4 manifest format
+   */
   transformToManifest(applicationCache: AzionCache[]) {
     if (!Array.isArray(applicationCache) || applicationCache.length === 0) {
       return [];
@@ -31,19 +34,62 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
       const maxAgeSecondsBrowser = cache?.browser ? this.evaluateMathExpression(cache.browser.maxAgeSeconds) : 0;
       const maxAgeSecondsEdge = cache?.edge ? this.evaluateMathExpression(cache.edge.maxAgeSeconds) : 60;
 
+      // Build cache_vary_by_method array based on methods configuration
+      const cacheVaryByMethod: string[] = [];
+      if (cache?.methods?.post) cacheVaryByMethod.push('post');
+      if (cache?.methods?.options) cacheVaryByMethod.push('options');
+
+      // Build cache_vary_by_querystring object
+      const cacheVaryByQuerystring = {
+        behavior: cache?.cacheByQueryString?.option || 'ignore',
+        fields: cache?.cacheByQueryString?.list || [],
+        sort_enabled: cache?.queryStringSort || false,
+      };
+
+      // Build cache_vary_by_cookies object
+      const cacheVaryByCookies = {
+        behavior: cache?.cacheByCookie?.option || 'ignore',
+        cookie_names: cache?.cacheByCookie?.list || [],
+      };
+
       return {
         name: cache.name,
-        browser_cache_settings: cache?.browser ? 'override' : 'honor',
-        browser_cache_settings_maximum_ttl: maxAgeSecondsBrowser,
-        cdn_cache_settings: cache?.edge ? 'override' : 'honor',
-        cdn_cache_settings_maximum_ttl: maxAgeSecondsEdge,
-        enable_caching_for_post: cache?.methods?.post || false,
-        enable_caching_for_options: cache?.methods?.options || false,
-        enable_query_string_sort: cache?.queryStringSort || false,
+        browser_cache: {
+          behavior: cache?.browser ? 'override' : 'honor',
+          max_age: maxAgeSecondsBrowser,
+        },
+        modules: {
+          edge_cache: {
+            behavior: cache?.edge ? 'override' : 'honor',
+            max_age: maxAgeSecondsEdge,
+            stale_cache: {
+              enabled: cache?.stale || false,
+            },
+            large_file_cache: {
+              enabled: false, // Default for now, could be extended later
+              offset: 1024, // Default offset
+            },
+          },
+          tiered_cache: {
+            topology: 'near-edge', // Default topology
+          },
+          application_accelerator: {
+            cache_vary_by_method: cacheVaryByMethod,
+            cache_vary_by_querystring: cacheVaryByQuerystring,
+            cache_vary_by_cookies: cacheVaryByCookies,
+            cache_vary_by_devices: {
+              behavior: 'ignore', // Default behavior
+              device_group: [],
+            },
+          },
+        },
       };
     });
   }
 
+  /**
+   * Transform V4 manifest format back to azion.config cache settings
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(cacheSettings: any[]) {
     if (!Array.isArray(cacheSettings) || cacheSettings.length === 0) {
@@ -51,15 +97,16 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
     }
 
     return cacheSettings.map((cache) => {
-      const maxAgeSecondsBrowser = cache.browser_cache_settings_maximum_ttl
-        ? this.evaluateMathExpression(cache.browser_cache_settings_maximum_ttl)
+      const maxAgeSecondsBrowser = cache.browser_cache?.max_age
+        ? this.evaluateMathExpression(cache.browser_cache.max_age)
         : 0;
-      const maxAgeSecondsEdge = cache.cdn_cache_settings_maximum_ttl
-        ? this.evaluateMathExpression(cache.cdn_cache_settings_maximum_ttl)
+      const maxAgeSecondsEdge = cache.modules?.edge_cache?.max_age
+        ? this.evaluateMathExpression(cache.modules.edge_cache.max_age)
         : 60;
+
       const cacheSetting: AzionCache = {
         name: cache.name,
-        stale: cache.stale,
+        stale: cache.modules?.edge_cache?.stale_cache?.enabled || false,
         browser: {
           maxAgeSeconds: maxAgeSecondsBrowser,
         },
@@ -67,46 +114,28 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
           maxAgeSeconds: maxAgeSecondsEdge,
         },
         methods: {
-          post: cache.enable_caching_for_post,
-          options: cache.enable_caching_for_options,
+          post: cache.modules?.application_accelerator?.cache_vary_by_method?.includes('post') || false,
+          options: cache.modules?.application_accelerator?.cache_vary_by_method?.includes('options') || false,
         },
-        queryStringSort: cache.enable_query_string_sort,
+        queryStringSort: cache.modules?.application_accelerator?.cache_vary_by_querystring?.sort_enabled || false,
       };
 
-      if (cache.cache_by_query_string) {
+      // Handle cache by query string
+      if (cache.modules?.application_accelerator?.cache_vary_by_querystring) {
+        const queryStringConfig = cache.modules.application_accelerator.cache_vary_by_querystring;
         cacheSetting.cacheByQueryString = {
-          option:
-            // eslint-disable-next-line no-nested-ternary
-            cache.cache_by_query_string === 'varies' ? 'all' : cache.cache_by_query_string,
+          option: queryStringConfig.behavior,
+          list: queryStringConfig.fields || [],
         };
-        if (cache.cache_by_query_string === 'whitelist' || cache.cache_by_query_string === 'blacklist') {
-          cacheSetting.cacheByQueryString = {
-            ...cacheSetting.cacheByQueryString,
-            list: cache.query_string_fields || [],
-          };
-        } else {
-          cacheSetting.cacheByQueryString = {
-            ...cacheSetting.cacheByQueryString,
-            list: [],
-          };
-        }
       }
 
-      if (cache.cache_by_cookie) {
+      // Handle cache by cookie
+      if (cache.modules?.application_accelerator?.cache_vary_by_cookies) {
+        const cookieConfig = cache.modules.application_accelerator.cache_vary_by_cookies;
         cacheSetting.cacheByCookie = {
-          option: cache.cache_by_cookie === 'varies' ? 'all' : cache.cache_by_cookie,
+          option: cookieConfig.behavior,
+          list: cookieConfig.cookie_names || [],
         };
-        if (cache.cache_by_cookie === 'whitelist' || cache.cache_by_cookie === 'blacklist') {
-          cacheSetting.cacheByCookie = {
-            ...cacheSetting.cacheByCookie,
-            list: cache.cookie_names || [],
-          };
-        } else {
-          cacheSetting.cacheByCookie = {
-            ...cacheSetting.cacheByCookie,
-            list: [],
-          };
-        }
       }
 
       return cacheSetting;

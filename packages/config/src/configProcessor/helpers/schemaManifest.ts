@@ -9,7 +9,7 @@ import {
   CACHE_BY_COOKIE,
   CACHE_BY_QUERY_STRING,
   CACHE_CDN_SETTINGS,
-  CACHE_L2_REGION,
+  CACHE_VARY_BY_METHOD,
   EDGE_CONNECTOR_CONNECTION_PREFERENCE,
   EDGE_CONNECTOR_LOAD_BALANCE,
   EDGE_CONNECTOR_TYPES,
@@ -26,6 +26,7 @@ import {
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_PHASES,
   RULE_VARIABLES,
+  TIERED_CACHE_TOPOLOGY,
   WAF_MODE,
   WAF_SENSITIVITY,
   WORKLOAD_HTTP_VERSIONS,
@@ -531,44 +532,183 @@ const schemaApplicationCacheSettings = {
   properties: {
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string.",
+      minLength: 1,
+      maxLength: 250,
+      pattern: "^[a-zA-Z0-9 \\-\\.'\\,|]+$",
+      errorMessage: "The 'name' field must be a string between 1-250 characters with valid pattern.",
     },
-    browser_cache_settings: {
-      type: 'string',
-      enum: CACHE_BROWSER_SETTINGS,
-      errorMessage: "The 'browser_cache_settings' must be either 'honor' or 'override'.",
+    browser_cache: {
+      type: 'object',
+      properties: {
+        behavior: {
+          type: 'string',
+          enum: CACHE_BROWSER_SETTINGS,
+          default: 'honor',
+          errorMessage: "The 'behavior' must be one of: honor, override, no-cache.",
+        },
+        max_age: {
+          type: 'integer',
+          minimum: 0,
+          maximum: 31536000,
+          default: 0,
+          errorMessage: "The 'max_age' must be between 0 and 31536000 seconds.",
+        },
+      },
+      required: ['behavior', 'max_age'],
+      additionalProperties: false,
+      errorMessage: {
+        required: "Both 'behavior' and 'max_age' are required in browser_cache.",
+        additionalProperties: 'No additional properties are allowed in browser_cache.',
+      },
     },
-    cdn_cache_settings: {
-      type: 'string',
-      enum: CACHE_CDN_SETTINGS,
-      errorMessage: "The 'cdn_cache_settings' must be either 'honor' or 'override'.",
-    },
-    cache_by_query_string: {
-      type: 'string',
-      enum: CACHE_BY_QUERY_STRING,
-      errorMessage: "The 'cache_by_query_string' must be one of: ignore, whitelist, blacklist, all.",
-    },
-    cache_by_cookie: {
-      type: 'string',
-      enum: CACHE_BY_COOKIE,
-      errorMessage: "The 'cache_by_cookie' must be one of: ignore, whitelist, blacklist, all.",
-    },
-    adaptive_delivery_action: {
-      type: 'string',
-      enum: CACHE_ADAPTIVE_DELIVERY,
-      errorMessage: "The 'adaptive_delivery_action' must be either 'ignore' or 'whitelist'.",
-    },
-    l2_caching_enabled: {
-      type: 'boolean',
-      errorMessage: "The 'l2_caching_enabled' field must be a boolean.",
-    },
-    l2_region: {
-      type: ['string', 'null'],
-      enum: CACHE_L2_REGION,
-      errorMessage: "The 'l2_region' must be either null, 'sa-brazil' or 'na-united-states'.",
+    modules: {
+      type: 'object',
+      properties: {
+        edge_cache: {
+          type: 'object',
+          properties: {
+            behavior: {
+              type: 'string',
+              enum: CACHE_CDN_SETTINGS,
+              default: 'honor',
+              errorMessage: "The 'behavior' must be either 'honor' or 'override'.",
+            },
+            max_age: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 31536000,
+              default: 60,
+              errorMessage: "The 'max_age' must be between 0 and 31536000 seconds.",
+            },
+            stale_cache: {
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  errorMessage: "The 'enabled' field must be a boolean.",
+                },
+              },
+              required: ['enabled'],
+              additionalProperties: false,
+            },
+            large_file_cache: {
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  errorMessage: "The 'enabled' field must be a boolean.",
+                },
+                offset: {
+                  type: 'integer',
+                  minimum: 0,
+                  errorMessage: "The 'offset' must be a non-negative integer.",
+                },
+              },
+              required: ['enabled', 'offset'],
+              additionalProperties: false,
+            },
+          },
+          required: ['behavior', 'max_age'],
+          additionalProperties: false,
+        },
+        tiered_cache: {
+          type: ['object', 'null'],
+          properties: {
+            topology: {
+              type: 'string',
+              enum: TIERED_CACHE_TOPOLOGY,
+              errorMessage: "The 'topology' must be one of: near-edge, br-east-1, us-east-1.",
+            },
+          },
+          required: ['topology'],
+          additionalProperties: false,
+        },
+        application_accelerator: {
+          type: 'object',
+          properties: {
+            cache_vary_by_method: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: CACHE_VARY_BY_METHOD,
+              },
+              maxItems: 2,
+              errorMessage: "The 'cache_vary_by_method' must be an array of max 2 valid HTTP methods (options, post).",
+            },
+            cache_vary_by_querystring: {
+              type: 'object',
+              properties: {
+                behavior: {
+                  type: 'string',
+                  enum: CACHE_BY_QUERY_STRING,
+                  default: 'ignore',
+                  errorMessage: "The 'behavior' must be one of: ignore, all, allowlist, denylist.",
+                },
+                fields: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  errorMessage: "The 'fields' must be an array of strings.",
+                },
+                sort_enabled: {
+                  type: 'boolean',
+                  default: true,
+                  errorMessage: "The 'sort_enabled' field must be a boolean.",
+                },
+              },
+              required: ['behavior', 'fields', 'sort_enabled'],
+              additionalProperties: false,
+            },
+            cache_vary_by_cookies: {
+              type: 'object',
+              properties: {
+                behavior: {
+                  type: 'string',
+                  enum: CACHE_BY_COOKIE,
+                  default: 'ignore',
+                  errorMessage: "The 'behavior' must be one of: ignore, all, allowlist, denylist.",
+                },
+                cookie_names: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  errorMessage: "The 'cookie_names' must be an array of strings.",
+                },
+              },
+              required: ['behavior', 'cookie_names'],
+              additionalProperties: false,
+            },
+            cache_vary_by_devices: {
+              type: 'object',
+              properties: {
+                behavior: {
+                  type: 'string',
+                  enum: CACHE_ADAPTIVE_DELIVERY,
+                  default: 'ignore',
+                  errorMessage: "The 'behavior' must be either 'ignore' or 'allowlist'.",
+                },
+                device_group: {
+                  type: 'array',
+                  items: { type: 'integer' },
+                  errorMessage: "The 'device_group' must be an array of integers.",
+                },
+              },
+              required: ['behavior', 'device_group'],
+              additionalProperties: false,
+            },
+          },
+          required: [
+            'cache_vary_by_method',
+            'cache_vary_by_querystring',
+            'cache_vary_by_cookies',
+            'cache_vary_by_devices',
+          ],
+          additionalProperties: false,
+        },
+      },
+      required: ['edge_cache', 'application_accelerator'],
+      additionalProperties: false,
     },
   },
-  required: ['name'],
+  required: ['name', 'browser_cache', 'modules'],
   additionalProperties: false,
 };
 

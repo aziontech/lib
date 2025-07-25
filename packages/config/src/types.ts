@@ -85,14 +85,14 @@ export type AzionCache = {
   /** Cache by cookie configuration */
   cacheByCookie?: {
     /** Cookie caching option */
-    option: 'ignore' | 'varies' | 'whitelist' | 'blacklist';
+    option: 'ignore' | 'all' | 'allowlist' | 'denylist';
     /** List of cookies to be considered */
     list?: string[];
   };
   /** Cache by query string configuration */
   cacheByQueryString?: {
     /** Query string caching option */
-    option: 'ignore' | 'varies' | 'whitelist' | 'blacklist';
+    option: 'ignore' | 'all' | 'allowlist' | 'denylist';
     /** List of query string parameters to be considered */
     list?: string[];
   };

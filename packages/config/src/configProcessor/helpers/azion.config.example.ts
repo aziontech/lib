@@ -69,11 +69,11 @@ export default {
         maxAgeSeconds: 1000,
       },
       cacheByQueryString: {
-        option: 'blacklist', // ['blacklist', 'whitelist', 'varies', 'ignore]
+        option: 'denylist', // ['denylist', 'allowlist', 'all', 'ignore']
         list: ['order', 'user'],
       },
       cacheByCookie: {
-        option: 'whitelist', // ['blacklist', 'whitelist', 'varies', 'ignore]
+        option: 'allowlist', // ['denylist', 'allowlist', 'all', 'ignore']
         list: ['session', 'user'],
       },
     },

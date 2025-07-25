@@ -205,21 +205,33 @@ export type ApplicationSupportedCipher = (typeof APPLICATION_SUPPORTED_CIPHERS)[
 export type ApplicationHttpPort = (typeof APPLICATION_HTTP_PORTS)[number];
 export type ApplicationHttpsPort = (typeof APPLICATION_HTTPS_PORTS)[number];
 
-// Novas constantes para Cache Settings
-export const CACHE_BROWSER_SETTINGS = ['honor', 'override'] as const;
+// Constantes para Cache Settings V4
+export const CACHE_BROWSER_SETTINGS = ['honor', 'override', 'no-cache'] as const;
 export const CACHE_CDN_SETTINGS = ['honor', 'override'] as const;
-export const CACHE_BY_QUERY_STRING = ['ignore', 'whitelist', 'blacklist', 'all'] as const;
-export const CACHE_BY_COOKIE = ['ignore', 'whitelist', 'blacklist', 'all'] as const;
-export const CACHE_ADAPTIVE_DELIVERY = ['ignore', 'whitelist'] as const;
+export const CACHE_BY_QUERY_STRING = ['ignore', 'all', 'allowlist', 'denylist'] as const;
+export const CACHE_BY_COOKIE = ['ignore', 'all', 'allowlist', 'denylist'] as const;
+export const CACHE_ADAPTIVE_DELIVERY = ['ignore', 'allowlist'] as const;
+export const CACHE_VARY_BY_METHOD = ['options', 'post'] as const;
+export const TIERED_CACHE_TOPOLOGY = ['near-edge', 'br-east-1', 'us-east-1'] as const;
 export const CACHE_L2_REGION = [null, 'sa-brazil', 'na-united-states'] as const;
 
-// Tipos para as novas constantes
+// Constantes para Build
+export const BUILD_BUNDLERS = ['webpack', 'esbuild'] as const;
+
+// Constantes para Storage
+export const EDGE_ACCESS_TYPES = ['read_only', 'read_write', 'restricted'] as const;
+
+// Tipos para as constantes V4
 export type CacheBrowserSetting = (typeof CACHE_BROWSER_SETTINGS)[number];
 export type CacheCdnSetting = (typeof CACHE_CDN_SETTINGS)[number];
 export type CacheByQueryString = (typeof CACHE_BY_QUERY_STRING)[number];
 export type CacheByCookie = (typeof CACHE_BY_COOKIE)[number];
 export type CacheAdaptiveDelivery = (typeof CACHE_ADAPTIVE_DELIVERY)[number];
+export type CacheVaryByMethod = (typeof CACHE_VARY_BY_METHOD)[number];
+export type TieredCacheTopology = (typeof TIERED_CACHE_TOPOLOGY)[number];
 export type CacheL2Region = (typeof CACHE_L2_REGION)[number];
+export type BuildBundler = (typeof BUILD_BUNDLERS)[number];
+export type EdgeAccessType = (typeof EDGE_ACCESS_TYPES)[number];
 
 // Constantes para Origins
 export const ORIGIN_TYPES = ['single_origin', 'load_balancer', 'live_ingest', 'object_storage'] as const;

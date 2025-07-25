@@ -1,7 +1,9 @@
 import {
   ALL_REQUEST_VARIABLES,
   ALL_RESPONSE_VARIABLES,
+  BUILD_BUNDLERS,
   DYNAMIC_VARIABLE_PATTERNS,
+  EDGE_ACCESS_TYPES,
   EDGE_CONNECTOR_CONNECTION_PREFERENCE,
   EDGE_CONNECTOR_LOAD_BALANCE,
   EDGE_CONNECTOR_TYPES,
@@ -496,7 +498,7 @@ const schemaStorage = {
     },
     edgeAccess: {
       type: 'string',
-      enum: ['read_only', 'read_write', 'restricted'],
+      enum: EDGE_ACCESS_TYPES,
       errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
     },
   },
@@ -527,7 +529,7 @@ const azionConfigSchema = {
             },
             bundler: {
               type: 'string',
-              enum: ['webpack', 'esbuild'],
+              enum: BUILD_BUNDLERS,
               errorMessage: "The 'build.bundler' must be either 'webpack' or 'esbuild'",
             },
             preset: {
@@ -665,7 +667,10 @@ const azionConfigSchema = {
                   properties: {
                     name: {
                       type: 'string',
-                      errorMessage: "The 'name' field must be a string.",
+                      minLength: 1,
+                      maxLength: 250,
+                      pattern: "^[a-zA-Z0-9 \\-\\.'\\,|]+$",
+                      errorMessage: "The 'name' field must be a string between 1-250 characters with valid pattern.",
                     },
                     stale: {
                       type: 'boolean',
@@ -747,9 +752,8 @@ const azionConfigSchema = {
                       properties: {
                         option: {
                           type: 'string',
-                          enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
-                          errorMessage:
-                            "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'..",
+                          enum: ['ignore', 'all', 'allowlist', 'denylist'],
+                          errorMessage: "The 'option' field must be one of 'ignore', 'all', 'allowlist' or 'denylist'.",
                         },
                         list: {
                           type: 'array',
@@ -770,13 +774,13 @@ const azionConfigSchema = {
                       },
                       if: {
                         properties: {
-                          option: { enum: ['whitelist', 'blacklist'] },
+                          option: { enum: ['allowlist', 'denylist'] },
                         },
                       },
                       then: {
                         required: ['list'],
                         errorMessage: {
-                          required: "The 'list' field is required when 'option' is 'whitelist' or 'blacklist'.",
+                          required: "The 'list' field is required when 'option' is 'allowlist' or 'denylist'.",
                         },
                       },
                     },
@@ -785,9 +789,8 @@ const azionConfigSchema = {
                       properties: {
                         option: {
                           type: 'string',
-                          enum: ['ignore', 'varies', 'whitelist', 'blacklist'],
-                          errorMessage:
-                            "The 'option' field must be one of 'ignore', 'varies', 'whitelist' or 'blacklist'.",
+                          enum: ['ignore', 'all', 'allowlist', 'denylist'],
+                          errorMessage: "The 'option' field must be one of 'ignore', 'all', 'allowlist' or 'denylist'.",
                         },
                         list: {
                           type: 'array',
@@ -809,13 +812,13 @@ const azionConfigSchema = {
                       },
                       if: {
                         properties: {
-                          option: { enum: ['whitelist', 'blacklist'] },
+                          option: { enum: ['allowlist', 'denylist'] },
                         },
                       },
                       then: {
                         required: ['list'],
                         errorMessage: {
-                          required: "The 'list' field is required when 'option' is 'whitelist' or 'blacklist'.",
+                          required: "The 'list' field is required when 'option' is 'allowlist' or 'denylist'.",
                         },
                       },
                     },
