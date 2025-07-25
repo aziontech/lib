@@ -159,8 +159,30 @@ export type NetworkListType = (typeof NETWORK_LIST_TYPES)[number];
 
 export const WAF_MODE = ['learning', 'blocking', 'counting'] as const;
 export type WafMode = (typeof WAF_MODE)[number];
-export const WAF_SENSITIVITY = ['low', 'medium', 'high'] as const;
+export const WAF_SENSITIVITY = ['lowest', 'low', 'medium', 'high', 'highest'] as const;
 export type WafSensitivity = (typeof WAF_SENSITIVITY)[number];
+
+// WAF V4 Constants
+export const WAF_ENGINE_VERSIONS = ['2021-Q3'] as const;
+export type WafEngineVersion = (typeof WAF_ENGINE_VERSIONS)[number];
+
+export const WAF_ENGINE_TYPES = ['score'] as const;
+export type WafEngineType = (typeof WAF_ENGINE_TYPES)[number];
+
+export const WAF_RULESETS = [1] as const;
+export type WafRuleset = (typeof WAF_RULESETS)[number];
+
+export const WAF_THREAT_TYPES = [
+  'cross_site_scripting',
+  'directory_traversal',
+  'evading_tricks',
+  'file_upload',
+  'identified_attack',
+  'remote_file_inclusion',
+  'sql_injection',
+  'unwanted_access',
+] as const;
+export type WafThreatType = (typeof WAF_THREAT_TYPES)[number];
 
 export const FIREWALL_RULE_OPERATORS = [
   'is_equal',

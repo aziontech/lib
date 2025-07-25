@@ -20,8 +20,6 @@ import {
   RULE_OPERATORS_WITHOUT_VALUE,
   RULE_VARIABLES,
   SPECIAL_VARIABLES,
-  WAF_MODE,
-  WAF_SENSITIVITY,
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_MTLS_VERIFICATION,
   WORKLOAD_NETWORK_MAP,
@@ -132,12 +130,6 @@ const createVariableValidation = (isRequestPhase = false) => ({
     ? "The 'variable' field must be either a valid request phase variable, mTLS variable, follow the patterns (arg_*, cookie_*, http_*), or be a special function variable (cookie_time_offset, encode_base64)"
     : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
 });
-
-const sensitivitySchema = {
-  type: 'string',
-  enum: WAF_SENSITIVITY,
-  errorMessage: `The 'sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-};
 
 const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
@@ -1280,125 +1272,98 @@ const azionConfigSchema = {
               },
               name: {
                 type: 'string',
-                errorMessage: "The WAF configuration must have a 'name' field of type string",
+                minLength: 1,
+                maxLength: 250,
+                pattern: '.*',
+                errorMessage: "The WAF configuration must have a 'name' field of type string (1-250 characters)",
               },
-              mode: {
-                type: 'string',
-                enum: WAF_MODE,
-                errorMessage: `The 'mode' field must be one of: ${WAF_MODE.join(', ')}`,
+              productVersion: {
+                type: ['string', 'null'],
+                minLength: 3,
+                maxLength: 50,
+                pattern: '\\d+\\.\\d+',
+                default: '1.0',
+                errorMessage: "The 'productVersion' field must be a string matching pattern \\d+\\.\\d+ (e.g., '1.0')",
               },
-              active: {
-                type: 'boolean',
-                errorMessage: "The WAF configuration's 'active' field must be a boolean",
-              },
-              sqlInjection: {
+              engineSettings: {
                 type: 'object',
                 properties: {
-                  sensitivity: sensitivitySchema,
+                  engineVersion: {
+                    type: 'string',
+                    enum: ['2021-Q3'],
+                    default: '2021-Q3',
+                    errorMessage: "The 'engineVersion' field must be '2021-Q3'",
+                  },
+                  type: {
+                    type: 'string',
+                    enum: ['score'],
+                    default: 'score',
+                    errorMessage: "The 'type' field must be 'score'",
+                  },
+                  attributes: {
+                    type: 'object',
+                    properties: {
+                      rulesets: {
+                        type: 'array',
+                        items: {
+                          type: 'integer',
+                          enum: [1],
+                        },
+                        default: [1],
+                        errorMessage: "The 'rulesets' field must be an array containing [1]",
+                      },
+                      thresholds: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            threat: {
+                              type: 'string',
+                              enum: [
+                                'cross_site_scripting',
+                                'directory_traversal',
+                                'evading_tricks',
+                                'file_upload',
+                                'identified_attack',
+                                'remote_file_inclusion',
+                                'sql_injection',
+                                'unwanted_access',
+                              ],
+                              errorMessage: "The 'threat' field must be a valid threat type",
+                            },
+                            sensitivity: {
+                              type: 'string',
+                              enum: ['highest', 'high', 'medium', 'low', 'lowest'],
+                              default: 'medium',
+                              errorMessage:
+                                "The 'sensitivity' field must be one of: highest, high, medium, low, lowest",
+                            },
+                          },
+                          required: ['threat', 'sensitivity'],
+                          additionalProperties: false,
+                        },
+                        maxItems: 8,
+                        errorMessage: "The 'thresholds' field must be an array of threat configurations (max 8 items)",
+                      },
+                    },
+                    required: ['rulesets', 'thresholds'],
+                    additionalProperties: false,
+                    errorMessage: {
+                      additionalProperties: 'No additional properties are allowed in the attributes object',
+                      required: "The 'rulesets' and 'thresholds' fields are required in the attributes object",
+                    },
+                  },
                 },
-                required: ['sensitivity'],
+                required: ['engineVersion', 'type', 'attributes'],
                 additionalProperties: false,
                 errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the sqlInjection object',
-                  required: "The 'sensitivity' field is required in the sqlInjection object",
-                },
-              },
-              remoteFileInclusion: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the remoteFileInclusion object',
-                  required: "The 'sensitivity' field is required in the remoteFileInclusion object",
-                },
-              },
-              directoryTraversal: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the directoryTraversal object',
-                  required: "The 'sensitivity' field is required in the directoryTraversal object",
-                },
-              },
-              crossSiteScripting: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the crossSiteScripting object',
-                  required: "The 'sensitivity' field is required in the crossSiteScripting object",
-                },
-              },
-              evadingTricks: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the evadingTricks object',
-                  required: "The 'sensitivity' field is required in the evadingTricks object",
-                },
-              },
-              fileUpload: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the fileUpload object',
-                  required: "The 'sensitivity' field is required in the fileUpload object",
-                },
-              },
-              unwantedAccess: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the unwantedAccess object',
-                  required: "The 'sensitivity' field is required in the unwantedAccess object",
-                },
-              },
-              identifiedAttack: {
-                type: 'object',
-                properties: {
-                  sensitivity: sensitivitySchema,
-                },
-                required: ['sensitivity'],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in the identifiedAttack object',
-                  required: "The 'sensitivity' field is required in the identifiedAttack object",
-                },
-              },
-              bypassAddresses: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  errorMessage: 'Each item in the bypassAddresses list must be a string',
-                },
-                errorMessage: {
-                  type: "The 'bypassAddresses' field must be an array of strings",
+                  additionalProperties: 'No additional properties are allowed in the engineSettings object',
+                  required:
+                    "The 'engineVersion', 'type', and 'attributes' fields are required in the engineSettings object",
                 },
               },
             },
-            required: ['name', 'active', 'mode'],
+            required: ['name', 'engineSettings'],
             additionalProperties: false,
             errorMessage: {
               type: "The 'waf' field must be an object",

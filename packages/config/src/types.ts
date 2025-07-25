@@ -10,6 +10,10 @@ import type {
   EdgeConnectorLoadBalanceMethod,
   EdgeConnectorTransportPolicy,
   EdgeConnectorType,
+  WafEngineType,
+  WafEngineVersion,
+  WafRuleset,
+  WafThreatType,
 } from './constants';
 
 // Rule Engine types
@@ -503,49 +507,37 @@ export type AzionEdgeFirewall = {
   debugRules?: boolean;
 };
 
+// WAF V4 Types
+export interface WafThreshold {
+  /** Threat type */
+  threat: WafThreatType;
+  /** Sensitivity level */
+  sensitivity: WafSensitivity;
+}
+
+export interface WafEngineAttributes {
+  /** WAF rulesets */
+  rulesets: WafRuleset[];
+  /** Threat thresholds */
+  thresholds: WafThreshold[];
+}
+
+export interface WafEngineSettings {
+  /** Engine version */
+  engineVersion: WafEngineVersion;
+  /** Engine type */
+  type: WafEngineType;
+  /** Engine attributes */
+  attributes: WafEngineAttributes;
+}
+
 export type AzionWaf = {
-  /** WAF ID */
-  id?: number;
   /** WAF name */
   name: string;
-  /** WAF mode */
-  mode: WafMode;
-  /** WAF active */
-  active: boolean;
-  /** WAF sqlInjection */
-  sqlInjection?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF remoteFileInclusion */
-  remoteFileInclusion?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF directoryTraversal */
-  directoryTraversal?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF crossSiteScripting */
-  crossSiteScripting?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF evadingTricks */
-  evadingTricks?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF fileUpload */
-  fileUpload?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF unwantedAccess */
-  unwantedAccess?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF identifiedAttack */
-  identifiedAttack?: {
-    sensitivity: WafSensitivity;
-  };
-  /** WAF bypassAddress */
-  bypassAddresses?: string[];
+  /** Product version */
+  productVersion?: string;
+  /** Engine settings */
+  engineSettings: WafEngineSettings;
 };
 
 export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {

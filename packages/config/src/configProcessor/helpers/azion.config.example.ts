@@ -250,35 +250,25 @@ export default {
   ],
   waf: [
     {
-      id: 123,
-      name: 'my_waf',
-      active: true,
-      mode: 'blocking', // 'learning', 'blocking' or 'counting'
-      sqlInjection: {
-        sensitivity: 'high', // 'low', 'medium', 'high'
+      name: 'my-waf-v4',
+      productVersion: '1.0',
+      engineSettings: {
+        engineVersion: '2021-Q3',
+        type: 'score',
+        attributes: {
+          rulesets: [1],
+          thresholds: [
+            { threat: 'sql_injection', sensitivity: 'high' },
+            { threat: 'cross_site_scripting', sensitivity: 'high' },
+            { threat: 'remote_file_inclusion', sensitivity: 'medium' },
+            { threat: 'directory_traversal', sensitivity: 'low' },
+            { threat: 'evading_tricks', sensitivity: 'medium' },
+            { threat: 'file_upload', sensitivity: 'low' },
+            { threat: 'unwanted_access', sensitivity: 'high' },
+            { threat: 'identified_attack', sensitivity: 'medium' },
+          ],
+        },
       },
-      remoteFileInclusion: {
-        sensitivity: 'medium',
-      },
-      directoryTraversal: {
-        sensitivity: 'low',
-      },
-      crossSiteScripting: {
-        sensitivity: 'high',
-      },
-      evadingTricks: {
-        sensitivity: 'medium',
-      },
-      fileUpload: {
-        sensitivity: 'low',
-      },
-      unwantedAccess: {
-        sensitivity: 'high',
-      },
-      identifiedAttack: {
-        sensitivity: 'medium',
-      },
-      bypassAddresses: ['10.0.0.1'],
     },
   ],
   edgeFirewall: [

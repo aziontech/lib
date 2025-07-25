@@ -31,7 +31,6 @@ import {
   RULE_VARIABLES,
   TIERED_CACHE_TOPOLOGY,
   WAF_MODE,
-  WAF_SENSITIVITY,
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_MTLS_VERIFICATION,
   WORKLOAD_NETWORK_MAP,
@@ -70,126 +69,108 @@ const schemaNetworkListManifest = {
 const schemaWafManifest = {
   type: 'object',
   properties: {
-    id: {
-      type: 'number',
-      errorMessage: "The WAF configuration must have an 'id' field of type number",
-    },
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string.",
+      minLength: 1,
+      maxLength: 250,
+      pattern: '.*',
+      errorMessage: "The 'name' field must be a string (1-250 characters).",
     },
-    mode: {
-      type: 'string',
-      enum: WAF_MODE,
-      errorMessage: `The 'mode' field must be one of: ${WAF_MODE.join(', ')}`,
+    product_version: {
+      type: ['string', 'null'],
+      minLength: 3,
+      maxLength: 50,
+      pattern: '\\d+\\.\\d+',
+      default: '1.0',
+      errorMessage: "The 'product_version' field must be a string matching pattern \\d+\\.\\d+ (e.g., '1.0').",
     },
-    active: {
-      type: 'boolean',
-      errorMessage: "The 'active' field must be a boolean.",
-    },
-    sql_injection: {
-      type: 'boolean',
-      errorMessage: "The 'sql_injection' field must be a boolean.",
-    },
-    sql_injection_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'sql_injection_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    remote_file_inclusion: {
-      type: 'boolean',
-      errorMessage: "The 'remote_file_inclusion' field must be a boolean.",
-    },
-    remote_file_inclusion_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'remote_file_inclusion_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    directory_traversal: {
-      type: 'boolean',
-      errorMessage: "The 'directory_traversal' field must be a boolean.",
-    },
-    directory_traversal_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'directory_traversal_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    cross_site_scripting: {
-      type: 'boolean',
-      errorMessage: "The 'cross_site_scripting' field must be a boolean.",
-    },
-    cross_site_scripting_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'cross_site_scripting_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    evading_tricks: {
-      type: 'boolean',
-      errorMessage: "The 'evading_tricks' field must be a boolean.",
-    },
-    evading_tricks_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'evading_tricks_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    file_upload: {
-      type: 'boolean',
-      errorMessage: "The 'file_upload' field must be a boolean.",
-    },
-    file_upload_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'file_upload_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    unwanted_access: {
-      type: 'boolean',
-      errorMessage: "The 'unwanted_access' field must be a boolean.",
-    },
-    unwanted_access_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'unwanted_access_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    identified_attack: {
-      type: 'boolean',
-      errorMessage: "The 'identified_attack' field must be a boolean.",
-    },
-    identified_attack_sensitivity: {
-      type: 'string',
-      enum: WAF_SENSITIVITY,
-      errorMessage: `The 'identified_attack_sensitivity' field must be one of: ${WAF_SENSITIVITY.join(', ')}`,
-    },
-    bypass_addresses: {
-      type: 'array',
-      items: {
-        type: 'string',
-        errorMessage: "The 'bypass_addresses' field must be an array of strings.",
+    engine_settings: {
+      type: 'object',
+      properties: {
+        engine_version: {
+          type: 'string',
+          enum: ['2021-Q3'],
+          default: '2021-Q3',
+          errorMessage: "The 'engine_version' field must be '2021-Q3'.",
+        },
+        type: {
+          type: 'string',
+          enum: ['score'],
+          default: 'score',
+          errorMessage: "The 'type' field must be 'score'.",
+        },
+        attributes: {
+          type: 'object',
+          properties: {
+            rulesets: {
+              type: 'array',
+              items: {
+                type: 'integer',
+                enum: [1],
+              },
+              default: [1],
+              errorMessage: "The 'rulesets' field must be an array containing [1].",
+            },
+            thresholds: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  threat: {
+                    type: 'string',
+                    enum: [
+                      'cross_site_scripting',
+                      'directory_traversal',
+                      'evading_tricks',
+                      'file_upload',
+                      'identified_attack',
+                      'remote_file_inclusion',
+                      'sql_injection',
+                      'unwanted_access',
+                    ],
+                    errorMessage: "The 'threat' field must be a valid threat type.",
+                  },
+                  sensitivity: {
+                    type: 'string',
+                    enum: ['highest', 'high', 'medium', 'low', 'lowest'],
+                    default: 'medium',
+                    errorMessage: "The 'sensitivity' field must be one of: highest, high, medium, low, lowest.",
+                  },
+                },
+                required: ['threat', 'sensitivity'],
+                additionalProperties: false,
+              },
+              maxItems: 8,
+              default: [
+                { threat: 'cross_site_scripting', sensitivity: 'medium' },
+                { threat: 'directory_traversal', sensitivity: 'medium' },
+                { threat: 'evading_tricks', sensitivity: 'medium' },
+                { threat: 'file_upload', sensitivity: 'medium' },
+                { threat: 'identified_attack', sensitivity: 'medium' },
+                { threat: 'remote_file_inclusion', sensitivity: 'medium' },
+                { threat: 'sql_injection', sensitivity: 'medium' },
+                { threat: 'unwanted_access', sensitivity: 'medium' },
+              ],
+              errorMessage: "The 'thresholds' field must be an array of threat configurations (max 8 items).",
+            },
+          },
+          required: ['rulesets', 'thresholds'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in the attributes object.',
+            required: "The 'rulesets' and 'thresholds' fields are required in the attributes object.",
+          },
+        },
       },
-      errorMessage: "The 'bypass_addresses' field must be an array of strings.",
+      required: ['engine_version', 'type', 'attributes'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in the engine_settings object.',
+        required: "The 'engine_version', 'type', and 'attributes' fields are required in the engine_settings object.",
+      },
     },
   },
-  required: [
-    'name',
-    'mode',
-    'active',
-    'sql_injection',
-    'sql_injection_sensitivity',
-    'remote_file_inclusion',
-    'remote_file_inclusion_sensitivity',
-    'directory_traversal',
-    'directory_traversal_sensitivity',
-    'cross_site_scripting',
-    'cross_site_scripting_sensitivity',
-    'evading_tricks',
-    'evading_tricks_sensitivity',
-    'file_upload',
-    'file_upload_sensitivity',
-    'unwanted_access',
-    'unwanted_access_sensitivity',
-    'identified_attack',
-    'identified_attack_sensitivity',
-    'bypass_addresses',
-  ],
+  required: ['name', 'engine_settings'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in waf items.',
