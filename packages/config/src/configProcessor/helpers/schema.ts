@@ -447,46 +447,16 @@ const schemaFunction = {
       default: 'azion_js',
       errorMessage: "The 'runtime' field must be 'azion_js'",
     },
-    args: {
+    defaultArgs: {
       type: 'object',
       default: {},
-      errorMessage: "The 'args' field must be an object",
+      errorMessage: "The 'defaultArgs' field must be an object",
     },
     executionEnvironment: {
       type: 'string',
       enum: ['application', 'firewall'],
       default: 'application',
       errorMessage: "The 'executionEnvironment' field must be 'application' or 'firewall'",
-    },
-    bindings: {
-      type: 'object',
-      properties: {
-        storage: {
-          type: 'object',
-          properties: {
-            bucket: {
-              type: 'string',
-              errorMessage: "The 'bucket' field must be a string",
-            },
-            prefix: {
-              type: 'string',
-              errorMessage: "The 'prefix' field must be a string",
-            },
-          },
-          required: ['bucket'],
-          additionalProperties: false,
-          errorMessage: {
-            type: "The 'storage' field must be an object",
-            additionalProperties: 'No additional properties are allowed in the storage object',
-            required: "The 'bucket' field is required in the storage object",
-          },
-        },
-      },
-      additionalProperties: false,
-      errorMessage: {
-        type: "The 'bindings' field must be an object",
-        additionalProperties: 'No additional properties are allowed in the bindings object',
-      },
     },
     active: {
       type: 'boolean',
@@ -880,6 +850,67 @@ const azionConfigSchema = {
                   },
                 },
                 errorMessage: "The 'deviceGroups' field must be an array of device group objects",
+              },
+              functions: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string',
+                      minLength: 1,
+                      maxLength: 100,
+                      pattern: '.*',
+                      errorMessage: "The 'name' field must be a string between 1 and 100 characters",
+                    },
+                    ref: {
+                      type: 'string',
+                      errorMessage: "The 'ref' field must be a string referencing an existing Edge Function name",
+                    },
+                    args: {
+                      type: 'object',
+                      default: {},
+                      errorMessage: "The 'args' field must be an object",
+                    },
+                    bindings: {
+                      type: 'object',
+                      properties: {
+                        storage: {
+                          type: 'object',
+                          properties: {
+                            bucket: {
+                              type: 'string',
+                              errorMessage: "The 'bucket' field must be a string",
+                            },
+                            prefix: {
+                              type: 'string',
+                              errorMessage: "The 'prefix' field must be a string",
+                            },
+                          },
+                          required: ['bucket'],
+                          additionalProperties: false,
+                          errorMessage: {
+                            type: "The 'storage' field must be an object",
+                            additionalProperties: 'No additional properties are allowed in the storage object',
+                            required: "The 'bucket' field is required in the storage object",
+                          },
+                        },
+                      },
+                      additionalProperties: false,
+                      errorMessage: {
+                        type: "The 'bindings' field must be an object",
+                        additionalProperties: 'No additional properties are allowed in the bindings object',
+                      },
+                    },
+                  },
+                  required: ['name', 'ref'],
+                  additionalProperties: false,
+                  errorMessage: {
+                    additionalProperties: 'No additional properties are allowed in function instance objects',
+                    required: "The 'name' and 'ref' fields are required in each function instance",
+                  },
+                },
+                errorMessage: "The 'functions' field must be an array of function instance objects",
               },
             },
             required: ['name'],

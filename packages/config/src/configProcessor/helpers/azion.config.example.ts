@@ -114,6 +114,30 @@ export default {
           userAgent: '(Chrome|Firefox|Safari).*(?!Mobile)',
         },
       ],
+      functions: [
+        {
+          name: 'auth-function-instance',
+          ref: 'my-edge-function',
+          args: {
+            environment: 'production',
+            apiUrl: 'https://api.example.com',
+          },
+          bindings: {
+            storage: {
+              bucket: 'my-storage',
+              prefix: 'auth-data/',
+            },
+          },
+        },
+        {
+          name: 'analytics-function-instance',
+          ref: 'my-edge-function',
+          args: {
+            environment: 'production',
+            trackingId: 'UA-12345',
+          },
+        },
+      ],
     },
   ],
   edgeConnectors: [
@@ -216,17 +240,10 @@ export default {
       name: 'my-edge-function',
       path: './functions/index.js',
       runtime: 'azion_js',
-      args: {
-        environment: 'production',
-        debug: false,
+      defaultArgs: {
+        defaultEnv: 'development',
       },
       executionEnvironment: 'application',
-      bindings: {
-        storage: {
-          bucket: 'my-storage',
-          prefix: 'data/',
-        },
-      },
       active: true,
     },
   ],

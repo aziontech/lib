@@ -952,6 +952,38 @@ const schemaApplicationManifest = {
       },
       errorMessage: "The 'device_groups' field must be an array of device group objects.",
     },
+    functions_instances: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 100,
+            pattern: '.*',
+            errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
+          },
+          edge_function: {
+            type: 'integer',
+            minimum: 1,
+            errorMessage: "The 'edge_function' field must be an integer >= 1.",
+          },
+          args: {
+            type: 'object',
+            default: {},
+            errorMessage: "The 'args' field must be an object.",
+          },
+        },
+        required: ['name', 'edge_function'],
+        additionalProperties: false,
+        errorMessage: {
+          additionalProperties: 'No additional properties are allowed in function instance objects.',
+          required: "The 'name' and 'edge_function' fields are required in each function instance.",
+        },
+      },
+      errorMessage: "The 'functions_instances' field must be an array of function instance objects.",
+    },
   },
   required: ['name'],
   additionalProperties: false,

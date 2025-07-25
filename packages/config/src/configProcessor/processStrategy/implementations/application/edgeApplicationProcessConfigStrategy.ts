@@ -1,11 +1,15 @@
-import { AzionConfig, AzionDeviceGroup, AzionEdgeApplication } from '../../../../types';
+import { AzionConfig, AzionEdgeApplication } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
+import DeviceGroupsProcessConfigStrategy from './deviceGroupsProcessConfigStrategy';
+import FunctionInstancesProcessConfigStrategy from './functionInstancesProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
 
 class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   private cacheStrategy = new CacheProcessConfigStrategy();
   private rulesStrategy = new RulesProcessConfigStrategy();
+  private deviceGroupsStrategy = new DeviceGroupsProcessConfigStrategy();
+  private functionInstancesStrategy = new FunctionInstancesProcessConfigStrategy();
 
   transformToManifest(config: AzionConfig) {
     if (!config.edgeApplications || !Array.isArray(config.edgeApplications)) {
@@ -50,10 +54,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       }
 
       if (app.deviceGroups) {
-        application.device_groups = app.deviceGroups.map((deviceGroup) => ({
-          name: deviceGroup.name,
-          user_agent: deviceGroup.userAgent,
-        }));
+        application.device_groups = this.deviceGroupsStrategy.transformToManifest(app.deviceGroups);
+      }
+
+      if (app.functions) {
+        application.functions_instances = this.functionInstancesStrategy.transformToManifest(app.functions, config);
       }
 
       return application;
@@ -80,13 +85,9 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
-        deviceGroups: app.device_groups
-          ? app.device_groups.map(
-              (deviceGroup: { name: string; user_agent: string }): AzionDeviceGroup => ({
-                name: deviceGroup.name,
-                userAgent: deviceGroup.user_agent,
-              }),
-            )
+        deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,
+        functions: app.functions_instances
+          ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)
           : undefined,
       };
     });

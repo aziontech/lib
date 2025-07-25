@@ -369,6 +369,20 @@ export type AzionBindings = {
 };
 
 /**
+ * Function Instance configuration for Azion V4 (within Edge Application).
+ */
+export type AzionFunctionInstance = {
+  /** Function instance name */
+  name: string;
+  /** Reference to Edge Function name */
+  ref: string;
+  /** Instance-specific arguments */
+  args?: Record<string, unknown>;
+  /** Function bindings (moved from Edge Function to instance) */
+  bindings?: AzionBindings;
+};
+
+/**
  * Function configuration for Azion (DX-friendly).
  */
 export type AzionEdgeFunction = {
@@ -378,12 +392,10 @@ export type AzionEdgeFunction = {
   path: string;
   /** Runtime environment */
   runtime?: EdgeFunctionRuntime;
-  /** Optional arguments to be passed to the function */
-  args?: Record<string, unknown>;
+  /** Default arguments to be passed to the function */
+  defaultArgs?: Record<string, unknown>;
   /** Execution environment */
   executionEnvironment?: EdgeFunctionExecutionEnvironment;
-  /** Function bindings */
-  bindings?: AzionBindings;
   /** Active status */
   active?: boolean;
 };
@@ -426,6 +438,8 @@ export type AzionEdgeApplication = {
   rules?: AzionRules;
   /** Device groups */
   deviceGroups?: AzionDeviceGroup[];
+  /** Function instances */
+  functions?: AzionFunctionInstance[];
 };
 
 /**
