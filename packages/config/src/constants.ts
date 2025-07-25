@@ -330,3 +330,10 @@ export type EdgeConnectorTransportPolicy = (typeof EDGE_CONNECTOR_TRANSPORT_POLI
 export type EdgeConnectorHttpVersionPolicy = (typeof EDGE_CONNECTOR_HTTP_VERSION_POLICY)[number];
 export type EdgeConnectorLoadBalanceMethod = (typeof EDGE_CONNECTOR_LOAD_BALANCE_METHOD)[number];
 export type EdgeConnectorHmacType = (typeof EDGE_CONNECTOR_HMAC_TYPE)[number];
+
+// Edge Functions V4 Constants
+export const EDGE_FUNCTION_RUNTIMES = ['azion_js'] as const;
+export type EdgeFunctionRuntime = (typeof EDGE_FUNCTION_RUNTIMES)[number];
+
+export const EDGE_FUNCTION_EXECUTION_ENVIRONMENTS = ['application', 'firewall'] as const;
+export type EdgeFunctionExecutionEnvironment = (typeof EDGE_FUNCTION_EXECUTION_ENVIRONMENTS)[number];

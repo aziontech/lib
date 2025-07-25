@@ -205,9 +205,19 @@ export default {
     {
       name: 'my-edge-function',
       path: './functions/index.js',
+      runtime: 'azion_js',
       args: {
         environment: 'production',
+        debug: false,
       },
+      executionEnvironment: 'application',
+      bindings: {
+        storage: {
+          bucket: 'my-storage',
+          prefix: 'data/',
+        },
+      },
+      active: true,
     },
   ],
   edgeStorage: [

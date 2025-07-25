@@ -432,15 +432,31 @@ const schemaFunction = {
   properties: {
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string",
+      minLength: 1,
+      maxLength: 250,
+      pattern: '.*',
+      errorMessage: "The 'name' field must be a string between 1 and 250 characters",
     },
     path: {
       type: 'string',
       errorMessage: "The 'path' field must be a string",
     },
+    runtime: {
+      type: 'string',
+      enum: ['azion_js'],
+      default: 'azion_js',
+      errorMessage: "The 'runtime' field must be 'azion_js'",
+    },
     args: {
       type: 'object',
+      default: {},
       errorMessage: "The 'args' field must be an object",
+    },
+    executionEnvironment: {
+      type: 'string',
+      enum: ['application', 'firewall'],
+      default: 'application',
+      errorMessage: "The 'executionEnvironment' field must be 'application' or 'firewall'",
     },
     bindings: {
       type: 'object',
@@ -471,6 +487,11 @@ const schemaFunction = {
         type: "The 'bindings' field must be an object",
         additionalProperties: 'No additional properties are allowed in the bindings object',
       },
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean",
     },
   },
   required: ['name', 'path'],

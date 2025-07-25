@@ -2,9 +2,9 @@ import { AzionConfig } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * FunctionsProcessConfigStrategy
+ * FunctionsProcessConfigStrategy V4
  * @class FunctionsProcessConfigStrategy
- * @description This class is implementation of the Functions ProcessConfig Strategy.
+ * @description This class is implementation of the Edge Functions Process Config Strategy for API V4.
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
   private validateStorageBinding(config: AzionConfig, bucketName: string, functionName: string) {
@@ -15,6 +15,9 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
     }
   }
 
+  /**
+   * Transform azion.config Edge Functions to V4 manifest format
+   */
   transformToManifest(config: AzionConfig) {
     if (!Array.isArray(config?.edgeFunctions) || config?.edgeFunctions.length === 0) {
       return [];
@@ -28,53 +31,44 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
 
       return {
         name: func.name,
-        argument: func.path,
-        args: func.args || {},
-        bindings: func.bindings
-          ? {
-              edge_storage: func.bindings.storage
-                ? {
-                    bucket: func.bindings.storage.bucket,
-                    prefix: func.bindings.storage.prefix,
-                  }
-                : undefined,
-            }
-          : undefined,
+        path: func.path,
+        runtime: func.runtime || 'azion_js',
+        default_args: func.args || {},
+        execution_environment: func.executionEnvironment || 'application',
+        bindings: func.bindings,
+        active: func.active ?? true,
       };
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+  /**
+   * Transform V4 manifest format back to azion.config Edge Functions
+   */
+  transformToConfig(
+    payload: {
+      edgeFunction?: Array<{
+        name: string;
+        runtime?: string;
+        default_args?: Record<string, unknown>;
+        execution_environment?: string;
+        active?: boolean;
+      }>;
+    },
+    transformedPayload: AzionConfig,
+  ) {
     if (!Array.isArray(payload?.edgeFunction) || payload?.edgeFunction.length === 0) {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeFunctions = payload.functions.map((func: any) => {
-      const config = {
-        name: func.name,
-        path: func.argument,
-        args: func.args || {},
-        bindings: func.bindings
-          ? {
-              storage: func.bindings.edge_storage
-                ? {
-                    bucket: func.bindings.edge_storage.bucket,
-                    prefix: func.bindings.edge_storage.prefix,
-                  }
-                : undefined,
-            }
-          : undefined,
-      };
-
-      // Validar se o bucket referenciado existe
-      if (config.bindings?.storage?.bucket) {
-        this.validateStorageBinding(transformedPayload, config.bindings.storage.bucket, config.name);
-      }
-
-      return config;
-    });
+    transformedPayload.edgeFunctions = payload.edgeFunction.map((func) => ({
+      name: func.name,
+      path: `./functions/${func.name}.js`, // Default - API V4 não retorna path
+      runtime: func.runtime as 'azion_js' | undefined,
+      args: func.default_args,
+      executionEnvironment: func.execution_environment as 'application' | 'firewall' | undefined,
+      bindings: {},
+      active: func.active,
+    }));
 
     return transformedPayload.edgeFunctions;
   }

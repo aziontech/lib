@@ -413,50 +413,42 @@ const schemaFunctionManifest = {
   properties: {
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string",
+      minLength: 1,
+      maxLength: 250,
+      pattern: '.*',
+      errorMessage: "The 'name' field must be a string between 1 and 250 characters",
     },
-    arguemnt: {
+    runtime: {
       type: 'string',
-      errorMessage: "The 'argument' field must be a string",
+      enum: ['azion_js'],
+      default: 'azion_js',
+      errorMessage: "The 'runtime' field must be 'azion_js'",
     },
-    args: {
-      type: 'object',
-      errorMessage: "The 'args' field must be an object",
+    code: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 20971520,
+      pattern: '.*',
+      errorMessage: "The 'code' field must be a string between 1 and 20971520 characters (20MB max)",
     },
-    bindings: {
+    default_args: {
       type: 'object',
-      properties: {
-        edge_storage: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              bucket: {
-                type: 'string',
-                errorMessage: "The 'bucket' field must be a string",
-              },
-              prefix: {
-                type: 'string',
-                errorMessage: "The 'prefix' field must be a string",
-              },
-            },
-            required: ['bucket'],
-            additionalProperties: false,
-            errorMessage: {
-              additionalProperties: 'No additional properties are allowed in edge_storage items',
-              required: "The 'bucket' field is required",
-            },
-          },
-          errorMessage: "The 'edge_storage' field must be an array of storage bindings",
-        },
-      },
-      additionalProperties: false,
-      errorMessage: {
-        additionalProperties: 'No additional properties are allowed in bindings object',
-      },
+      default: {},
+      errorMessage: "The 'default_args' field must be an object",
+    },
+    execution_environment: {
+      type: 'string',
+      enum: ['application', 'firewall'],
+      default: 'application',
+      errorMessage: "The 'execution_environment' field must be 'application' or 'firewall'",
+    },
+    active: {
+      type: 'boolean',
+      default: true,
+      errorMessage: "The 'active' field must be a boolean",
     },
   },
-  required: ['name', 'target'],
+  required: ['name', 'code'],
   additionalProperties: false,
 };
 

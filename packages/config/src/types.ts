@@ -52,6 +52,11 @@ export type TieredCacheTopology = (typeof import('./constants').TIERED_CACHE_TOP
 export type BuildBundler = (typeof import('./constants').BUILD_BUNDLERS)[number];
 export type EdgeAccessType = (typeof import('./constants').EDGE_ACCESS_TYPES)[number];
 
+// Edge Functions types
+export type EdgeFunctionRuntime = (typeof import('./constants').EDGE_FUNCTION_RUNTIMES)[number];
+export type EdgeFunctionExecutionEnvironment =
+  (typeof import('./constants').EDGE_FUNCTION_EXECUTION_ENVIRONMENTS)[number];
+
 // Workload types
 export type WorkloadNetworkMap = (typeof import('./constants').WORKLOAD_NETWORK_MAP)[number];
 export type WorkloadTLSCipher = (typeof import('./constants').WORKLOAD_TLS_CIPHERS)[number];
@@ -354,17 +359,23 @@ export type AzionBindings = {
 };
 
 /**
- * Function configuration for Azion.
+ * Function configuration for Azion (DX-friendly).
  */
 export type AzionEdgeFunction = {
   /** Function name */
   name: string;
-  /** Function path */
+  /** Function file path */
   path: string;
+  /** Runtime environment */
+  runtime?: EdgeFunctionRuntime;
   /** Optional arguments to be passed to the function */
   args?: Record<string, unknown>;
+  /** Execution environment */
+  executionEnvironment?: EdgeFunctionExecutionEnvironment;
   /** Function bindings */
   bindings?: AzionBindings;
+  /** Active status */
+  active?: boolean;
 };
 
 /**
