@@ -16,6 +16,10 @@ import type {
   WafThreatType,
 } from './constants';
 
+// Custom Pages types
+export type CustomPageErrorCode = (typeof import('./constants').CUSTOM_PAGE_ERROR_CODES)[number];
+export type CustomPageType = (typeof import('./constants').CUSTOM_PAGE_TYPES)[number];
+
 // Rule Engine types
 export type CommonVariable = (typeof import('./constants').COMMON_VARIABLES)[number];
 export type RequestVariable = (typeof import('./constants').ALL_REQUEST_VARIABLES)[number];
@@ -674,8 +678,8 @@ export interface AzionWorkloadDeploymentStrategy {
     edgeApplication: string | number;
     /** Edge Firewall name or ID reference (optional) */
     edgeFirewall?: string | number | null;
-    /** Custom page reference (optional, to be implemented later) */
-    customPage?: number | null;
+    /** Custom page name or ID reference (optional) */
+    customPage?: string | number | null;
   };
 }
 
@@ -818,6 +822,42 @@ export interface AzionEdgeConnector {
   attributes: EdgeConnectorAttributes;
 }
 
+// Custom Pages V4 Types
+
+export interface AzionCustomPageConnectorAttributes {
+  /** Connector name or ID reference */
+  connector: string | number;
+  /** Time to live in seconds */
+  ttl?: number;
+  /** URI path */
+  uri?: string | null;
+  /** Custom status code */
+  customStatusCode?: number | null;
+}
+
+export interface AzionCustomPageConnector {
+  /** Page connector type */
+  type?: CustomPageType;
+  /** Page connector attributes */
+  attributes: AzionCustomPageConnectorAttributes;
+}
+
+export interface AzionCustomPageEntry {
+  /** Error code */
+  code: CustomPageErrorCode;
+  /** Page configuration */
+  page: AzionCustomPageConnector;
+}
+
+export interface AzionCustomPage {
+  /** Custom page name */
+  name: string;
+  /** Active status */
+  active?: boolean;
+  /** Array of error page configurations */
+  pages: AzionCustomPageEntry[];
+}
+
 /**
  * Main configuration type for Azion.
  */
@@ -842,4 +882,6 @@ export type AzionConfig = {
   waf?: AzionWaf[];
   /** Workload configuration */
   workloads?: AzionWorkload[];
+  /** Custom pages configuration */
+  customPages?: AzionCustomPage[];
 };

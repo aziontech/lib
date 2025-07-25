@@ -1,4 +1,10 @@
-import { AzionConfig, AzionEdgeApplication, AzionEdgeFirewall, AzionWorkloadDeployment } from '../../../types';
+import {
+  AzionConfig,
+  AzionCustomPage,
+  AzionEdgeApplication,
+  AzionEdgeFirewall,
+  AzionWorkloadDeployment,
+} from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
@@ -44,6 +50,24 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   /**
+   * Validate Custom Page references
+   */
+  private validateCustomPageReference(
+    customPages: AzionCustomPage[] | undefined,
+    customPageNameOrId: string | number,
+    deploymentName: string,
+  ) {
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof customPageNameOrId === 'string') {
+      if (!Array.isArray(customPages) || !customPages.find((page) => page.name === customPageNameOrId)) {
+        throw new Error(
+          `Workload deployment "${deploymentName}" references non-existent Custom Page "${customPageNameOrId}".`,
+        );
+      }
+    }
+  }
+
+  /**
    * Extract deployments from all workloads and transform to V4 manifest format
    */
   transformToManifest(config: AzionConfig) {
@@ -82,6 +106,15 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
         );
       }
 
+      // Validate Custom Page reference if provided
+      if (deployment.strategy.attributes.customPage) {
+        this.validateCustomPageReference(
+          config.customPages,
+          deployment.strategy.attributes.customPage,
+          deployment.name,
+        );
+      }
+
       return {
         name: deployment.name,
         current: deployment.current ?? true,
@@ -93,7 +126,9 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
             edge_firewall: deployment.strategy.attributes.edgeFirewall
               ? String(deployment.strategy.attributes.edgeFirewall)
               : null, // Convert to string for API manifest
-            custom_page: deployment.strategy.attributes.customPage || null,
+            custom_page: deployment.strategy.attributes.customPage
+              ? String(deployment.strategy.attributes.customPage)
+              : null, // Convert to string for API manifest
           },
         },
       };

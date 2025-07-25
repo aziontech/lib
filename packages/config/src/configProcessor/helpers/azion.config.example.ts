@@ -383,7 +383,7 @@ export default {
             attributes: {
               edgeApplication: 'my-edge-app', // Reference to edge application name
               edgeFirewall: 'my-edge-firewall', // Reference to edge firewall name
-              customPage: null, // To be implemented later
+              customPage: 'my-custom-error-pages', // Reference to custom page name
             },
           },
         },
@@ -397,6 +397,49 @@ export default {
               edgeApplication: 67890, // Using ID reference (no validation needed)
               edgeFirewall: null, // No firewall for staging
               customPage: null,
+            },
+          },
+        },
+      ],
+    },
+  ],
+  customPages: [
+    {
+      name: 'my-custom-error-pages',
+      active: true,
+      pages: [
+        {
+          code: '404',
+          page: {
+            type: 'page_connector',
+            attributes: {
+              connector: 'my-edge-connector', // Using name reference
+              ttl: 3600,
+              uri: '/errors/404.html',
+              customStatusCode: 404,
+            },
+          },
+        },
+        {
+          code: '500',
+          page: {
+            type: 'page_connector',
+            attributes: {
+              connector: 12345, // Using ID reference (no validation needed)
+              ttl: 0,
+              uri: '/errors/500.html',
+              customStatusCode: null,
+            },
+          },
+        },
+        {
+          code: 'default',
+          page: {
+            attributes: {
+              connector: 'my-edge-connector',
+              ttl: 1800,
+              uri: '/errors/default.html',
+              customStatusCode: null,
             },
           },
         },

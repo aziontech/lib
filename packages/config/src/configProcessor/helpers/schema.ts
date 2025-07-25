@@ -2,6 +2,8 @@ import {
   ALL_REQUEST_VARIABLES,
   ALL_RESPONSE_VARIABLES,
   BUILD_BUNDLERS,
+  CUSTOM_PAGE_ERROR_CODES,
+  CUSTOM_PAGE_TYPES,
   DYNAMIC_VARIABLE_PATTERNS,
   EDGE_ACCESS_TYPES,
   EDGE_CONNECTOR_DNS_RESOLUTION,
@@ -1089,9 +1091,10 @@ const azionConfigSchema = {
                                 "The 'edgeFirewall' field must be a string or number referencing an existing Edge Firewall name/ID or null",
                             },
                             customPage: {
-                              type: ['integer', 'null'],
+                              type: ['string', 'number', 'null'],
                               minimum: 1,
-                              errorMessage: "The 'customPage' field must be an integer >= 1 or null",
+                              errorMessage:
+                                "The 'customPage' field must be a string or number referencing a custom page name/ID or null",
                             },
                           },
                           required: ['edgeApplication'],
@@ -1814,6 +1817,108 @@ const azionConfigSchema = {
           type: 'array',
           items: schemaFunction,
         },
+        customPages: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 255,
+                pattern: '.*',
+                errorMessage: "The 'name' field must be a string between 1 and 255 characters",
+              },
+              active: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'active' field must be a boolean",
+              },
+              pages: {
+                type: 'array',
+                minItems: 1,
+                items: {
+                  type: 'object',
+                  properties: {
+                    code: {
+                      type: 'string',
+                      enum: CUSTOM_PAGE_ERROR_CODES,
+                      errorMessage: "The 'code' field must be a valid error code",
+                    },
+                    page: {
+                      type: 'object',
+                      properties: {
+                        type: {
+                          type: 'string',
+                          enum: CUSTOM_PAGE_TYPES,
+                          default: 'page_connector',
+                          errorMessage: "The 'type' field must be a valid page type",
+                        },
+                        attributes: {
+                          type: 'object',
+                          properties: {
+                            connector: {
+                              type: ['string', 'number'],
+                              errorMessage:
+                                "The 'connector' field must be a string or number referencing a connector name or ID",
+                            },
+                            ttl: {
+                              type: 'integer',
+                              minimum: 0,
+                              maximum: 31536000,
+                              default: 0,
+                              errorMessage: "The 'ttl' field must be an integer between 0 and 31536000",
+                            },
+                            uri: {
+                              type: ['string', 'null'],
+                              minLength: 1,
+                              maxLength: 250,
+                              pattern: '^/[/a-zA-Z0-9\\-_\\.~@:]*$',
+                              errorMessage: "The 'uri' field must be a valid URI path starting with / or null",
+                            },
+                            customStatusCode: {
+                              type: ['integer', 'null'],
+                              minimum: 100,
+                              maximum: 599,
+                              errorMessage:
+                                "The 'customStatusCode' field must be an integer between 100 and 599 or null",
+                            },
+                          },
+                          required: ['connector'],
+                          additionalProperties: false,
+                          errorMessage: {
+                            additionalProperties: 'No additional properties are allowed in page attributes',
+                            required: "The 'connector' field is required in page attributes",
+                          },
+                        },
+                      },
+                      required: ['attributes'],
+                      additionalProperties: false,
+                      errorMessage: {
+                        additionalProperties: 'No additional properties are allowed in page configuration',
+                        required: "The 'attributes' field is required in page configuration",
+                      },
+                    },
+                  },
+                  required: ['code', 'page'],
+                  additionalProperties: false,
+                  errorMessage: {
+                    additionalProperties: 'No additional properties are allowed in page entry',
+                    required: "The 'code' and 'page' fields are required in each page entry",
+                  },
+                },
+                errorMessage: "The 'pages' field must be an array of page configurations with at least one item",
+              },
+            },
+            required: ['name', 'pages'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in custom page objects',
+              required: "The 'name' and 'pages' fields are required in each custom page",
+            },
+          },
+          errorMessage: "The 'customPages' field must be an array of custom page objects",
+        },
         edgeStorage: {
           type: 'array',
           items: schemaStorage,
@@ -1823,7 +1928,7 @@ const azionConfigSchema = {
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, edgefirewall, networkList, waf, edgeConnectors',
+          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, edgefirewall, networkList, waf, edgeConnectors, customPages',
         type: 'Configuration must be an object',
       },
     },

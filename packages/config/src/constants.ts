@@ -337,3 +337,34 @@ export type EdgeFunctionRuntime = (typeof EDGE_FUNCTION_RUNTIMES)[number];
 
 export const EDGE_FUNCTION_EXECUTION_ENVIRONMENTS = ['application', 'firewall'] as const;
 export type EdgeFunctionExecutionEnvironment = (typeof EDGE_FUNCTION_EXECUTION_ENVIRONMENTS)[number];
+
+// Custom Pages V4 Constants
+export const CUSTOM_PAGE_ERROR_CODES = [
+  'default',
+  '400',
+  '401',
+  '403',
+  '404',
+  '405',
+  '406',
+  '408',
+  '409',
+  '410',
+  '411',
+  '414',
+  '415',
+  '416',
+  '426',
+  '429',
+  '431',
+  '500',
+  '501',
+  '502',
+  '503',
+  '504',
+  '505',
+] as const;
+export type CustomPageErrorCode = (typeof CUSTOM_PAGE_ERROR_CODES)[number];
+
+export const CUSTOM_PAGE_TYPES = ['page_connector'] as const;
+export type CustomPageType = (typeof CUSTOM_PAGE_TYPES)[number];
