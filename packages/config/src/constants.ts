@@ -294,21 +294,17 @@ export type WorkloadTLSVersion = (typeof WORKLOAD_TLS_VERSIONS)[number];
 export type WorkloadMTLSVerification = (typeof WORKLOAD_MTLS_VERIFICATION)[number];
 export type WorkloadHTTPVersion = (typeof WORKLOAD_HTTP_VERSIONS)[number];
 
-export const EDGE_CONNECTOR_TYPES = ['http', 's3', 'edge_storage', 'live_ingest'] as const;
-export const EDGE_CONNECTOR_LOAD_BALANCE = ['off', 'round_robin', 'ip_hash', 'least_conn'] as const;
-export const EDGE_CONNECTOR_SERVER_ROLE = ['primary', 'backup'] as const;
-export const EDGE_CONNECTOR_CONNECTION_PREFERENCE = ['IPv4', 'IPv6'] as const;
-
-export const EDGE_CONNECTOR_REQUIRED_PROPERTIES = {
-  http: ['versions', 'host', 'path'],
-  live_ingest: ['endpoint'],
-  s3: ['host', 'bucket', 'path', 'region', 'accessKey', 'secretKey'],
-  edge_storage: ['bucket'],
-} as const;
-
-export const EDGE_CONNECTOR_ALLOWED_PROPERTIES = {
-  http: ['versions', 'host', 'path', 'followingRedirect', 'realIpHeader', 'realPortHeader'],
-  live_ingest: ['endpoint'],
-  s3: ['host', 'bucket', 'path', 'region', 'accessKey', 'secretKey'],
-  edge_storage: ['bucket', 'prefix'],
-} as const;
+// Constantes para Edge Connector V4
+export const EDGE_CONNECTOR_TYPES = ['http', 'edge_storage', 'live_ingest'] as const;
+export const EDGE_CONNECTOR_DNS_RESOLUTION = ['preserve', 'force_ipv4', 'force_ipv6'] as const;
+export const EDGE_CONNECTOR_TRANSPORT_POLICY = ['preserve', 'force_https', 'force_http'] as const;
+export const EDGE_CONNECTOR_HTTP_VERSION_POLICY = ['http1_1'] as const;
+export const EDGE_CONNECTOR_LOAD_BALANCE_METHOD = ['round_robin', 'least_conn', 'ip_hash'] as const;
+export const EDGE_CONNECTOR_HMAC_TYPE = ['aws4_hmac_sha256'] as const;
+// Tipos para Edge Connector V4
+export type EdgeConnectorType = (typeof EDGE_CONNECTOR_TYPES)[number];
+export type EdgeConnectorDnsResolution = (typeof EDGE_CONNECTOR_DNS_RESOLUTION)[number];
+export type EdgeConnectorTransportPolicy = (typeof EDGE_CONNECTOR_TRANSPORT_POLICY)[number];
+export type EdgeConnectorHttpVersionPolicy = (typeof EDGE_CONNECTOR_HTTP_VERSION_POLICY)[number];
+export type EdgeConnectorLoadBalanceMethod = (typeof EDGE_CONNECTOR_LOAD_BALANCE_METHOD)[number];
+export type EdgeConnectorHmacType = (typeof EDGE_CONNECTOR_HMAC_TYPE)[number];

@@ -19,11 +19,21 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         active: app.active ?? true,
         debug: app.debug ?? false,
         modules: {
-          edge_cache_enabled: app.edgeCacheEnabled ?? true,
-          edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
-          application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
-          image_processor_enabled: app.imageProcessorEnabled ?? false,
-          tiered_cache_enabled: app.tieredCacheEnabled ?? false,
+          edge_cache: {
+            enabled: app.edgeCacheEnabled ?? true,
+          },
+          edge_functions: {
+            enabled: app.edgeFunctionsEnabled ?? false,
+          },
+          application_accelerator: {
+            enabled: app.applicationAcceleratorEnabled ?? false,
+          },
+          image_processor: {
+            enabled: app.imageProcessorEnabled ?? false,
+          },
+          tiered_cache: {
+            enabled: app.tieredCacheEnabled ?? false,
+          },
         },
       };
 
@@ -56,11 +66,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         name: app.name,
         active: app.active,
         debug: app.debug,
-        edgeCacheEnabled: app.edge_cache_enabled,
-        edgeFunctionsEnabled: app.edge_functions_enabled,
-        applicationAcceleratorEnabled: app.application_accelerator_enabled,
-        imageProcessorEnabled: app.image_processor_enabled,
-        tieredCacheEnabled: app.tiered_cache_enabled,
+        edgeCacheEnabled: app.modules?.edge_cache?.enabled,
+        edgeFunctionsEnabled: app.modules?.edge_functions?.enabled,
+        applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
+        imageProcessorEnabled: app.modules?.image_processor?.enabled,
+        tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
       };

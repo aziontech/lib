@@ -1,22 +1,23 @@
 import {
-  EDGE_CONNECTOR_ALLOWED_PROPERTIES,
-  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
-  EDGE_CONNECTOR_LOAD_BALANCE,
-  EDGE_CONNECTOR_SERVER_ROLE,
-} from '../../../constants';
-import {
-  AzionConfig,
-  AzionEdgeConnector,
+  EdgeConnectorDnsResolution,
+  EdgeConnectorHmacType,
+  EdgeConnectorHttpVersionPolicy,
+  EdgeConnectorLoadBalanceMethod,
+  EdgeConnectorTransportPolicy,
   EdgeConnectorType,
-  EdgeConnectorTypeProperty,
-  HttpTypeProperty,
-  LiveIngestTypeProperty,
-  S3TypeProperty,
-  StorageTypeProperty,
-} from '../../../types';
+} from '../../../constants';
+import { AzionConfig, AzionEdgeConnector } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
+/**
+ * EdgeConnectorProcessConfigStrategy V4
+ * @class EdgeConnectorProcessConfigStrategy
+ * @description This class is implementation of the Edge Connector ProcessConfig Strategy for API V4.
+ */
 class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
+  /**
+   * Transform azion.config edge connectors to V4 manifest format
+   */
   transformToManifest(config: AzionConfig) {
     const edgeConnectors = config?.edgeConnectors;
     if (!edgeConnectors || edgeConnectors.length === 0) {
@@ -25,118 +26,129 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
 
     return edgeConnectors.map((connector: AzionEdgeConnector) => ({
       name: connector.name,
-      modules: {
-        load_balancer_enabled: connector.modules.loadBalancerEnabled,
-        origin_shield_enabled: connector.modules.originShieldEnabled,
-      },
       active: connector.active ?? true,
       type: connector.type,
-      type_properties: this.transformTypePropertiesToSnakeCase(connector.type, connector.typeProperties),
-      addresses: connector.addresses?.map((addr) => ({
-        address: addr.address,
-        plain_port: addr.plainPort ?? 80,
-        tls_port: addr.tlsPort ?? 443,
-        server_role: addr.serverRole ?? 'primary',
-        weight: addr.weight ?? 1,
-        active: addr.active ?? true,
-        max_conns: addr.maxConns ?? 0,
-        max_fails: addr.maxFails ?? 1,
-        fail_timeout: addr.failTimeout ?? 10,
-      })),
-      tls: connector.tls ?? { policy: 'preserve' },
-      load_balance_method: connector.loadBalanceMethod ?? 'off',
-      connection_preference: connector.connectionPreference ?? ['IPv6', 'IPv4'],
-      connection_timeout: connector.connectionTimeout ?? 60,
-      read_write_timeout: connector.readWriteTimeout ?? 120,
-      max_retries: connector.maxRetries ?? 0,
+      attributes: {
+        addresses: connector.attributes.addresses.map((addr) => ({
+          active: addr.active ?? true,
+          address: addr.address,
+          http_port: addr.httpPort ?? 80,
+          https_port: addr.httpsPort ?? 443,
+          modules: addr.modules || null,
+        })),
+        connection_options: {
+          dns_resolution: connector.attributes.connectionOptions.dnsResolution ?? 'preserve',
+          transport_policy: connector.attributes.connectionOptions.transportPolicy ?? 'preserve',
+          http_version_policy: connector.attributes.connectionOptions.httpVersionPolicy ?? 'http1_1',
+          host: connector.attributes.connectionOptions.host ?? '${host}',
+          path_prefix: connector.attributes.connectionOptions.pathPrefix ?? '',
+          following_redirect: connector.attributes.connectionOptions.followingRedirect ?? false,
+          real_ip_header: connector.attributes.connectionOptions.realIpHeader ?? 'X-Real-IP',
+          real_port_header: connector.attributes.connectionOptions.realPortHeader ?? 'X-Real-PORT',
+        },
+        modules: {
+          load_balancer: {
+            enabled: connector.attributes.modules.loadBalancer.enabled,
+            config: connector.attributes.modules.loadBalancer.config
+              ? {
+                  method: connector.attributes.modules.loadBalancer.config.method ?? 'round_robin',
+                  max_retries: connector.attributes.modules.loadBalancer.config.maxRetries ?? 0,
+                  connection_timeout: connector.attributes.modules.loadBalancer.config.connectionTimeout ?? 60,
+                  read_write_timeout: connector.attributes.modules.loadBalancer.config.readWriteTimeout ?? 120,
+                }
+              : null,
+          },
+          origin_shield: {
+            enabled: connector.attributes.modules.originShield.enabled,
+            config: connector.attributes.modules.originShield.config
+              ? {
+                  origin_ip_acl: {
+                    enabled: connector.attributes.modules.originShield.config.originIpAcl?.enabled ?? false,
+                  },
+                  hmac: {
+                    enabled: connector.attributes.modules.originShield.config.hmac?.enabled ?? false,
+                    config: connector.attributes.modules.originShield.config.hmac?.config
+                      ? {
+                          type: connector.attributes.modules.originShield.config.hmac.config.type,
+                          attributes: {
+                            region: connector.attributes.modules.originShield.config.hmac.config.attributes.region,
+                            service:
+                              connector.attributes.modules.originShield.config.hmac.config.attributes.service ?? 's3',
+                            access_key:
+                              connector.attributes.modules.originShield.config.hmac.config.attributes.accessKey,
+                            secret_key:
+                              connector.attributes.modules.originShield.config.hmac.config.attributes.secretKey,
+                          },
+                        }
+                      : null,
+                  },
+                }
+              : null,
+          },
+        },
+      },
     }));
   }
 
-  private transformTypePropertiesToSnakeCase(type: EdgeConnectorType, properties: EdgeConnectorTypeProperty) {
-    if (!properties) {
-      throw new Error(`Edge Connector of type '${type}' requires 'typeProperties'. Please add the required properties:
-          - For type 'http': { versions: string[], host: string, path: string }
-          - For type 'live_ingest': { endpoint: string }
-          - For type 's3': { host: string, bucket: string, path: string, region: string, accessKey: string, secretKey: string }
-          - For type 'edge_storage': { bucket: string }`);
-    }
-
-    switch (type) {
-      case 'http': {
-        const httpProps = properties as HttpTypeProperty;
-        return {
-          versions: httpProps.versions,
-          host: httpProps.host,
-          path: httpProps.path,
-          following_redirect: httpProps.followingRedirect,
-          real_ip_header: httpProps.realIpHeader,
-          real_port_header: httpProps.realPortHeader,
-        };
-      }
-      case 'live_ingest': {
-        const liveProps = properties as LiveIngestTypeProperty;
-        return {
-          endpoint: liveProps.endpoint,
-        };
-      }
-      case 's3': {
-        const s3Props = properties as S3TypeProperty;
-        return {
-          host: s3Props.host,
-          bucket: s3Props.bucket,
-          path: s3Props.path,
-          region: s3Props.region,
-          access_key: s3Props.accessKey,
-          secret_key: s3Props.secretKey,
-        };
-      }
-      case 'edge_storage': {
-        const storageProps = properties as StorageTypeProperty;
-        return {
-          bucket: storageProps.bucket,
-          prefix: storageProps.prefix,
-        };
-      }
-      default:
-        throw new Error(`Invalid Edge Connector type: ${type}`);
-    }
-  }
-
-  private validateTypeProperties(type: EdgeConnectorType, properties: EdgeConnectorTypeProperty) {
-    // Check if there are any invalid properties for the type
-    const invalidProperties = Object.keys(properties).filter(
-      (prop) => !(EDGE_CONNECTOR_ALLOWED_PROPERTIES[type] as unknown as string[]).includes(prop),
-    );
-    if (invalidProperties.length > 0) {
-      throw new Error(`Invalid properties for type ${type}: ${invalidProperties.join(', ')}`);
-    }
-  }
-
+  /**
+   * Transform V4 manifest format back to azion.config edge connectors
+   */
   transformToConfig(
     payload: {
       edge_connector?: Array<{
         name: string;
-        modules: { load_balancer_enabled: boolean; origin_shield_enabled: boolean };
         active?: boolean;
         type: EdgeConnectorType;
-        type_properties: Record<string, unknown>;
-        addresses?: Array<{
-          address: string;
-          plain_port?: number;
-          tls_port?: number;
-          server_role?: string;
-          weight?: number;
-          active?: boolean;
-          max_conns?: number;
-          max_fails?: number;
-          fail_timeout?: number;
-        }>;
-        tls?: { policy: string };
-        load_balance_method?: string;
-        connection_preference?: string[];
-        connection_timeout?: number;
-        read_write_timeout?: number;
-        max_retries?: number;
+        attributes: {
+          addresses: Array<{
+            active?: boolean;
+            address: string;
+            http_port?: number;
+            https_port?: number;
+            modules?: import('../../../types').EdgeConnectorAddressModules | null;
+          }>;
+          connection_options: {
+            dns_resolution?: string;
+            transport_policy?: string;
+            http_version_policy?: string;
+            host?: string;
+            path_prefix?: string;
+            following_redirect?: boolean;
+            real_ip_header?: string;
+            real_port_header?: string;
+          };
+          modules: {
+            load_balancer: {
+              enabled: boolean;
+              config?: {
+                method?: string;
+                max_retries?: number;
+                connection_timeout?: number;
+                read_write_timeout?: number;
+              } | null;
+            };
+            origin_shield: {
+              enabled: boolean;
+              config?: {
+                origin_ip_acl?: {
+                  enabled?: boolean;
+                };
+                hmac?: {
+                  enabled?: boolean;
+                  config?: {
+                    type: string;
+                    attributes: {
+                      region: string;
+                      service?: string;
+                      access_key: string;
+                      secret_key: string;
+                    };
+                  } | null;
+                };
+              } | null;
+            };
+          };
+        };
       }>;
     },
     transformedPayload: AzionConfig,
@@ -145,103 +157,73 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       return;
     }
 
-    transformedPayload.edgeConnectors = payload.edge_connector.map(
-      (connector: {
-        name: string;
-        modules: { load_balancer_enabled: boolean; origin_shield_enabled: boolean };
-        active?: boolean;
-        type: EdgeConnectorType;
-        type_properties: Record<string, unknown>;
-        addresses?: Array<{
-          address: string;
-          plain_port?: number;
-          tls_port?: number;
-          server_role?: string;
-          weight?: number;
-          active?: boolean;
-          max_conns?: number;
-          max_fails?: number;
-          fail_timeout?: number;
-        }>;
-        tls?: { policy: string };
-        load_balance_method?: string;
-        connection_preference?: string[];
-        connection_timeout?: number;
-        read_write_timeout?: number;
-        max_retries?: number;
-      }) => {
-        const typeProperties = this.transformTypePropertiesFromSnakeCase(connector.type, connector.type_properties);
-        this.validateTypeProperties(connector.type, typeProperties);
-
-        return {
-          name: connector.name,
-          modules: {
-            loadBalancerEnabled: connector.modules.load_balancer_enabled,
-            originShieldEnabled: connector.modules.origin_shield_enabled,
+    transformedPayload.edgeConnectors = payload.edge_connector.map((connector) => ({
+      name: connector.name,
+      active: connector.active,
+      type: connector.type,
+      attributes: {
+        addresses: connector.attributes.addresses.map((addr) => ({
+          active: addr.active,
+          address: addr.address,
+          httpPort: addr.http_port,
+          httpsPort: addr.https_port,
+          modules: addr.modules as import('../../../types').EdgeConnectorAddressModules | null,
+        })),
+        connectionOptions: {
+          dnsResolution: connector.attributes.connection_options.dns_resolution as EdgeConnectorDnsResolution,
+          transportPolicy: connector.attributes.connection_options.transport_policy as EdgeConnectorTransportPolicy,
+          httpVersionPolicy: connector.attributes.connection_options
+            .http_version_policy as EdgeConnectorHttpVersionPolicy,
+          host: connector.attributes.connection_options.host,
+          pathPrefix: connector.attributes.connection_options.path_prefix,
+          followingRedirect: connector.attributes.connection_options.following_redirect,
+          realIpHeader: connector.attributes.connection_options.real_ip_header,
+          realPortHeader: connector.attributes.connection_options.real_port_header,
+        },
+        modules: {
+          loadBalancer: {
+            enabled: connector.attributes.modules.load_balancer.enabled,
+            config: connector.attributes.modules.load_balancer.config
+              ? {
+                  method: connector.attributes.modules.load_balancer.config.method as EdgeConnectorLoadBalanceMethod,
+                  maxRetries: connector.attributes.modules.load_balancer.config.max_retries,
+                  connectionTimeout: connector.attributes.modules.load_balancer.config.connection_timeout,
+                  readWriteTimeout: connector.attributes.modules.load_balancer.config.read_write_timeout,
+                }
+              : null,
           },
-          active: connector.active,
-          type: connector.type,
-          typeProperties,
-          addresses: connector.addresses?.map((addr) => ({
-            address: addr.address,
-            plainPort: addr.plain_port,
-            tlsPort: addr.tls_port,
-            serverRole: addr.server_role as (typeof EDGE_CONNECTOR_SERVER_ROLE)[number],
-            weight: addr.weight,
-            active: addr.active,
-            maxConns: addr.max_conns,
-            maxFails: addr.max_fails,
-            failTimeout: addr.fail_timeout,
-          })),
-          tls: connector.tls,
-          loadBalanceMethod: connector.load_balance_method as (typeof EDGE_CONNECTOR_LOAD_BALANCE)[number],
-          connectionPreference:
-            connector.connection_preference as (typeof EDGE_CONNECTOR_CONNECTION_PREFERENCE)[number][],
-          connectionTimeout: connector.connection_timeout,
-          readWriteTimeout: connector.read_write_timeout,
-          maxRetries: connector.max_retries,
-        };
+          originShield: {
+            enabled: connector.attributes.modules.origin_shield.enabled,
+            config: connector.attributes.modules.origin_shield.config
+              ? {
+                  originIpAcl: {
+                    enabled: connector.attributes.modules.origin_shield.config.origin_ip_acl?.enabled,
+                  },
+                  hmac: {
+                    enabled: connector.attributes.modules.origin_shield.config.hmac?.enabled,
+                    config: connector.attributes.modules.origin_shield.config.hmac?.config
+                      ? {
+                          type: connector.attributes.modules.origin_shield.config.hmac.config
+                            .type as EdgeConnectorHmacType,
+                          attributes: {
+                            region: connector.attributes.modules.origin_shield.config.hmac.config.attributes.region,
+                            service: connector.attributes.modules.origin_shield.config.hmac.config.attributes.service,
+                            accessKey:
+                              connector.attributes.modules.origin_shield.config.hmac.config.attributes.access_key,
+                            secretKey:
+                              connector.attributes.modules.origin_shield.config.hmac.config.attributes.secret_key,
+                          },
+                        }
+                      : null,
+                  },
+                }
+              : null,
+          },
+        },
       },
-    );
+    }));
 
     return transformedPayload.edgeConnectors;
-  }
-
-  private transformTypePropertiesFromSnakeCase(
-    type: EdgeConnectorType,
-    properties: Record<string, unknown>,
-  ): EdgeConnectorTypeProperty {
-    switch (type) {
-      case 'http':
-        return {
-          versions: properties.versions as string[],
-          host: properties.host as string,
-          path: properties.path as string,
-          followingRedirect: properties.following_redirect as boolean,
-          realIpHeader: properties.real_ip_header as string,
-          realPortHeader: properties.real_port_header as string,
-        } as HttpTypeProperty;
-      case 'live_ingest':
-        return {
-          endpoint: properties.endpoint as string,
-        } as LiveIngestTypeProperty;
-      case 's3':
-        return {
-          host: properties.host as string,
-          bucket: properties.bucket as string,
-          path: properties.path as string,
-          region: properties.region as string,
-          accessKey: properties.access_key as string,
-          secretKey: properties.secret_key as string,
-        } as S3TypeProperty;
-      case 'edge_storage':
-        return {
-          bucket: properties.bucket as string,
-          prefix: properties.prefix as string,
-        } as StorageTypeProperty;
-      default:
-        throw new Error(`Invalid Edge Connector type: ${type}`);
-    }
   }
 }
 

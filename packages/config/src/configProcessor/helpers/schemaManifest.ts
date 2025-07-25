@@ -10,8 +10,11 @@ import {
   CACHE_BY_QUERY_STRING,
   CACHE_CDN_SETTINGS,
   CACHE_VARY_BY_METHOD,
-  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
-  EDGE_CONNECTOR_LOAD_BALANCE,
+  EDGE_CONNECTOR_DNS_RESOLUTION,
+  EDGE_CONNECTOR_HMAC_TYPE,
+  EDGE_CONNECTOR_HTTP_VERSION_POLICY,
+  EDGE_CONNECTOR_LOAD_BALANCE_METHOD,
+  EDGE_CONNECTOR_TRANSPORT_POLICY,
   EDGE_CONNECTOR_TYPES,
   FIREWALL_BEHAVIOR_NAMES,
   FIREWALL_RATE_LIMIT_BY,
@@ -1059,26 +1062,8 @@ const schemaEdgeConnectorManifest = {
       type: 'string',
       minLength: 1,
       maxLength: 255,
+      pattern: '.*',
       errorMessage: "The 'name' field must be a string between 1 and 255 characters",
-    },
-    modules: {
-      type: 'object',
-      properties: {
-        load_balancer_enabled: {
-          type: 'boolean',
-          errorMessage: "'load_balancer_enabled' must be a boolean",
-        },
-        origin_shield_enabled: {
-          type: 'boolean',
-          errorMessage: "'origin_shield_enabled' must be a boolean",
-        },
-      },
-      required: ['load_balancer_enabled', 'origin_shield_enabled'],
-      additionalProperties: false,
-      errorMessage: {
-        required: "'load_balancer_enabled' and 'origin_shield_enabled' are required in modules",
-        additionalProperties: 'No additional properties are allowed in modules',
-      },
     },
     active: {
       type: 'boolean',
@@ -1088,229 +1073,261 @@ const schemaEdgeConnectorManifest = {
     type: {
       type: 'string',
       enum: EDGE_CONNECTOR_TYPES,
-      errorMessage: "The 'type' must be one of: http, s3, edge_storage, live_ingest",
+      errorMessage: "The 'type' must be one of: http, edge_storage, live_ingest",
     },
-    type_properties: {
-      oneOf: [
-        {
+    attributes: {
+      type: 'object',
+      properties: {
+        addresses: {
+          type: 'array',
+          minItems: 1,
+          items: {
+            type: 'object',
+            properties: {
+              active: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'active' field must be a boolean",
+              },
+              address: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 255,
+                pattern: '.*',
+                errorMessage: "The 'address' field must be a string between 1 and 255 characters",
+              },
+              http_port: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 65535,
+                default: 80,
+                errorMessage: "The 'http_port' must be between 1 and 65535",
+              },
+              https_port: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 65535,
+                default: 443,
+                errorMessage: "The 'https_port' must be between 1 and 65535",
+              },
+              modules: {
+                type: ['object', 'null'],
+                errorMessage: "The 'modules' field must be an object or null",
+              },
+            },
+            required: ['address'],
+            additionalProperties: false,
+          },
+          errorMessage: "The 'addresses' field must be an array of address objects",
+        },
+        connection_options: {
           type: 'object',
           properties: {
-            versions: {
-              type: 'array',
-              items: { type: 'string' },
-              errorMessage: "The 'versions' field must be an array of strings",
+            dns_resolution: {
+              type: 'string',
+              enum: EDGE_CONNECTOR_DNS_RESOLUTION,
+              default: 'preserve',
+              errorMessage: "The 'dns_resolution' must be one of: preserve, force_ipv4, force_ipv6",
+            },
+            transport_policy: {
+              type: 'string',
+              enum: EDGE_CONNECTOR_TRANSPORT_POLICY,
+              default: 'preserve',
+              errorMessage: "The 'transport_policy' must be one of: preserve, force_https, force_http",
+            },
+            http_version_policy: {
+              type: 'string',
+              enum: EDGE_CONNECTOR_HTTP_VERSION_POLICY,
+              default: 'http1_1',
+              errorMessage: "The 'http_version_policy' must be http1_1",
             },
             host: {
               type: 'string',
-              errorMessage: "The 'host' field must be a string",
+              minLength: 1,
+              maxLength: 255,
+              pattern: '.*',
+              default: '${host}',
+              errorMessage: "The 'host' field must be a string between 1 and 255 characters",
             },
-            path: {
+            path_prefix: {
               type: 'string',
-              errorMessage: "The 'path' field must be a string",
+              minLength: 0,
+              maxLength: 255,
+              pattern: '.*',
+              default: '',
+              errorMessage: "The 'path_prefix' field must be a string between 0 and 255 characters",
             },
             following_redirect: {
               type: 'boolean',
+              default: false,
               errorMessage: "The 'following_redirect' field must be a boolean",
             },
             real_ip_header: {
               type: 'string',
-              errorMessage: "The 'real_ip_header' field must be a string",
+              minLength: 1,
+              maxLength: 100,
+              pattern: '.*',
+              default: 'X-Real-IP',
+              errorMessage: "The 'real_ip_header' field must be a string between 1 and 100 characters",
             },
             real_port_header: {
               type: 'string',
-              errorMessage: "The 'real_port_header' field must be a string",
+              minLength: 1,
+              maxLength: 100,
+              pattern: '.*',
+              default: 'X-Real-PORT',
+              errorMessage: "The 'real_port_header' field must be a string between 1 and 100 characters",
             },
           },
-          required: ['versions', 'host', 'path'],
           additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in HTTP type properties',
-            required: "The 'versions', 'host', and 'path' fields are required for HTTP type",
-          },
+          errorMessage: "The 'connection_options' field must be an object with valid connection options",
         },
-        {
+        modules: {
           type: 'object',
           properties: {
-            endpoint: {
-              type: 'string',
-              errorMessage: "The 'endpoint' field must be a string",
+            load_balancer: {
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  default: false,
+                  errorMessage: "The 'enabled' field must be a boolean",
+                },
+                config: {
+                  type: ['object', 'null'],
+                  properties: {
+                    method: {
+                      type: 'string',
+                      enum: EDGE_CONNECTOR_LOAD_BALANCE_METHOD,
+                      default: 'round_robin',
+                      errorMessage: "The 'method' must be one of: round_robin, least_conn, ip_hash",
+                    },
+                    max_retries: {
+                      type: 'integer',
+                      minimum: 0,
+                      maximum: 20,
+                      default: 0,
+                      errorMessage: "The 'max_retries' must be between 0 and 20",
+                    },
+                    connection_timeout: {
+                      type: 'integer',
+                      minimum: 1,
+                      maximum: 300,
+                      default: 60,
+                      errorMessage: "The 'connection_timeout' must be between 1 and 300",
+                    },
+                    read_write_timeout: {
+                      type: 'integer',
+                      minimum: 1,
+                      maximum: 600,
+                      default: 120,
+                      errorMessage: "The 'read_write_timeout' must be between 1 and 600",
+                    },
+                  },
+                  additionalProperties: false,
+                },
+              },
+              required: ['enabled'],
+              additionalProperties: false,
+            },
+            origin_shield: {
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  default: false,
+                  errorMessage: "The 'enabled' field must be a boolean",
+                },
+                config: {
+                  type: ['object', 'null'],
+                  properties: {
+                    origin_ip_acl: {
+                      type: 'object',
+                      properties: {
+                        enabled: {
+                          type: 'boolean',
+                          default: false,
+                          errorMessage: "The 'enabled' field must be a boolean",
+                        },
+                      },
+                      additionalProperties: false,
+                    },
+                    hmac: {
+                      type: 'object',
+                      properties: {
+                        enabled: {
+                          type: 'boolean',
+                          default: false,
+                          errorMessage: "The 'enabled' field must be a boolean",
+                        },
+                        config: {
+                          type: ['object', 'null'],
+                          properties: {
+                            type: {
+                              type: 'string',
+                              enum: EDGE_CONNECTOR_HMAC_TYPE,
+                              errorMessage: "The 'type' must be aws4_hmac_sha256",
+                            },
+                            attributes: {
+                              type: 'object',
+                              properties: {
+                                region: {
+                                  type: 'string',
+                                  minLength: 1,
+                                  maxLength: 255,
+                                  pattern: '.*',
+                                  errorMessage: "The 'region' field must be a string between 1 and 255 characters",
+                                },
+                                service: {
+                                  type: 'string',
+                                  minLength: 1,
+                                  maxLength: 255,
+                                  pattern: '.*',
+                                  default: 's3',
+                                  errorMessage: "The 'service' field must be a string between 1 and 255 characters",
+                                },
+                                access_key: {
+                                  type: 'string',
+                                  minLength: 1,
+                                  maxLength: 255,
+                                  pattern: '.*',
+                                  errorMessage: "The 'access_key' field must be a string between 1 and 255 characters",
+                                },
+                                secret_key: {
+                                  type: 'string',
+                                  minLength: 1,
+                                  maxLength: 255,
+                                  pattern: '.*',
+                                  errorMessage: "The 'secret_key' field must be a string between 1 and 255 characters",
+                                },
+                              },
+                              required: ['region', 'access_key', 'secret_key'],
+                              additionalProperties: false,
+                            },
+                          },
+                          required: ['type', 'attributes'],
+                          additionalProperties: false,
+                        },
+                      },
+                      additionalProperties: false,
+                    },
+                  },
+                  additionalProperties: false,
+                },
+              },
+              required: ['enabled'],
+              additionalProperties: false,
             },
           },
-          required: ['endpoint'],
+          required: ['load_balancer', 'origin_shield'],
           additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in Live Ingest type properties',
-            required: "The 'endpoint' field is required for Live Ingest type",
-          },
         },
-        {
-          type: 'object',
-          properties: {
-            host: {
-              type: 'string',
-              errorMessage: "The 'host' field must be a string",
-            },
-            bucket: {
-              type: 'string',
-              errorMessage: "The 'bucket' field must be a string",
-            },
-            path: {
-              type: 'string',
-              errorMessage: "The 'path' field must be a string",
-            },
-            region: {
-              type: 'string',
-              errorMessage: "The 'region' field must be a string",
-            },
-            access_key: {
-              type: 'string',
-              errorMessage: "The 'access_key' field must be a string",
-            },
-            secret_key: {
-              type: 'string',
-              errorMessage: "The 'secret_key' field must be a string",
-            },
-          },
-          required: ['host', 'bucket', 'path', 'region', 'access_key', 'secret_key'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in S3 type properties',
-            required: 'All fields are required for S3 type',
-          },
-        },
-        {
-          type: 'object',
-          properties: {
-            bucket: {
-              type: 'string',
-              errorMessage: "The 'bucket' field must be a string",
-            },
-            prefix: {
-              type: 'string',
-              errorMessage: "The 'prefix' field must be a string",
-            },
-          },
-          required: ['bucket'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in Storage type properties',
-            required: "The 'bucket' field is required for Storage type",
-          },
-        },
-      ],
-    },
-    addresses: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          address: {
-            type: 'string',
-            minLength: 1,
-            maxLength: 255,
-            errorMessage: "The 'address' field must be a string between 1 and 255 characters",
-          },
-          plain_port: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 65535,
-            default: 80,
-            errorMessage: "The 'plain_port' must be between 1 and 65535",
-          },
-          tls_port: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 65535,
-            default: 443,
-            errorMessage: "The 'tls_port' must be between 1 and 65535",
-          },
-          server_role: {
-            type: 'string',
-            enum: ['primary', 'backup'],
-            default: 'primary',
-            errorMessage: "The 'server_role' must be either 'primary' or 'backup'",
-          },
-          weight: {
-            type: 'integer',
-            minimum: 0,
-            maximum: 100,
-            default: 1,
-            errorMessage: "The 'weight' must be between 0 and 100",
-          },
-          active: {
-            type: 'boolean',
-            default: true,
-            errorMessage: "The 'active' field must be a boolean",
-          },
-          max_conns: {
-            type: 'integer',
-            minimum: 0,
-            maximum: 1000,
-            default: 0,
-            errorMessage: "The 'max_conns' must be between 0 and 1000",
-          },
-          max_fails: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 10,
-            default: 1,
-            errorMessage: "The 'max_fails' must be between 1 and 10",
-          },
-          fail_timeout: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 60,
-            default: 10,
-            errorMessage: "The 'fail_timeout' must be between 1 and 60",
-          },
-        },
-        required: ['address'],
-        additionalProperties: false,
       },
-    },
-    tls: {
-      type: 'object',
-      properties: {
-        policy: { type: 'string' },
-      },
-      default: { policy: 'preserve' },
-    },
-    load_balance_method: {
-      type: 'string',
-      enum: EDGE_CONNECTOR_LOAD_BALANCE,
-      default: 'off',
-      errorMessage: `The 'load_balance_method' must be one of: ${EDGE_CONNECTOR_LOAD_BALANCE.join(', ')}`,
-    },
-    connection_preference: {
-      type: 'array',
-      items: {
-        type: 'string',
-        enum: EDGE_CONNECTOR_CONNECTION_PREFERENCE,
-        errorMessage: `Each connection preference must be one of: ${EDGE_CONNECTOR_CONNECTION_PREFERENCE.join(', ')}`,
-      },
-      maxItems: 2,
-      default: ['IPv6', 'IPv4'],
-      errorMessage: "The 'connection_preference' field must be an array with maximum 2 items",
-    },
-    connection_timeout: {
-      type: 'integer',
-      minimum: 1,
-      maximum: 300,
-      default: 60,
-    },
-    read_write_timeout: {
-      type: 'integer',
-      minimum: 1,
-      maximum: 300,
-      default: 120,
-    },
-    max_retries: {
-      type: 'integer',
-      minimum: 0,
-      maximum: 10,
+      required: ['addresses', 'connection_options', 'modules'],
+      additionalProperties: false,
     },
   },
-  required: ['name', 'modules', 'product_version', 'type'],
+  required: ['name', 'active', 'type', 'attributes'],
   additionalProperties: false,
 };
 

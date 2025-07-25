@@ -1,28 +1,59 @@
-import {
-  EDGE_CONNECTOR_CONNECTION_PREFERENCE,
-  EDGE_CONNECTOR_LOAD_BALANCE,
-  EDGE_CONNECTOR_TYPES,
-  FirewallRateLimitBy,
-  FirewallRateLimitType,
-  FirewallWafMode,
-  NetworkListType,
-  RuleConditional,
-  RuleOperatorWithValue,
-  RuleOperatorWithoutValue,
-  RuleVariable,
-  WafMode,
-  WafSensitivity,
-  WorkloadHTTPVersion,
-  WorkloadMTLSVerification,
-  WorkloadNetworkMap,
-  WorkloadTLSCipher,
-  WorkloadTLSVersion,
-} from './constants';
-
 import { AzionFetchEvent } from 'azion/types';
 
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
+
+import type {
+  EdgeConnectorDnsResolution,
+  EdgeConnectorHmacType,
+  EdgeConnectorHttpVersionPolicy,
+  EdgeConnectorLoadBalanceMethod,
+  EdgeConnectorTransportPolicy,
+  EdgeConnectorType,
+} from './constants';
+
+// Rule Engine types
+export type CommonVariable = (typeof import('./constants').COMMON_VARIABLES)[number];
+export type RequestVariable = (typeof import('./constants').ALL_REQUEST_VARIABLES)[number];
+export type ResponseVariable = (typeof import('./constants').ALL_RESPONSE_VARIABLES)[number];
+export type RuleOperatorWithValue = (typeof import('./constants').RULE_OPERATORS_WITH_VALUE)[number];
+export type RuleOperatorWithoutValue = (typeof import('./constants').RULE_OPERATORS_WITHOUT_VALUE)[number];
+export type RuleConditional = (typeof import('./constants').RULE_CONDITIONALS)[number];
+export type RuleVariable = CommonVariable | RequestVariable | ResponseVariable;
+
+// Firewall types
+export type FirewallBehaviorName = (typeof import('./constants').FIREWALL_BEHAVIOR_NAMES)[number];
+export type FirewallRateLimitType = (typeof import('./constants').FIREWALL_RATE_LIMIT_TYPES)[number];
+export type FirewallRateLimitBy = (typeof import('./constants').FIREWALL_RATE_LIMIT_BY)[number];
+export type FirewallWafMode = (typeof import('./constants').FIREWALL_WAF_MODES)[number];
+export type FirewallVariable = (typeof import('./constants').FIREWALL_VARIABLES)[number];
+
+// Network List types
+export type NetworkListType = (typeof import('./constants').NETWORK_LIST_TYPES)[number];
+
+// WAF types
+export type WafMode = (typeof import('./constants').WAF_MODE)[number];
+export type WafSensitivity = (typeof import('./constants').WAF_SENSITIVITY)[number];
+
+// Cache types
+export type CacheBrowserSetting = (typeof import('./constants').CACHE_BROWSER_SETTINGS)[number];
+export type CacheCdnSetting = (typeof import('./constants').CACHE_CDN_SETTINGS)[number];
+export type CacheByQueryString = (typeof import('./constants').CACHE_BY_QUERY_STRING)[number];
+export type CacheByCookie = (typeof import('./constants').CACHE_BY_COOKIE)[number];
+export type CacheAdaptiveDelivery = (typeof import('./constants').CACHE_ADAPTIVE_DELIVERY)[number];
+export type CacheVaryByMethod = (typeof import('./constants').CACHE_VARY_BY_METHOD)[number];
+export type TieredCacheTopology = (typeof import('./constants').TIERED_CACHE_TOPOLOGY)[number];
+
+// Build types
+export type BuildBundler = (typeof import('./constants').BUILD_BUNDLERS)[number];
+export type EdgeAccessType = (typeof import('./constants').EDGE_ACCESS_TYPES)[number];
+
+// Workload types
+export type WorkloadNetworkMap = (typeof import('./constants').WORKLOAD_NETWORK_MAP)[number];
+export type WorkloadTLSCipher = (typeof import('./constants').WORKLOAD_TLS_CIPHERS)[number];
+export type WorkloadTLSVersion = (typeof import('./constants').WORKLOAD_TLS_VERSIONS)[number];
+export type WorkloadMTLSVerification = (typeof import('./constants').WORKLOAD_MTLS_VERIFICATION)[number];
+export type WorkloadHTTPVersion = (typeof import('./constants').WORKLOAD_HTTP_VERSIONS)[number];
 
 /**
  * Domain configuration for Azion.
@@ -367,31 +398,6 @@ export type AzionEdgeApplication = {
   /** Rules configuration */
   rules?: AzionRules;
 };
-/**
- * Main configuration type for Azion.
- */
-export type AzionConfig = {
-  /** Build configuration */
-  build?: AzionBuild;
-  /** Edge Application configuration */
-  edgeApplications?: AzionEdgeApplication[];
-  /** Functions configurations */
-  edgeFunctions?: AzionEdgeFunction[];
-  /** Edge Connectors configuration */
-  edgeConnectors?: AzionEdgeConnector[];
-  /** Storage configurations */
-  edgeStorage?: AzionBucket[];
-  /** Firewall configuration */
-  edgeFirewall?: AzionEdgeFirewall[];
-  /** Network list configurations */
-  networkList?: AzionNetworkList[];
-  /** Purge configurations */
-  purge?: AzionPurge[];
-  /** WAF configuration */
-  waf?: AzionWaf[];
-  /** Workload configuration */
-  workloads?: AzionWorkload[];
-};
 
 /**
  * Firewall behavior configuration for Azion.
@@ -638,78 +644,140 @@ export type AzionWorkload = {
   workloadHostnameAllowAccess?: boolean;
 };
 
-export type EdgeConnectorType = (typeof EDGE_CONNECTOR_TYPES)[number];
-export type EdgeConnectorLoadBalance = (typeof EDGE_CONNECTOR_LOAD_BALANCE)[number];
-export type EdgeConnectorConnectionPreference = (typeof EDGE_CONNECTOR_CONNECTION_PREFERENCE)[number];
-
-export interface EdgeConnectorModules {
-  loadBalancerEnabled: boolean;
-  originShieldEnabled: boolean;
-}
-
-export interface EdgeConnectorTLS {
-  policy: string;
-}
+// Edge Connector V4 Types
 
 export interface EdgeConnectorAddress {
-  address: string;
-  plainPort?: number;
-  tlsPort?: number;
-  serverRole?: 'primary' | 'backup';
-  weight?: number;
+  /** Address active status */
   active?: boolean;
-  maxConns?: number;
-  maxFails?: number;
-  failTimeout?: number;
-  tls?: {
-    policy: 'off' | 'on' | 'preserve';
-  };
+  /** IPv4/IPv6 address or CNAME */
+  address: string;
+  /** HTTP port */
+  httpPort?: number;
+  /** HTTPS port */
+  httpsPort?: number;
+  /** Address modules */
+  modules?: EdgeConnectorAddressModules | null;
 }
 
-export interface HttpTypeProperty {
-  versions: string[];
-  host: string;
-  path: string;
+export interface EdgeConnectorAddressModules {
+  // Address-specific modules (to be defined based on future API spec)
+}
+
+export interface EdgeConnectorConnectionOptions {
+  /** DNS resolution policy */
+  dnsResolution?: EdgeConnectorDnsResolution;
+  /** Transport protocol policy */
+  transportPolicy?: EdgeConnectorTransportPolicy;
+  /** HTTP version preference */
+  httpVersionPolicy?: EdgeConnectorHttpVersionPolicy;
+  /** Custom host override */
+  host?: string;
+  /** Path prefix for requests */
+  pathPrefix?: string;
+  /** Follow HTTP redirects */
   followingRedirect?: boolean;
+  /** Real IP header name */
   realIpHeader?: string;
+  /** Real port header name */
   realPortHeader?: string;
 }
 
-export interface LiveIngestTypeProperty {
-  endpoint: string;
+export interface LoadBalancerConfig {
+  /** Load balancing method */
+  method?: EdgeConnectorLoadBalanceMethod;
+  /** Maximum retry attempts */
+  maxRetries?: number;
+  /** Connection timeout in seconds */
+  connectionTimeout?: number;
+  /** Read/write timeout in seconds */
+  readWriteTimeout?: number;
 }
 
-export interface S3TypeProperty {
-  host: string;
-  bucket: string;
-  path: string;
+export interface AWS4HMACAttributes {
+  /** AWS region */
   region: string;
+  /** AWS service */
+  service?: string;
+  /** Access key */
   accessKey: string;
+  /** Secret key */
   secretKey: string;
 }
 
-export interface StorageTypeProperty {
-  bucket: string;
-  prefix?: string;
+export interface HMACConfig {
+  /** HMAC type */
+  type: EdgeConnectorHmacType;
+  /** HMAC attributes */
+  attributes: AWS4HMACAttributes;
 }
 
-export type EdgeConnectorTypeProperty =
-  | HttpTypeProperty
-  | LiveIngestTypeProperty
-  | S3TypeProperty
-  | StorageTypeProperty;
+export interface OriginShieldConfig {
+  /** Origin IP ACL */
+  originIpAcl?: {
+    enabled?: boolean;
+  };
+  /** HMAC configuration */
+  hmac?: {
+    enabled?: boolean;
+    config?: HMACConfig | null;
+  };
+}
+
+export interface EdgeConnectorModules {
+  /** Load balancer module */
+  loadBalancer: {
+    enabled: boolean;
+    config: LoadBalancerConfig | null;
+  };
+  /** Origin shield module */
+  originShield: {
+    enabled: boolean;
+    config: OriginShieldConfig | null;
+  };
+}
+
+export interface EdgeConnectorAttributes {
+  /** Array of addresses */
+  addresses: EdgeConnectorAddress[];
+  /** Connection options */
+  connectionOptions: EdgeConnectorConnectionOptions;
+  /** Modules configuration */
+  modules: EdgeConnectorModules;
+}
 
 export interface AzionEdgeConnector {
+  /** Edge connector name */
   name: string;
-  modules: EdgeConnectorModules;
+  /** Active status */
   active?: boolean;
+  /** Connector type */
   type: EdgeConnectorType;
-  typeProperties: EdgeConnectorTypeProperty;
-  addresses?: EdgeConnectorAddress[];
-  tls?: EdgeConnectorTLS;
-  loadBalanceMethod?: EdgeConnectorLoadBalance;
-  connectionPreference?: EdgeConnectorConnectionPreference[];
-  connectionTimeout?: number;
-  readWriteTimeout?: number;
-  maxRetries?: number;
+  /** Connector attributes */
+  attributes: EdgeConnectorAttributes;
 }
+
+/**
+ * Main configuration type for Azion.
+ */
+export type AzionConfig = {
+  /** Build configuration */
+  build?: AzionBuild;
+  /** Edge Application configuration */
+  edgeApplications?: AzionEdgeApplication[];
+  /** Functions configurations */
+  edgeFunctions?: AzionEdgeFunction[];
+  /** Edge Connectors configuration */
+  edgeConnectors?: AzionEdgeConnector[];
+  /** Storage configurations */
+  edgeStorage?: AzionBucket[];
+  /** Firewall configuration */
+  edgeFirewall?: AzionEdgeFirewall[];
+  /** Network list configurations */
+  networkList?: AzionNetworkList[];
+  /** Purge configurations */
+  purge?: AzionPurge[];
+  /** WAF configuration */
+  waf?: AzionWaf[];
+  /** Workload configuration */
+  workloads?: AzionWorkload[];
+};
