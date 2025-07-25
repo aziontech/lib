@@ -1,18 +1,14 @@
 export default {
   build: {
     entry: './src/index.js',
-    preset: {
-      name: 'angular',
-    },
+    preset: 'angular', // V4: 'angular' | 'react' | 'next' | 'vue' | 'nuxt' | 'astro' | etc.
     bundler: 'webpack', // V4: 'webpack' | 'esbuild'
   },
-  // V4: Edge Applications com estrutura modules
   edgeApplications: [
     {
       name: 'my-edge-app',
       active: true,
       debug: false,
-      // V4: Módulos com enabled em vez de *Enabled
       edgeCacheEnabled: true,
       edgeFunctionsEnabled: false,
       applicationAcceleratorEnabled: false,
@@ -110,7 +106,6 @@ export default {
       },
     },
   ],
-  // V4: Edge Connectors com estrutura attributes
   edgeConnectors: [
     {
       name: 'my-http-connector',
@@ -206,7 +201,6 @@ export default {
       },
     },
   ],
-  // V4: Edge Functions
   edgeFunctions: [
     {
       name: 'my-edge-function',
@@ -216,7 +210,6 @@ export default {
       },
     },
   ],
-  // V4: Edge Storage
   edgeStorage: [
     {
       name: 'my-storage',
@@ -224,7 +217,6 @@ export default {
       dir: './storage',
     },
   ],
-  // V4: Purge
   purge: [
     {
       type: 'url',
@@ -239,7 +231,6 @@ export default {
       items: ['http://www.example.com/*'],
     },
   ],
-  // V4: Network Lists
   networkList: [
     {
       id: 1,
@@ -257,7 +248,6 @@ export default {
       listContent: ['US', 'BR', 'UK'],
     },
   ],
-  // V4: WAF
   waf: [
     {
       id: 123,
@@ -291,7 +281,6 @@ export default {
       bypassAddresses: ['10.0.0.1'],
     },
   ],
-  // V4: Edge Firewall
   edgeFirewall: [
     {
       name: 'my_edge_firewall',

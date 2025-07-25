@@ -618,41 +618,6 @@ const azionConfigSchema = {
                 maxLength: 250,
                 errorMessage: "The 'name' field must be a string with 1 to 250 characters",
               },
-              modules: {
-                type: 'object',
-                properties: {
-                  edgeCacheEnabled: {
-                    type: 'boolean',
-                    default: true,
-                    errorMessage: "The 'edgeCacheEnabled' field must be a boolean",
-                  },
-                  edgeFunctionsEnabled: {
-                    type: 'boolean',
-                    default: false,
-                    errorMessage: "The 'edgeFunctionsEnabled' field must be a boolean",
-                  },
-                  applicationAcceleratorEnabled: {
-                    type: 'boolean',
-                    default: false,
-                    errorMessage: "The 'applicationAcceleratorEnabled' field must be a boolean",
-                  },
-                  imageProcessorEnabled: {
-                    type: 'boolean',
-                    default: false,
-                    errorMessage: "The 'imageProcessorEnabled' field must be a boolean",
-                  },
-                  tieredCacheEnabled: {
-                    type: 'boolean',
-                    default: false,
-                    errorMessage: "The 'tieredCacheEnabled' field must be a boolean",
-                  },
-                },
-                required: [],
-                additionalProperties: false,
-                errorMessage: {
-                  additionalProperties: 'No additional properties are allowed in modules object',
-                },
-              },
               active: {
                 type: 'boolean',
                 default: true,
@@ -662,6 +627,31 @@ const azionConfigSchema = {
                 type: 'boolean',
                 default: false,
                 errorMessage: "The 'debug' field must be a boolean",
+              },
+              edgeCacheEnabled: {
+                type: 'boolean',
+                default: true,
+                errorMessage: "The 'edgeCacheEnabled' field must be a boolean",
+              },
+              edgeFunctionsEnabled: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'edgeFunctionsEnabled' field must be a boolean",
+              },
+              applicationAcceleratorEnabled: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'applicationAcceleratorEnabled' field must be a boolean",
+              },
+              imageProcessorEnabled: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'imageProcessorEnabled' field must be a boolean",
+              },
+              tieredCacheEnabled: {
+                type: 'boolean',
+                default: false,
+                errorMessage: "The 'tieredCacheEnabled' field must be a boolean",
               },
               cache: {
                 type: 'array',
@@ -833,6 +823,7 @@ const azionConfigSchema = {
                     required: "The 'name' field is required in each cache item.",
                   },
                 },
+                errorMessage: "The 'cache' field must be an array of cache setting items.",
               },
               rules: {
                 type: 'object',
