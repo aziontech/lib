@@ -801,7 +801,10 @@ const schemaApplicationManifest = {
   properties: {
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string.",
+      minLength: 1,
+      maxLength: 100,
+      pattern: '.*',
+      errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
     },
     delivery_protocol: {
       type: 'string',
@@ -858,30 +861,65 @@ const schemaApplicationManifest = {
     modules: {
       type: 'object',
       properties: {
-        edge_cache_enabled: {
-          type: 'boolean',
-          default: true,
-          errorMessage: "The 'edge_cache_enabled' field must be a boolean.",
+        edge_cache: {
+          type: 'object',
+          properties: {
+            enabled: {
+              type: 'boolean',
+              default: true,
+              errorMessage: "The 'enabled' field must be a boolean.",
+            },
+          },
+          required: ['enabled'],
+          additionalProperties: false,
         },
-        edge_functions_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+        edge_functions: {
+          type: 'object',
+          properties: {
+            enabled: {
+              type: 'boolean',
+              default: false,
+              errorMessage: "The 'enabled' field must be a boolean.",
+            },
+          },
+          required: ['enabled'],
+          additionalProperties: false,
         },
-        application_accelerator_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'application_accelerator_enabled' field must be a boolean.",
+        application_accelerator: {
+          type: 'object',
+          properties: {
+            enabled: {
+              type: 'boolean',
+              default: false,
+              errorMessage: "The 'enabled' field must be a boolean.",
+            },
+          },
+          required: ['enabled'],
+          additionalProperties: false,
         },
-        image_processor_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'image_processor_enabled' field must be a boolean.",
+        image_processor: {
+          type: 'object',
+          properties: {
+            enabled: {
+              type: 'boolean',
+              default: false,
+              errorMessage: "The 'enabled' field must be a boolean.",
+            },
+          },
+          required: ['enabled'],
+          additionalProperties: false,
         },
-        tiered_cache_enabled: {
-          type: 'boolean',
-          default: false,
-          errorMessage: "The 'tiered_cache_enabled' field must be a boolean.",
+        tiered_cache: {
+          type: 'object',
+          properties: {
+            enabled: {
+              type: 'boolean',
+              default: false,
+              errorMessage: "The 'enabled' field must be a boolean.",
+            },
+          },
+          required: ['enabled'],
+          additionalProperties: false,
         },
       },
       required: [],
