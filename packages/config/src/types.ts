@@ -322,15 +322,17 @@ export interface AzionBuild<T extends WebpackConfig | ESBuildConfig | unknown = 
 }
 
 /**
- * Network list configuration for Azion.
+ * Network list configuration for Azion V4.
  */
 export type AzionNetworkList = {
-  /** Network list identifier */
-  id: number;
+  /** Network list name */
+  name: string;
   /** Network list type */
-  listType: NetworkListType;
-  /** List of networks */
-  listContent: string[] | number[];
+  type: NetworkListType;
+  /** List of network items */
+  items: string[];
+  /** Active status */
+  active?: boolean;
 };
 
 /**

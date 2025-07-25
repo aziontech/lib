@@ -233,19 +233,22 @@ export default {
   ],
   networkList: [
     {
-      id: 1,
-      listType: 'ip_cidr',
-      listContent: ['10.0.0.1'],
+      name: 'my-ip-allowlist',
+      type: 'ip_cidr',
+      items: ['10.0.0.1/32', '192.168.1.0/24'],
+      active: true,
     },
     {
-      id: 2,
-      listType: 'asn',
-      listContent: [123, 456, 789],
+      name: 'trusted-asn-list',
+      type: 'asn',
+      items: ['123', '456', '789'],
+      active: true,
     },
     {
-      id: 3,
-      listType: 'countries',
-      listContent: ['US', 'BR', 'UK'],
+      name: 'allowed-countries',
+      type: 'countries',
+      items: ['US', 'BR', 'UK'],
+      active: true,
     },
   ],
   waf: [
