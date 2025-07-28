@@ -263,12 +263,7 @@ export const NO_ARGS_BEHAVIORS = [
 ] as const;
 
 // Behaviors com string value
-export const STRING_BEHAVIORS = [
-  'redirect_to_301',
-  'redirect_to_302',
-  'rewrite_request',
-  'filter_response_cookie',
-] as const;
+export const STRING_BEHAVIORS = ['redirect_to_301', 'redirect_to_302', 'rewrite_request'] as const;
 
 // Behaviors com ID value
 export const ID_BEHAVIORS = ['run_function', 'set_cache_policy', 'set_edge_connector', 'set_origin'] as const;
@@ -282,7 +277,12 @@ export const HEADER_BEHAVIORS = [
 ] as const;
 
 // Behaviors de cookie
-export const COOKIE_BEHAVIORS = ['add_request_cookie', 'filter_request_cookie', 'set_cookie'] as const;
+export const COOKIE_BEHAVIORS = [
+  'add_request_cookie',
+  'filter_request_cookie',
+  'set_cookie',
+  'filter_response_cookie',
+] as const;
 
 // Workload Constants V4
 export const WORKLOAD_INFRASTRUCTURE = [1, 2] as const;
