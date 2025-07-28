@@ -3,7 +3,6 @@ import {
   convertToV4Config,
   convertV3ToV4Config,
   isV3LegacyConfig,
-  migrateConfigV3ToV4,
 } from './configProcessor/helpers/convertLegacyConfig';
 import { AzionConfig } from './types';
 
@@ -37,7 +36,6 @@ export {
   convertV3ToV4Config,
   defineConfig,
   isV3LegacyConfig,
-  migrateConfigV3ToV4,
   processConfig,
   validateConfig,
 };

@@ -263,10 +263,10 @@ function convertV3BehaviorsToV4(legacyBehavior: any, isRequestPhase: boolean = t
           v4Behaviors.push(result);
         }
       } catch (error) {
-        console.warn(`Warning: Failed to convert behavior '${key}' with value:`, value, error);
+        // Silent warning for failed conversions
       }
     } else if (value !== null && value !== undefined) {
-      console.warn(`Warning: Unknown V3 behavior '${key}' with value:`, value);
+      // Silent warning for unknown behaviors
     }
   });
 
@@ -276,59 +276,6 @@ function convertV3BehaviorsToV4(legacyBehavior: any, isRequestPhase: boolean = t
   }
 
   return v4Behaviors;
-}
-
-/**
- * Creates a migration command that reads a V3 config file and outputs V4 format
- */
-export function migrateConfigV3ToV4(configPath: string): { success: boolean; message: string; config?: AzionConfig } {
-  try {
-    console.log(`🚀 Migrating ${configPath} from V3 to V4...`);
-
-    // TODO: Implement file reading and writing
-    // This is a placeholder for CLI implementation
-    /* 
-    if (!fs.existsSync(configPath)) {
-      return {
-        success: false,
-        message: `❌ Configuration file not found: ${configPath}`,
-      };
-    }
-
-    try {
-      const legacyConfig = require(path.resolve(configPath));
-      const v4Config = convertV3ToV4Config(legacyConfig);
-      
-      // Validate the converted config
-      const outputPath = configPath.replace(/\.js$/, '.v4.js');
-      fs.writeFileSync(outputPath, 
-        `export default ${JSON.stringify(v4Config, null, 2)};`
-      );
-      
-      return {
-        success: true,
-        message: `✅ Configuration migrated successfully!\nV4 config saved to: ${outputPath}`,
-        config: v4Config,
-      };
-    } catch (conversionError) {
-      return {
-        success: false,
-        message: `❌ Conversion failed: ${conversionError.message}`,
-      };
-    }
-    */
-
-    return {
-      success: true,
-      message:
-        '✅ Configuration migrated successfully! Use convertV3ToV4Config() function for programmatic conversion.',
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: `❌ Migration failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    };
-  }
 }
 
 /**
@@ -364,18 +311,16 @@ export function isV3LegacyConfig(config: any): boolean {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function convertToV4Config(config: any): AzionConfig {
   if (isV3LegacyConfig(config)) {
-    console.log('🔄 V3 legacy format detected, converting to V4...');
     return convertV3ToV4Config(config);
   }
 
-  console.log('✅ V4 format detected, no conversion needed.');
   return config as AzionConfig;
 }
 
 export default convertLegacyConfig;
 
 /**
- * EXEMPLO DE USO - CONVERSÃO V3 → V4
+ * USAGE EXAMPLE - V3 → V4 CONVERSION
  *
  * // V3 Legacy Format
  * const legacyConfig = {
@@ -408,11 +353,11 @@ export default convertLegacyConfig;
  *   }
  * };
  *
- * // Converter para V4
+ * // Convert to V4
  * import { convertV3ToV4Config } from 'azion/config';
  * const v4Config = convertV3ToV4Config(legacyConfig);
  *
- * // Resultado V4:
+ * // V4 Result:
  * // {
  * //   rules: {
  * //     request: [
@@ -462,7 +407,7 @@ export default convertLegacyConfig;
  * //   }
  * // }
  *
- * // Para usar como comando CLI:
+ * // For CLI usage:
  * import { migrateConfigV3ToV4 } from 'azion/config';
  * const result = migrateConfigV3ToV4('./azion.config.js');
  * console.log(result.message);
