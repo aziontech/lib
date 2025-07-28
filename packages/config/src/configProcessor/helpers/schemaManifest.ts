@@ -10,6 +10,7 @@ import {
   CACHE_BY_QUERY_STRING,
   CACHE_CDN_SETTINGS,
   CACHE_VARY_BY_METHOD,
+  COOKIE_BEHAVIORS,
   CUSTOM_PAGE_ERROR_CODES,
   EDGE_CONNECTOR_DNS_RESOLUTION,
   EDGE_CONNECTOR_HMAC_TYPE,
@@ -23,15 +24,18 @@ import {
   FIREWALL_RULE_CONDITIONALS,
   FIREWALL_RULE_OPERATORS,
   FIREWALL_VARIABLES,
+  FIREWALL_WAF_MODES,
+  HEADER_BEHAVIORS,
+  ID_BEHAVIORS,
   NETWORK_LIST_TYPES,
-  RULE_BEHAVIOR_NAMES,
+  NO_ARGS_BEHAVIORS,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
-  RULE_PHASES,
   RULE_VARIABLES,
+  STRING_BEHAVIORS,
   TIERED_CACHE_TOPOLOGY,
-  WAF_MODE,
+  WAF_ENGINE_VERSIONS,
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_MTLS_VERIFICATION,
   WORKLOAD_TLS_VERSIONS,
@@ -100,7 +104,7 @@ const schemaWafManifest = {
       properties: {
         engine_version: {
           type: 'string',
-          enum: ['2021-Q3'],
+          enum: WAF_ENGINE_VERSIONS,
           default: '2021-Q3',
           errorMessage: "The 'engine_version' field must be '2021-Q3'.",
         },
@@ -286,8 +290,8 @@ const schemaFirewallRuleBehaviorArguments = {
       },
       mode: {
         type: 'string',
-        enum: WAF_MODE,
-        errorMessage: `The mode must be one of: ${WAF_MODE.join(', ')}`,
+        enum: FIREWALL_WAF_MODES,
+        errorMessage: `The mode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
       },
     },
     required: ['waf_id', 'mode'],
@@ -699,86 +703,283 @@ const schemaApplicationCacheSettings = {
   additionalProperties: false,
 };
 
-const schemaApplicationRules = {
-  type: 'object',
-  properties: {
-    name: {
-      type: 'string',
-      errorMessage: "The 'name' field must be a string.",
-    },
-    phase: {
-      type: 'string',
-      enum: RULE_PHASES,
-      errorMessage: "The 'phase' field must be either 'request' or 'response'.",
-    },
-    behaviors: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            enum: RULE_BEHAVIOR_NAMES,
-            errorMessage: "The 'name' field must be a valid behavior name.",
-          },
-          argument: {
-            oneOf: [{ type: 'string' }, { type: 'null' }],
-            errorMessage: "The 'argument' must be a string or null.",
-          },
+// Schema para behaviors V4 no manifest
+const schemaBehaviorManifest = {
+  oneOf: [
+    // No-args behaviors
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: NO_ARGS_BEHAVIORS,
         },
-        required: ['name'],
-        additionalProperties: false,
       },
+      required: ['type'],
+      additionalProperties: false,
     },
-    criteria: {
-      type: 'array',
-      items: {
-        type: 'array',
-        items: {
+    // String behaviors
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: STRING_BEHAVIORS,
+        },
+        attributes: {
           type: 'object',
           properties: {
-            variable: {
+            value: {
               type: 'string',
-              enum: Array.from(new Set(RULE_VARIABLES)),
-              errorMessage: "The 'variable' field must be a valid variable name.",
-            },
-            operator: {
-              type: 'string',
-              enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
-              errorMessage: "The 'operator' field must be a valid operator.",
-            },
-            conditional: {
-              type: 'string',
-              enum: RULE_CONDITIONALS,
-              errorMessage: "The 'conditional' field must be one of: if, and, or.",
-            },
-            argument: {
-              type: 'string',
-              errorMessage: "The 'argument' field must be a string.",
+              minLength: 1,
+              maxLength: 255,
             },
           },
-          required: ['variable', 'operator', 'conditional'],
-          dependencies: {
-            operator: {
+          required: ['value'],
+          additionalProperties: false,
+        },
+      },
+      required: ['type', 'attributes'],
+      additionalProperties: false,
+    },
+    // ID behaviors (aceita string ou number)
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: ID_BEHAVIORS,
+        },
+        attributes: {
+          type: 'object',
+          properties: {
+            value: {
               oneOf: [
                 {
-                  properties: {
-                    operator: { enum: RULE_OPERATORS_WITH_VALUE },
-                  },
-                  required: ['argument'],
-                  errorMessage: "The operator 'matches' requires an argument.",
+                  type: 'string',
+                  minLength: 1,
+                  maxLength: 255,
+                },
+                {
+                  type: 'integer',
+                  minimum: 1,
                 },
               ],
             },
           },
+          required: ['value'],
           additionalProperties: false,
         },
       },
+      required: ['type', 'attributes'],
+      additionalProperties: false,
+    },
+    // Header behaviors
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: HEADER_BEHAVIORS,
+        },
+        attributes: {
+          type: 'object',
+          properties: {
+            header_name: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              pattern: '.*',
+            },
+            header_value: {
+              type: 'string',
+              maxLength: 255,
+              pattern: '.*',
+            },
+          },
+          required: ['header_name'],
+          additionalProperties: false,
+        },
+      },
+      required: ['type', 'attributes'],
+      additionalProperties: false,
+    },
+    // Cookie behaviors
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: COOKIE_BEHAVIORS,
+        },
+        attributes: {
+          type: 'object',
+          properties: {
+            cookie_name: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              pattern: '.*',
+            },
+            cookie_value: {
+              type: 'string',
+              maxLength: 255,
+              pattern: '.*',
+            },
+          },
+          required: ['cookie_name'],
+          additionalProperties: false,
+        },
+      },
+      required: ['type', 'attributes'],
+      additionalProperties: false,
+    },
+    // Capture groups behavior
+    {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: ['capture_match_groups'],
+        },
+        attributes: {
+          type: 'object',
+          properties: {
+            regex: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+            },
+            subject: {
+              type: 'string',
+              minLength: 4,
+              maxLength: 50,
+            },
+            captured_array: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 10,
+            },
+          },
+          required: ['regex', 'subject', 'captured_array'],
+          additionalProperties: false,
+        },
+      },
+      required: ['type', 'attributes'],
+      additionalProperties: false,
+    },
+  ],
+};
+
+// Schema para critérios V4 no manifest
+const schemaCriteriaManifest = {
+  type: 'object',
+  properties: {
+    variable: {
+      type: 'string',
+      enum: Array.from(new Set(RULE_VARIABLES)),
+      errorMessage: "The 'variable' field must be a valid variable name.",
+    },
+    operator: {
+      type: 'string',
+      enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
+      errorMessage: "The 'operator' field must be a valid operator.",
+    },
+    conditional: {
+      type: 'string',
+      enum: RULE_CONDITIONALS,
+      errorMessage: "The 'conditional' field must be one of: if, and, or.",
+    },
+    argument: {
+      type: 'string',
+      errorMessage: "The 'argument' field must be a string.",
     },
   },
-  required: ['name', 'behaviors', 'criteria'],
+  required: ['variable', 'operator', 'conditional'],
+  allOf: [
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITH_VALUE },
+        },
+      },
+      then: {
+        required: ['argument'],
+      },
+    },
+    {
+      if: {
+        properties: {
+          operator: { enum: RULE_OPERATORS_WITHOUT_VALUE },
+        },
+      },
+      then: {
+        not: {
+          required: ['argument'],
+        },
+      },
+    },
+  ],
   additionalProperties: false,
 };
+
+// Schema para rules V4 no manifest (com phase)
+const schemaApplicationRulesV4 = {
+  type: 'object',
+  properties: {
+    phase: {
+      type: 'string',
+      enum: ['request', 'response'],
+      errorMessage: "The 'phase' field must be either 'request' or 'response'.",
+    },
+    rule: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 250,
+          errorMessage: "The 'name' field must be a string between 1 and 250 characters.",
+        },
+        description: {
+          type: 'string',
+          maxLength: 1000,
+          errorMessage: "The 'description' field must be a string with maximum 1000 characters.",
+        },
+        active: {
+          type: 'boolean',
+          default: true,
+          errorMessage: "The 'active' field must be a boolean.",
+        },
+        criteria: {
+          type: 'array',
+          items: {
+            type: 'array',
+            items: schemaCriteriaManifest,
+            minItems: 1,
+            maxItems: 10,
+          },
+          minItems: 1,
+          maxItems: 5,
+          errorMessage: 'The criteria must be an array of arrays with 1-5 groups.',
+        },
+        behaviors: {
+          type: 'array',
+          items: schemaBehaviorManifest,
+          minItems: 1,
+          maxItems: 10,
+          errorMessage: 'The behaviors must be an array with 1-10 items.',
+        },
+      },
+      required: ['name', 'criteria', 'behaviors'],
+      additionalProperties: false,
+    },
+  },
+  required: ['phase', 'rule'],
+  additionalProperties: false,
+};
+
+const schemaApplicationRules = schemaApplicationRulesV4;
 
 const schemaApplicationManifest = {
   type: 'object',

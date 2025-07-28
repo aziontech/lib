@@ -1,4 +1,25 @@
-export default {
+import type {
+  AzionConfig,
+  CacheByCookie,
+  CacheByQueryString,
+  CustomPageErrorCode,
+  CustomPageType,
+  EdgeConnectorDnsResolution,
+  EdgeConnectorHmacType,
+  EdgeConnectorHttpVersionPolicy,
+  EdgeConnectorLoadBalanceMethod,
+  EdgeConnectorTransportPolicy,
+  EdgeConnectorType,
+  NetworkListType,
+  WafSensitivity,
+  WafThreatType,
+  WorkloadInfrastructure,
+  WorkloadMTLSVerification,
+  WorkloadTLSCipher,
+  WorkloadTLSVersion,
+} from 'azion/config';
+
+const config: AzionConfig = {
   build: {
     entry: './src/index.js',
     preset: 'angular', // V4: 'angular' | 'react' | 'next' | 'vue' | 'nuxt' | 'astro' | etc.
@@ -30,11 +51,11 @@ export default {
             maxAgeSeconds: 1000,
           },
           cacheByQueryString: {
-            option: 'denylist', // V4: ['denylist', 'allowlist', 'all', 'ignore']
+            option: 'denylist' as CacheByQueryString,
             list: ['order', 'user'],
           },
           cacheByCookie: {
-            option: 'allowlist', // V4: ['denylist', 'allowlist', 'all', 'ignore']
+            option: 'allowlist' as CacheByCookie,
             list: ['session', 'user'],
           },
         },
@@ -45,49 +66,156 @@ export default {
             name: 'rewriteRuleExample',
             description: 'Rewrite URLs, set cookies and headers, forward cookies.',
             active: true,
-            variable: 'uri',
-            match: '^/rewrite$',
-            behavior: {
-              setCache: 'mycache',
-              rewrite: `/new/%{captured[1]}`,
-              setCookie: 'user=12345; Path=/; Secure',
-              setHeaders: ['Cache-Control: no-cache'],
-              forwardCookies: true,
-            },
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/rewrite$',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: 'mycache', // Using name reference (validated)
+                },
+              },
+              {
+                type: 'rewrite_request',
+                attributes: {
+                  value: '/new/%{captured[1]}',
+                },
+              },
+              {
+                type: 'set_cookie',
+                attributes: {
+                  cookie_name: 'user',
+                  cookie_value: '12345; Path=/; Secure',
+                },
+              },
+              {
+                type: 'add_response_header',
+                attributes: {
+                  header_name: 'Cache-Control',
+                  header_value: 'no-cache',
+                },
+              },
+              {
+                type: 'forward_cookies',
+              },
+            ],
           },
           {
             name: 'staticContentRuleExample',
             description: 'Handle static content by setting a specific origin and delivering directly.',
             active: true,
-            variable: 'uri',
-            match: '^/_statics/',
-            behavior: {
-              setOrigin: {
-                name: 'myneworigin',
-                type: 'object_storage',
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/_statics/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_origin',
+                attributes: {
+                  value: 123, // Using ID reference (no validation needed)
+                },
               },
-              deliver: true,
-            },
+              {
+                type: 'deliver',
+              },
+            ],
           },
           {
             name: 'computeFunctionRuleExample',
             description: 'Executes a serverless function for compute paths.',
             active: true,
-            variable: 'uri',
-            match: '^/compute/',
-            behavior: {
-              runFunction: 'function_name',
-            },
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/compute/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'run_function',
+                attributes: {
+                  value: 'my-edge-function', // Using name reference (validated)
+                },
+              },
+            ],
           },
           {
             name: 'setEdgeConnectorExample',
             description: 'Routes traffic through edge connector.',
             active: true,
-            variable: 'uri',
-            match: '^/api/',
-            behavior: {
-              setEdgeConnector: 'my-http-connector',
-            },
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/api/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_edge_connector',
+                attributes: {
+                  value: 'my-http-connector', // Using name reference (validated)
+                },
+              },
+            ],
+          },
+          {
+            name: 'complexCriteriaExample',
+            description: 'Example with multiple criteria groups (AND/OR logic).',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'starts_with',
+                  argument: '/mobile/',
+                },
+                {
+                  variable: 'device_group',
+                  conditional: 'and',
+                  operator: 'is_equal',
+                  argument: 'mobile-devices',
+                },
+              ],
+              [
+                {
+                  variable: 'host',
+                  conditional: 'if',
+                  operator: 'is_equal',
+                  argument: 'm.example.com',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'redirect_to_302',
+                attributes: {
+                  value: 'https://mobile.example.com${uri}',
+                },
+              },
+            ],
           },
         ],
         response: [
@@ -95,12 +223,97 @@ export default {
             name: 'apiDataResponseRuleExample',
             description: 'Manage headers, cookies, and GZIP compression for API data responses.',
             active: true,
-            variable: 'uri',
-            match: '^/api/data',
-            behavior: {
-              setHeaders: ['Content-Type: application/json'],
-              enableGZIP: true,
-            },
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/api/data',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'add_response_header',
+                attributes: {
+                  header_name: 'Content-Type',
+                  header_value: 'application/json',
+                },
+              },
+              {
+                type: 'enable_gzip',
+              },
+            ],
+          },
+          {
+            name: 'securityHeadersExample',
+            description: 'Add security headers to responses.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: 'status',
+                  conditional: 'if',
+                  operator: 'is_equal',
+                  argument: '200',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'add_response_header',
+                attributes: {
+                  header_name: 'X-Frame-Options',
+                  header_value: 'DENY',
+                },
+              },
+              {
+                type: 'add_response_header',
+                attributes: {
+                  header_name: 'X-Content-Type-Options',
+                  header_value: 'nosniff',
+                },
+              },
+              {
+                type: 'filter_response_cookie',
+                attributes: {
+                  cookie_name: 'internal_session',
+                },
+              },
+            ],
+          },
+          {
+            name: 'captureGroupsExample',
+            description: 'Example using capture groups behavior.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: 'uri',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/capture/(.+)',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'capture_match_groups',
+                attributes: {
+                  regex: '^/capture/(.+)',
+                  subject: '${uri}',
+                  captured_array: 'captured',
+                },
+              },
+              {
+                type: 'add_response_header',
+                attributes: {
+                  header_name: 'X-Captured-Path',
+                  header_value: '${captured[1]}',
+                },
+              },
+            ],
           },
         ],
       },
@@ -144,7 +357,7 @@ export default {
     {
       name: 'my-http-connector',
       active: true,
-      type: 'http',
+      type: 'http' as EdgeConnectorType,
       attributes: {
         addresses: [
           {
@@ -156,9 +369,9 @@ export default {
           },
         ],
         connectionOptions: {
-          dnsResolution: 'preserve', // 'preserve' | 'force_ipv4' | 'force_ipv6'
-          transportPolicy: 'preserve', // 'preserve' | 'force_https' | 'force_http'
-          httpVersionPolicy: 'http1_1', // 'http1_1'
+          dnsResolution: 'preserve' as EdgeConnectorDnsResolution,
+          transportPolicy: 'preserve' as EdgeConnectorTransportPolicy,
+          httpVersionPolicy: 'http1_1' as EdgeConnectorHttpVersionPolicy,
           host: '${host}',
           pathPrefix: '',
           followingRedirect: false,
@@ -180,7 +393,7 @@ export default {
     {
       name: 'my-s3-connector',
       active: true,
-      type: 'edge_storage',
+      type: 'edge_storage' as EdgeConnectorType,
       attributes: {
         addresses: [
           {
@@ -193,7 +406,7 @@ export default {
         ],
         connectionOptions: {
           dnsResolution: 'preserve',
-          transportPolicy: 'force_https',
+          transportPolicy: 'force_https' as EdgeConnectorTransportPolicy,
           httpVersionPolicy: 'http1_1',
           host: 'my-bucket.s3.amazonaws.com',
           pathPrefix: '/uploads',
@@ -205,7 +418,7 @@ export default {
           loadBalancer: {
             enabled: true,
             config: {
-              method: 'round_robin', // 'round_robin' | 'least_conn' | 'ip_hash'
+              method: 'round_robin' as EdgeConnectorLoadBalanceMethod,
               maxRetries: 3,
               connectionTimeout: 60,
               readWriteTimeout: 120,
@@ -220,7 +433,7 @@ export default {
               hmac: {
                 enabled: true,
                 config: {
-                  type: 'aws4_hmac_sha256',
+                  type: 'aws4_hmac_sha256' as EdgeConnectorHmacType,
                   attributes: {
                     region: 'us-east-1',
                     service: 's3',
@@ -271,19 +484,19 @@ export default {
   networkList: [
     {
       name: 'my-ip-allowlist',
-      type: 'ip_cidr',
+      type: 'ip_cidr' as NetworkListType,
       items: ['10.0.0.1/32', '192.168.1.0/24'],
       active: true,
     },
     {
       name: 'trusted-asn-list',
-      type: 'asn',
+      type: 'asn' as NetworkListType,
       items: ['123', '456', '789'],
       active: true,
     },
     {
       name: 'allowed-countries',
-      type: 'countries',
+      type: 'countries' as NetworkListType,
       items: ['US', 'BR', 'UK'],
       active: true,
     },
@@ -298,14 +511,14 @@ export default {
         attributes: {
           rulesets: [1],
           thresholds: [
-            { threat: 'sql_injection', sensitivity: 'high' },
-            { threat: 'cross_site_scripting', sensitivity: 'high' },
-            { threat: 'remote_file_inclusion', sensitivity: 'medium' },
-            { threat: 'directory_traversal', sensitivity: 'low' },
-            { threat: 'evading_tricks', sensitivity: 'medium' },
-            { threat: 'file_upload', sensitivity: 'low' },
-            { threat: 'unwanted_access', sensitivity: 'high' },
-            { threat: 'identified_attack', sensitivity: 'medium' },
+            { threat: 'sql_injection' as WafThreatType, sensitivity: 'high' as WafSensitivity },
+            { threat: 'cross_site_scripting' as WafThreatType, sensitivity: 'high' as WafSensitivity },
+            { threat: 'remote_file_inclusion' as WafThreatType, sensitivity: 'medium' as WafSensitivity },
+            { threat: 'directory_traversal' as WafThreatType, sensitivity: 'low' as WafSensitivity },
+            { threat: 'evading_tricks' as WafThreatType, sensitivity: 'medium' as WafSensitivity },
+            { threat: 'file_upload' as WafThreatType, sensitivity: 'low' as WafSensitivity },
+            { threat: 'unwanted_access' as WafThreatType, sensitivity: 'high' as WafSensitivity },
+            { threat: 'identified_attack' as WafThreatType, sensitivity: 'medium' as WafSensitivity },
           ],
         },
       },
@@ -352,13 +565,13 @@ export default {
     {
       name: 'my-production-workload',
       active: true,
-      infrastructure: 1, // Production Infrastructure
+      infrastructure: 1 as WorkloadInfrastructure, // Production Infrastructure
       domains: ['example.com', 'www.example.com'],
       workloadDomainAllowAccess: true,
       tls: {
         certificate: 12345,
-        ciphers: 1, // TLS cipher suite 1
-        minimumVersion: 'tls_1_3',
+        ciphers: 1 as WorkloadTLSCipher, // TLS cipher suite 1
+        minimumVersion: 'tls_1_3' as WorkloadTLSVersion,
       },
       protocols: {
         http: {
@@ -369,7 +582,7 @@ export default {
         },
       },
       mtls: {
-        verification: 'enforce',
+        verification: 'enforce' as WorkloadMTLSVerification,
         certificate: 67890,
         crl: [1, 2, 3],
       },
@@ -409,9 +622,9 @@ export default {
       active: true,
       pages: [
         {
-          code: '404',
+          code: '404' as CustomPageErrorCode,
           page: {
-            type: 'page_connector',
+            type: 'page_connector' as CustomPageType,
             attributes: {
               connector: 'my-edge-connector', // Using name reference
               ttl: 3600,
@@ -421,9 +634,9 @@ export default {
           },
         },
         {
-          code: '500',
+          code: '500' as CustomPageErrorCode,
           page: {
-            type: 'page_connector',
+            type: 'page_connector' as CustomPageType,
             attributes: {
               connector: 12345, // Using ID reference (no validation needed)
               ttl: 0,
@@ -433,7 +646,7 @@ export default {
           },
         },
         {
-          code: 'default',
+          code: 'default' as CustomPageErrorCode,
           page: {
             attributes: {
               connector: 'my-edge-connector',
@@ -447,3 +660,5 @@ export default {
     },
   ],
 };
+
+export default config;

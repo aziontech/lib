@@ -1,166 +1,186 @@
 import {
-  AzionConfig,
   AzionEdgeConnector,
   AzionEdgeFunction,
-  AzionRuleCriteriaWithValue,
+  AzionManifestRule,
+  AzionRule,
+  AzionRuleBehavior,
+  AzionRuleCriteriaArray,
   AzionRules,
+  RuleVariable,
 } from '../../../../types';
-import {
-  requestBehaviors,
-  responseBehaviors,
-  revertRequestBehaviors,
-  revertResponseBehaviors,
-} from '../../../helpers/behaviors';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 
 /**
  * RulesProcessConfigStrategy
  * @class RulesProcessConfigStrategy
- * @description This class is implementation of the Rules ProcessConfig Strategy.
+ * @description This class is implementation of the Rules ProcessConfig Strategy for V4.
  */
 class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   /**
-   * Adds behaviors to the CDN rule.
-   * @param cdnRule - The CDN rule.
-   * @param behaviors - The behaviors.
-   * @param behaviorDefinitions - The behavior definitions.
-   * @param payloadContext - The payload context.
-   * @returns
+   * Validates function references in rules
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private addBehaviors(cdnRule: any, behaviors: any, behaviorDefinitions: any, payloadContext: any) {
-    if (behaviors && typeof behaviors === 'object') {
-      Object.entries(behaviors).forEach(([key, value]) => {
-        if (behaviorDefinitions[key]) {
-          const transformedBehavior = behaviorDefinitions[key].transform(value, payloadContext);
-          if (Array.isArray(transformedBehavior)) {
-            cdnRule.behaviors.push(...transformedBehavior);
-          } else if (transformedBehavior) {
-            cdnRule.behaviors.push(transformedBehavior);
-          }
-        } else {
-          console.warn(`Unknown behavior: ${key}`);
-        }
-      });
-    }
-  }
-
   private validateFunctionReferences(applicationRules: AzionRules, functions?: AzionEdgeFunction[]) {
-    if (!applicationRules?.request || !functions) {
-      return;
-    }
+    if (!functions) return;
 
     const definedFunctions = new Set(functions.map((f) => f.name));
 
-    for (const rule of applicationRules.request) {
-      if (rule.behavior?.runFunction) {
-        // Only validate if it's a string (name), skip validation for numbers (IDs)
-        if (typeof rule.behavior.runFunction === 'string' && !definedFunctions.has(rule.behavior.runFunction)) {
-          throw new Error(
-            `Function "${rule.behavior.runFunction}" referenced in rule "${rule.name}" is not defined in the functions array.`,
-          );
+    // Check request rules
+    if (applicationRules.request) {
+      for (const rule of applicationRules.request) {
+        for (const behavior of rule.behaviors) {
+          if (behavior.type === 'run_function' && behavior.attributes) {
+            // Only validate if it's a string (name), skip validation for numbers (IDs)
+            if (typeof behavior.attributes.value === 'string' && !definedFunctions.has(behavior.attributes.value)) {
+              throw new Error(
+                `Function "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the functions array.`,
+              );
+            }
+          }
+        }
+      }
+    }
+
+    // Check response rules
+    if (applicationRules.response) {
+      for (const rule of applicationRules.response) {
+        for (const behavior of rule.behaviors) {
+          if (behavior.type === 'run_function' && behavior.attributes) {
+            // Only validate if it's a string (name), skip validation for numbers (IDs)
+            if (typeof behavior.attributes.value === 'string' && !definedFunctions.has(behavior.attributes.value)) {
+              throw new Error(
+                `Function "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the functions array.`,
+              );
+            }
+          }
         }
       }
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /**
+   * Validates edge connector references in rules
+   */
+  private validateEdgeConnectorReferences(applicationRules: AzionRules, edgeConnectors?: AzionEdgeConnector[]) {
+    if (!edgeConnectors) return;
+
+    const definedConnectors = new Set(edgeConnectors.map((c) => c.name));
+
+    // Check request rules
+    if (applicationRules.request) {
+      for (const rule of applicationRules.request) {
+        for (const behavior of rule.behaviors) {
+          if (behavior.type === 'set_edge_connector' && behavior.attributes) {
+            // Only validate if it's a string (name), skip validation for numbers (IDs)
+            if (typeof behavior.attributes.value === 'string' && !definedConnectors.has(behavior.attributes.value)) {
+              throw new Error(
+                `Edge Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the edgeConnectors array.`,
+              );
+            }
+          }
+        }
+      }
+    }
+
+    // Check response rules
+    if (applicationRules.response) {
+      for (const rule of applicationRules.response) {
+        for (const behavior of rule.behaviors) {
+          if (behavior.type === 'set_edge_connector' && behavior.attributes) {
+            // Only validate if it's a string (name), skip validation for numbers (IDs)
+            if (typeof behavior.attributes.value === 'string' && !definedConnectors.has(behavior.attributes.value)) {
+              throw new Error(
+                `Edge Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the edgeConnectors array.`,
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Transforms azion.config rules to API manifest format
+   */
   transformToManifest(
     applicationRules: AzionRules,
     functions?: AzionEdgeFunction[],
     edgeConnectors?: AzionEdgeConnector[],
-  ) {
-    // Validar referências de funções
+  ): AzionManifestRule[] {
+    // Validate function references
     this.validateFunctionReferences(applicationRules, functions);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload: any[] = [];
+    // Validate edge connector references
+    this.validateEdgeConnectorReferences(applicationRules, edgeConnectors);
+
+    const payload: AzionManifestRule[] = [];
+
     if (!applicationRules || Object.keys(applicationRules).length === 0) {
-      return;
+      return payload;
     }
 
-    // request
-    if (Array.isArray(applicationRules?.request)) {
+    // Process request rules
+    if (Array.isArray(applicationRules.request)) {
       applicationRules.request.forEach((rule) => {
-        const cdnRule = {
-          name: rule.name,
+        const manifestRule: AzionManifestRule = {
           phase: 'request',
-          description: rule.description ?? '',
-          active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
-
-          criteria: rule.criteria
-            ? [
-                rule.criteria.map((criterion) => {
-                  const isWithValue = 'argument' in criterion;
-                  const { argument, ...rest } = criterion as AzionRuleCriteriaWithValue;
-                  return {
-                    ...rest,
-                    variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
-                    ...(isWithValue && { argument: argument }),
-                  };
-                }),
-              ]
-            : [
-                [
-                  {
-                    variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    argument: rule.match,
-                  },
-                ],
-              ],
-          behaviors: [],
+          rule: {
+            name: rule.name,
+            description: rule.description,
+            active: rule.active !== undefined ? rule.active : true,
+            criteria: rule.criteria.map((criteriaGroup) =>
+              criteriaGroup.map((criterion) => ({
+                variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
+                conditional: criterion.conditional,
+                operator: criterion.operator,
+                ...('argument' in criterion && { argument: criterion.argument }),
+              })),
+            ) as AzionRuleCriteriaArray,
+            behaviors: rule.behaviors.map((behavior) => ({
+              type: behavior.type,
+              ...('attributes' in behavior && behavior.attributes && { attributes: behavior.attributes }),
+            })) as AzionRuleBehavior[],
+          },
         };
-        this.addBehaviors(cdnRule, rule.behavior, requestBehaviors, { edgeConnectors });
-        payload.push(cdnRule);
+        payload.push(manifestRule);
       });
     }
 
-    // response
-    if (Array.isArray(applicationRules?.response)) {
+    // Process response rules
+    if (Array.isArray(applicationRules.response)) {
       applicationRules.response.forEach((rule) => {
-        const cdnRule = {
-          name: rule.name,
+        const manifestRule: AzionManifestRule = {
           phase: 'response',
-          description: rule.description ?? '',
-          active: rule.active !== undefined ? rule.active : true, // Default to true if not provided
-          criteria: rule.criteria
-            ? [
-                rule.criteria.map((criterion) => {
-                  const isWithValue = 'argument' in criterion;
-                  const { argument, ...rest } = criterion as AzionRuleCriteriaWithValue;
-                  return {
-                    ...rest,
-                    variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
-                    ...(isWithValue && { argument: argument }),
-                  };
-                }),
-              ]
-            : [
-                [
-                  {
-                    variable: rule.variable?.startsWith('${') ? rule.variable : `\${${rule.variable ?? 'uri'}}`,
-                    operator: 'matches',
-                    conditional: 'if',
-                    argument: rule.match,
-                  },
-                ],
-              ],
-          behaviors: [],
+          rule: {
+            name: rule.name,
+            description: rule.description,
+            active: rule.active !== undefined ? rule.active : true,
+            criteria: rule.criteria.map((criteriaGroup) =>
+              criteriaGroup.map((criterion) => ({
+                variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
+                conditional: criterion.conditional,
+                operator: criterion.operator,
+                ...('argument' in criterion && { argument: criterion.argument }),
+              })),
+            ) as AzionRuleCriteriaArray,
+            behaviors: rule.behaviors.map((behavior) => ({
+              type: behavior.type,
+              ...('attributes' in behavior && behavior.attributes && { attributes: behavior.attributes }),
+            })) as AzionRuleBehavior[],
+          },
         };
-        this.addBehaviors(cdnRule, rule.behavior, responseBehaviors, { edgeConnectors });
-        payload.push(cdnRule);
+        payload.push(manifestRule);
       });
     }
 
     return payload;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(rulesPayload: any[], transformedPayload: AzionConfig) {
+  /**
+   * Transforms API manifest format back to azion.config rules
+   */
+  transformToConfig(rulesPayload: AzionManifestRule[]): AzionRules {
     if (!Array.isArray(rulesPayload)) {
-      return undefined;
+      return { request: [], response: [] };
     }
 
     const rules: AzionRules = {
@@ -168,76 +188,40 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
       response: [],
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const addBehaviorsObject = (behaviors: any, behaviorDefinitions: any, context: any) => {
-      if (behaviors && Array.isArray(behaviors)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const transformedBehaviors = behaviors.map((behavior: any) => {
-          const behaviorName = behavior.name;
-          if (behaviorDefinitions[behaviorName]) {
-            const transformed = behaviorDefinitions[behaviorName].transform(behavior.target, context);
-            return transformed;
-          }
-          console.warn(`Unknown behavior: ${behaviorName}`);
-          return {};
-        });
-
-        const result = transformedBehaviors.reduce((acc, curr) => {
-          if (curr.setHeaders) {
-            return {
-              ...acc,
-              setHeaders: [...(acc.setHeaders || []), ...curr.setHeaders],
+    rulesPayload.forEach((manifestRule) => {
+      const rule: AzionRule = {
+        name: manifestRule.rule.name,
+        description: manifestRule.rule.description,
+        active: manifestRule.rule.active !== undefined ? manifestRule.rule.active : true,
+        criteria: manifestRule.rule.criteria.map((criteriaGroup) =>
+          criteriaGroup.map((criterion) => {
+            const baseCriterion = {
+              variable: criterion.variable.replace(/^\$\{|\}$/g, '') as RuleVariable, // Remove ${}
+              conditional: criterion.conditional,
+              operator: criterion.operator,
             };
-          }
-          return { ...acc, ...curr };
-        }, {});
 
-        return result;
-      }
-      return undefined;
-    };
+            // Add argument if present
+            if ('argument' in criterion && criterion.argument !== undefined) {
+              return {
+                ...baseCriterion,
+                argument: criterion.argument,
+              };
+            }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rulesPayload.forEach((rule: any) => {
-      if (rule.phase === 'request') {
-        rules.request!.push({
-          name: rule.name,
-          description: rule.description,
-          active: rule.active,
-          criteria:
-            // Verifica se criteria existe e é um array de arrays
-            Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
-              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                rule.criteria[0].map((criterion: any) => {
-                  const isWithValue = 'argument' in criterion;
-                  const { argument, ...rest } = criterion;
-                  return {
-                    ...rest,
-                    ...(isWithValue && { argument: argument }),
-                  };
-                })
-              : [],
-          behavior: addBehaviorsObject(rule.behaviors, revertRequestBehaviors, transformedPayload),
-        });
-      } else if (rule.phase === 'response') {
-        rules.response!.push({
-          name: rule.name,
-          description: rule.description,
-          active: rule.active,
-          criteria:
-            Array.isArray(rule.criteria) && Array.isArray(rule.criteria[0])
-              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                rule.criteria[0].map((criterion: any) => {
-                  const isWithValue = 'argument' in criterion;
-                  const { argument, ...rest } = criterion;
-                  return {
-                    ...rest,
-                    ...(isWithValue && { argument: argument }),
-                  };
-                })
-              : [],
-          behavior: addBehaviorsObject(rule.behaviors, revertResponseBehaviors, transformedPayload),
-        });
+            return baseCriterion;
+          }),
+        ) as AzionRuleCriteriaArray,
+        behaviors: manifestRule.rule.behaviors.map((behavior) => ({
+          type: behavior.type,
+          ...('attributes' in behavior && behavior.attributes && { attributes: behavior.attributes }),
+        })) as AzionRuleBehavior[],
+      };
+
+      if (manifestRule.phase === 'request') {
+        rules.request!.push(rule);
+      } else if (manifestRule.phase === 'response') {
+        rules.response!.push(rule);
       }
     });
 

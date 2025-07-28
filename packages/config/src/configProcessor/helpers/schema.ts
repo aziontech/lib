@@ -2,9 +2,9 @@ import {
   ALL_REQUEST_VARIABLES,
   ALL_RESPONSE_VARIABLES,
   BUILD_BUNDLERS,
+  COOKIE_BEHAVIORS,
   CUSTOM_PAGE_ERROR_CODES,
   CUSTOM_PAGE_TYPES,
-  DYNAMIC_VARIABLE_PATTERNS,
   EDGE_ACCESS_TYPES,
   EDGE_CONNECTOR_DNS_RESOLUTION,
   EDGE_CONNECTOR_HMAC_TYPE,
@@ -16,37 +16,31 @@ import {
   FIREWALL_RATE_LIMIT_TYPES,
   FIREWALL_VARIABLES,
   FIREWALL_WAF_MODES,
+  HEADER_BEHAVIORS,
+  ID_BEHAVIORS,
   NETWORK_LIST_TYPES,
+  NO_ARGS_BEHAVIORS,
   RULE_CONDITIONALS,
   RULE_OPERATORS_WITH_VALUE,
   RULE_OPERATORS_WITHOUT_VALUE,
-  RULE_VARIABLES,
   SPECIAL_VARIABLES,
+  STRING_BEHAVIORS,
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_MTLS_VERIFICATION,
   WORKLOAD_TLS_VERSIONS,
 } from '../../constants';
 
-const criteriaBaseSchema = {
+// Schema base para critérios com validação específica por fase
+const createCriteriaBaseSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
-    variable: {
-      type: 'string',
-      anyOf: [
-        {
-          // static variables validation
+    variable: createVariableValidation(isRequestPhase).anyOf
+      ? {
           type: 'string',
-          pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
-        },
-        {
-          // dynamic variables validation
-          type: 'string',
-          pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|').replace(/\$/g, '\\$') + ')\\}$',
-        },
-      ],
-      errorMessage:
-        "The 'variable' field must be wrapped in ${} and be either a valid static variable or follow the dynamic patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*)",
-    },
+          anyOf: createVariableValidation(isRequestPhase).anyOf,
+          errorMessage: createVariableValidation(isRequestPhase).errorMessage,
+        }
+      : createVariableValidation(isRequestPhase),
     conditional: {
       type: 'string',
       enum: RULE_CONDITIONALS,
@@ -89,7 +83,8 @@ const criteriaBaseSchema = {
       },
     },
   ],
-};
+  additionalProperties: false,
+});
 
 const createVariableValidation = (isRequestPhase = false) => ({
   type: 'string',
@@ -131,300 +126,254 @@ const createVariableValidation = (isRequestPhase = false) => ({
     : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
 });
 
+// Schema para behaviors sem argumentos
+const noArgsBehaviorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      enum: NO_ARGS_BEHAVIORS,
+      errorMessage: "The 'type' field must be a valid no-args behavior type.",
+    },
+  },
+  required: ['type'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in no-args behaviors.',
+    required: "The 'type' field is required in no-args behaviors.",
+  },
+};
+
+// Schema para behaviors com string value
+const stringBehaviorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      enum: STRING_BEHAVIORS,
+      errorMessage: "The 'type' field must be a valid string behavior type.",
+    },
+    attributes: {
+      type: 'object',
+      properties: {
+        value: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 255,
+          pattern: '.*',
+          errorMessage: "The 'value' field must be a string between 1 and 255 characters.",
+        },
+      },
+      required: ['value'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in string behavior attributes.',
+        required: "The 'value' field is required in string behavior attributes.",
+      },
+    },
+  },
+  required: ['type', 'attributes'],
+  additionalProperties: false,
+};
+
+// Schema para behaviors com ID value (run_function, set_cache_policy, etc.)
+const idBehaviorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      enum: ID_BEHAVIORS,
+      errorMessage: "The 'type' field must be a valid ID behavior type.",
+    },
+    attributes: {
+      type: 'object',
+      properties: {
+        value: {
+          type: 'number',
+          minimum: 1,
+          errorMessage: "The 'value' field must be a positive number.",
+        },
+      },
+      required: ['value'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in ID behavior attributes.',
+        required: "The 'value' field is required in ID behavior attributes.",
+      },
+    },
+  },
+  required: ['type', 'attributes'],
+  additionalProperties: false,
+};
+
+// Schema para behaviors de header
+const headerBehaviorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      enum: HEADER_BEHAVIORS,
+      errorMessage: "The 'type' field must be a valid header behavior type.",
+    },
+    attributes: {
+      type: 'object',
+      properties: {
+        value: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 255,
+          pattern: '.*',
+          errorMessage: "The 'value' field must be a non-empty string between 1 and 255 characters.",
+        },
+      },
+      required: ['value'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in header behavior attributes.',
+        required: "The 'value' field is required in header behavior attributes.",
+      },
+    },
+  },
+  required: ['type', 'attributes'],
+  additionalProperties: false,
+};
+
+// Schema para behaviors de cookie
+const cookieBehaviorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      enum: COOKIE_BEHAVIORS,
+      errorMessage: "The 'type' field must be a valid cookie behavior type.",
+    },
+    attributes: {
+      type: 'object',
+      properties: {
+        value: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 255,
+          pattern: '.*',
+          errorMessage: "The 'value' field must be a non-empty string between 1 and 255 characters.",
+        },
+      },
+      required: ['value'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in cookie behavior attributes.',
+        required: "The 'value' field is required in cookie behavior attributes.",
+      },
+    },
+  },
+  required: ['type', 'attributes'],
+  additionalProperties: false,
+};
+
+// Schema para capture match groups
+const captureGroupsBehaviorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      enum: ['capture_match_groups'],
+      errorMessage: "The 'type' field must be 'capture_match_groups'.",
+    },
+    attributes: {
+      type: 'object',
+      properties: {
+        regex: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 255,
+          pattern: '.*',
+          errorMessage: "The 'regex' field must be a string between 1 and 255 characters.",
+        },
+        subject: {
+          type: 'string',
+          minLength: 4,
+          maxLength: 50,
+          pattern: '.*',
+          errorMessage: "The 'subject' field must be a string between 4 and 50 characters.",
+        },
+        captured_array: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 10,
+          pattern: '.*',
+          errorMessage: "The 'captured_array' field must be a string between 1 and 10 characters.",
+        },
+      },
+      required: ['regex', 'subject', 'captured_array'],
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'No additional properties are allowed in capture groups behavior attributes.',
+        required:
+          "All fields ('regex', 'subject', 'captured_array') are required in capture groups behavior attributes.",
+      },
+    },
+  },
+  required: ['type', 'attributes'],
+  additionalProperties: false,
+};
+
+// Schema para behaviors (union de todos os tipos)
+const ruleBehaviorSchema = {
+  oneOf: [
+    noArgsBehaviorSchema,
+    stringBehaviorSchema,
+    idBehaviorSchema,
+    headerBehaviorSchema,
+    cookieBehaviorSchema,
+    captureGroupsBehaviorSchema,
+  ],
+  errorMessage: 'Each behavior must match one of the valid behavior formats.',
+};
+
+// Schema para rules V4 com validação específica por fase
 const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
     name: {
       type: 'string',
-      errorMessage: "The 'name' field must be a string",
+      minLength: 1,
+      maxLength: 250,
+      pattern: '.*',
+      errorMessage: "The 'name' field must be a string between 1 and 250 characters.",
     },
     description: {
       type: 'string',
-      errorMessage: "The 'description' field must be a string",
+      maxLength: 1000,
+      errorMessage: "The 'description' field must be a string with maximum 1000 characters.",
     },
     active: {
       type: 'boolean',
-      errorMessage: "The 'active' field must be a boolean",
+      default: true,
+      errorMessage: "The 'active' field must be a boolean.",
     },
-    match: {
-      type: 'string',
-      errorMessage: "The 'match' field must be a string",
-    },
-    variable: createVariableValidation(isRequestPhase),
     criteria: {
       type: 'array',
-      items: criteriaBaseSchema,
-      errorMessage: {
-        type: 'Each criteria item must follow the criteria format',
+      items: {
+        type: 'array',
+        items: createCriteriaBaseSchema(isRequestPhase),
+        minItems: 1,
+        maxItems: 10,
+        errorMessage: 'Each criteria group must have between 1 and 10 criteria items.',
       },
+      minItems: 1,
+      maxItems: 5,
+      errorMessage: 'The criteria must be an array of arrays with 1-5 groups.',
     },
-    behavior: {
-      type: 'object',
-      properties: {
-        setEdgeConnector: {
-          type: ['string', 'number'],
-          errorMessage: "The 'setEdgeConnector' field must be a string or number.",
-        },
-        rewrite: {
-          type: 'string',
-          errorMessage: "The 'rewrite' field must be a string.",
-        },
-        setHeaders: {
-          type: 'array',
-          items: {
-            type: 'string',
-            errorMessage: "Each item in 'setHeaders' must be a string.",
-          },
-          errorMessage: {
-            type: "The 'setHeaders' field must be an array of strings.",
-          },
-        },
-        bypassCache: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'bypassCache' field must be a boolean or null.",
-        },
-        httpToHttps: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'httpToHttps' field must be a boolean or null.",
-        },
-        redirectTo301: {
-          type: ['string', 'null'],
-          errorMessage: "The 'redirectTo301' field must be a string or null.",
-        },
-        redirectTo302: {
-          type: ['string', 'null'],
-          errorMessage: "The 'redirectTo302' field must be a string or null.",
-        },
-        forwardCookies: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'forwardCookies' field must be a boolean or null.",
-        },
-        setCookie: {
-          type: ['string', 'null'],
-          errorMessage: "The 'setCookie' field must be a string or null.",
-        },
-        deliver: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'deliver' field must be a boolean or null.",
-        },
-        capture: {
-          type: 'object',
-          properties: {
-            match: {
-              type: 'string',
-              errorMessage: "The 'match' field must be a string.",
-            },
-            captured: {
-              type: 'string',
-              errorMessage: "The 'captured' field must be a string.",
-            },
-            subject: {
-              type: 'string',
-              errorMessage: "The 'subject' field must be a string.",
-            },
-          },
-          required: ['match', 'captured', 'subject'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'capture' object.",
-            required: "All properties ('match', 'captured', 'subject') are required in the 'capture' object.",
-          },
-        },
-        runFunction: {
-          type: ['string', 'number'],
-          errorMessage: "The 'runFunction' behavior must be a string or number",
-        },
-        setWafRuleset: {
-          type: 'object',
-          properties: {
-            wafMode: {
-              type: 'string',
-              enum: FIREWALL_WAF_MODES,
-              errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
-            },
-            wafId: {
-              type: ['string', 'number'],
-              errorMessage: 'The wafId must be a string or number',
-            },
-          },
-          required: ['wafMode', 'wafId'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in the setWafRuleset object',
-            required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
-          },
-        },
-        setRateLimit: {
-          type: 'object',
-          properties: {
-            type: {
-              type: 'string',
-              enum: FIREWALL_RATE_LIMIT_TYPES,
-              errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
-            },
-            limitBy: {
-              type: 'string',
-              enum: FIREWALL_RATE_LIMIT_BY,
-              errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
-            },
-            averageRateLimit: {
-              type: 'string',
-              errorMessage: 'The averageRateLimit must be a string',
-            },
-            maximumBurstSize: {
-              type: 'string',
-              errorMessage: 'The maximumBurstSize must be a string',
-            },
-          },
-          required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in the setRateLimit object',
-            required:
-              "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
-          },
-        },
-        deny: {
-          type: 'boolean',
-          errorMessage: 'The deny behavior must be a boolean',
-        },
-        drop: {
-          type: 'boolean',
-          errorMessage: 'The drop behavior must be a boolean',
-        },
-        setCustomResponse: {
-          type: 'object',
-          properties: {
-            statusCode: {
-              type: ['integer', 'string'],
-              minimum: 200,
-              maximum: 499,
-              errorMessage: 'The statusCode must be a number or string between 200 and 499',
-            },
-            contentType: {
-              type: 'string',
-              errorMessage: 'The contentType must be a string',
-            },
-            contentBody: {
-              type: 'string',
-              errorMessage: 'The contentBody must be a string',
-            },
-          },
-          required: ['statusCode', 'contentType', 'contentBody'],
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: 'No additional properties are allowed in the setCustomResponse object',
-            required: "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
-          },
-        },
-        tagEvent: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              errorMessage: 'The tagEvent name must be a string',
-            },
-          },
-          required: ['name'],
-          additionalProperties: false,
-        },
-        setCache: {
-          oneOf: [
-            {
-              type: ['string', 'number'],
-              errorMessage: "The 'setCache' field must be a string or number.",
-            },
-            {
-              type: 'object',
-              properties: {
-                name: {
-                  type: ['string', 'number'],
-                  errorMessage: "The 'name' field must be a string or number.",
-                },
-                browserCacheSettingsMaximumTtl: {
-                  type: 'number',
-                  nullable: true,
-                  errorMessage: "The 'browserCacheSettingsMaximumTtl' field must be a number or null.",
-                },
-                cdnCacheSettingsMaximumTtl: {
-                  type: 'number',
-                  nullable: true,
-                  errorMessage: "The 'cdnCacheSettingsMaximumTtl' field must be a number or null.",
-                },
-              },
-              required: ['name'],
-              additionalProperties: false,
-              errorMessage: {
-                additionalProperties: 'No additional properties are allowed in the cache object.',
-                required: "The 'name' field is required in the cache object.",
-              },
-            },
-          ],
-          errorMessage: "The 'cache' field must be either a string or an object with specified properties.",
-        },
-        filterCookie: {
-          type: ['string', 'null'],
-          errorMessage: "The 'filterCookie' field must be a string or null.",
-        },
-        filterHeader: {
-          type: ['string', 'null'],
-          errorMessage: "The 'filterHeader' field must be a string or null.",
-        },
-        enableGZIP: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'enableGZIP' field must be a boolean or null.",
-        },
-        noContent: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'noContent' field must be a boolean or null.",
-        },
-        optimizeImages: {
-          type: ['boolean', 'null'],
-          errorMessage: "The 'optimizeImages' field must be a boolean or null.",
-        },
-      },
-      additionalProperties: false,
-      allOf: [
-        {
-          not: {
-            anyOf: [
-              { required: ['deny', 'drop'] },
-              { required: ['deny', 'setCustomResponse'] },
-              { required: ['deny', 'setRateLimit'] },
-              { required: ['drop', 'setCustomResponse'] },
-              { required: ['drop', 'setRateLimit'] },
-              { required: ['setCustomResponse', 'setRateLimit'] },
-            ],
-          },
-          errorMessage:
-            'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset, tagEvent) with only one final behavior.',
-        },
-      ],
-      minProperties: 1,
-      errorMessage: {
-        additionalProperties: "No additional properties are allowed in the 'behavior' object.",
-        minProperties: 'At least one behavior must be specified',
-      },
+    behaviors: {
+      type: 'array',
+      items: ruleBehaviorSchema,
+      minItems: 1,
+      maxItems: 10,
+      errorMessage: 'The behaviors must be an array with 1-10 items.',
     },
   },
-  required: ['name'],
-  oneOf: [
-    {
-      anyOf: [{ required: ['match'] }, { required: ['variable'] }],
-      not: { required: ['criteria'] },
-      errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
-    },
-    {
-      required: ['criteria'],
-      not: {
-        anyOf: [{ required: ['match'] }, { required: ['variable'] }],
-      },
-      errorMessage: "Cannot use 'criteria' together with 'match' or 'variable'.",
-    },
-  ],
-  errorMessage: {
-    oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
-  },
+  required: ['name', 'criteria', 'behaviors'],
+  additionalProperties: false,
 });
 
 const schemaFunction = {

@@ -3,70 +3,186 @@ import { AzionFetchEvent } from 'azion/types';
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
 
-import type {
-  EdgeConnectorDnsResolution,
-  EdgeConnectorHmacType,
-  EdgeConnectorHttpVersionPolicy,
-  EdgeConnectorLoadBalanceMethod,
-  EdgeConnectorTransportPolicy,
-  EdgeConnectorType,
-  WafEngineType,
-  WafEngineVersion,
-  WafRuleset,
-  WafThreatType,
-} from './constants';
-
 // Custom Pages types
-export type CustomPageErrorCode = (typeof import('./constants').CUSTOM_PAGE_ERROR_CODES)[number];
-export type CustomPageType = (typeof import('./constants').CUSTOM_PAGE_TYPES)[number];
+export type CustomPageErrorCode =
+  | 'default'
+  | '400'
+  | '401'
+  | '403'
+  | '404'
+  | '405'
+  | '406'
+  | '408'
+  | '409'
+  | '410'
+  | '411'
+  | '414'
+  | '415'
+  | '416'
+  | '426'
+  | '429'
+  | '431'
+  | '500'
+  | '501'
+  | '502'
+  | '503'
+  | '504'
+  | '505';
+export type CustomPageType = 'page_connector';
 
 // Rule Engine types
-export type CommonVariable = (typeof import('./constants').COMMON_VARIABLES)[number];
-export type RequestVariable = (typeof import('./constants').ALL_REQUEST_VARIABLES)[number];
-export type ResponseVariable = (typeof import('./constants').ALL_RESPONSE_VARIABLES)[number];
-export type RuleOperatorWithValue = (typeof import('./constants').RULE_OPERATORS_WITH_VALUE)[number];
-export type RuleOperatorWithoutValue = (typeof import('./constants').RULE_OPERATORS_WITHOUT_VALUE)[number];
-export type RuleConditional = (typeof import('./constants').RULE_CONDITIONALS)[number];
-export type RuleVariable = CommonVariable | RequestVariable | ResponseVariable;
+export type CommonVariable =
+  | 'args'
+  | 'device_group'
+  | 'domain'
+  | 'geoip_city'
+  | 'geoip_city_continent_code'
+  | 'geoip_city_country_code'
+  | 'geoip_city_country_name'
+  | 'geoip_continent_code'
+  | 'geoip_country_code'
+  | 'geoip_country_name'
+  | 'geoip_region'
+  | 'geoip_region_name'
+  | 'host'
+  | 'remote_addr'
+  | 'remote_port'
+  | 'remote_user'
+  | 'request'
+  | 'request_body'
+  | 'request_method'
+  | 'request_uri'
+  | 'scheme'
+  | 'uri';
+export type RequestVariable =
+  | CommonVariable
+  | 'server_addr'
+  | 'server_port'
+  | 'ssl_client_fingerprint'
+  | 'ssl_client_escaped_cert'
+  | 'ssl_client_s_dn'
+  | 'ssl_client_s_dn_parsed'
+  | 'ssl_client_cert'
+  | 'ssl_client_i_dn'
+  | 'ssl_client_serial'
+  | 'ssl_client_v_end'
+  | 'ssl_client_v_remain'
+  | 'ssl_client_v_start'
+  | 'ssl_client_verify';
+export type ResponseVariable =
+  | CommonVariable
+  | 'sent_http_name'
+  | 'status'
+  | 'tcpinfo_rtt'
+  | 'upstream_addr'
+  | 'upstream_status';
+export type RuleOperatorWithValue =
+  | 'is_equal'
+  | 'is_not_equal'
+  | 'starts_with'
+  | 'does_not_start_with'
+  | 'matches'
+  | 'does_not_match';
+export type RuleOperatorWithoutValue = 'exists' | 'does_not_exist';
+export type RuleConditional = 'if' | 'and' | 'or';
+
+// Criar um tipo utilitário para gerar as versões com ${}
+type WithDollarBraces<T extends string> = `\${${T}}` | T;
+
+// Criar um tipo para variáveis dinâmicas
+type DynamicVariable =
+  | `arg_${string}`
+  | `cookie_${string}`
+  | `http_${string}`
+  | `sent_http_${string}`
+  | `upstream_cookie_${string}`
+  | `upstream_http_${string}`;
+
+// Modificar a definição do tipo RuleVariable para incluir variáveis dinâmicas
+export type RuleVariable =
+  | WithDollarBraces<CommonVariable | RequestVariable | ResponseVariable>
+  | DynamicVariable
+  | WithDollarBraces<DynamicVariable>;
 
 // Firewall types
-export type FirewallBehaviorName = (typeof import('./constants').FIREWALL_BEHAVIOR_NAMES)[number];
-export type FirewallRateLimitType = (typeof import('./constants').FIREWALL_RATE_LIMIT_TYPES)[number];
-export type FirewallRateLimitBy = (typeof import('./constants').FIREWALL_RATE_LIMIT_BY)[number];
-export type FirewallWafMode = (typeof import('./constants').FIREWALL_WAF_MODES)[number];
-export type FirewallVariable = (typeof import('./constants').FIREWALL_VARIABLES)[number];
+export type FirewallBehaviorName =
+  | 'deny'
+  | 'drop'
+  | 'set_rate_limit'
+  | 'set_waf_ruleset'
+  | 'run_function'
+  | 'tag_event'
+  | 'set_custom_response';
+export type FirewallRateLimitType = 'second' | 'minute';
+export type FirewallRateLimitBy = 'clientIp' | 'global';
+export type FirewallWafMode = 'learning' | 'blocking';
+export type FirewallVariable =
+  | 'header_accept'
+  | 'header_accept_encoding'
+  | 'header_accept_language'
+  | 'header_cookie'
+  | 'header_origin'
+  | 'header_referer'
+  | 'header_user_agent'
+  | 'host'
+  | 'network'
+  | 'request_args'
+  | 'request_method'
+  | 'request_uri'
+  | 'scheme'
+  | 'client_certificate_validation'
+  | 'ssl_verification_status';
 
 // Network List types
-export type NetworkListType = (typeof import('./constants').NETWORK_LIST_TYPES)[number];
+export type NetworkListType = 'ip_cidr' | 'asn' | 'countries';
 
 // WAF types
-export type WafMode = (typeof import('./constants').WAF_MODE)[number];
-export type WafSensitivity = (typeof import('./constants').WAF_SENSITIVITY)[number];
+export type WafMode = 'learning' | 'blocking' | 'counting';
+export type WafSensitivity = 'lowest' | 'low' | 'medium' | 'high' | 'highest';
+export type WafEngineVersion = '2021-Q3';
+export type WafEngineType = 'score';
+export type WafRuleset = 1;
+export type WafThreatType =
+  | 'cross_site_scripting'
+  | 'directory_traversal'
+  | 'evading_tricks'
+  | 'file_upload'
+  | 'identified_attack'
+  | 'remote_file_inclusion'
+  | 'sql_injection'
+  | 'unwanted_access';
 
 // Cache types
-export type CacheBrowserSetting = (typeof import('./constants').CACHE_BROWSER_SETTINGS)[number];
-export type CacheCdnSetting = (typeof import('./constants').CACHE_CDN_SETTINGS)[number];
-export type CacheByQueryString = (typeof import('./constants').CACHE_BY_QUERY_STRING)[number];
-export type CacheByCookie = (typeof import('./constants').CACHE_BY_COOKIE)[number];
-export type CacheAdaptiveDelivery = (typeof import('./constants').CACHE_ADAPTIVE_DELIVERY)[number];
-export type CacheVaryByMethod = (typeof import('./constants').CACHE_VARY_BY_METHOD)[number];
-export type TieredCacheTopology = (typeof import('./constants').TIERED_CACHE_TOPOLOGY)[number];
+export type CacheBrowserSetting = 'honor' | 'override' | 'no-cache';
+export type CacheCdnSetting = 'honor' | 'override';
+export type CacheByQueryString = 'ignore' | 'all' | 'allowlist' | 'denylist';
+export type CacheByCookie = 'ignore' | 'all' | 'allowlist' | 'denylist';
+export type CacheAdaptiveDelivery = 'ignore' | 'allowlist';
+export type CacheVaryByMethod = 'options' | 'post';
+export type TieredCacheTopology = 'near-edge' | 'br-east-1' | 'us-east-1';
 
 // Build types
-export type BuildBundler = (typeof import('./constants').BUILD_BUNDLERS)[number];
-export type EdgeAccessType = (typeof import('./constants').EDGE_ACCESS_TYPES)[number];
+export type BuildBundler = 'webpack' | 'esbuild';
+export type EdgeAccessType = 'read_only' | 'read_write' | 'restricted';
 
 // Edge Functions types
-export type EdgeFunctionRuntime = (typeof import('./constants').EDGE_FUNCTION_RUNTIMES)[number];
-export type EdgeFunctionExecutionEnvironment =
-  (typeof import('./constants').EDGE_FUNCTION_EXECUTION_ENVIRONMENTS)[number];
+export type EdgeFunctionRuntime = 'azion_js';
+export type EdgeFunctionExecutionEnvironment = 'application' | 'firewall';
 
 // Workload types
-export type WorkloadInfrastructure = (typeof import('./constants').WORKLOAD_INFRASTRUCTURE)[number];
-export type WorkloadTLSCipher = (typeof import('./constants').WORKLOAD_TLS_CIPHERS)[number];
-export type WorkloadTLSVersion = (typeof import('./constants').WORKLOAD_TLS_VERSIONS)[number];
-export type WorkloadMTLSVerification = (typeof import('./constants').WORKLOAD_MTLS_VERIFICATION)[number];
-export type WorkloadHTTPVersion = (typeof import('./constants').WORKLOAD_HTTP_VERSIONS)[number];
+export type WorkloadInfrastructure = 1 | 2;
+export type WorkloadTLSCipher = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type WorkloadTLSVersion = '' | 'tls_1_0' | 'tls_1_1' | 'tls_1_2' | 'tls_1_3';
+export type WorkloadMTLSVerification = 'enforce' | 'permissive';
+export type WorkloadHTTPVersion = 'http1' | 'http2';
+
+// Edge Connector types
+export type EdgeConnectorType = 'http' | 'edge_storage' | 'live_ingest';
+export type EdgeConnectorDnsResolution = 'preserve' | 'force_ipv4' | 'force_ipv6';
+export type EdgeConnectorTransportPolicy = 'preserve' | 'force_https' | 'force_http';
+export type EdgeConnectorHttpVersionPolicy = 'http1_1';
+export type EdgeConnectorLoadBalanceMethod = 'round_robin' | 'least_conn' | 'ip_hash';
+export type EdgeConnectorHmacType = 'aws4_hmac_sha256';
 
 /**
  * Domain configuration for Azion.
@@ -304,15 +420,6 @@ export type AzionResponseRule = {
 };
 
 /**
- * Rules configuration for Azion.
- */
-export type AzionRules = {
-  /** Request rules */
-  request?: AzionRequestRule[];
-  /** Response rules */
-  response?: AzionResponseRule[];
-};
-/**
  * Purge configuration for Azion.
  */
 export type AzionPurge = {
@@ -439,7 +546,7 @@ export type AzionEdgeApplication = {
   debug?: boolean;
   /** Cache settings */
   cache?: AzionCache[];
-  /** Rules configuration */
+  /** Rules configuration V4 */
   rules?: AzionRules;
   /** Device groups */
   deviceGroups?: AzionDeviceGroup[];
@@ -884,4 +991,186 @@ export type AzionConfig = {
   workloads?: AzionWorkload[];
   /** Custom pages configuration */
   customPages?: AzionCustomPage[];
+};
+
+// Rule Types - Separados corretamente baseado no behaviors.yml
+
+// Behaviors comuns (podem ser usados em request E response)
+export type AzionCommonRuleBehaviorType =
+  | 'deliver'
+  | 'redirect_to_301'
+  | 'redirect_to_302'
+  | 'enable_gzip'
+  | 'run_function'
+  | 'capture_match_groups';
+
+// Behaviors apenas para request phase
+export type AzionRequestOnlyBehaviorType =
+  | 'deny'
+  | 'no_content'
+  | 'finish_request_phase'
+  | 'forward_cookies'
+  | 'optimize_images'
+  | 'bypass_cache'
+  | 'filter_request_cookie'
+  | 'set_origin'
+  | 'redirect_http_to_https'
+  | 'set_edge_connector'
+  | 'set_cache_policy'
+  | 'rewrite_request'
+  | 'add_request_header'
+  | 'filter_request_header'
+  | 'add_request_cookie';
+
+// Behaviors apenas para response phase
+export type AzionResponseOnlyBehaviorType =
+  | 'filter_response_cookie'
+  | 'set_cookie'
+  | 'add_response_header'
+  | 'filter_response_header';
+
+// Union types para cada phase
+export type AzionRequestRuleBehaviorType = AzionCommonRuleBehaviorType | AzionRequestOnlyBehaviorType;
+export type AzionResponseRuleBehaviorType = AzionCommonRuleBehaviorType | AzionResponseOnlyBehaviorType;
+export type AzionRuleBehaviorType = AzionRequestRuleBehaviorType | AzionResponseRuleBehaviorType;
+
+// Rule phase type
+export type AzionRulePhase = 'request' | 'response';
+
+// Rule Criteria (array de arrays como especificado na API)
+export type AzionRuleCriteriaArray = AzionRuleCriteria[][];
+
+// Base behavior interface
+export interface AzionRuleBehaviorBase {
+  type: AzionRuleBehaviorType;
+}
+
+// Rule Behaviors - No Args (sem argumentos)
+export interface AzionRuleNoArgsBehavior extends AzionRuleBehaviorBase {
+  type:
+    | 'deny'
+    | 'no_content'
+    | 'deliver'
+    | 'finish_request_phase'
+    | 'forward_cookies'
+    | 'optimize_images'
+    | 'bypass_cache'
+    | 'enable_gzip'
+    | 'redirect_http_to_https';
+}
+
+// Rule Behaviors - String (com valor string)
+export interface AzionRuleStringBehavior extends AzionRuleBehaviorBase {
+  type: 'redirect_to_301' | 'redirect_to_302' | 'rewrite_request' | 'filter_response_cookie';
+  attributes: {
+    value: string;
+  };
+}
+
+// Rule Behaviors - Run Function
+export interface AzionRuleRunFunctionBehavior extends AzionRuleBehaviorBase {
+  type: 'run_function';
+  attributes: {
+    value: string | number; // Nome da função (validado) ou ID (direto)
+  };
+}
+
+// Rule Behaviors - Set Cache Policy
+export interface AzionRuleSetCachePolicyBehavior extends AzionRuleBehaviorBase {
+  type: 'set_cache_policy';
+  attributes: {
+    value: string | number; // Nome da cache policy (validado) ou ID (direto)
+  };
+}
+
+// Rule Behaviors - Set Edge Connector
+export interface AzionRuleSetConnectorBehavior extends AzionRuleBehaviorBase {
+  type: 'set_edge_connector';
+  attributes: {
+    value: string | number; // Nome do connector (validado) ou ID (direto)
+  };
+}
+
+// Rule Behaviors - Set Origin
+export interface AzionRuleSetOriginBehavior extends AzionRuleBehaviorBase {
+  type: 'set_origin';
+  attributes: {
+    value: string | number; // Nome do origin (validado) ou ID (direto)
+  };
+}
+
+// Rule Behaviors - Header (para add/filter headers)
+export interface AzionRuleHeaderBehavior extends AzionRuleBehaviorBase {
+  type: 'add_request_header' | 'add_response_header' | 'filter_request_header' | 'filter_response_header';
+  attributes: {
+    header_name: string;
+    header_value?: string;
+  };
+}
+
+// Rule Behaviors - Cookie (para add/filter cookies)
+export interface AzionRuleCookieBehavior extends AzionRuleBehaviorBase {
+  type: 'add_request_cookie' | 'filter_request_cookie' | 'set_cookie' | 'filter_response_cookie';
+  attributes: {
+    cookie_name: string;
+    cookie_value?: string;
+  };
+}
+
+// Rule Behaviors - Capture Match Groups
+export interface AzionRuleCaptureGroupsBehavior extends AzionRuleBehaviorBase {
+  type: 'capture_match_groups';
+  attributes: {
+    regex: string;
+    subject: string;
+    captured_array: string;
+  };
+}
+
+// Union type para todos os behaviors
+export type AzionRuleBehavior =
+  | AzionRuleNoArgsBehavior
+  | AzionRuleStringBehavior
+  | AzionRuleRunFunctionBehavior
+  | AzionRuleSetCachePolicyBehavior
+  | AzionRuleSetConnectorBehavior
+  | AzionRuleSetOriginBehavior
+  | AzionRuleHeaderBehavior
+  | AzionRuleCookieBehavior
+  | AzionRuleCaptureGroupsBehavior;
+
+/**
+ * Rule configuration for Azion.
+ */
+export type AzionRule = {
+  /** Rule name */
+  name: string;
+  /** Rule description */
+  description?: string;
+  /** Indicates if the rule is active */
+  active?: boolean;
+  /** Array of criteria arrays */
+  criteria: AzionRuleCriteriaArray;
+  /** Array of behaviors */
+  behaviors: AzionRuleBehavior[];
+};
+
+/**
+ * Rules configuration for Azion.
+ */
+export type AzionRules = {
+  /** Request rules */
+  request?: AzionRule[];
+  /** Response rules */
+  response?: AzionRule[];
+};
+
+/**
+ * Manifest Rule for API (with phase).
+ */
+export type AzionManifestRule = {
+  /** Rule phase */
+  phase: AzionRulePhase;
+  /** Rule data */
+  rule: AzionRule;
 };
