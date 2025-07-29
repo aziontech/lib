@@ -48,49 +48,87 @@ describe('processConfig', () => {
 
     it('should process a cache object directly in the rule', () => {
       const azionConfig: any = {
-        rules: {
-          request: [
-            {
-              name: 'testRule',
-              match: '/test',
-              behavior: {
-                setCache: {
-                  name: 'directCache',
-                  browser_cache_settings_maximum_ttl: 300,
-                  cdn_cache_settings_maximum_ttl: 600,
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'testRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/test',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'set_cache_policy',
+                      attributes: {
+                        value: 'directCache',
+                      },
+                    },
+                  ],
                 },
-              },
+              ],
             },
-          ],
-        },
+          },
+        ],
       };
 
       const result = processConfig(azionConfig);
-      expect(result).toHaveProperty('cache');
-      expect(result.cache).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'directCache' })]));
+      expect(result.edgeApplications[0]).toHaveProperty('cache');
+      expect(result.edgeApplications[0].cache).toEqual(
+        expect.arrayContaining([expect.objectContaining({ name: 'directCache' })]),
+      );
     });
 
     it('should handle rewrites directly as a string', () => {
       const azionConfig: any = {
-        rules: {
-          request: [
-            {
-              name: 'simpleRewriteRule',
-              match: '/simple',
-              behavior: {
-                rewrite: '/new-path',
-              },
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'simpleRewriteRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/simple',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'rewrite_request',
+                      attributes: {
+                        value: '/new-path',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
-          ],
-        },
+          },
+        ],
       };
 
       const result = processConfig(azionConfig);
-      expect(result.rules[0].behaviors).toEqual(
+      expect(result.edgeApplications[0].rules.request[0].behaviors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            name: 'rewrite_request',
-            target: '/new-path',
+            type: 'rewrite_request',
+            attributes: expect.objectContaining({
+              value: '/new-path',
+            }),
           }),
         ]),
       );
@@ -98,20 +136,22 @@ describe('processConfig', () => {
 
     it('should correctly calculate numerical values', () => {
       const azionConfig: any = {
-        cache: [
+        edgeApplications: [
           {
-            name: 'calcCache',
-            browser: { maxAgeSeconds: '2 * 3' },
-            edge: { maxAgeSeconds: '4 + 1' },
+            name: 'my-edge-app',
+            cache: [
+              {
+                name: 'calcCache',
+                browser: { maxAgeSeconds: '2 * 3' },
+                edge: { maxAgeSeconds: '4 + 1' },
+              },
+            ],
           },
         ],
-        rules: {
-          request: [],
-        },
       };
 
       const result = processConfig(azionConfig);
-      expect(result.cache[0]).toEqual(
+      expect(result.edgeApplications[0].cache[0]).toEqual(
         expect.objectContaining({
           browser_cache_settings_maximum_ttl: 6,
           cdn_cache_settings_maximum_ttl: 5,
@@ -121,70 +161,136 @@ describe('processConfig', () => {
 
     it('should correctly handle the absence of cache settings', () => {
       const azionConfig: any = {
-        functions: [
+        edgeFunctions: [
           {
             name: 'handler',
             path: '.edge/worker.js',
           },
         ],
-        rules: {
-          request: [
-            {
-              name: 'testRule',
-              match: '/no-cache',
-              behavior: {
-                runFunction: 'handler',
-              },
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'testRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/no-cache',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'run_function',
+                      attributes: {
+                        value: 'handler',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
-          ],
-        },
+          },
+        ],
       };
 
       const result = processConfig(azionConfig);
-      expect(result.cache).toBeUndefined();
+      expect(result.edgeApplications[0].cache).toBeUndefined();
     });
 
     it('should correctly convert request rules', () => {
       const azionConfig: any = {
-        origin: [
+        edgeConnectors: [
           {
-            name: 'my origin storage',
-            type: 'object_storage',
-            bucket: 'mybucket',
-            prefix: 'myfolder',
-          },
-        ],
-        rules: {
-          request: [
-            {
-              name: 'testRule',
-              match: '/api',
-              behavior: {
-                setOrigin: {
-                  name: 'my origin storage',
-                  type: 'object_storage',
+            name: 'my-connector',
+            active: true,
+            type: 'http',
+            attributes: {
+              addresses: [
+                {
+                  active: true,
+                  address: 'http.bin.org',
+                  httpPort: 80,
+                  httpsPort: 443,
+                },
+              ],
+              connectionOptions: {
+                dnsResolution: 'preserve',
+                transportPolicy: 'preserve',
+                httpVersionPolicy: 'http1_1',
+                host: '${host}',
+                pathPrefix: '',
+                followingRedirect: false,
+                realIpHeader: 'X-Real-IP',
+                realPortHeader: 'X-Real-PORT',
+              },
+              modules: {
+                loadBalancer: {
+                  enabled: false,
+                  config: null,
+                },
+                originShield: {
+                  enabled: false,
+                  config: null,
                 },
               },
             },
-          ],
-        },
+          },
+        ],
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'testRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/api',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'set_edge_connector',
+                      attributes: {
+                        value: 'my-connector',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       };
 
       const result = processConfig(azionConfig);
-      expect(result.rules).toEqual(
+      expect(result.edgeApplications[0].rules.request).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             criteria: expect.arrayContaining([
               expect.arrayContaining([
                 expect.objectContaining({
-                  input_value: '/api',
+                  argument: '/api',
                 }),
               ]),
             ]),
             behaviors: expect.arrayContaining([
               expect.objectContaining({
-                name: 'set_origin',
-                target: 'my origin storage',
+                type: 'set_edge_connector',
+                attributes: expect.objectContaining({
+                  value: 'my-connector',
+                }),
               }),
             ]),
           }),
@@ -194,20 +300,22 @@ describe('processConfig', () => {
 
     it('should correctly calculate complex mathematical expressions', () => {
       const azionConfig: any = {
-        cache: [
+        edgeApplications: [
           {
-            name: 'complexMathCache',
-            browser: { maxAgeSeconds: '(2 * 3) + 5' },
-            edge: { maxAgeSeconds: '10 / 2' },
+            name: 'my-edge-app',
+            cache: [
+              {
+                name: 'complexMathCache',
+                browser: { maxAgeSeconds: '(2 * 3) + 5' },
+                edge: { maxAgeSeconds: '10 / 2' },
+              },
+            ],
           },
         ],
-        rules: {
-          request: [],
-        },
       };
 
       const result = processConfig(azionConfig);
-      expect(result.cache[0]).toEqual(
+      expect(result.edgeApplications[0].cache[0]).toEqual(
         expect.objectContaining({
           browser_cache_settings_maximum_ttl: 11,
           cdn_cache_settings_maximum_ttl: 5,
@@ -299,37 +407,84 @@ describe('processConfig', () => {
       );
     });
 
-    it('should correctly process the setOrigin rule with all optional fields provided', () => {
+    it('should correctly process the setEdgeConnector rule with all optional fields provided', () => {
       const azionConfigWithAllFields = {
-        origin: [
+        edgeConnectors: [
           {
-            name: 'my origin storage',
-            type: 'object_storage',
-            bucket: 'mybucket',
-            prefix: 'myfolder',
-          },
-        ],
-        rules: {
-          request: [
-            {
-              name: 'testRule',
-              match: '/_next',
-              behavior: {
-                setOrigin: {
-                  name: 'my origin storage',
-                  type: 'object_storage',
+            name: 'my-connector',
+            active: true,
+            type: 'http',
+            attributes: {
+              addresses: [
+                {
+                  active: true,
+                  address: 'http.bin.org',
+                  httpPort: 80,
+                  httpsPort: 443,
+                },
+              ],
+              connectionOptions: {
+                dnsResolution: 'preserve',
+                transportPolicy: 'preserve',
+                httpVersionPolicy: 'http1_1',
+                host: '${host}',
+                pathPrefix: '',
+                followingRedirect: false,
+                realIpHeader: 'X-Real-IP',
+                realPortHeader: 'X-Real-PORT',
+              },
+              modules: {
+                loadBalancer: {
+                  enabled: false,
+                  config: null,
+                },
+                originShield: {
+                  enabled: false,
+                  config: null,
                 },
               },
             },
-          ],
-        },
+          },
+        ],
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'testRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/_next',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'set_edge_connector',
+                      attributes: {
+                        value: 'my-connector',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       };
       const resultWithAllFields = processConfig(azionConfigWithAllFields);
-      expect(resultWithAllFields.rules[0].behaviors).toEqual(
+      expect(resultWithAllFields.edgeApplications[0].rules.request[0].behaviors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            name: 'set_origin',
-            target: 'my origin storage',
+            type: 'set_edge_connector',
+            attributes: expect.objectContaining({
+              value: 'my-connector',
+            }),
           }),
         ]),
       );
@@ -360,10 +515,15 @@ describe('processConfig', () => {
 
     it('should throw an error for an undefined property', () => {
       const azionConfigWithUndefinedProperty = {
-        cache: [
+        edgeApplications: [
           {
-            name: 'testCache',
-            undefinedProperty: 'This property does not exist',
+            name: 'my-edge-app',
+            cache: [
+              {
+                name: 'testCache',
+                undefinedProperty: 'This property does not exist',
+              },
+            ],
           },
         ],
       };
@@ -375,31 +535,52 @@ describe('processConfig', () => {
 
     it('should correctly process the runFunction behavior with only the required path', () => {
       const azionConfigWithRunFunctionOnlyPath = {
-        functions: [
+        edgeFunctions: [
           {
             name: 'handler',
             path: '.edge/worker.js',
           },
         ],
-        rules: {
-          request: [
-            {
-              name: 'testRule',
-              match: '/run-function-test-path-only',
-              behavior: {
-                runFunction: 'handler',
-              },
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'testRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/run-function-test-path-only',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'run_function',
+                      attributes: {
+                        value: 'handler',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
-          ],
-        },
+          },
+        ],
       };
 
       const result = processConfig(azionConfigWithRunFunctionOnlyPath);
-      expect(result.rules[0].behaviors).toEqual(
+      expect(result.edgeApplications[0].rules.request[0].behaviors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            name: 'run_function',
-            target: 'handler',
+            type: 'run_function',
+            attributes: expect.objectContaining({
+              value: 'handler',
+            }),
           }),
         ]),
       );
@@ -407,23 +588,42 @@ describe('processConfig', () => {
 
     it('should throw an error when runFunction references a non-existent function', () => {
       const azionConfig = {
-        functions: [
+        edgeFunctions: [
           {
             name: 'existingFunction',
             path: '.edge/worker.js',
           },
         ],
-        rules: {
-          request: [
-            {
-              name: 'testRule',
-              match: '/test',
-              behavior: {
-                runFunction: 'nonExistentFunction',
-              },
+        edgeApplications: [
+          {
+            name: 'my-edge-app',
+            rules: {
+              request: [
+                {
+                  name: 'testRule',
+                  criteria: [
+                    [
+                      {
+                        variable: 'uri',
+                        conditional: 'if',
+                        operator: 'matches',
+                        argument: '/test',
+                      },
+                    ],
+                  ],
+                  behaviors: [
+                    {
+                      type: 'run_function',
+                      attributes: {
+                        value: 'nonExistentFunction',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
-          ],
-        },
+          },
+        ],
       };
 
       expect(() => processConfig(azionConfig)).toThrow();
@@ -2565,7 +2765,7 @@ describe('processConfig', () => {
         purge: [
           {
             type: 'wildcard',
-            urls: ['https://example.com/*'],
+            items: ['https://example.com/*'],
           },
         ],
       };
@@ -2619,19 +2819,22 @@ describe('processConfig', () => {
       const azionConfig: AzionConfig = {
         networkList: [
           {
-            id: 1,
-            listType: 'ip_cidr',
-            listContent: ['10.0.0.1'],
+            name: 'network-list-1',
+            type: 'ip_cidr',
+            items: ['10.0.0.1'],
+            active: true,
           },
           {
-            id: 2,
-            listType: 'asn',
-            listContent: [4569],
+            name: 'network-list-2',
+            type: 'asn',
+            items: [4569],
+            active: true,
           },
           {
-            id: 3,
-            listType: 'countries',
-            listContent: ['BR'],
+            name: 'network-list-3',
+            type: 'countries',
+            items: ['BR'],
+            active: true,
           },
         ],
       };
@@ -2693,34 +2896,48 @@ describe('processConfig', () => {
 
     beforeEach(() => {
       defaultConfig = {
-        id: 123,
         name: 'mywaf',
-        mode: 'counting',
-        active: true,
-        bypassAddresses: ['10.0.0.1'],
-        crossSiteScripting: {
-          sensitivity: 'medium',
-        },
-        directoryTraversal: {
-          sensitivity: 'low',
-        },
-        sqlInjection: {
-          sensitivity: 'low',
-        },
-        remoteFileInclusion: {
-          sensitivity: 'low',
-        },
-        evadingTricks: {
-          sensitivity: 'low',
-        },
-        fileUpload: {
-          sensitivity: 'low',
-        },
-        unwantedAccess: {
-          sensitivity: 'low',
-        },
-        identifiedAttack: {
-          sensitivity: 'low',
+        productVersion: '1.0',
+        engineSettings: {
+          engineVersion: '2021-Q3',
+          type: 'score',
+          attributes: {
+            rulesets: [1],
+            thresholds: [
+              {
+                threat: 'cross_site_scripting',
+                sensitivity: 'medium',
+              },
+              {
+                threat: 'directory_traversal',
+                sensitivity: 'low',
+              },
+              {
+                threat: 'sql_injection',
+                sensitivity: 'low',
+              },
+              {
+                threat: 'remote_file_inclusion',
+                sensitivity: 'low',
+              },
+              {
+                threat: 'evading_tricks',
+                sensitivity: 'low',
+              },
+              {
+                threat: 'file_upload',
+                sensitivity: 'low',
+              },
+              {
+                threat: 'unwanted_access',
+                sensitivity: 'low',
+              },
+              {
+                threat: 'identified_attack',
+                sensitivity: 'low',
+              },
+            ],
+          },
         },
       };
     });
@@ -2736,13 +2953,20 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypass_addresses: ['10.0.0.1'],
-            cross_site_scripting: true,
-            cross_site_scripting_sensitivity: 'medium',
-            directory_traversal: true,
-            directory_traversal_sensitivity: 'low',
+            product_version: '1.0',
+            engine_settings: expect.objectContaining({
+              engine_version: '2021-Q3',
+              type: 'score',
+              attributes: expect.objectContaining({
+                rulesets: [1],
+                thresholds: expect.arrayContaining([
+                  expect.objectContaining({
+                    threat: 'cross_site_scripting',
+                    sensitivity: 'medium',
+                  }),
+                ]),
+              }),
+            }),
           }),
         ]),
       );
@@ -2752,9 +2976,20 @@ describe('processConfig', () => {
         waf: [
           {
             name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypassAddresses: ['10.0.0.1'],
+            productVersion: '1.0',
+            engineSettings: {
+              engineVersion: '2021-Q3',
+              type: 'score',
+              attributes: {
+                rulesets: [1],
+                thresholds: [
+                  {
+                    threat: 'cross_site_scripting',
+                    sensitivity: 'medium',
+                  },
+                ],
+              },
+            },
           },
         ],
       };
@@ -2764,15 +2999,23 @@ describe('processConfig', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'mywaf',
-            mode: 'counting',
-            active: true,
-            bypass_addresses: ['10.0.0.1'],
-            cross_site_scripting: false,
-            cross_site_scripting_sensitivity: 'low',
-            directory_traversal: false,
-            directory_traversal_sensitivity: 'low',
-            sql_injection: false,
-            sql_injection_sensitivity: 'low',
+            product_version: '1.0',
+            engine_settings: expect.objectContaining({
+              engine_version: '2021-Q3',
+              type: 'score',
+              attributes: expect.objectContaining({
+                rulesets: [1],
+                thresholds: expect.arrayContaining([
+                  expect.objectContaining({
+                    threat: 'cross_site_scripting',
+                    sensitivity: 'medium',
+                  }),
+                ]),
+              }),
+            }),
+          }),
+        ]),
+      );
             remote_file_inclusion: false,
             remote_file_inclusion_sensitivity: 'low',
             evading_tricks: false,

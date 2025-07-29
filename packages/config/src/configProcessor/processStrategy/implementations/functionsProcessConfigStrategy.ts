@@ -1,37 +1,58 @@
-import { AzionConfig } from '../../../types';
+import { AzionConfig, EdgeFunctionExecutionEnvironment, EdgeFunctionRuntime } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * FunctionsProcessConfigStrategy
+ * FunctionsProcessConfigStrategy V4
  * @class FunctionsProcessConfigStrategy
- * @description This class is implementation of the Functions ProcessConfig Strategy.
+ * @description This class is implementation of the Edge Functions Process Config Strategy for API V4.
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
+  /**
+   * Transform azion.config Edge Functions to V4 manifest format
+   */
   transformToManifest(config: AzionConfig) {
-    if (!Array.isArray(config?.functions) || config?.functions.length === 0) {
-      return;
+    if (!Array.isArray(config?.edgeFunctions) || config?.edgeFunctions.length === 0) {
+      return [];
     }
 
-    return config.functions.map((func) => ({
+    return config.edgeFunctions.map((func) => ({
       name: func.name,
-      target: func.path,
-      args: func.args || {},
+      runtime: func.runtime || 'azion_js',
+      default_args: func.defaultArgs || {},
+      execution_environment: func.executionEnvironment || 'application',
+      active: func.active ?? true,
     }));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!Array.isArray(payload?.functions) || payload?.functions.length === 0) {
+  /**
+   * Transform V4 manifest format back to azion.config Edge Functions
+   */
+  transformToConfig(
+    payload: {
+      edgeFunction?: Array<{
+        name: string;
+        runtime?: string;
+        default_args?: Record<string, unknown>;
+        execution_environment?: string;
+        active?: boolean;
+      }>;
+    },
+    transformedPayload: AzionConfig,
+  ) {
+    if (!Array.isArray(payload?.edgeFunction) || payload?.edgeFunction.length === 0) {
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.functions = payload.functions.map((func: any) => ({
+
+    transformedPayload.edgeFunctions = payload.edgeFunction.map((func) => ({
       name: func.name,
-      path: func.target,
-      args: func.args || {},
+      path: `./functions/${func.name}.js`, // Default path since it's not in V4 API
+      runtime: func.runtime as EdgeFunctionRuntime,
+      defaultArgs: func.default_args,
+      executionEnvironment: func.execution_environment as EdgeFunctionExecutionEnvironment,
+      active: func.active,
     }));
 
-    return transformedPayload.functions;
+    return transformedPayload.edgeFunctions;
   }
 }
 
