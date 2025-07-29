@@ -1,4 +1,4 @@
-import { AzionFetchEvent } from 'azion/types';
+import { AzionRuntimeModule } from 'azion/types';
 
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
@@ -717,7 +717,7 @@ export type PresetMetadata = {
 
 export interface AzionBuildPreset {
   config: AzionConfig;
-  handler?: (event: AzionFetchEvent) => Promise<Response>;
+  handler?: AzionRuntimeModule;
   prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>;
   postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>;
   metadata: PresetMetadata;
