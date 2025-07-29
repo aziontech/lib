@@ -1,13 +1,12 @@
 import type {
   AzionConfig,
+  AzionEdgeConnector,
   CacheByCookie,
   CacheByQueryString,
   CustomPageErrorCode,
   CustomPageType,
   EdgeConnectorDnsResolution,
-  EdgeConnectorHmacType,
   EdgeConnectorHttpVersionPolicy,
-  EdgeConnectorLoadBalanceMethod,
   EdgeConnectorTransportPolicy,
   EdgeConnectorType,
   NetworkListType,
@@ -383,64 +382,16 @@ const config: AzionConfig = {
           },
         },
       },
-    },
+    } as AzionEdgeConnector,
     {
       name: 'my-s3-connector',
       active: true,
       type: 'edge_storage' as EdgeConnectorType,
       attributes: {
-        addresses: [
-          {
-            active: true,
-            address: 's3.amazonaws.com',
-            httpPort: 80,
-            httpsPort: 443,
-            modules: null,
-          },
-        ],
-        connectionOptions: {
-          dnsResolution: 'preserve',
-          transportPolicy: 'force_https' as EdgeConnectorTransportPolicy,
-          httpVersionPolicy: 'http1_1',
-          host: 'my-bucket.s3.amazonaws.com',
-          pathPrefix: '/uploads',
-          followingRedirect: false,
-          realIpHeader: 'X-Real-IP',
-          realPortHeader: 'X-Real-PORT',
-        },
-        modules: {
-          loadBalancer: {
-            enabled: true,
-            config: {
-              method: 'round_robin' as EdgeConnectorLoadBalanceMethod,
-              maxRetries: 3,
-              connectionTimeout: 60,
-              readWriteTimeout: 120,
-            },
-          },
-          originShield: {
-            enabled: true,
-            config: {
-              originIpAcl: {
-                enabled: false,
-              },
-              hmac: {
-                enabled: true,
-                config: {
-                  type: 'aws4_hmac_sha256' as EdgeConnectorHmacType,
-                  attributes: {
-                    region: 'us-east-1',
-                    service: 's3',
-                    accessKey: 'YOUR_ACCESS_KEY',
-                    secretKey: 'YOUR_SECRET_KEY',
-                  },
-                },
-              },
-            },
-          },
-        },
+        bucket: 'my-bucket',
+        prefix: '/uploads',
       },
-    },
+    } as AzionEdgeConnector,
   ],
   edgeFunctions: [
     {
