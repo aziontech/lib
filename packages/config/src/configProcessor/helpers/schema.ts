@@ -51,6 +51,10 @@ const createCriteriaBaseSchema = (isRequestPhase = false) => ({
       enum: [...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE],
       errorMessage: `The 'operator' field must be one of: ${[...RULE_OPERATORS_WITH_VALUE, ...RULE_OPERATORS_WITHOUT_VALUE].join(', ')}`,
     },
+    argument: {
+      type: 'string',
+      errorMessage: "The 'argument' field must be a string",
+    },
   },
   required: ['variable', 'conditional', 'operator'],
   allOf: [
@@ -62,12 +66,6 @@ const createCriteriaBaseSchema = (isRequestPhase = false) => ({
       },
       then: {
         required: ['argument'],
-        properties: {
-          argument: {
-            type: 'string',
-            errorMessage: "The 'argument' field must be a string",
-          },
-        },
       },
     },
     {
@@ -189,9 +187,19 @@ const idBehaviorSchema = {
       type: 'object',
       properties: {
         value: {
-          type: 'number',
-          minimum: 1,
-          errorMessage: "The 'value' field must be a positive number.",
+          oneOf: [
+            {
+              type: 'string',
+              minLength: 1,
+              maxLength: 255,
+              pattern: '.*',
+            },
+            {
+              type: 'number',
+              minimum: 1,
+            },
+          ],
+          errorMessage: "The 'value' field must be a string or positive number.",
         },
       },
       required: ['value'],
@@ -594,7 +602,7 @@ const azionConfigSchema = {
                       type: 'string',
                       minLength: 1,
                       maxLength: 250,
-                      pattern: "^[a-zA-Z0-9 \\-\\.'\\,|]+$",
+                      pattern: "^[a-zA-Z0-9 \\-.',|]+$",
                       errorMessage: "The 'name' field must be a string between 1-250 characters with valid pattern.",
                     },
                     stale: {
@@ -1822,7 +1830,7 @@ const azionConfigSchema = {
                               type: ['string', 'null'],
                               minLength: 1,
                               maxLength: 250,
-                              pattern: '^/[/a-zA-Z0-9\\-_\\.~@:]*$',
+                              pattern: '^/[/a-zA-Z0-9\\-_.~@:]*$',
                               errorMessage: "The 'uri' field must be a valid URI path starting with / or null",
                             },
                             customStatusCode: {

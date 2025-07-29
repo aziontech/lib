@@ -525,7 +525,7 @@ const schemaApplicationCacheSettings = {
       type: 'string',
       minLength: 1,
       maxLength: 250,
-      pattern: "^[a-zA-Z0-9 \\-\\.'\\,|]+$",
+      pattern: "^[a-zA-Z0-9 \\-.',|]+$",
       errorMessage: "The 'name' field must be a string between 1-250 characters with valid pattern.",
     },
     browser_cache: {
@@ -785,19 +785,14 @@ const schemaBehaviorManifest = {
         attributes: {
           type: 'object',
           properties: {
-            header_name: {
+            value: {
               type: 'string',
               minLength: 1,
               maxLength: 255,
               pattern: '.*',
             },
-            header_value: {
-              type: 'string',
-              maxLength: 255,
-              pattern: '.*',
-            },
           },
-          required: ['header_name'],
+          required: ['value'],
           additionalProperties: false,
         },
       },
@@ -815,19 +810,14 @@ const schemaBehaviorManifest = {
         attributes: {
           type: 'object',
           properties: {
-            cookie_name: {
+            value: {
               type: 'string',
               minLength: 1,
               maxLength: 255,
               pattern: '.*',
             },
-            cookie_value: {
-              type: 'string',
-              maxLength: 255,
-              pattern: '.*',
-            },
           },
-          required: ['cookie_name'],
+          required: ['value'],
           additionalProperties: false,
         },
       },
@@ -1779,7 +1769,7 @@ const schemaManifest = {
                             type: ['string', 'null'],
                             minLength: 1,
                             maxLength: 250,
-                            pattern: '^/[/a-zA-Z0-9\\-_\\.~@:]*$',
+                            pattern: '^/[/a-zA-Z0-9\\-_.~@:]*$',
                             errorMessage: "The 'uri' field must be a valid URI path starting with / or null.",
                           },
                           custom_status_code: {

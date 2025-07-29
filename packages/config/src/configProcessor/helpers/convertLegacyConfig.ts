@@ -188,49 +188,39 @@ function convertV3BehaviorsToV4(legacyBehavior: any, isRequestPhase: boolean = t
       if (!value) return [];
       const headers = Array.isArray(value) ? value : [value];
       const headerType = isRequestPhase ? 'add_request_header' : 'add_response_header';
-      return headers.map((header: string) => {
-        const [header_name, ...rest] = header.split(':');
-        const header_value = rest.length > 0 ? rest.join(':').trim() : '';
-        return {
-          type: headerType,
-          attributes: { header_name: header_name.trim(), header_value },
-        };
-      });
+      return headers.map((header: string) => ({
+        type: headerType,
+        attributes: { value: header },
+      }));
     },
 
     // Cookie behaviors (context-aware)
     setCookie: (value: string) => {
       if (!value) return null;
-      const [cookie_name, ...rest] = value.split('=');
-      const cookie_value = rest.length > 0 ? rest.join('=') : '';
-      return { type: 'set_cookie', attributes: { cookie_name: cookie_name.trim(), cookie_value } };
+      return { type: 'set_cookie', attributes: { value } };
     },
 
     filterCookie: (value: string) => {
       if (!value) return null;
       const cookieType = isRequestPhase ? 'filter_request_cookie' : 'filter_response_cookie';
-      return { type: cookieType, attributes: { cookie_name: value } };
+      return { type: cookieType, attributes: { value } };
     },
 
     filterHeader: (value: string) => {
       if (!value) return null;
       const headerType = isRequestPhase ? 'filter_request_header' : 'filter_response_header';
-      return { type: headerType, attributes: { header_name: value } };
+      return { type: headerType, attributes: { value } };
     },
 
     // Additional request-specific behaviors
     addRequestCookie: (value: string) => {
       if (!value) return null;
-      const [cookie_name, ...rest] = value.split('=');
-      const cookie_value = rest.length > 0 ? rest.join('=') : '';
-      return { type: 'add_request_cookie', attributes: { cookie_name: cookie_name.trim(), cookie_value } };
+      return { type: 'add_request_cookie', attributes: { value } };
     },
 
     addRequestHeader: (value: string) => {
       if (!value) return null;
-      const [header_name, ...rest] = value.split(':');
-      const header_value = rest.length > 0 ? rest.join(':').trim() : '';
-      return { type: 'add_request_header', attributes: { header_name: header_name.trim(), header_value } };
+      return { type: 'add_request_header', attributes: { value } };
     },
 
     // Legacy aliases (common V3 naming variations)
@@ -238,14 +228,10 @@ function convertV3BehaviorsToV4(legacyBehavior: any, isRequestPhase: boolean = t
     setResponseHeader: (value: string | string[]) => {
       if (!value) return [];
       const headers = Array.isArray(value) ? value : [value];
-      return headers.map((header: string) => {
-        const [header_name, ...rest] = header.split(':');
-        const header_value = rest.length > 0 ? rest.join(':').trim() : '';
-        return {
-          type: 'add_response_header',
-          attributes: { header_name: header_name.trim(), header_value },
-        };
-      });
+      return headers.map((header: string) => ({
+        type: 'add_response_header',
+        attributes: { value: header },
+      }));
     },
   };
 
@@ -377,8 +363,8 @@ export default convertLegacyConfig;
  * //         behaviors: [
  * //           { type: 'set_cache_policy', attributes: { value: 'my-cache' } },
  * //           { type: 'rewrite_request', attributes: { value: '/assets${uri}' } },
- * //           { type: 'add_response_header', attributes: { header_name: 'Cache-Control', header_value: 'max-age=3600' } },
- * //           { type: 'add_response_header', attributes: { header_name: 'X-Custom', header_value: 'header' } },
+ * //           { type: 'add_response_header', attributes: { value: 'Cache-Control: max-age=3600' } },
+ * //           { type: 'add_response_header', attributes: { value: 'X-Custom: header' } },
  * //           { type: 'deliver' },
  * //         ],
  * //       }
@@ -399,8 +385,8 @@ export default convertLegacyConfig;
  * //         ],
  * //         behaviors: [
  * //           { type: 'enable_gzip' },
- * //           { type: 'set_cookie', attributes: { cookie_name: 'compressed', cookie_value: 'true; Path=/' } },
- * //           { type: 'filter_response_header', attributes: { header_name: 'Server' } },
+ * //           { type: 'set_cookie', attributes: { value: 'compressed=true; Path=/' } },
+ * //           { type: 'filter_response_header', attributes: { value: 'Server' } },
  * //         ],
  * //       }
  * //     ]

@@ -92,15 +92,13 @@ const config: AzionConfig = {
               {
                 type: 'set_cookie',
                 attributes: {
-                  cookie_name: 'user',
-                  cookie_value: '12345; Path=/; Secure',
+                  value: 'user=12345; Path=/; Secure',
                 },
               },
               {
                 type: 'add_response_header',
                 attributes: {
-                  header_name: 'Cache-Control',
-                  header_value: 'no-cache',
+                  value: 'Cache-Control: no-cache',
                 },
               },
               {
@@ -237,8 +235,7 @@ const config: AzionConfig = {
               {
                 type: 'add_response_header',
                 attributes: {
-                  header_name: 'Content-Type',
-                  header_value: 'application/json',
+                  value: 'Content-Type: application/json',
                 },
               },
               {
@@ -264,21 +261,19 @@ const config: AzionConfig = {
               {
                 type: 'add_response_header',
                 attributes: {
-                  header_name: 'X-Frame-Options',
-                  header_value: 'DENY',
+                  value: 'X-Frame-Options: DENY',
                 },
               },
               {
                 type: 'add_response_header',
                 attributes: {
-                  header_name: 'X-Content-Type-Options',
-                  header_value: 'nosniff',
+                  value: 'X-Content-Type-Options: nosniff',
                 },
               },
               {
                 type: 'filter_response_cookie',
                 attributes: {
-                  cookie_name: 'internal_session',
+                  value: 'internal_session',
                 },
               },
             ],
@@ -309,8 +304,7 @@ const config: AzionConfig = {
               {
                 type: 'add_response_header',
                 attributes: {
-                  header_name: 'X-Captured-Path',
-                  header_value: '${captured[1]}',
+                  value: 'X-Captured-Path: ${captured[1]}',
                 },
               },
             ],

@@ -706,6 +706,7 @@ export interface BundlerSetup {
 export interface BuildContext {
   production: boolean;
   handler: BuildEntryPoint;
+  skipFrameworkBuild?: boolean;
 }
 
 export type PresetMetadata = {
@@ -1103,8 +1104,7 @@ export interface AzionRuleSetOriginBehavior extends AzionRuleBehaviorBase {
 export interface AzionRuleHeaderBehavior extends AzionRuleBehaviorBase {
   type: 'add_request_header' | 'add_response_header' | 'filter_request_header' | 'filter_response_header';
   attributes: {
-    header_name: string;
-    header_value?: string;
+    value: string;
   };
 }
 
@@ -1112,8 +1112,7 @@ export interface AzionRuleHeaderBehavior extends AzionRuleBehaviorBase {
 export interface AzionRuleCookieBehavior extends AzionRuleBehaviorBase {
   type: 'add_request_cookie' | 'filter_request_cookie' | 'set_cookie' | 'filter_response_cookie';
   attributes: {
-    cookie_name: string;
-    cookie_value?: string;
+    value: string;
   };
 }
 
