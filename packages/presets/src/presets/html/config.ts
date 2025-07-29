@@ -1,36 +1,54 @@
-import type { AzionConfig } from 'azion/config';
-import { createMPARules } from 'azion/config/rules';
+import { defineConfig } from 'azion/config';
 
-const config: AzionConfig = {
+export default defineConfig({
   build: {
     bundler: 'esbuild',
+    preset: 'html',
+    polyfills: false,
   },
-  edgeStorage: [
+  origin: [
     {
-      name: '$BUCKET_NAME',
-      dir: '$LOCAL_BUCKET_DIR',
-      edgeAccess: 'read_only',
+      name: 'origin-storage-default',
+      type: 'object_storage',
     },
   ],
-  edgeConnectors: [
-    {
-      name: '$EDGE_CONNECTOR_NAME',
-      active: true,
-      type: 'edge_storage',
-      attributes: {
-        bucket: '$BUCKET_NAME',
-        prefix: '$BUCKET_PREFIX',
+  rules: {
+    request: [
+      {
+        name: 'Set Storage Origin for All Requests',
+        match: '^\\/',
+        behavior: {
+          setOrigin: {
+            name: 'origin-storage-default',
+            type: 'object_storage',
+          },
+        },
       },
-    },
-  ],
-  edgeApplications: [
-    {
-      name: '$EDGE_APPLICATION_NAME',
-      rules: createMPARules({
-        edgeConnector: '$EDGE_CONNECTOR_NAME',
-      }),
-    },
-  ],
-};
-
-export default config;
+      {
+        name: 'Deliver Static Assets',
+        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+        behavior: {
+          setOrigin: {
+            name: 'origin-storage-default',
+            type: 'object_storage',
+          },
+          deliver: true,
+        },
+      },
+      {
+        name: 'Redirect to index.html',
+        match: '.*/$',
+        behavior: {
+          rewrite: '${uri}index.html',
+        },
+      },
+      {
+        name: 'Redirect to index.html for Subpaths',
+        match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
+        behavior: {
+          rewrite: '${uri}/index.html',
+        },
+      },
+    ],
+  },
+});

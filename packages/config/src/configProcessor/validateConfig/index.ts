@@ -3,6 +3,7 @@ import ajvErrors from 'ajv-errors';
 import addKeywords from 'ajv-keywords';
 
 import { AzionConfig } from '../../types';
+import convertLegacyConfig from '../helpers/convertLegacyConfig';
 import azionConfigSchema from '../helpers/schema';
 
 /**
@@ -18,34 +19,16 @@ function validateConfig(
   schema: Record<string, unknown> = azionConfigSchema,
 ) {
   /*  Converts legacy configuration properties to the new `behavior` format. */
+  const configConverted = convertLegacyConfig(config);
   const ajv = new Ajv({ allErrors: true, $data: true, allowUnionTypes: true });
   ajvErrors(ajv);
   addKeywords(ajv, ['instanceof']);
   const validate = ajv.compile(schema);
-  const valid = validate(config);
+  const valid = validate(configConverted);
 
   if (!valid) {
     if (validate.errors && validate.errors.length > 0) {
-      const firstError = validate.errors[0];
-      console.error('🔍 AJV Validation Error Details:');
-      console.error('  Path:', firstError.instancePath);
-      console.error('  Schema Path:', firstError.schemaPath);
-      console.error('  Message:', firstError.message);
-      console.error('  Keyword:', firstError.keyword);
-      console.error('  Params:', firstError.params);
-      console.error('  Data:', JSON.stringify(firstError.data, null, 2));
-
-      // Log all errors for debugging
-      console.error('📋 All Validation Errors:');
-      validate.errors.forEach((error, index) => {
-        console.error(`  ${index + 1}. Path: ${error.instancePath}`);
-        console.error(`     Message: ${error.message}`);
-        console.error(`     Keyword: ${error.keyword}`);
-        console.error(`     Schema Path: ${error.schemaPath}`);
-        console.error('---');
-      });
-
-      throw new Error('Azion Config validation: ' + firstError.message);
+      throw new Error('Azion Config validation: ' + validate.errors[0].message);
     } else {
       throw new Error('Azion Config validation failed.');
     }

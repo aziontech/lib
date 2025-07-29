@@ -1,47 +1,26 @@
-import type { AzionConfig } from 'azion/config';
+import { defineConfig } from 'azion/config';
 
-const config: AzionConfig = {
+export default defineConfig({
   build: {
     entry: 'handler.ts',
+    preset: 'typescript',
+    polyfills: true,
   },
-  edgeFunctions: [
+  functions: [
     {
-      name: '$EDGE_FUNCTION_NAME',
-      path: '$LOCAL_FUNCTION_PATH',
+      name: 'my-typescript-function',
+      path: '.edge/functions/handler.js',
     },
   ],
-  edgeApplications: [
-    {
-      name: '$EDGE_APPLICATION_NAME',
-      rules: {
-        request: [
-          {
-            name: 'Execute Edge Function',
-            description: 'Execute edge function for all requests',
-            active: true,
-            criteria: [
-              [
-                {
-                  variable: 'uri',
-                  conditional: 'if',
-                  operator: 'matches',
-                  argument: '^/',
-                },
-              ],
-            ],
-            behaviors: [
-              {
-                type: 'run_function',
-                attributes: {
-                  value: '$EDGE_FUNCTION_NAME',
-                },
-              },
-            ],
-          },
-        ],
+  rules: {
+    request: [
+      {
+        name: 'Execute Edge Function',
+        match: '^\\/',
+        behavior: {
+          runFunction: 'my-typescript-function',
+        },
       },
-    },
-  ],
-};
-
-export default config;
+    ],
+  },
+});

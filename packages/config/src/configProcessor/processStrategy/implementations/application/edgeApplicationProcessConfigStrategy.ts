@@ -1,15 +1,11 @@
 import { AzionConfig, AzionEdgeApplication } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
-import DeviceGroupsProcessConfigStrategy from './deviceGroupsProcessConfigStrategy';
-import FunctionInstancesProcessConfigStrategy from './functionInstancesProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
 
 class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   private cacheStrategy = new CacheProcessConfigStrategy();
   private rulesStrategy = new RulesProcessConfigStrategy();
-  private deviceGroupsStrategy = new DeviceGroupsProcessConfigStrategy();
-  private functionInstancesStrategy = new FunctionInstancesProcessConfigStrategy();
 
   transformToManifest(config: AzionConfig) {
     if (!config.edgeApplications || !Array.isArray(config.edgeApplications)) {
@@ -23,21 +19,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         active: app.active ?? true,
         debug: app.debug ?? false,
         modules: {
-          edge_cache: {
-            enabled: app.edgeCacheEnabled ?? true,
-          },
-          edge_functions: {
-            enabled: app.edgeFunctionsEnabled ?? false,
-          },
-          application_accelerator: {
-            enabled: app.applicationAcceleratorEnabled ?? false,
-          },
-          image_processor: {
-            enabled: app.imageProcessorEnabled ?? false,
-          },
-          tiered_cache: {
-            enabled: app.tieredCacheEnabled ?? false,
-          },
+          edge_cache_enabled: app.edgeCacheEnabled ?? false,
+          edge_functions_enabled: app.edgeFunctionsEnabled ?? false,
+          application_accelerator_enabled: app.applicationAcceleratorEnabled ?? false,
+          image_processor_enabled: app.imageProcessorEnabled ?? false,
+          tiered_cache_enabled: app.tieredCacheEnabled ?? false,
         },
       };
 
@@ -53,14 +39,6 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         );
       }
 
-      if (app.deviceGroups) {
-        application.device_groups = this.deviceGroupsStrategy.transformToManifest(app.deviceGroups);
-      }
-
-      if (app.functions) {
-        application.functions_instances = this.functionInstancesStrategy.transformToManifest(app.functions, config);
-      }
-
       return application;
     });
   }
@@ -74,21 +52,22 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformedPayload.edgeApplications = payload.edgeApplications.map((app: any) => {
+      // Handle both formats: direct properties or nested in modules
+      const modules = app.modules || app;
+
       return {
         name: app.name,
         active: app.active,
         debug: app.debug,
-        edgeCacheEnabled: app.modules?.edge_cache?.enabled,
-        edgeFunctionsEnabled: app.modules?.edge_functions?.enabled,
-        applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
-        imageProcessorEnabled: app.modules?.image_processor?.enabled,
-        tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
+        modules: {
+          edgeCacheEnabled: modules.edge_cache_enabled ?? false,
+          edgeFunctionsEnabled: modules.edge_functions_enabled ?? false,
+          applicationAcceleratorEnabled: modules.application_accelerator_enabled ?? false,
+          imageProcessorEnabled: modules.image_processor_enabled ?? false,
+          tieredCacheEnabled: modules.tiered_cache_enabled ?? false,
+        },
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
-        rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules) : undefined,
-        deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,
-        functions: app.functions_instances
-          ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)
-          : undefined,
+        rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
       };
     });
 
