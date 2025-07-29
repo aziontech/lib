@@ -11,7 +11,7 @@ import { ALL_EXTENSIONS } from '../constants';
  * - Automatic fallback to index.html for all routes
  *
  * @param options Configuration options for the SPA rules
- * @param options.bucket The name of the edge storage bucket to use
+ * @param options.edgeConnector The name of the edge connector to use
  * @param options.staticExtensions List of file extensions to be treated as static assets
  * @returns Array of rules configured for SPA hosting on Azion Edge
  */
@@ -27,19 +27,58 @@ export function createSPARules(
     request: [
       {
         name: 'Deliver Static Assets',
-        match: `\\.(${staticExtensions.join('|')})$`,
-        behavior: {
-          setEdgeConnector: edgeConnector,
-          deliver: true,
-        },
+        description: 'Deliver static assets directly from edge storage',
+        active: true,
+        criteria: [
+          [
+            {
+              variable: 'uri',
+              conditional: 'if',
+              operator: 'matches',
+              argument: `\\.(${staticExtensions.join('|')})$`,
+            },
+          ],
+        ],
+        behaviors: [
+          {
+            type: 'set_edge_connector',
+            attributes: {
+              value: edgeConnector,
+            },
+          },
+          {
+            type: 'deliver',
+          },
+        ],
       },
       {
         name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          setEdgeConnector: edgeConnector,
-          rewrite: '/index.html',
-        },
+        description: 'Handle all routes by rewriting to index.html for client-side routing',
+        active: true,
+        criteria: [
+          [
+            {
+              variable: 'uri',
+              conditional: 'if',
+              operator: 'matches',
+              argument: '^\\/',
+            },
+          ],
+        ],
+        behaviors: [
+          {
+            type: 'set_edge_connector',
+            attributes: {
+              value: edgeConnector,
+            },
+          },
+          {
+            type: 'rewrite_request',
+            attributes: {
+              value: '/index.html',
+            },
+          },
+        ],
       },
     ],
     response: [],

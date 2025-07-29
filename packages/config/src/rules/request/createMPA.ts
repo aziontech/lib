@@ -11,7 +11,7 @@ import { ALL_EXTENSIONS } from '../constants';
  * - Automatic index.html handling for clean URLs
  *
  * @param options Configuration options for the MPA rules
- * @param options.bucket The name of the edge storage bucket to use
+ * @param options.edgeConnector The name of the edge connector to use
  * @param options.staticExtensions List of file extensions to be treated as static assets
  * @returns Array of rules configured for MPA hosting on Azion Edge
  */
@@ -27,27 +27,87 @@ export function createMPARules(
     request: [
       {
         name: 'Deliver Static Assets',
-        match: `\\.(${staticExtensions.join('|')})$`,
-        behavior: {
-          setEdgeConnector: edgeConnector,
-          deliver: true,
-        },
+        description: 'Deliver static assets directly from edge storage',
+        active: true,
+        criteria: [
+          [
+            {
+              variable: 'uri',
+              conditional: 'if',
+              operator: 'matches',
+              argument: `\\.(${staticExtensions.join('|')})$`,
+            },
+          ],
+        ],
+        behaviors: [
+          {
+            type: 'set_edge_connector',
+            attributes: {
+              value: edgeConnector,
+            },
+          },
+          {
+            type: 'deliver',
+          },
+        ],
       },
       {
         name: 'Redirect to index.html',
-        match: '.*/$',
-        behavior: {
-          setEdgeConnector: edgeConnector,
-          rewrite: '${uri}index.html',
-        },
+        description: 'Handle directory requests by rewriting to index.html',
+        active: true,
+        criteria: [
+          [
+            {
+              variable: 'uri',
+              conditional: 'if',
+              operator: 'matches',
+              argument: '.*/$',
+            },
+          ],
+        ],
+        behaviors: [
+          {
+            type: 'set_edge_connector',
+            attributes: {
+              value: edgeConnector,
+            },
+          },
+          {
+            type: 'rewrite_request',
+            attributes: {
+              value: '${uri}index.html',
+            },
+          },
+        ],
       },
       {
         name: 'Redirect to index.html for Subpaths',
-        match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
-        behavior: {
-          setEdgeConnector: edgeConnector,
-          rewrite: '${uri}/index.html',
-        },
+        description: 'Handle subpath requests by rewriting to index.html',
+        active: true,
+        criteria: [
+          [
+            {
+              variable: 'uri',
+              conditional: 'if',
+              operator: 'matches',
+              argument: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
+            },
+          ],
+        ],
+        behaviors: [
+          {
+            type: 'set_edge_connector',
+            attributes: {
+              value: edgeConnector,
+            },
+          },
+          {
+            type: 'rewrite_request',
+            attributes: {
+              value: '${uri}/index.html',
+            },
+          },
+        ],
       },
     ],
     response: [],
