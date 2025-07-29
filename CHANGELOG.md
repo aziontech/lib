@@ -1,3 +1,10 @@
+## [2.0.0-stage.7](https://github.com/aziontech/lib/compare/v2.0.0-stage.6...v2.0.0-stage.7) (2025-07-29)
+
+
+### Features
+
+* Azion IaC API v4  (#200) ([6ec9c84](https://github.com/aziontech/lib/commit/6ec9c84d446bf738215d7f19a1f6476b6287162c))
+
 ## [2.0.0-stage.6](https://github.com/aziontech/lib/compare/v2.0.0-stage.5...v2.0.0-stage.6) (2025-07-22)
 
 
