@@ -910,25 +910,70 @@ export interface EdgeConnectorModules {
   };
 }
 
-export interface EdgeConnectorAttributes {
+export interface EdgeConnectorStorageAttributes {
+  /** Storage bucket name */
+  bucket: string;
+  /** Storage prefix */
+  prefix?: string;
+}
+
+export interface EdgeConnectorHttpAttributes {
   /** Array of addresses */
   addresses: EdgeConnectorAddress[];
   /** Connection options */
   connectionOptions: EdgeConnectorConnectionOptions;
   /** Modules configuration */
-  modules: EdgeConnectorModules;
+  modules?: EdgeConnectorModules;
 }
 
-export interface AzionEdgeConnector {
+export interface EdgeConnectorLiveIngestAttributes {
+  /** Array of addresses */
+  addresses: EdgeConnectorAddress[];
+  /** Connection options */
+  connectionOptions: EdgeConnectorConnectionOptions;
+  /** Modules configuration */
+  modules?: EdgeConnectorModules;
+}
+
+export type EdgeConnectorAttributes =
+  | EdgeConnectorStorageAttributes
+  | EdgeConnectorHttpAttributes
+  | EdgeConnectorLiveIngestAttributes;
+
+export interface AzionEdgeConnectorStorage {
   /** Edge connector name */
   name: string;
   /** Active status */
   active?: boolean;
   /** Connector type */
-  type: EdgeConnectorType;
+  type: 'edge_storage';
   /** Connector attributes */
-  attributes: EdgeConnectorAttributes;
+  attributes: EdgeConnectorStorageAttributes;
 }
+
+export interface AzionEdgeConnectorHttp {
+  /** Edge connector name */
+  name: string;
+  /** Active status */
+  active?: boolean;
+  /** Connector type */
+  type: 'http';
+  /** Connector attributes */
+  attributes: EdgeConnectorHttpAttributes;
+}
+
+export interface AzionEdgeConnectorLiveIngest {
+  /** Edge connector name */
+  name: string;
+  /** Active status */
+  active?: boolean;
+  /** Connector type */
+  type: 'live_ingest';
+  /** Connector attributes */
+  attributes: EdgeConnectorLiveIngestAttributes;
+}
+
+export type AzionEdgeConnector = AzionEdgeConnectorStorage | AzionEdgeConnectorHttp | AzionEdgeConnectorLiveIngest;
 
 // Custom Pages V4 Types
 

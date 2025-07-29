@@ -84,7 +84,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         imageProcessorEnabled: app.modules?.image_processor?.enabled,
         tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
-        rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules, transformedPayload) : undefined,
+        rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules) : undefined,
         deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,
         functions: app.functions_instances
           ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)
