@@ -19,7 +19,7 @@ const config: AzionConfig = {
       type: 'edge_storage',
       attributes: {
         bucket: '$BUCKET_NAME',
-        prefix: '/',
+        prefix: '$BUCKET_PREFIX',
       },
     },
   ],
