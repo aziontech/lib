@@ -1,48 +1,36 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
+import { createSPARules } from 'azion/config/rules';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
-    preset: 'vue',
     bundler: 'esbuild',
-    polyfills: false,
   },
-  origin: [
+  edgeStorage: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: '$BUCKET_NAME',
+      dir: '$LOCAL_BUCKET_DIR',
+      edgeAccess: 'read_only',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
+  edgeConnectors: [
+    {
+      name: '$EDGE_CONNECTOR_NAME',
+      active: true,
+      type: 'edge_storage',
+      attributes: {
+        bucket: '$BUCKET_NAME',
+        prefix: '$BUCKET_PREFIX',
       },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
+    },
+  ],
+  edgeApplications: [
+    {
+      name: '$EDGE_APPLICATION_NAME',
+      rules: createSPARules({
+        edgeConnector: '$EDGE_CONNECTOR_NAME',
+      }),
+    },
+  ],
+};
 
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+export default config;
