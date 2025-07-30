@@ -1,3 +1,10 @@
+## [2.0.0-stage.10](https://github.com/aziontech/lib/compare/v2.0.0-stage.9...v2.0.0-stage.10) (2025-07-30)
+
+
+### Bug Fixes
+
+* **config:** compile rules package ([5739539](https://github.com/aziontech/lib/commit/5739539f4dfa7b6b3a372a7ccc9ea7351d452cfe))
+
 ## [2.0.0-stage.9](https://github.com/aziontech/lib/compare/v2.0.0-stage.8...v2.0.0-stage.9) (2025-07-30)
 
 
