@@ -522,8 +522,6 @@ export type AzionBucket = {
   edgeAccess?: 'read_only' | 'read_write' | 'restricted';
   /** Storage path */
   dir: string;
-  /** Storage prefix */
-  prefix?: string;
 };
 
 /**
