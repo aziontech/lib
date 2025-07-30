@@ -1,3 +1,10 @@
+## [2.0.0-stage.8](https://github.com/aziontech/lib/compare/v2.0.0-stage.7...v2.0.0-stage.8) (2025-07-30)
+
+
+### Bug Fixes
+
+* **config:** add AzionBucket prefix (#201) ([09da565](https://github.com/aziontech/lib/commit/09da5657f005bc018f076dc79adef55d596e6159))
+
 ## [2.0.0-stage.7](https://github.com/aziontech/lib/compare/v2.0.0-stage.6...v2.0.0-stage.7) (2025-07-29)
 
 
