@@ -1,3 +1,10 @@
+## [2.0.0-stage.9](https://github.com/aziontech/lib/compare/v2.0.0-stage.8...v2.0.0-stage.9) (2025-07-30)
+
+
+### Reverts
+
+* Revert "fix(config): add AzionBucket prefix (#201)" (#202) ([b600879](https://github.com/aziontech/lib/commit/b6008794c59d196e87432c01ef831298e72cd3fe))
+
 ## [2.0.0-stage.8](https://github.com/aziontech/lib/compare/v2.0.0-stage.7...v2.0.0-stage.8) (2025-07-30)
 
 
