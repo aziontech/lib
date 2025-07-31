@@ -1,3 +1,10 @@
+## [2.0.0-stage.11](https://github.com/aziontech/lib/compare/v2.0.0-stage.10...v2.0.0-stage.11) (2025-07-31)
+
+
+### Bug Fixes
+
+* move bindings from function instances to edge functions ([c58173b](https://github.com/aziontech/lib/commit/c58173b4267b871724af4a060877826c5fd9eee7))
+
 ## [2.0.0-stage.10](https://github.com/aziontech/lib/compare/v2.0.0-stage.9...v2.0.0-stage.10) (2025-07-30)
 
 
