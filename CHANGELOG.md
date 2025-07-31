@@ -1,3 +1,11 @@
+## [2.0.0-stage.17](https://github.com/aziontech/lib/compare/v2.0.0-stage.16...v2.0.0-stage.17) (2025-07-31)
+
+
+### Bug Fixes
+
+* **config:** correct strategy naming inconsistencies ([feabea4](https://github.com/aziontech/lib/commit/feabea451363964fc19a03bed507e59ccf1a2c9c))
+* write function path in manifest ([99dbf7f](https://github.com/aziontech/lib/commit/99dbf7f3c6cfe80d25dc8b09b1b5d71e60248cd7))
+
 ## [2.0.0-stage.16](https://github.com/aziontech/lib/compare/v2.0.0-stage.15...v2.0.0-stage.16) (2025-07-31)
 
 
