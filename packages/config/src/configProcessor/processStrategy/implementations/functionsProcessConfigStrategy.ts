@@ -42,6 +42,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
         default_args: func.defaultArgs || {},
         execution_environment: func.executionEnvironment || 'application',
         active: func.active ?? true,
+        path: func.path,
         bindings: func.bindings,
       };
     });
