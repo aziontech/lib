@@ -469,7 +469,7 @@ export type AzionStorageBinding = {
   /** Storage bucket name or ID */
   bucket: string;
   /** Storage prefix */
-  prefix: string;
+  prefix?: string;
 };
 
 /**
