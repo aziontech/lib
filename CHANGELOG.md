@@ -1,3 +1,10 @@
+## [2.0.0-stage.16](https://github.com/aziontech/lib/compare/v2.0.0-stage.15...v2.0.0-stage.16) (2025-07-31)
+
+
+### Bug Fixes
+
+* manifest schema ([d3168d8](https://github.com/aziontech/lib/commit/d3168d89dd0074810c9cfb89d67ce6f1780b3da8))
+
 ## [2.0.0-stage.15](https://github.com/aziontech/lib/compare/v2.0.0-stage.14...v2.0.0-stage.15) (2025-07-31)
 
 
