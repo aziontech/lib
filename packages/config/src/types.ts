@@ -475,7 +475,7 @@ export type AzionStorageBinding = {
 /**
  * Bindings configuration for Azion Edge Functions.
  */
-export type AzionBindings = {
+export type AzionFunctionBindings = {
   /** Storage bindings */
   storage?: AzionStorageBinding;
 };
@@ -509,7 +509,7 @@ export type AzionEdgeFunction = {
   /** Active status */
   active?: boolean;
   /** Function bindings */
-  bindings?: AzionBindings;
+  bindings?: AzionFunctionBindings;
 };
 
 /**
