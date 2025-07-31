@@ -1,3 +1,10 @@
+## [2.0.0-stage.13](https://github.com/aziontech/lib/compare/v2.0.0-stage.12...v2.0.0-stage.13) (2025-07-31)
+
+
+### Features
+
+* **utils:** feedback new scopes ([3575c26](https://github.com/aziontech/lib/commit/3575c260652a102a40f3be80d63b2d465d6cfb82))
+
 ## [2.0.0-stage.12](https://github.com/aziontech/lib/compare/v2.0.0-stage.11...v2.0.0-stage.12) (2025-07-31)
 
 
