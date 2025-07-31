@@ -27,27 +27,9 @@ function validateConfig(
   if (!valid) {
     if (validate.errors && validate.errors.length > 0) {
       const firstError = validate.errors[0];
-      console.error('🔍 AJV Validation Error Details:');
-      console.error('  Path:', firstError.instancePath);
-      console.error('  Schema Path:', firstError.schemaPath);
-      console.error('  Message:', firstError.message);
-      console.error('  Keyword:', firstError.keyword);
-      console.error('  Params:', firstError.params);
-      console.error('  Data:', JSON.stringify(firstError.data, null, 2));
-
-      // Log all errors for debugging
-      console.error('📋 All Validation Errors:');
-      validate.errors.forEach((error, index) => {
-        console.error(`  ${index + 1}. Path: ${error.instancePath}`);
-        console.error(`     Message: ${error.message}`);
-        console.error(`     Keyword: ${error.keyword}`);
-        console.error(`     Schema Path: ${error.schemaPath}`);
-        console.error('---');
-      });
-
-      throw new Error('Azion Config validation: ' + firstError.message);
+      throw new Error('Azion validation: ' + firstError.message);
     } else {
-      throw new Error('Azion Config validation failed.');
+      throw new Error('Azion validation failed.');
     }
   }
 }
