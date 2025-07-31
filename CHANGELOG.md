@@ -1,3 +1,10 @@
+## [2.0.0-stage.15](https://github.com/aziontech/lib/compare/v2.0.0-stage.14...v2.0.0-stage.15) (2025-07-31)
+
+
+### Bug Fixes
+
+* export validateManifest ([9b6c46b](https://github.com/aziontech/lib/commit/9b6c46b103dff8da2bf24937e26746a9fc9f647e))
+
 ## [2.0.0-stage.14](https://github.com/aziontech/lib/compare/v2.0.0-stage.13...v2.0.0-stage.14) (2025-07-31)
 
 
