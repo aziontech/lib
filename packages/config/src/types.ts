@@ -467,7 +467,7 @@ export type AzionNetworkList = {
  */
 export type AzionStorageBinding = {
   /** Storage bucket name or ID */
-  bucket: string | number;
+  bucket: string;
   /** Storage prefix */
   prefix: string;
 };
