@@ -1,3 +1,11 @@
+## [2.0.0-stage.12](https://github.com/aziontech/lib/compare/v2.0.0-stage.11...v2.0.0-stage.12) (2025-07-31)
+
+
+### Bug Fixes
+
+* azion storage binding prefix is optional ([f546d8c](https://github.com/aziontech/lib/commit/f546d8c71d5a4d81593b06fbdbe08b200d8b57ef))
+* storage binding bucket property type ([c1348e1](https://github.com/aziontech/lib/commit/c1348e1a9f1a9eb76dbc365abda223fa9dde35e0))
+
 ## [2.0.0-stage.11](https://github.com/aziontech/lib/compare/v2.0.0-stage.10...v2.0.0-stage.11) (2025-07-31)
 
 
