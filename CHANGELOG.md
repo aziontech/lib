@@ -1,3 +1,10 @@
+## [2.0.0-stage.14](https://github.com/aziontech/lib/compare/v2.0.0-stage.13...v2.0.0-stage.14) (2025-07-31)
+
+
+### Features
+
+* export validateManifest method ([936338e](https://github.com/aziontech/lib/commit/936338e14f66d79e9ca71bba8fecf0daa900039a))
+
 ## [2.0.0-stage.13](https://github.com/aziontech/lib/compare/v2.0.0-stage.12...v2.0.0-stage.13) (2025-07-31)
 
 
