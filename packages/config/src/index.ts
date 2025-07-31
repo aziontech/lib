@@ -1,4 +1,4 @@
-import { convertJsonConfigToObject, processConfig, validateConfig } from './configProcessor';
+import { convertJsonConfigToObject, processConfig, validateConfig, validateManifest } from './configProcessor';
 import {
   convertToV4Config,
   convertV3ToV4Config,
@@ -38,6 +38,7 @@ export {
   isV3LegacyConfig,
   processConfig,
   validateConfig,
+  validateManifest,
 };
 
 export type * from './types';
