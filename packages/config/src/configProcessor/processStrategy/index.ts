@@ -16,7 +16,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
   processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
   processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
-  processConfigContext.setStrategy('storage', new StorageProcessConfigStrategy());
+  processConfigContext.setStrategy('edgeStorage', new StorageProcessConfigStrategy());
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
   processConfigContext.setStrategy('edgeFunctions', new FunctionsProcessConfigStrategy());
   processConfigContext.setStrategy('edgeApplications', new EdgeApplicationProcessConfigStrategy());

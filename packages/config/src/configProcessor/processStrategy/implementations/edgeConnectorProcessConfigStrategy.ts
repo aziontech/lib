@@ -112,7 +112,7 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
    */
   transformToConfig(
     payload: {
-      edge_connector?: Array<{
+      edgeConnectors?: Array<{
         name: string;
         active?: boolean;
         type: EdgeConnectorType;
@@ -174,11 +174,11 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
     },
     transformedPayload: AzionConfig,
   ) {
-    if (!payload.edge_connector || payload.edge_connector.length === 0) {
+    if (!payload.edgeConnectors || payload.edgeConnectors.length === 0) {
       return;
     }
 
-    transformedPayload.edgeConnectors = payload.edge_connector.map((connector) => {
+    transformedPayload.edgeConnectors = payload.edgeConnectors.map((connector) => {
       const baseConnector = {
         name: connector.name,
         active: connector.active,

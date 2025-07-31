@@ -53,7 +53,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
    */
   transformToConfig(
     payload: {
-      edgeFunction?: Array<{
+      edgeFunctions?: Array<{
         name: string;
         runtime?: string;
         default_args?: Record<string, unknown>;
@@ -63,11 +63,11 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
     },
     transformedPayload: AzionConfig,
   ) {
-    if (!Array.isArray(payload?.edgeFunction) || payload?.edgeFunction.length === 0) {
+    if (!Array.isArray(payload?.edgeFunctions) || payload?.edgeFunctions.length === 0) {
       return;
     }
 
-    transformedPayload.edgeFunctions = payload.edgeFunction.map((func) => ({
+    transformedPayload.edgeFunctions = payload.edgeFunctions.map((func) => ({
       name: func.name,
       path: `./functions/${func.name}.js`, // Default path since it's not in V4 API
       runtime: func.runtime as EdgeFunctionRuntime,
