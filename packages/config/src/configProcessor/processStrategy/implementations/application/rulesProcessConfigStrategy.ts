@@ -196,7 +196,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
         criteria: manifestRule.rule.criteria.map((criteriaGroup) =>
           criteriaGroup.map((criterion) => {
             const baseCriterion = {
-              variable: criterion.variable.replace(/^\$\{|\}$/g, '') as RuleVariable, // Remove ${}
+              variable: criterion.variable as RuleVariable,
               conditional: criterion.conditional,
               operator: criterion.operator,
             };

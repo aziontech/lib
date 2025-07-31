@@ -14,14 +14,14 @@ function factoryProcessContext() {
   const processConfigContext = new ProcessConfigContext();
   processConfigContext.setStrategy('build', new BuildProcessConfigStrategy());
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
-  processConfigContext.setStrategy('networkList', new NetworkListProcessConfigStrategy());
+  processConfigContext.setStrategy('network_list', new NetworkListProcessConfigStrategy());
   processConfigContext.setStrategy('waf', new WafProcessConfigStrategy());
-  processConfigContext.setStrategy('edgeStorage', new StorageProcessConfigStrategy());
+  processConfigContext.setStrategy('edge_storage', new StorageProcessConfigStrategy());
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
-  processConfigContext.setStrategy('edgeFunctions', new FunctionsProcessConfigStrategy());
-  processConfigContext.setStrategy('edgeApplications', new EdgeApplicationProcessConfigStrategy());
+  processConfigContext.setStrategy('edge_functions', new FunctionsProcessConfigStrategy());
+  processConfigContext.setStrategy('edge_applications', new EdgeApplicationProcessConfigStrategy());
   processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
-  processConfigContext.setStrategy('edgeConnectors', new EdgeConnectorProcessConfigStrategy());
+  processConfigContext.setStrategy('edge_connectors', new EdgeConnectorProcessConfigStrategy());
   return processConfigContext;
 }
 

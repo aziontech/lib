@@ -26,23 +26,6 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   /**
-   * Validate storage binding reference
-   */
-  private validateStorageBinding(config: AzionConfig, bucketNameOrId: string | number, instanceName: string) {
-    // Only validate if it's a string (name), skip validation for numbers (IDs)
-    if (typeof bucketNameOrId === 'string') {
-      if (
-        !Array.isArray(config?.edgeStorage) ||
-        !config.edgeStorage.find((storage) => storage.name === bucketNameOrId)
-      ) {
-        throw new Error(
-          `Function instance "${instanceName}" references storage bucket "${bucketNameOrId}" which is not defined in the edgeStorage configuration.`,
-        );
-      }
-    }
-  }
-
-  /**
    * Transform azion.config Function Instances to V4 manifest format
    */
   transformToManifest(functionInstances: AzionFunctionInstance[], config: AzionConfig) {
@@ -56,7 +39,7 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
 
       return {
         name: instance.name,
-        edge_function: String(instance.ref), // Convert to string for API manifest
+        edge_function: instance.ref,
         args: instance.args || {},
       };
     });
@@ -76,7 +59,7 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
 
     return payload.map((instance) => ({
       name: instance.name,
-      ref: String(instance.edge_function), // CLI should resolve ID to function name before calling this
+      ref: instance.edge_function,
       args: instance.args,
     }));
   }

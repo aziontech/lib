@@ -450,8 +450,33 @@ const schemaFunctionManifest = {
       default: true,
       errorMessage: "The 'active' field must be a boolean",
     },
+    path: {
+      type: 'string',
+      errorMessage: "The 'path' field must be a string",
+    },
+    bindings: {
+      type: 'object',
+      properties: {
+        storage: {
+          type: 'object',
+          properties: {
+            bucket: {
+              type: 'string',
+              errorMessage: "The 'bucket' field must be a string",
+            },
+            prefix: {
+              type: 'string',
+              errorMessage: "The 'prefix' field must be a string",
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+      additionalProperties: false,
+      errorMessage: "The 'bindings' field must be an object",
+    },
   },
-  required: ['name', 'code'],
+  required: ['name'],
   additionalProperties: false,
 };
 
@@ -867,8 +892,8 @@ const schemaCriteriaManifest = {
   properties: {
     variable: {
       type: 'string',
-      enum: Array.from(new Set(RULE_VARIABLES)),
-      errorMessage: "The 'variable' field must be a valid variable name.",
+      pattern: `^\\$\\{(${Array.from(new Set(RULE_VARIABLES)).join('|')})\\}$`,
+      errorMessage: "The 'variable' field must be a valid variable name wrapped in ${}.",
     },
     operator: {
       type: 'string',
@@ -1155,9 +1180,20 @@ const schemaApplicationManifest = {
             errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
           },
           edge_function: {
-            type: 'integer',
-            minimum: 1,
-            errorMessage: "The 'edge_function' field must be an integer >= 1.",
+            oneOf: [
+              {
+                type: 'string',
+                minLength: 1,
+                maxLength: 250,
+                errorMessage: "The 'edge_function' field must be a string between 1 and 250 characters.",
+              },
+              {
+                type: 'integer',
+                minimum: 1,
+                errorMessage: "The 'edge_function' field must be an integer >= 1.",
+              },
+            ],
+            errorMessage: "The 'edge_function' field must be either a string (function name) or integer (function ID).",
           },
           args: {
             type: 'object',

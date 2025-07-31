@@ -67,13 +67,13 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!payload.edgeApplications || !Array.isArray(payload.edgeApplications)) {
+    if (!payload.edge_applications || !Array.isArray(payload.edge_applications)) {
       transformedPayload.edgeApplications = [];
       return transformedPayload.edgeApplications;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeApplications = payload.edgeApplications.map((app: any) => {
+    transformedPayload.edgeApplications = payload.edge_applications.map((app: any) => {
       return {
         name: app.name,
         active: app.active,

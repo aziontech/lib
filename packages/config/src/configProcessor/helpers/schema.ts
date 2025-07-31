@@ -88,23 +88,11 @@ const createVariableValidation = (isRequestPhase = false) => ({
   type: 'string',
   anyOf: [
     {
-      // static variables
-      enum: [...new Set(isRequestPhase ? ALL_REQUEST_VARIABLES : ALL_RESPONSE_VARIABLES)],
-      errorMessage: "The 'variable' field must be a valid variable",
-    },
-    {
       // variables with ${}
       type: 'string',
       pattern:
         '^\\$\\{(' + [...new Set(isRequestPhase ? ALL_REQUEST_VARIABLES : ALL_RESPONSE_VARIABLES)].join('|') + ')\\}$',
       errorMessage: "The 'variable' field must be a valid variable wrapped in ${}",
-    },
-    {
-      // dynamic pattern
-      type: 'string',
-      pattern: isRequestPhase
-        ? '^(arg_|cookie_|http_)[a-zA-Z0-9_]+$'
-        : '^(arg_|cookie_|http_|sent_http_|upstream_cookie_|upstream_http_)[a-zA-Z0-9_]+$',
     },
     {
       // dynamic pattern with ${}
@@ -116,12 +104,12 @@ const createVariableValidation = (isRequestPhase = false) => ({
     {
       // special variables with arguments
       type: 'string',
-      pattern: `^(${SPECIAL_VARIABLES.join('|')})\\([^)]+\\)$`,
+      pattern: `^\\$\\{(${SPECIAL_VARIABLES.join('|')})\\([^)]+\\)\\}$`,
     },
   ],
   errorMessage: isRequestPhase
-    ? "The 'variable' field must be either a valid request phase variable, mTLS variable, follow the patterns (arg_*, cookie_*, http_*), or be a special function variable (cookie_time_offset, encode_base64)"
-    : "The 'variable' field must be either a valid response phase variable, follow the patterns (arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*), or be a special function variable (cookie_time_offset, encode_base64)",
+    ? "The 'variable' field must be a valid request phase variable wrapped in ${}, follow the patterns arg_*, cookie_*, http_*, or be a special function variable cookie_time_offset(), encode_base64()"
+    : "The 'variable' field must be a valid response phase variable wrapped in ${}, follow the patterns arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*, or be a special function variable cookie_time_offset(), encode_base64()",
 });
 
 // Schema para behaviors sem argumentos
