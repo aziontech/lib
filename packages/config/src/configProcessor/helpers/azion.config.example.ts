@@ -328,12 +328,6 @@ const config: AzionConfig = {
             environment: 'production',
             apiUrl: 'https://api.example.com',
           },
-          bindings: {
-            storage: {
-              bucket: 'my-storage', // Using name reference
-              prefix: 'auth-data/',
-            },
-          },
         },
         {
           name: 'analytics-function-instance',
@@ -403,6 +397,12 @@ const config: AzionConfig = {
       },
       executionEnvironment: 'application',
       active: true,
+      bindings: {
+        storage: {
+          bucket: 'my-storage', // Using name reference
+          prefix: 'auth-data/',
+        },
+      },
     },
   ],
   edgeStorage: [

@@ -54,11 +54,6 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
       // Validate Edge Function reference
       this.validateEdgeFunctionReference(config.edgeFunctions, instance.ref, instance.name);
 
-      // Validate storage binding if exists
-      if (instance.bindings?.storage?.bucket) {
-        this.validateStorageBinding(config, instance.bindings.storage.bucket, instance.name);
-      }
-
       return {
         name: instance.name,
         edge_function: String(instance.ref), // Convert to string for API manifest
@@ -83,7 +78,6 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
       name: instance.name,
       ref: String(instance.edge_function), // CLI should resolve ID to function name before calling this
       args: instance.args,
-      // Note: bindings are not returned by V4 API, so we don't restore them
     }));
   }
 }

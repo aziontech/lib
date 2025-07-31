@@ -473,7 +473,7 @@ export type AzionStorageBinding = {
 };
 
 /**
- * Bindings configuration for Azion.
+ * Bindings configuration for Azion Edge Functions.
  */
 export type AzionBindings = {
   /** Storage bindings */
@@ -490,8 +490,6 @@ export type AzionFunctionInstance = {
   ref: string | number;
   /** Instance-specific arguments */
   args?: Record<string, unknown>;
-  /** Function bindings (moved from Edge Function to instance) */
-  bindings?: AzionBindings;
 };
 
 /**
@@ -510,6 +508,8 @@ export type AzionEdgeFunction = {
   executionEnvironment?: EdgeFunctionExecutionEnvironment;
   /** Active status */
   active?: boolean;
+  /** Function bindings */
+  bindings?: AzionBindings;
 };
 
 /**

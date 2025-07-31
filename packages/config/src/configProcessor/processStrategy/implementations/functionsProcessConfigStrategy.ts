@@ -8,6 +8,21 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
   /**
+   * Validate storage binding reference
+   */
+  private validateStorageBinding(config: AzionConfig, bucketNameOrId: string | number, functionName: string) {
+    if (typeof bucketNameOrId === 'string') {
+      if (
+        !Array.isArray(config?.edgeStorage) ||
+        !config.edgeStorage.find((storage) => storage.name === bucketNameOrId)
+      ) {
+        throw new Error(
+          `Edge Function "${functionName}" references storage bucket "${bucketNameOrId}" which is not defined in the edgeStorage configuration.`,
+        );
+      }
+    }
+  }
+  /**
    * Transform azion.config Edge Functions to V4 manifest format
    */
   transformToManifest(config: AzionConfig) {
@@ -15,13 +30,21 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       return [];
     }
 
-    return config.edgeFunctions.map((func) => ({
-      name: func.name,
-      runtime: func.runtime || 'azion_js',
-      default_args: func.defaultArgs || {},
-      execution_environment: func.executionEnvironment || 'application',
-      active: func.active ?? true,
-    }));
+    return config.edgeFunctions.map((func) => {
+      // Validate storage binding if exists
+      if (func.bindings?.storage?.bucket) {
+        this.validateStorageBinding(config, func.bindings.storage.bucket, func.name);
+      }
+
+      return {
+        name: func.name,
+        runtime: func.runtime || 'azion_js',
+        default_args: func.defaultArgs || {},
+        execution_environment: func.executionEnvironment || 'application',
+        active: func.active ?? true,
+        bindings: func.bindings,
+      };
+    });
   }
 
   /**

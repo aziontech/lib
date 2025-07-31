@@ -420,6 +420,36 @@ const schemaFunction = {
       default: true,
       errorMessage: "The 'active' field must be a boolean",
     },
+    bindings: {
+      type: 'object',
+      properties: {
+        storage: {
+          type: 'object',
+          properties: {
+            bucket: {
+              type: ['string', 'number'],
+              errorMessage: "The 'bucket' field must be a string or number",
+            },
+            prefix: {
+              type: 'string',
+              errorMessage: "The 'prefix' field must be a string",
+            },
+          },
+          required: ['bucket'],
+          additionalProperties: false,
+          errorMessage: {
+            type: "The 'storage' field must be an object",
+            additionalProperties: 'No additional properties are allowed in the storage object',
+            required: "The 'bucket' field is required in the storage object",
+          },
+        },
+      },
+      additionalProperties: false,
+      errorMessage: {
+        type: "The 'bindings' field must be an object",
+        additionalProperties: 'No additional properties are allowed in the bindings object',
+      },
+    },
   },
   required: ['name', 'path'],
   additionalProperties: false,
@@ -829,36 +859,6 @@ const azionConfigSchema = {
                       type: 'object',
                       default: {},
                       errorMessage: "The 'args' field must be an object",
-                    },
-                    bindings: {
-                      type: 'object',
-                      properties: {
-                        storage: {
-                          type: 'object',
-                          properties: {
-                            bucket: {
-                              type: ['string', 'number'],
-                              errorMessage: "The 'bucket' field must be a string or number",
-                            },
-                            prefix: {
-                              type: 'string',
-                              errorMessage: "The 'prefix' field must be a string",
-                            },
-                          },
-                          required: ['bucket'],
-                          additionalProperties: false,
-                          errorMessage: {
-                            type: "The 'storage' field must be an object",
-                            additionalProperties: 'No additional properties are allowed in the storage object',
-                            required: "The 'bucket' field is required in the storage object",
-                          },
-                        },
-                      },
-                      additionalProperties: false,
-                      errorMessage: {
-                        type: "The 'bindings' field must be an object",
-                        additionalProperties: 'No additional properties are allowed in the bindings object',
-                      },
                     },
                   },
                   required: ['name', 'ref'],
