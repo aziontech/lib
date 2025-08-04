@@ -1,3 +1,10 @@
+## [2.0.0-stage.19](https://github.com/aziontech/lib/compare/v2.0.0-stage.18...v2.0.0-stage.19) (2025-08-04)
+
+
+### Bug Fixes
+
+* azion.config criteria variable ([7e5096f](https://github.com/aziontech/lib/commit/7e5096f1a5962713201128bbaaeeaf0068ce7729))
+
 ## [2.0.0-stage.18](https://github.com/aziontech/lib/compare/v2.0.0-stage.17...v2.0.0-stage.18) (2025-08-04)
 
 
