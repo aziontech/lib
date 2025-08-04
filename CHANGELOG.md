@@ -1,3 +1,10 @@
+## [2.0.0-stage.20](https://github.com/aziontech/lib/compare/v2.0.0-stage.19...v2.0.0-stage.20) (2025-08-04)
+
+
+### Bug Fixes
+
+* workloads and workloads deployments ([f519b45](https://github.com/aziontech/lib/commit/f519b458585307827bbf93d454dc2558d71be8f2))
+
 ## [2.0.0-stage.19](https://github.com/aziontech/lib/compare/v2.0.0-stage.18...v2.0.0-stage.19) (2025-08-04)
 
 
