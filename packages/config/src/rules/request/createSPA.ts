@@ -32,7 +32,7 @@ export function createSPARules(
         criteria: [
           [
             {
-              variable: 'uri',
+              variable: '${uri}',
               conditional: 'if',
               operator: 'matches',
               argument: `\\.(${staticExtensions.join('|')})$`,
@@ -58,7 +58,7 @@ export function createSPARules(
         criteria: [
           [
             {
-              variable: 'uri',
+              variable: '${uri}',
               conditional: 'if',
               operator: 'matches',
               argument: '^\\/',

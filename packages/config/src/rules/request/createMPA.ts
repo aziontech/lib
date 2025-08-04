@@ -32,7 +32,7 @@ export function createMPARules(
         criteria: [
           [
             {
-              variable: 'uri',
+              variable: '${uri}',
               conditional: 'if',
               operator: 'matches',
               argument: `\\.(${staticExtensions.join('|')})$`,
@@ -58,7 +58,7 @@ export function createMPARules(
         criteria: [
           [
             {
-              variable: 'uri',
+              variable: '${uri}',
               conditional: 'if',
               operator: 'matches',
               argument: '.*/$',
@@ -87,7 +87,7 @@ export function createMPARules(
         criteria: [
           [
             {
-              variable: 'uri',
+              variable: '${uri}',
               conditional: 'if',
               operator: 'matches',
               argument: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',

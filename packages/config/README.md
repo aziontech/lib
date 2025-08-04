@@ -126,7 +126,7 @@ const config = defineConfig({
         active: true,
         criteria: [
           {
-            variable: 'remote_addr',
+            variable: '${remote_addr}',
             operator: 'in',
             conditional: 'if',
             inputValue: 'suspicious_ips',
@@ -142,7 +142,7 @@ const config = defineConfig({
         active: true,
         criteria: [
           {
-            variable: 'uri',
+            variable: '${uri}',
             operator: 'starts_with',
             conditional: 'if',
             inputValue: '/api/',

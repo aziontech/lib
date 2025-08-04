@@ -40,7 +40,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/_next/static/',
@@ -66,7 +66,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
@@ -92,7 +92,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/',

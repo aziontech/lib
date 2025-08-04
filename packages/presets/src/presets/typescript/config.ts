@@ -22,7 +22,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/',
