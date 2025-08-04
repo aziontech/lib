@@ -154,12 +154,12 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
         };
       };
     }>;
-  }): AzionWorkloadDeployment[] {
+  }) {
     if (!Array.isArray(payload?.workload_deployments) || payload.workload_deployments.length === 0) {
-      return [];
+      return {};
     }
 
-    return payload.workload_deployments.map((deployment) => ({
+    const workloadDeployments = payload.workload_deployments.map((deployment) => ({
       name: deployment.name,
       current: deployment.current,
       active: deployment.active,
@@ -175,7 +175,7 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
       },
     }));
 
-    // Note: The returned deployments need to be assigned back to their respective workloads by the CLI
+    return { workloadDeployments };
   }
 }
 

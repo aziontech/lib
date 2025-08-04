@@ -42,12 +42,12 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: { workloads?: any[] }, transformedPayload: AzionConfig) {
+  transformToConfig(payload: { workloads?: any[] }) {
     if (!payload.workloads || payload.workloads.length === 0) {
-      return;
+      return {};
     }
 
-    transformedPayload.workloads = payload.workloads.map((workload) => ({
+    const workloads = payload.workloads.map((workload) => ({
       name: workload.name,
       active: workload.active,
       infrastructure: workload.infrastructure,
@@ -75,7 +75,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
         : undefined,
     }));
 
-    return transformedPayload.workloads;
+    return { workloads };
   }
 }
 

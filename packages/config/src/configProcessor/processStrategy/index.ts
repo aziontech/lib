@@ -7,6 +7,7 @@ import FirewallProcessConfigStrategy from './implementations/secure/firewallProc
 import NetworkListProcessConfigStrategy from './implementations/secure/networkListProcessConfigStrategy';
 import WafProcessConfigStrategy from './implementations/secure/wafProcessConfigStrategy';
 import StorageProcessConfigStrategy from './implementations/storageProcessConfigStrategy';
+import WorkloadDeploymentsProcessConfigStrategy from './implementations/workloadDeploymentsProcessConfigStrategy';
 import WorkloadProcessConfigStrategy from './implementations/workloadProcessConfigStrategy';
 import ProcessConfigContext from './processConfigContext';
 
@@ -22,6 +23,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('edge_applications', new EdgeApplicationProcessConfigStrategy());
   processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
   processConfigContext.setStrategy('edge_connectors', new EdgeConnectorProcessConfigStrategy());
+  processConfigContext.setStrategy('workload_deployments', new WorkloadDeploymentsProcessConfigStrategy());
   return processConfigContext;
 }
 
