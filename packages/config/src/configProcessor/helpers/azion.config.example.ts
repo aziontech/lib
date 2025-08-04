@@ -68,7 +68,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/rewrite$',
@@ -112,7 +112,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/_statics/',
@@ -138,7 +138,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/compute/',
@@ -161,7 +161,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/api/',
@@ -184,13 +184,13 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'starts_with',
                   argument: '/mobile/',
                 },
                 {
-                  variable: 'device_group',
+                  variable: '${device_group}',
                   conditional: 'and',
                   operator: 'is_equal',
                   argument: 'mobile-devices',
@@ -198,7 +198,7 @@ const config: AzionConfig = {
               ],
               [
                 {
-                  variable: 'host',
+                  variable: '${host}',
                   conditional: 'if',
                   operator: 'is_equal',
                   argument: 'm.example.com',
@@ -223,7 +223,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/api/data',
@@ -249,7 +249,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'status',
+                  variable: '${status}',
                   conditional: 'if',
                   operator: 'is_equal',
                   argument: '200',
@@ -284,7 +284,7 @@ const config: AzionConfig = {
             criteria: [
               [
                 {
-                  variable: 'uri',
+                  variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
                   argument: '^/capture/(.+)',
