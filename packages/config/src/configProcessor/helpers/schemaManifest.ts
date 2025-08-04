@@ -728,10 +728,8 @@ const schemaApplicationCacheSettings = {
   additionalProperties: false,
 };
 
-// Schema para behaviors V4 no manifest
 const schemaBehaviorManifest = {
   oneOf: [
-    // No-args behaviors
     {
       type: 'object',
       properties: {
@@ -743,7 +741,6 @@ const schemaBehaviorManifest = {
       required: ['type'],
       additionalProperties: false,
     },
-    // String behaviors
     {
       type: 'object',
       properties: {
@@ -767,7 +764,6 @@ const schemaBehaviorManifest = {
       required: ['type', 'attributes'],
       additionalProperties: false,
     },
-    // ID behaviors (aceita string ou number)
     {
       type: 'object',
       properties: {
@@ -799,7 +795,6 @@ const schemaBehaviorManifest = {
       required: ['type', 'attributes'],
       additionalProperties: false,
     },
-    // Header behaviors
     {
       type: 'object',
       properties: {
@@ -824,7 +819,6 @@ const schemaBehaviorManifest = {
       required: ['type', 'attributes'],
       additionalProperties: false,
     },
-    // Cookie behaviors
     {
       type: 'object',
       properties: {
@@ -849,7 +843,6 @@ const schemaBehaviorManifest = {
       required: ['type', 'attributes'],
       additionalProperties: false,
     },
-    // Capture groups behavior
     {
       type: 'object',
       properties: {
@@ -886,7 +879,6 @@ const schemaBehaviorManifest = {
   ],
 };
 
-// Schema para critérios V4 no manifest
 const schemaCriteriaManifest = {
   type: 'object',
   properties: {
@@ -938,7 +930,6 @@ const schemaCriteriaManifest = {
   additionalProperties: false,
 };
 
-// Schema para rules V4 no manifest (com phase)
 const schemaApplicationRulesV4 = {
   type: 'object',
   properties: {
@@ -1375,7 +1366,6 @@ const schemaEdgeConnectorManifest = {
     attributes: {
       oneOf: [
         {
-          // Edge Storage attributes
           type: 'object',
           properties: {
             bucket: {
@@ -1401,7 +1391,6 @@ const schemaEdgeConnectorManifest = {
           },
         },
         {
-          // HTTP and Live Ingest attributes
           type: 'object',
           properties: {
             addresses: {

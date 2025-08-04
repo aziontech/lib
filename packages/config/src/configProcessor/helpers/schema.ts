@@ -30,7 +30,6 @@ import {
   WORKLOAD_TLS_VERSIONS,
 } from '../../constants';
 
-// Schema base para critérios com validação específica por fase
 const createCriteriaBaseSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
@@ -88,14 +87,12 @@ const createVariableValidation = (isRequestPhase = false) => ({
   type: 'string',
   anyOf: [
     {
-      // variables with ${}
       type: 'string',
       pattern:
         '^\\$\\{(' + [...new Set(isRequestPhase ? ALL_REQUEST_VARIABLES : ALL_RESPONSE_VARIABLES)].join('|') + ')\\}$',
       errorMessage: "The 'variable' field must be a valid variable wrapped in ${}",
     },
     {
-      // dynamic pattern with ${}
       type: 'string',
       pattern: isRequestPhase
         ? '^\\$\\{(arg_|cookie_|http_)[a-zA-Z0-9_]+\\}$'
@@ -112,7 +109,6 @@ const createVariableValidation = (isRequestPhase = false) => ({
     : "The 'variable' field must be a valid response phase variable wrapped in ${}, follow the patterns arg_*, cookie_*, http_*, sent_http_*, upstream_cookie_*, upstream_http_*, or be a special function variable cookie_time_offset(), encode_base64()",
 });
 
-// Schema para behaviors sem argumentos
 const noArgsBehaviorSchema = {
   type: 'object',
   properties: {
@@ -130,7 +126,6 @@ const noArgsBehaviorSchema = {
   },
 };
 
-// Schema para behaviors com string value
 const stringBehaviorSchema = {
   type: 'object',
   properties: {
@@ -202,7 +197,6 @@ const idBehaviorSchema = {
   additionalProperties: false,
 };
 
-// Schema para behaviors de header
 const headerBehaviorSchema = {
   type: 'object',
   properties: {
@@ -234,7 +228,6 @@ const headerBehaviorSchema = {
   additionalProperties: false,
 };
 
-// Schema para behaviors de cookie
 const cookieBehaviorSchema = {
   type: 'object',
   properties: {
@@ -266,7 +259,6 @@ const cookieBehaviorSchema = {
   additionalProperties: false,
 };
 
-// Schema para capture match groups
 const captureGroupsBehaviorSchema = {
   type: 'object',
   properties: {
@@ -313,7 +305,6 @@ const captureGroupsBehaviorSchema = {
   additionalProperties: false,
 };
 
-// Schema para behaviors (union de todos os tipos)
 const ruleBehaviorSchema = {
   oneOf: [
     noArgsBehaviorSchema,
@@ -326,7 +317,6 @@ const ruleBehaviorSchema = {
   errorMessage: 'Each behavior must match one of the valid behavior formats.',
 };
 
-// Schema para rules V4 com validação específica por fase
 const createRuleSchema = (isRequestPhase = false) => ({
   type: 'object',
   properties: {
