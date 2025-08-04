@@ -1,3 +1,10 @@
+## [2.0.0-stage.18](https://github.com/aziontech/lib/compare/v2.0.0-stage.17...v2.0.0-stage.18) (2025-08-04)
+
+
+### Bug Fixes
+
+* manifest props names ([2794529](https://github.com/aziontech/lib/commit/2794529e220ac489c738a2c70d035b9d8ce42bb7))
+
 ## [2.0.0-stage.17](https://github.com/aziontech/lib/compare/v2.0.0-stage.16...v2.0.0-stage.17) (2025-07-31)
 
 
