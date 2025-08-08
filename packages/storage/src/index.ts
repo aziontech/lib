@@ -136,19 +136,23 @@ export const createBucketMethod = async (
         createObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          createObjectMethod(token, name, key, content, resolvedOptions),
+          createObjectMethod(token, name, key, content, params, resolvedOptions),
         updateObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          updateObjectMethod(token, name, key, content, resolvedOptions),
+          updateObjectMethod(token, name, key, content, params, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
           deleteObjectMethod(token, name, key, resolvedOptions),
       },
@@ -216,19 +220,23 @@ export const getBucketsMethod = async (
       createObject: ({
         key,
         content,
+        params,
       }: {
         key: string;
         content: string;
+        params?: { content_type?: string };
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-        createObjectMethod(token, bucket.name, key, content, resolvedOptions),
+        createObjectMethod(token, bucket.name, key, content, params, resolvedOptions),
       updateObject: ({
         key,
         content,
+        params,
       }: {
         key: string;
         content: string;
+        params?: { content_type?: string };
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-        updateObjectMethod(token, bucket.name, key, content, resolvedOptions),
+        updateObjectMethod(token, bucket.name, key, content, params, resolvedOptions),
       deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
         deleteObjectMethod(token, bucket.name, key, resolvedOptions),
     }));
@@ -286,19 +294,23 @@ const getBucketMethod = async (
         createObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          createObjectMethod(token, name, key, content, resolvedOptions),
+          createObjectMethod(token, name, key, content, params, resolvedOptions),
         updateObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          updateObjectMethod(token, name, key, content, resolvedOptions),
+          updateObjectMethod(token, name, key, content, params, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
           deleteObjectMethod(token, name, key, resolvedOptions),
       },
@@ -354,19 +366,23 @@ export const updateBucketMethod = async (
         createObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          createObjectMethod(token, name, key, content, resolvedOptions),
+          createObjectMethod(token, name, key, content, params, resolvedOptions),
         updateObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          updateObjectMethod(token, name, key, content, resolvedOptions),
+          updateObjectMethod(token, name, key, content, params, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
           deleteObjectMethod(token, name, key, resolvedOptions),
       },
@@ -541,11 +557,12 @@ const createObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
     internalClient.name = bucket;
-    const internalResult = await internalClient.createObject({ key, content });
+    const internalResult = await internalClient.createObject({ key, content, options: params });
     if (internalResult?.data) {
       return {
         data: internalResult.data,
@@ -563,6 +580,7 @@ const createObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const apiResponse = await postObject(
@@ -570,6 +588,7 @@ const createObjectMethod = createInternalOrExternalMethod(
       bucket,
       key,
       content,
+      params?.content_type ?? 'application/octet-stream',
       resolveDebug(options?.debug),
       resolveEnv(options?.env),
     );
@@ -578,6 +597,7 @@ const createObjectMethod = createInternalOrExternalMethod(
         data: {
           key: apiResponse.data.object_key,
           content,
+          content_type: params?.content_type,
           state: apiResponse.state,
         },
       };
@@ -604,11 +624,12 @@ const updateObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
     internalClient.name = bucket;
-    const internalResult = await internalClient.updateObject({ key, content });
+    const internalResult = await internalClient.updateObject({ key, content, options: params });
     if (internalResult?.data) {
       return {
         data: internalResult.data,
@@ -623,6 +644,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const apiResponse = await putObject(
@@ -630,6 +652,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
       bucket,
       key,
       content,
+      params?.content_type ?? 'application/octet-stream',
       resolveDebug(options?.debug),
       resolveEnv(options?.env),
     );
@@ -638,6 +661,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
         data: {
           key: apiResponse.data.object_key,
           content,
+          content_type: params?.content_type,
           state: apiResponse.state,
         },
       };
@@ -902,11 +926,19 @@ const getObjectsWrapper = ({
  * @param {string} params.bucket - Name of the bucket to create the object in.
  * @param {string} params.key - Key (name) of the object to create.
  * @param {string} params.content - Content of the content to upload.
+ * @param {Object} [params.params] - Object parameters.
+ * @param {string} [params.params.content_type] - Content type of the object (defaults to 'application/octet-stream').
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The created object or error message
  *
  * @example
- * const { data: newObject, error } = await createObject({ bucket: 'my-bucket', key: 'new-content.txt', content: 'content content', options: { debug: true } });
+ * const { data: newObject, error } = await createObject({
+ *   bucket: 'my-bucket',
+ *   key: 'new-content.txt',
+ *   content: 'content content',
+ *   params: { content_type: 'text/plain' },
+ *   options: { debug: true }
+ * });
  * if (newObject) {
  *   console.log(`Object created with key: ${newObject.key}`);
  *   console.log(`Object content: ${newObject.content}`);
@@ -918,14 +950,16 @@ const createObjectWrapper = ({
   bucket,
   key,
   content,
+  params,
   options,
 }: {
   bucket: string;
   key: string;
   content: string;
+  params?: { content_type?: string };
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-  createObjectMethod(resolveToken(), bucket, key, content, resolveClientOptions(options));
+  createObjectMethod(resolveToken(), bucket, key, content, params, resolveClientOptions(options));
 
 /**
  * Retrieves an object from a specific bucket by its key.
@@ -962,11 +996,19 @@ const getObjectByKeyWrapper = ({
  * @param {string} params.bucket - Name of the bucket containing the object.
  * @param {string} params.key - Key of the object to update.
  * @param {string} params.content - New content of the content.
+ * @param {Object} [params.params] - Object parameters.
+ * @param {string} [params.params.content_type] - Content type of the object (defaults to 'application/octet-stream').
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The updated object or error message.
  *
  * @example
- * const { data: updatedObject, error } = await updateObject({ bucket: 'my-bucket', key: 'content.txt', content: 'Updated content', options: { debug: true } });
+ * const { data: updatedObject, error } = await updateObject({
+ *   bucket: 'my-bucket',
+ *   key: 'content.txt',
+ *   content: 'Updated content',
+ *   params: { content_type: 'text/plain' },
+ *   options: { debug: true }
+ * });
  * if (updatedObject) {
  *   console.log(`Object updated: ${updatedObject.key}`);
  *   console.log(`New content: ${updatedObject.content}`);
@@ -978,14 +1020,16 @@ const updateObjectWrapper = ({
   bucket,
   key,
   content,
+  params,
   options,
 }: {
   bucket: string;
   key: string;
   content: string;
+  params?: { content_type?: string };
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-  updateObjectMethod(resolveToken(), bucket, key, content, resolveClientOptions(options));
+  updateObjectMethod(resolveToken(), bucket, key, content, params, resolveClientOptions(options));
 
 /**
  * Deletes an object from a specific bucket.

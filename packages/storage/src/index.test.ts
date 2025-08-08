@@ -170,6 +170,7 @@ describe('Storage Module', () => {
         'test-bucket',
         'test-object',
         'file-content',
+        'application/octet-stream',
         debug,
         env,
       );

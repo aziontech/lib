@@ -15,7 +15,7 @@ export namespace Azion {
 
     export interface StorageObject {
       arrayBuffer(): Promise<ArrayBuffer>;
-      AzionRuntimeRequestMetadata: Map<string, string>;
+      metadata: Map<string, string>;
       contentType: string;
       contentLength: number;
     }
@@ -80,7 +80,7 @@ export interface AzionRuntimeRequestMetadata {
  */
 export interface AzionFetchEvent extends Event {
   request: Request & {
-    AzionRuntimeRequestMetadata: AzionRuntimeRequestMetadata;
+    metadata: AzionRuntimeRequestMetadata;
   };
   waitUntil: (promise: Promise<unknown>) => void;
   respondWith: (response: Response | Promise<Response>) => void;
