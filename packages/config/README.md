@@ -524,7 +524,7 @@ Type definition for the response rule configuration.
   - `type: 'url' | 'cachekey' | 'wildcard'` - The type of purge to be performed.
   - `urls: string[]` - List of URLs or patterns to be purged.
   - `method?: 'delete'` - HTTP method for the purge request.
-  - `layer?: 'edge_caching' | 'l2_caching'` - Cache layer to be purged.
+  - `layer?: 'edge_cache' | 'l2_cache'` - Cache layer to be purged.
 
   ### `AzionNetworkList`
 

@@ -1191,6 +1191,11 @@ const schemaApplicationManifest = {
             default: {},
             errorMessage: "The 'args' field must be an object.",
           },
+          active: {
+            type: 'boolean',
+            default: true,
+            errorMessage: "The 'active' field must be a boolean.",
+          },
         },
         required: ['name', 'edge_function'],
         additionalProperties: false,

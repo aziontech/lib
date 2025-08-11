@@ -490,6 +490,8 @@ export type AzionFunctionInstance = {
   ref: string | number;
   /** Instance-specific arguments */
   args?: Record<string, unknown>;
+  /** Active status */
+  active?: boolean;
 };
 
 /**
@@ -551,7 +553,7 @@ export type AzionEdgeApplication = {
   /** Device groups */
   deviceGroups?: AzionDeviceGroup[];
   /** Function instances */
-  functions?: AzionFunctionInstance[];
+  functionsInstances?: AzionFunctionInstance[];
 };
 
 /**

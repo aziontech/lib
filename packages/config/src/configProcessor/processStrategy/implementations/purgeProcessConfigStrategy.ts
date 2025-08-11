@@ -28,11 +28,8 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
       const purgeSetting: any = {
         type: purge.type,
         items: purge.items || [],
+        layer: purge.layer ?? 'edge_cache',
       };
-
-      if (purge?.layer) {
-        purgeSetting.layer = purge.layer;
-      }
 
       payload.push(purgeSetting);
     });
@@ -59,11 +56,8 @@ class PurgeProcessConfigStrategy extends ProcessConfigStrategy {
       const purgeSetting: AzionPurge = {
         type: purge.type,
         items: purge.items || [],
+        layer: purge.layer ?? 'edge_cache',
       };
-
-      if (purge?.layer) {
-        purgeSetting.layer = purge.layer;
-      }
 
       transformedPayload.purge!.push(purgeSetting);
     });
