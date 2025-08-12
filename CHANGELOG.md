@@ -1,3 +1,10 @@
+## [2.0.0-stage.21](https://github.com/aziontech/lib/compare/v2.0.0-stage.20...v2.0.0-stage.21) (2025-08-12)
+
+
+### Bug Fixes
+
+* rename functions to functionsInstances, add active and update purge layer (#205) ([6a0d0b8](https://github.com/aziontech/lib/commit/6a0d0b84b01026488d28005134581d957790134a))
+
 ## [2.0.0-stage.20](https://github.com/aziontech/lib/compare/v2.0.0-stage.19...v2.0.0-stage.20) (2025-08-04)
 
 
