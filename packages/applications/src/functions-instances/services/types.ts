@@ -11,6 +11,7 @@ export interface ApiCreateFunctionInstancePayload {
   name: string;
   edge_function_id: number;
   args: Record<string, unknown>;
+  active?: boolean;
 }
 
 export interface ApiFunctionInstance extends ApiBaseFunctionInstancePayload {

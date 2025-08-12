@@ -57,8 +57,11 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         application.device_groups = this.deviceGroupsStrategy.transformToManifest(app.deviceGroups);
       }
 
-      if (app.functions) {
-        application.functions_instances = this.functionInstancesStrategy.transformToManifest(app.functions, config);
+      if (app.functionsInstances) {
+        application.functions_instances = this.functionInstancesStrategy.transformToManifest(
+          app.functionsInstances,
+          config,
+        );
       }
 
       return application;
@@ -86,7 +89,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules) : undefined,
         deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,
-        functions: app.functions_instances
+        functionsInstances: app.functions_instances
           ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)
           : undefined,
       };

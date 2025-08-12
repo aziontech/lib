@@ -320,7 +320,7 @@ const config: AzionConfig = {
           userAgent: '(Chrome|Firefox|Safari).*(?!Mobile)',
         },
       ],
-      functions: [
+      functionsInstances: [
         {
           name: 'auth-function-instance',
           ref: 'my-edge-function', // Using name reference
@@ -416,10 +416,12 @@ const config: AzionConfig = {
     {
       type: 'url',
       items: ['http://www.example.com/image.jpg'],
+      layer: 'edge_cache',
     },
     {
       type: 'cachekey',
       items: ['https://example.com/test1', 'https://example.com/test2'],
+      layer: 'edge_cache',
     },
     {
       type: 'wildcard',

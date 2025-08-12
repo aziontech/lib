@@ -2726,7 +2726,7 @@
 //           {
 //             type: 'cachekey',
 //             urls: ['https://example.com/test1', 'https://example.com/test2'],
-//             layer: 'edge_caching',
+//             layer: 'edge_cache',
 //           },
 //         ],
 //       };
@@ -2738,7 +2738,7 @@
 //             type: 'cachekey',
 //             urls: ['https://example.com/test1', 'https://example.com/test2'],
 //             method: 'delete',
-//             layer: 'edge_caching',
+//             layer: 'edge_cache',
 //           }),
 //         ]),
 //       );
