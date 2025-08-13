@@ -2,7 +2,7 @@ import type { AzionConfig } from 'azion/config';
 
 const config: AzionConfig = {
   build: {
-    entry: 'handler.js',
+    entry: 'index.js',
   },
   edgeFunctions: [
     {
@@ -40,6 +40,44 @@ const config: AzionConfig = {
           },
         ],
       },
+      functionsInstances: [
+        {
+          name: '$EDGE_FUNCTION_INSTANCE_NAME',
+          ref: '$EDGE_FUNCTION_NAME',
+          args: {
+            environment: 'production',
+          },
+        },
+      ],
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      domains: [],
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
+        },
+      },
+      deployments: [
+        {
+          name: '$DEPLOYMENT_NAME',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: '$EDGE_APPLICATION_NAME',
+            },
+          },
+        },
+      ],
     },
   ],
 };
