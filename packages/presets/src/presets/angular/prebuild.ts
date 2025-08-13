@@ -25,16 +25,16 @@ async function prebuild(): Promise<void> {
   const packageManager: PackageManagerType = await getPackageManager();
   const npmArgsForward: string = packageManager === 'npm' ? '--' : '';
 
-  await exec(`${packageManager} run build ${npmArgsForward} --output-path=.edge/storage`, {
+  await exec(`${packageManager} run build ${npmArgsForward} --output-path=./dist`, {
     scope: 'Angular',
     verbose: true,
   });
 
-  const browserFolder: string = path.join(process.cwd(), '.edge', 'storage', 'browser');
+  const browserFolder: string = path.join(process.cwd(), 'dist', 'browser');
 
   try {
     await fs.access(browserFolder);
-    await moveBrowserFiles(browserFolder, path.join(process.cwd(), '.edge', 'storage'));
+    await moveBrowserFiles(browserFolder, path.join(process.cwd(), 'dist'));
   } catch {
     // Browser folder doesn't exist, nothing to move
   }
