@@ -1,3 +1,10 @@
+## [2.0.0-stage.22](https://github.com/aziontech/lib/compare/v2.0.0-stage.21...v2.0.0-stage.22) (2025-08-13)
+
+
+### Bug Fixes
+
+* update storage paths and enable edge functions by default across presets (#206) ([cfbdab7](https://github.com/aziontech/lib/commit/cfbdab75f647daec8cf0c60639253c9ea77e6feb))
+
 ## [2.0.0-stage.21](https://github.com/aziontech/lib/compare/v2.0.0-stage.20...v2.0.0-stage.21) (2025-08-12)
 
 
