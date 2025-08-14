@@ -1,3 +1,10 @@
+## [2.0.0-stage.23](https://github.com/aziontech/lib/compare/v2.0.0-stage.22...v2.0.0-stage.23) (2025-08-14)
+
+
+### Bug Fixes
+
+* update presets to use api v4 (#207) ([4691cba](https://github.com/aziontech/lib/commit/4691cba04135a6c5aa6d45c71722850820d29f7a))
+
 ## [2.0.0-stage.22](https://github.com/aziontech/lib/compare/v2.0.0-stage.21...v2.0.0-stage.22) (2025-08-13)
 
 
