@@ -410,6 +410,7 @@ const config: AzionConfig = {
       name: 'my-storage',
       edgeAccess: 'read_write', // 'read_only' | 'read_write' | 'restricted'
       dir: './storage',
+      prefix: '1236677364374',
     },
   ],
   purge: [

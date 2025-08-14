@@ -452,8 +452,12 @@ const schemaStorage = {
       enum: EDGE_ACCESS_TYPES,
       errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
     },
+    prefix: {
+      type: 'string',
+      errorMessage: "The 'prefix' field must be a string.",
+    },
   },
-  required: ['name', 'dir'],
+  required: ['name', 'dir', 'prefix'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in storage items.',

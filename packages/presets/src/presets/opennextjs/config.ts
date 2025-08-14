@@ -10,6 +10,7 @@ const config: AzionConfig = {
   edgeStorage: [
     {
       name: '$BUCKET_NAME',
+      prefix: '$BUCKET_PREFIX',
       dir: './.edge/assets',
       edgeAccess: 'read_only',
     },
@@ -28,7 +29,13 @@ const config: AzionConfig = {
   edgeFunctions: [
     {
       name: '$EDGE_FUNCTION_NAME',
-      path: './functions/handler.js',
+      path: './functions/worker.js',
+      bindings: {
+        storage: {
+          bucket: '$BUCKET_NAME',
+          prefix: '$BUCKET_PREFIX',
+        },
+      },
     },
   ],
   edgeApplications: [
@@ -106,7 +113,7 @@ const config: AzionConfig = {
               {
                 type: 'run_function',
                 attributes: {
-                  value: 'handler',
+                  value: '$EDGE_FUNCTION_NAME',
                 },
               },
               {
