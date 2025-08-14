@@ -52,7 +52,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       active: workload.active,
       infrastructure: workload.infrastructure,
       workloadDomainAllowAccess: workload.workload_domain_allow_access,
-      domains: workload.domains,
+      domains: workload.domains || [],
       tls: {
         certificate: workload.tls?.certificate,
         ciphers: workload.tls?.ciphers,

@@ -1,13 +1,19 @@
-import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
-import { readFile } from 'fs/promises';
+import { BuildConfiguration, BuildContext } from 'azion/config';
+import { exec, getPackageManager } from 'azion/utils/node';
+import { mkdir, readFile } from 'fs/promises';
 
 /**
  * Runs custom prebuild actions for Hexo
  */
-async function prebuild(): Promise<void> {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   const packageManager = await getPackageManager();
-  const newOutDir = '.edge/storage';
   let outDir = 'public';
+
+  // If skipFrameworkBuild is true, we need to create the dist folder
+  if (ctx.skipFrameworkBuild) {
+    await mkdir(outDir, { recursive: true });
+    return;
+  }
 
   // check if an output path is specified in config file
   const configFileContent = await readFile('./_config.yml', 'utf-8');
@@ -21,9 +27,6 @@ async function prebuild(): Promise<void> {
     scope: 'Hexo',
     verbose: true,
   });
-
-  // move files to vulcan default path
-  copyDirectory(outDir, newOutDir);
 }
 
 export default prebuild;

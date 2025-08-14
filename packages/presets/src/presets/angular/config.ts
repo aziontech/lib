@@ -45,7 +45,6 @@ const config: AzionConfig = {
       name: '$WORKLOAD_NAME',
       active: true,
       infrastructure: 1,
-      domains: [],
       protocols: {
         http: {
           versions: ['http1', 'http2'],

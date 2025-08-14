@@ -27,7 +27,8 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
             enabled: app.edgeCacheEnabled ?? true,
           },
           edge_functions: {
-            enabled: app.edgeFunctionsEnabled ?? true,
+            enabled:
+              app.edgeFunctionsEnabled || (app.functionsInstances && app.functionsInstances.length > 0) ? true : false,
           },
           application_accelerator: {
             enabled: app.applicationAcceleratorEnabled ?? false,
@@ -82,7 +83,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         active: app.active,
         debug: app.debug,
         edgeCacheEnabled: app.modules?.edge_cache?.enabled,
-        edgeFunctionsEnabled: app.modules?.edge_functions?.enabled ?? true,
+        edgeFunctionsEnabled: app.modules?.edge_functions?.enabled,
         applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
         imageProcessorEnabled: app.modules?.image_processor?.enabled,
         tieredCacheEnabled: app.modules?.tiered_cache?.enabled,

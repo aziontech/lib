@@ -814,7 +814,7 @@ export type AzionWorkload = {
   tls?: AzionWorkloadTLS;
   protocols?: AzionWorkloadProtocols;
   mtls?: AzionWorkloadMTLS;
-  domains: string[];
+  domains?: string[];
   workloadDomainAllowAccess?: boolean;
   /** Workload deployments */
   deployments?: AzionWorkloadDeployment[];
