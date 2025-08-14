@@ -29,15 +29,6 @@ const config: AzionConfig = {
       rules: createSPARules({
         edgeConnector: '$EDGE_CONNECTOR_NAME',
       }),
-      functionsInstances: [
-        {
-          name: '$EDGE_FUNCTION_INSTANCE_NAME',
-          ref: '$EDGE_FUNCTION_NAME',
-          args: {
-            environment: 'production',
-          },
-        },
-      ],
     },
   ],
   workloads: [

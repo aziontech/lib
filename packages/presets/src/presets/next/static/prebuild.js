@@ -19,11 +19,11 @@ import { getNextConfig, readManifestFile } from '../utils/utils.next.js';
  * @param {string} directory - The root directory to start moving files.
  * @example
  * // Before:
- * // Root directory: '/path/to/project/.edge/storage'
+ * // Root directory: '/path/to/project/.edge/storage/next-build-assets'
  * // Files in the directory: ['home.html', 'about.html', 'contact.html', 'styles.css']
  *
- * // After calling moveFiles('/path/to/project/.edge/storage'):
- * // Root directory: '/path/to/project/.edge/storage'
+ * // After calling moveFiles('/path/to/project/.edge/storage/next-build-assets'):
+ * // Root directory: '/path/to/project/.edge/storage/next-build-assets'
  * // Files in the directory: ['styles.css']
  * // Subdirectory 'home':
  * //   - index.html (previously home.html)
@@ -101,7 +101,7 @@ async function fixAppDirRoutes() {
   // fix _next calls in client (static routes in app dir format)
   await Promise.all(
     pathsToCopy.map(async (path) => {
-      const storagePath = '.edge/storage';
+      const storagePath = '.edge/storage/next-build-assets';
       const filesToCopy = [`${path}.html`, `${path}.txt`];
 
       const dirPath = getRouteDirPath(path);
@@ -180,13 +180,13 @@ function validateStaticSiteMode(nextConfig) {
  * Runs custom prebuild actions
  * @returns {import('azion/config').AzionPrebuildResult} - info about the build
  */
-async function prebuild() {
+async function prebuild(ctx) {
   feedback.prebuild.info('Starting Next.js static build process...');
 
   const nextVersion = getPackageVersion('next');
   feedback.prebuild.info('Detected Next.js version:', nextVersion);
 
-  const staticsOutputDir = '.edge/storage';
+  const staticsOutputDir = '.edge/next-build-assets';
   const packageManager = await getPackageManager();
 
   // new build format
@@ -201,24 +201,27 @@ async function prebuild() {
     if (nextConfig.distDir) {
       outDir = nextConfig.distDir;
     }
-    await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
 
-    // move files to azion storage local directory
-    copyDirectory(outDir, staticsOutputDir);
-    rm(outDir, { recursive: true, force: true });
+    if (!ctx.skipFrameworkBuild) {
+      await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
+      // move files to azion storage local directory
+      copyDirectory(outDir, staticsOutputDir);
+      rm(outDir, { recursive: true, force: true });
 
-    feedback.prebuild.info('Adapting Next.js build output...');
-    await moveFiles(`${process.cwd()}/${staticsOutputDir}`);
-    await fixAppDirRoutes();
+      feedback.prebuild.info('Adapting Next.js build output...');
+      await moveFiles(`${process.cwd()}/${staticsOutputDir}`);
+      await fixAppDirRoutes();
+    }
   } else {
     // old build format
+    if (!ctx.skipFrameworkBuild) {
+      await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
 
-    await exec(`${packageManager} run build`, `Next ${nextVersion}`, true);
+      await exec(`npx next export -o ${staticsOutputDir}`, `Next ${nextVersion}`, true);
 
-    await exec(`npx next export -o ${staticsOutputDir}`, `Next ${nextVersion}`, true);
-
-    feedback.prebuild.info('Adapting Next.js build output...');
-    await moveFiles(`${process.cwd()}/${staticsOutputDir}`);
+      feedback.prebuild.info('Adapting Next.js build output...');
+      await moveFiles(`${process.cwd()}/${staticsOutputDir}`);
+    }
   }
 
   feedback.prebuild.success('Next.js build adaptation completed successfully.');

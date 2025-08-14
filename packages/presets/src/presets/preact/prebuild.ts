@@ -1,9 +1,10 @@
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
-import { lstat, readFile, rm } from 'fs/promises';
+import { lstat, mkdir, readFile, rm } from 'fs/promises';
 import { join } from 'path';
 
 const packageManager = await getPackageManager();
-const edgeStorageDir = '.edge/storage';
+const edgeStorageDir = '.edge/assets';
 const defaultViteOutDir = 'dist';
 
 /**
@@ -60,8 +61,14 @@ async function readViteBuildOutput() {
 /**
  * Runs custom prebuild actions
  */
-async function prebuild() {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext) {
   const npmArgsForward = packageManager === 'npm' ? '--' : '';
+
+  // if skipFrameworkBuild is true, we need to create the dist folder
+  if (ctx.skipFrameworkBuild) {
+    await mkdir(edgeStorageDir, { recursive: true });
+    return;
+  }
 
   let outDir = defaultViteOutDir;
   const destPath = edgeStorageDir;
@@ -69,7 +76,9 @@ async function prebuild() {
   const isViteProject = await viteConfigExists();
 
   if (isViteProject) {
-    await exec(`${packageManager} run build ${npmArgsForward}`, 'Preact', true);
+    if (!ctx.skipFrameworkBuild) {
+      await exec(`${packageManager} run build ${npmArgsForward}`);
+    }
 
     const config = await readViteBuildOutput();
 
@@ -80,7 +89,9 @@ async function prebuild() {
     copyDirectory(outDir, destPath);
     rm(outDir, { recursive: true, force: true });
   } else {
-    await exec(`BUILD_PATH="./.edge/storage" ${packageManager} run build`, 'Preact', true);
+    if (!ctx.skipFrameworkBuild) {
+      await exec(`BUILD_PATH="./.edge/assets" ${packageManager} run build`);
+    }
   }
 }
 

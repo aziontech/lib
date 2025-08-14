@@ -6,7 +6,7 @@ import path from 'path';
 /**
  * Runs custom prebuild actions for OpenNextjs
  */
-async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Promise<void> {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   const pkgOpenNextjsName = '@aziontech/opennextjs-azion';
   const openNextjsCommand = 'npm exec opennextjs-azion';
 
@@ -33,11 +33,11 @@ async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Pro
     verbose: true,
     interactive: true,
   });
-  await exec(`${openNextjsCommand} populateAssets`, {
+  await exec(`${openNextjsCommand} populateAssets -- --cacheDir .edge/assets --assetsDir .edge/assets`, {
     scope: 'OpenNextjs',
     verbose: true,
   });
-  await exec(`${openNextjsCommand} populateCache`, {
+  await exec(`${openNextjsCommand} populateCache -- --cacheDir .edge/assets --assetsDir .edge/assets`, {
     scope: 'OpenNextjs',
     verbose: true,
   });
