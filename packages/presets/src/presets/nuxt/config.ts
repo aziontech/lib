@@ -8,7 +8,7 @@ const config: AzionConfig = {
   edgeStorage: [
     {
       name: '$BUCKET_NAME',
-      dir: '$LOCAL_BUCKET_DIR',
+      dir: '.output/public',
       edgeAccess: 'read_only',
     },
   ],
@@ -29,6 +29,34 @@ const config: AzionConfig = {
       rules: createMPARules({
         edgeConnector: '$EDGE_CONNECTOR_NAME',
       }),
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
+        },
+      },
+      deployments: [
+        {
+          name: '$DEPLOYMENT_NAME',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: '$EDGE_APPLICATION_NAME',
+            },
+          },
+        },
+      ],
     },
   ],
 };

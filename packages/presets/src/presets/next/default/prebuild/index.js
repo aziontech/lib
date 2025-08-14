@@ -62,7 +62,6 @@ function writeOutputReferencesFile(functionsFile, vercelOutput) {
  */
 async function run(prebuildContext) {
   const targetDir = process.cwd();
-  //   const workerDir = join(this.targetDir, '.');
 
   const applicationMapping = {
     invalidFunctions: new Set(),
@@ -73,7 +72,6 @@ async function run(prebuildContext) {
   };
 
   const tmpFunctionsDir = join(tmpdir(), Math.random().toString(36).slice(2));
-  //   const dirName = dirname(__filename);
 
   const config = loadVercelConfigs();
 
@@ -81,10 +79,6 @@ async function run(prebuildContext) {
 
   // adapt functions and set application mapping
   await mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir, prebuildContext?.vcConfigObjects);
-
-  //   if (this.applicationMapping.functionsMap.size <= 0) {
-  //       throw new MiddlewareManifestHandlerError("No functions was provided");
-  //   }
 
   const assetsDir = join(targetDir, '.vercel/output/static');
   const assetsManifest = assetsPaths(assetsDir);

@@ -1063,7 +1063,7 @@ const azionConfigSchema = {
                 errorMessage: "The 'deployments' field must be an array of deployment objects",
               },
             },
-            required: ['name', 'domains'],
+            required: ['name'],
             additionalProperties: false,
             errorMessage: {
               additionalProperties: 'No additional properties are allowed in workload items',

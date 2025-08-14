@@ -7,7 +7,7 @@ const config: AzionConfig = {
   edgeFunctions: [
     {
       name: '$EDGE_FUNCTION_NAME',
-      path: '$LOCAL_FUNCTION_PATH',
+      path: './functions/index.js', // path to the edge function. This path is relative to the .edge folder.
     },
   ],
   edgeApplications: [
@@ -56,7 +56,6 @@ const config: AzionConfig = {
       name: '$WORKLOAD_NAME',
       active: true,
       infrastructure: 1,
-      domains: [],
       protocols: {
         http: {
           versions: ['http1', 'http2'],

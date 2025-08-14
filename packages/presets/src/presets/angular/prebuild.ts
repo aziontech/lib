@@ -1,3 +1,4 @@
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { exec, getPackageManager, type PackageManagerType } from 'azion/utils/node';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -21,22 +22,32 @@ async function moveBrowserFiles(browserFolder: string, storagePath: string): Pro
 /**
  * Runs custom prebuild actions for Angular
  */
-async function prebuild(): Promise<void> {
-  const packageManager: PackageManagerType = await getPackageManager();
-  const npmArgsForward: string = packageManager === 'npm' ? '--' : '';
-
-  await exec(`${packageManager} run build ${npmArgsForward} --output-path=./dist`, {
-    scope: 'Angular',
-    verbose: true,
-  });
-
-  const browserFolder: string = path.join(process.cwd(), 'dist', 'browser');
-
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   try {
-    await fs.access(browserFolder);
-    await moveBrowserFiles(browserFolder, path.join(process.cwd(), 'dist'));
-  } catch {
-    // Browser folder doesn't exist, nothing to move
+    const outputDir = './dist';
+    // if skipFrameworkBuild is true, we need to create the dist folder
+    if (ctx.skipFrameworkBuild) {
+      await fs.mkdir(outputDir, { recursive: true });
+      return;
+    }
+    const packageManager: PackageManagerType = await getPackageManager();
+    const npmArgsForward: string = packageManager === 'npm' ? '--' : '';
+
+    await exec(`${packageManager} run build ${npmArgsForward} --output-path=${outputDir}`, {
+      scope: 'Angular',
+      verbose: true,
+    });
+
+    const browserFolder: string = path.join(process.cwd(), outputDir, 'browser');
+
+    try {
+      await fs.access(browserFolder);
+      await moveBrowserFiles(browserFolder, path.join(process.cwd(), outputDir));
+    } catch {
+      // Browser folder doesn't exist, nothing to move
+    }
+  } catch (error) {
+    throw new Error(`Error during Angular prebuild: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

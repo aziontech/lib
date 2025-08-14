@@ -10,7 +10,7 @@ const config: AzionConfig = {
   edgeStorage: [
     {
       name: '$BUCKET_NAME',
-      dir: '$LOCAL_BUCKET_DIR',
+      dir: './.edge/assets',
       edgeAccess: 'read_only',
     },
   ],
@@ -27,8 +27,8 @@ const config: AzionConfig = {
   ],
   edgeFunctions: [
     {
-      name: 'handler',
-      path: '.edge/functions/handler.js',
+      name: '$EDGE_FUNCTION_NAME',
+      path: './functions/handler.js',
     },
   ],
   edgeApplications: [
@@ -116,6 +116,43 @@ const config: AzionConfig = {
           },
         ],
       },
+      functionsInstances: [
+        {
+          name: '$EDGE_FUNCTION_INSTANCE_NAME',
+          ref: '$EDGE_FUNCTION_NAME',
+          args: {
+            environment: 'production',
+          },
+        },
+      ],
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
+        },
+      },
+      deployments: [
+        {
+          name: '$DEPLOYMENT_NAME',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: '$EDGE_APPLICATION_NAME',
+            },
+          },
+        },
+      ],
     },
   ],
 };

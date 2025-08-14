@@ -2,12 +2,12 @@ import type { AzionConfig } from 'azion/config';
 
 const config: AzionConfig = {
   build: {
-    entry: 'handler.ts',
+    entry: 'index.ts',
   },
   edgeFunctions: [
     {
       name: '$EDGE_FUNCTION_NAME',
-      path: '$LOCAL_FUNCTION_PATH',
+      path: './functions/index.js', // path to the edge function. This path is relative to the .edge folder.
     },
   ],
   edgeApplications: [
@@ -40,6 +40,43 @@ const config: AzionConfig = {
           },
         ],
       },
+      functionsInstances: [
+        {
+          name: '$EDGE_FUNCTION_INSTANCE_NAME',
+          ref: '$EDGE_FUNCTION_NAME',
+          args: {
+            environment: 'production',
+          },
+        },
+      ],
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
+        },
+      },
+      deployments: [
+        {
+          name: '$DEPLOYMENT_NAME',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: '$EDGE_APPLICATION_NAME',
+            },
+          },
+        },
+      ],
     },
   ],
 };

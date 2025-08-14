@@ -1,13 +1,20 @@
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
-import { readFile } from 'fs/promises';
+import { mkdir, readFile } from 'fs/promises';
 
 /**
  * Runs custom prebuild actions for Qwik
  */
-async function prebuild(): Promise<void> {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   const packageManager = await getPackageManager();
-  const newOutDir = '.edge/storage';
+  const newOutDir = '.edge/assets';
   let outDir = 'dist';
+
+  // if skipFrameworkBuild is true, we need to create the dist folder
+  if (ctx.skipFrameworkBuild) {
+    await mkdir(newOutDir, { recursive: true });
+    return;
+  }
 
   // Check if an output path is specified in config file
   try {
@@ -24,8 +31,7 @@ async function prebuild(): Promise<void> {
     scope: 'Qwik',
     verbose: true,
   });
-
-  // move files to vulcan default path
+  // move files to bundler default path
   copyDirectory(outDir, newOutDir);
 }
 
