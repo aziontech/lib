@@ -1,3 +1,10 @@
+## [2.0.0-stage.24](https://github.com/aziontech/lib/compare/v2.0.0-stage.23...v2.0.0-stage.24) (2025-08-15)
+
+
+### Bug Fixes
+
+* add storage prefix support across all presets and configurations (#208) ([0869f60](https://github.com/aziontech/lib/commit/0869f60d4c2af4c6b505ded764403feddc8f5cfc))
+
 ## [2.0.0-stage.23](https://github.com/aziontech/lib/compare/v2.0.0-stage.22...v2.0.0-stage.23) (2025-08-14)
 
 
