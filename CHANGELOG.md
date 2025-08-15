@@ -1,3 +1,10 @@
+## [2.0.0-stage.26](https://github.com/aziontech/lib/compare/v2.0.0-stage.25...v2.0.0-stage.26) (2025-08-15)
+
+
+### Bug Fixes
+
+* enable application accelerator by default and set bucket edge access to read_write (#210) ([fd90219](https://github.com/aziontech/lib/commit/fd902197d67ee10442ce694e6ccb0a5492e4f9c2))
+
 ## [2.0.0-stage.25](https://github.com/aziontech/lib/compare/v2.0.0-stage.24...v2.0.0-stage.25) (2025-08-15)
 
 
