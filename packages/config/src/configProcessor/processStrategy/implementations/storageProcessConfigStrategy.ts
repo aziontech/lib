@@ -16,6 +16,7 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
       name: item.name,
       edge_access: item.edgeAccess || 'read_only',
       dir: item.dir,
+      prefix: item.prefix,
     }));
   }
 
@@ -30,6 +31,7 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
       name: item.name,
       edgeAccess: item.edge_access || 'read_only',
       dir: item.dir,
+      prefix: item.prefix,
     }));
 
     return transformedPayload.edgeStorage;

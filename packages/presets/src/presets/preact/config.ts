@@ -8,6 +8,7 @@ const config: AzionConfig = {
   edgeStorage: [
     {
       name: '$BUCKET_NAME',
+      prefix: '$BUCKET_PREFIX',
       dir: './.edge/assets',
       edgeAccess: 'read_only',
     },

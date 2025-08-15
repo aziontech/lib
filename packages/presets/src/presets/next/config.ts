@@ -9,6 +9,7 @@ const config: AzionConfig = {
       name: '$BUCKET_NAME',
       dir: '.edge/next-build-assets',
       edgeAccess: 'read_only',
+      prefix: '$BUCKET_PREFIX',
     },
   ],
   edgeConnectors: [
@@ -26,6 +27,12 @@ const config: AzionConfig = {
     {
       name: '$EDGE_FUNCTION_NAME',
       path: './functions/handler.js',
+      bindings: {
+        storage: {
+          bucket: '$BUCKET_NAME',
+          prefix: '$BUCKET_PREFIX',
+        },
+      },
     },
   ],
   edgeApplications: [
