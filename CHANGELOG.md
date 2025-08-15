@@ -1,3 +1,10 @@
+## [2.0.0-stage.25](https://github.com/aziontech/lib/compare/v2.0.0-stage.24...v2.0.0-stage.25) (2025-08-15)
+
+
+### Bug Fixes
+
+* require prefix field in storage bindings and update error messages (#209) ([7679357](https://github.com/aziontech/lib/commit/76793571c23f223877aa54f3c1ad38453e0db044))
+
 ## [2.0.0-stage.24](https://github.com/aziontech/lib/compare/v2.0.0-stage.23...v2.0.0-stage.24) (2025-08-15)
 
 
