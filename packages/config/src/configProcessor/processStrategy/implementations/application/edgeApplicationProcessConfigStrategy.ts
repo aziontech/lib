@@ -31,7 +31,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
               app.edgeFunctionsEnabled || (app.functionsInstances && app.functionsInstances.length > 0) ? true : false,
           },
           application_accelerator: {
-            enabled: app.applicationAcceleratorEnabled ?? false,
+            enabled: app.applicationAcceleratorEnabled ?? true,
           },
           image_processor: {
             enabled: app.imageProcessorEnabled ?? false,
