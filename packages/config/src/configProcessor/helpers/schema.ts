@@ -413,12 +413,12 @@ const schemaFunction = {
               errorMessage: "The 'prefix' field must be a string",
             },
           },
-          required: ['bucket'],
+          required: ['bucket', 'prefix'],
           additionalProperties: false,
           errorMessage: {
             type: "The 'storage' field must be an object",
-            additionalProperties: 'No additional properties are allowed in the storage object',
-            required: "The 'bucket' field is required in the storage object",
+            additionalProperties: 'No additional properties are allowed in the storage object binding.',
+            required: "The 'bucket' and 'prefix' fields are required in the storage object binding.",
           },
         },
       },
@@ -461,7 +461,7 @@ const schemaStorage = {
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in storage items.',
-    required: "The 'name' and 'dir' fields are required.",
+    required: "The 'name', 'dir' and 'prefix' fields are required.",
   },
 };
 
@@ -1517,9 +1517,9 @@ const azionConfigSchema = {
                         errorMessage: "The 'prefix' field must be a string between 0 and 255 characters",
                       },
                     },
-                    required: ['bucket'],
+                    required: ['bucket', 'prefix'],
                     additionalProperties: false,
-                    errorMessage: 'Edge storage attributes must have bucket and optional prefix',
+                    errorMessage: 'Edge storage attributes must have bucket and prefix',
                   },
                   {
                     type: 'object',
