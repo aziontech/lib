@@ -212,33 +212,75 @@ const config = {
     preset: 'react',
     polyfills: true,
   },
-  domain: {
-    name: 'example.com',
-    cnameAccessOnly: false,
-  },
-  origin: [
+  workloads: [
+    {
+      name: 'my-production-workload',
+      active: true,
+      infrastructure: 1,
+      domains: ['example.com'],
+      workloadDomainAllowAccess: false,
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+        },
+      },
+    },
+  ],
+  edgeConnectors: [
     {
       name: 'My Origin',
-      type: 'single_origin',
-      addresses: ['origin.example.com'],
-    },
-  ],
-  cache: [
-    {
-      name: 'Default Cache',
-      browser: { maxAgeSeconds: 3600 },
-      edge: { maxAgeSeconds: 7200 },
-    },
-  ],
-  rules: {
-    request: [
-      {
-        name: 'Example Rule',
-        match: 'path',
-        behavior: { setOrigin: { name: 'My Origin', type: 'single_origin' } },
+      type: 'http',
+      active: true,
+      attributes: {
+        addresses: [
+          {
+            address: 'origin.example.com',
+            weight: 100,
+          },
+        ],
+        connectionOptions: {
+          protocolPolicy: 'https',
+        },
       },
-    ],
-  },
+    },
+  ],
+  edgeApplications: [
+    {
+      name: 'My Edge App',
+      active: true,
+      cache: [
+        {
+          name: 'Default Cache',
+          browser: { maxAgeSeconds: 3600 },
+          edge: { maxAgeSeconds: 7200 },
+        },
+      ],
+      rules: [
+        {
+          name: 'Example Rule',
+          phase: 'request',
+          criteria: [
+            {
+              variable: 'request_uri',
+              operator: 'matches',
+              conditional: 'if',
+              input_value: '/api/*',
+            },
+          ],
+          behaviors: [
+            {
+              type: 'set_origin',
+              attributes: {
+                name: 'My Origin',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
   purge: [
     {
       type: 'url',
@@ -252,23 +294,35 @@ const config = {
       listContent: ['10.0.0.1'],
     },
   ],
-  firewall: {
+  edgeFirewall: {
     name: 'My Firewall',
     active: true,
     rules: [
       {
         name: 'Block Suspicious IPs',
-        behavior: { deny: true },
+        behaviors: [
+          {
+            type: 'deny',
+          },
+        ],
       },
     ],
   },
   waf: [
     {
       name: 'My WAF',
-      mode: 'blocking',
       active: true,
+      engineSettings: {
+        useGeolocation: true,
+        useReputation: true,
+        thresholds: {
+          sql_injection: 'high',
+          cross_site_scripting: 'medium',
+        },
+      },
     },
   ],
+  // Other configurations...
 };
 
 export default config;
@@ -283,10 +337,7 @@ const config = defineConfig({
   build: {
     // Advanced build configuration options
     bundler: 'esbuild',
-    entry: {
-      main: './src/index.js',
-      admin: './src/admin.js',
-    },
+    entry: './src/index.js',
     preset: {
       config: {
         /* custom configuration */
@@ -313,24 +364,6 @@ const config = defineConfig({
       removePathPrefix: './src',
     },
   },
-  domain: {
-    name: 'example.com',
-    cnameAccessOnly: false,
-    cnames: ['www.example.com'],
-  },
-  origin: [
-    {
-      name: 'My Origin',
-      type: 'single_origin',
-      addresses: [
-        {
-          address: 'origin.example.com',
-          weight: 100,
-        },
-      ],
-      protocolPolicy: 'https',
-    },
-  ],
   // Other configurations...
 });
 
@@ -397,7 +430,7 @@ export default defineConfig({
       removePathPrefix: './src',
     },
   },
-  // Domain, origin, and other configurations...
+  // Workloads, edge connectors, and other configurations...
 });
 ```
 
