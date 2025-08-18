@@ -1,3 +1,10 @@
+## [2.0.0-stage.27](https://github.com/aziontech/lib/compare/v2.0.0-stage.26...v2.0.0-stage.27) (2025-08-18)
+
+
+### Bug Fixes
+
+* remove hardcoded production environment from edge function instances (#211) ([369be30](https://github.com/aziontech/lib/commit/369be30ed123fc2a94d5e0e2aff2375c5ee50fcb))
+
 ## [2.0.0-stage.26](https://github.com/aziontech/lib/compare/v2.0.0-stage.25...v2.0.0-stage.26) (2025-08-15)
 
 
