@@ -44,9 +44,6 @@ const config: AzionConfig = {
         {
           name: '$EDGE_FUNCTION_INSTANCE_NAME',
           ref: '$EDGE_FUNCTION_NAME',
-          args: {
-            environment: 'production',
-          },
         },
       ],
     },
