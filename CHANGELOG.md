@@ -1,3 +1,32 @@
+## [2.0.0-stage.28](https://github.com/aziontech/lib/compare/v2.0.0-stage.27...v2.0.0-stage.28) (2025-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* Major configuration structure changes
+
+- Remove `domain` and `origin` → Add `workloads` for domain/infrastructure management
+- Remove root-level `cache` → Move to `edgeApplications[].cache`
+- Rename `functions` → `edgeFunctions`
+- Add `edgeApplications` array with embedded cache and rules
+- Add `edgeConnectors` for HTTP/storage/live ingest connections
+- Add `edgeStorage` for storage bucket configuration
+- Add `customPages` for error page management
+- Update rules to criteria-based structure with behaviors array
+- Replace cache 'whitelist'/'blacklist' → 'allowlist'/'denylist'
+- Update WAF to v4 structure with engineSettings
+
+Migration:
+- Move domain config to `workloads` array
+- Move cache config inside `edgeApplications`
+- Rename `functions` to `edgeFunctions`
+- Update cache options to allowlist/denylist
+- Migrate rules to new criteria/behaviors format
+
+### Documentation
+
+* restructure configuration API to workloads-based architecture (#212) ([fce95a6](https://github.com/aziontech/lib/commit/fce95a6dea55fd30a1da7ff583b7cbe4a8272373))
+
 ## [2.0.0-stage.27](https://github.com/aziontech/lib/compare/v2.0.0-stage.26...v2.0.0-stage.27) (2025-08-18)
 
 
