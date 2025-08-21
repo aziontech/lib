@@ -2,13 +2,14 @@
 import { AzionDatabaseCollectionOptions } from '../../types';
 import { limitArraySize } from '../../utils';
 import fetchWithErrorHandling from '../../utils/fetch';
-import type {
-  ApiCreateDatabaseResponse,
-  ApiDeleteDatabaseResponse,
-  ApiListDatabasesResponse,
-  ApiQueryExecutionResponse,
+import {
+  type ApiCreateDatabaseResponse,
+  type ApiDatabaseListResponse,
+  type ApiDeleteDatabaseResponse,
+  type ApiError,
+  type ApiQueryExecutionResponse,
+  type ApiRetrieveDatabaseResponse,
 } from './types';
-import { hasDataError } from './utils';
 
 import { AzionEnvironment } from '../../types';
 
@@ -60,8 +61,27 @@ const buildFetchOptions = (method: string, headers: Record<string, string>, body
   return options;
 };
 
-const handleApiError = (fields: string[], data: any, operation: string) => {
-  let error = { message: 'Error unknown', operation: operation };
+const handleApiError = (fields: string[], data: any, operation: string): ApiError => {
+  let error: ApiError = { message: 'Error unknown', operation: operation };
+
+  if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+    const firstError = data.errors[0];
+    if (firstError.detail) {
+      error = {
+        message: firstError.detail,
+        operation: operation,
+      };
+      return error;
+    }
+    if (firstError.title) {
+      error = {
+        message: firstError.title,
+        operation: operation,
+      };
+      return error;
+    }
+  }
+
   fields.forEach((field: string) => {
     if (data[field]) {
       const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
@@ -90,31 +110,23 @@ const postEdgeDatabase = async (
 
     const result = await fetchWithErrorHandling(baseUrl, options, debug);
 
-    if (!result.state) {
-      result.error = handleApiError(['detail'], result, 'post database');
+    if (result.errors) {
       return {
-        error: result.error ?? JSON.stringify(result),
+        error: handleApiError([], result, 'post database'),
       };
     }
+
+    const dataResult = result.data;
 
     if (debug) console.log('Response Post Database', JSON.stringify(result));
     return {
       state: result.state,
-      data: {
-        clientId: result.data.client_id,
-        createdAt: result.data.created_at,
-        deletedAt: result.data.deleted_at,
-        id: result.data.id,
-        isActive: result.data.is_active,
-        name: result.data.name,
-        status: result.data.status,
-        updatedAt: result.data.updated_at,
-      },
+      data: dataResult,
     };
-  } catch (error: any) {
+  } catch (error) {
     if (debug) console.error('Error creating EdgeDB:', error);
     return {
-      error: { message: error.toString(), operation: 'post database' },
+      error: { message: (error as Error).message, operation: 'post database' },
     };
   }
 };
@@ -135,18 +147,12 @@ const deleteEdgeDatabase = async (
 
     const result = await fetchWithErrorHandling(`${baseUrl}/${id}`, options, debug);
 
-    if (!result.state) {
-      result.error = handleApiError(['detail'], result, 'delete database');
+    if (result.errors) {
       return {
-        error: result.error ?? JSON.stringify(result),
+        error: handleApiError([], result, 'delete database'),
       };
     }
-    return {
-      state: result.state,
-      data: {
-        id,
-      },
-    };
+    return result;
   } catch (error: any) {
     if (debug) console.error('Error deleting EdgeDB:', error);
     return {
@@ -172,25 +178,13 @@ const postQueryEdgeDatabase = async (
 
     const result = await fetchWithErrorHandling(`${baseUrl}/${id}/query`, options, debug);
 
-    if (!result.data || !Array.isArray(result.data)) {
-      result.error = handleApiError(['detail'], result, 'post query');
+    if (result.errors) {
       return {
-        error: result.error ?? JSON.stringify(result),
+        error: handleApiError([], result, 'post query'),
       };
     }
 
-    const hasErrorResult = hasDataError(result.data);
-
-    if (hasErrorResult) {
-      return {
-        error: {
-          message: hasErrorResult?.message,
-          operation: 'post query',
-        },
-        state: result.state,
-        data: result.data.filter((data: any) => data?.results),
-      };
-    }
+    const dataResult = result.data;
 
     if (debug) {
       const limitedData: ApiQueryExecutionResponse = {
@@ -199,7 +193,7 @@ const postQueryEdgeDatabase = async (
           ...data,
           results: {
             ...data.results,
-            rows: limitArraySize(data.results.rows, 10),
+            rows: limitArraySize(data.results?.rows, 10),
           },
         })),
       };
@@ -207,7 +201,7 @@ const postQueryEdgeDatabase = async (
     }
     return {
       state: result.state,
-      data: result.data,
+      data: dataResult,
     };
   } catch (error: any) {
     if (debug) console.error('Error querying EdgeDB:', error);
@@ -225,7 +219,7 @@ const getEdgeDatabases = async (
   params?: Partial<AzionDatabaseCollectionOptions>,
   debug?: boolean,
   env: AzionEnvironment = 'production',
-): Promise<ApiListDatabasesResponse> => {
+): Promise<ApiDatabaseListResponse> => {
   try {
     const baseUrl = getBaseUrl(env);
     const url = new URL(baseUrl);
@@ -243,12 +237,13 @@ const getEdgeDatabases = async (
 
     const data = await fetchWithErrorHandling(url.toString(), options, debug);
 
-    if (!data.results) {
-      data.error = handleApiError(['detail'], data, 'get databases');
+    if (data.errors) {
       return {
-        error: data.error ?? JSON.stringify(data),
+        error: handleApiError([], data, 'get databases'),
       };
     }
+
+    const dataResult = data.results;
 
     if (debug) {
       const limitedData = {
@@ -259,25 +254,56 @@ const getEdgeDatabases = async (
     }
 
     return {
-      links: data?.links,
       count: data.count,
-      results: data.results.map((result: any) => ({
-        clientId: result.client_id,
-        createdAt: result.created_at,
-        deletedAt: result.deleted_at,
-        id: result.id,
-        isActive: result.is_active,
-        name: result.name,
-        status: result.status,
-        updatedAt: result.updated_at,
-      })),
+      results: dataResult,
     };
-  } catch (error: any) {
+  } catch (error) {
     if (debug) console.error('Error getting all EdgeDBs:', error);
     return {
-      error: { message: error.toString(), operation: 'get databases' },
+      error: { message: (error as Error).message, operation: 'get databases' },
     };
   }
 };
 
-export { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase, postQueryEdgeDatabase };
+/**
+ * Retrieve of Edge Databases.
+ */
+const retrieveEdgeDatabase = async (
+  token: string,
+  id: number,
+  debug?: boolean,
+  env: AzionEnvironment = 'production',
+): Promise<ApiRetrieveDatabaseResponse> => {
+  try {
+    const baseUrl = getBaseUrl(env);
+    const url = new URL(baseUrl);
+
+    url.pathname += `/${id}`;
+
+    const headers = buildHeaders(token);
+    const options = buildFetchOptions('GET', headers);
+
+    const result = await fetchWithErrorHandling(url.toString(), options, debug);
+
+    if (result.errors) {
+      return {
+        error: handleApiError([], result, 'retrieve database'),
+      };
+    }
+
+    if (debug) {
+      console.log('Response Databases:', JSON.stringify(result));
+    }
+
+    return {
+      data: result.data,
+    };
+  } catch (error) {
+    if (debug) console.error('Error getting all EdgeDBs:', error);
+    return {
+      error: { message: (error as Error).message, operation: 'get databases' },
+    };
+  }
+};
+
+export { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase, postQueryEdgeDatabase, retrieveEdgeDatabase };

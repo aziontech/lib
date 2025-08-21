@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import { copyDirectory, feedback } from 'azion/utils/node';
 import VercelUtils from './utils/vercel/index';
 
-import { AzionPrebuildResult } from 'azion/config';
+import { AzionPrebuildResult, BuildConfiguration, BuildContext } from 'azion/config';
 import runDefaultBuild from './default/prebuild/index.js';
 import { validationSupportAndRetrieveFromVcConfig } from './default/prebuild/validation/support.js';
 import runNodeBuild from './node/prebuild/index.js';
@@ -49,8 +49,8 @@ async function generateNextManifest(runtimes: string[]) {
 /**
  *
  */
-function copyVercelStaticGeneratedFiles() {
-  copyDirectory('.vercel/output/static', '.edge/storage');
+function copyVercelStaticGeneratedFiles(outputDir: string) {
+  copyDirectory('.vercel/output/static', outputDir);
 }
 
 /**
@@ -68,14 +68,18 @@ function validateStaticSiteMode(nextConfig: Record<string, any>) {
 /**
  * Prebuild process for Next.js projects.
  */
-async function prebuild(buildContext: Record<string, any>): Promise<AzionPrebuildResult> {
+async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Promise<AzionPrebuildResult | undefined> {
+  const outputDir = resolve(process.cwd(), '.edge/next-build-assets');
+
   feedback.prebuild.info('Starting Next.js build process ...');
 
-  await vercelPrebuildActions();
+  if (!ctx.skipFrameworkBuild) {
+    await vercelPrebuildActions();
+  }
 
   const nextConfig = await getNextConfig();
   if (validateStaticSiteMode(nextConfig)) {
-    return prebuildStatic();
+    return prebuildStatic(ctx);
   }
 
   const {
@@ -107,7 +111,7 @@ async function prebuild(buildContext: Record<string, any>): Promise<AzionPrebuil
 
   // build node functions (custom node server)
   if (projectRuntimes.includes('node')) {
-    await runNodeBuild(minorVersion, buildContext);
+    await runNodeBuild(minorVersion, buildConfig);
   }
 
   // build routing system and edge functions
@@ -128,7 +132,7 @@ async function prebuild(buildContext: Record<string, any>): Promise<AzionPrebuil
 
   await generateNextManifest(projectRuntimes);
 
-  copyVercelStaticGeneratedFiles();
+  copyVercelStaticGeneratedFiles(outputDir);
 
   feedback.prebuild.success('Next.js build adaptation completed successfully.');
 

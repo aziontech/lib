@@ -1,48 +1,65 @@
-import { defineConfig } from 'azion/config';
+import type { AzionConfig } from 'azion/config';
+import { createMPARules } from 'azion/config/rules';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
-    preset: 'vuepress',
-    polyfills: false,
   },
-  origin: [
+  edgeStorage: [
     {
-      name: 'origin-storage-default',
-      type: 'object_storage',
+      name: '$BUCKET_NAME',
+      prefix: '$BUCKET_PREFIX',
+      dir: './.edge/assets',
+      edgeAccess: 'read_only',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
+  edgeConnectors: [
+    {
+      name: '$EDGE_CONNECTOR_NAME',
+      active: true,
+      type: 'edge_storage',
+      attributes: {
+        bucket: '$BUCKET_NAME',
+        prefix: '$BUCKET_PREFIX',
+      },
+    },
+  ],
+  edgeApplications: [
+    {
+      name: '$EDGE_APPLICATION_NAME',
+      rules: createMPARules({
+        edgeConnector: '$EDGE_CONNECTOR_NAME',
+      }),
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
         },
       },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
+      deployments: [
+        {
+          name: '$DEPLOYMENT_NAME',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: '$EDGE_APPLICATION_NAME',
+            },
           },
-          deliver: true,
         },
-      },
+      ],
+    },
+  ],
+};
 
-      {
-        name: 'Redirect to index.html',
-        match: '^\\/',
-        behavior: {
-          rewrite: `/index.html`,
-        },
-      },
-    ],
-  },
-});
+export default config;

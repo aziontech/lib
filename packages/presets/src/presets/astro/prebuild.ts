@@ -1,6 +1,7 @@
-import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
+import { BuildConfiguration, BuildContext } from 'azion/config';
+import { exec, getPackageManager } from 'azion/utils/node';
 import { constants } from 'fs';
-import { access, readFile } from 'fs/promises';
+import { access, mkdir, readFile } from 'fs/promises';
 
 const CONFIG_FILES = ['astro.config.ts', 'astro.config.mjs', 'astro.config.js', 'astro.config.cjs'] as const;
 
@@ -26,18 +27,20 @@ async function getAstroOutDir(): Promise<string> {
   return 'dist'; // Default Astro output directory
 }
 
-async function prebuild(): Promise<void> {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   try {
     const [packageManager, outDir] = await Promise.all([getPackageManager(), getAstroOutDir()]);
 
-    const newOutDir = '.edge/storage';
+    // If skipFrameworkBuild is true, we need to create the dist folder
+    if (ctx.skipFrameworkBuild) {
+      await mkdir(outDir, { recursive: true });
+      return;
+    }
 
     await exec(`${packageManager} run build`, {
       scope: 'Astro',
       verbose: true,
     });
-
-    copyDirectory(outDir, newOutDir);
   } catch (error) {
     throw new Error(`Error during Astro prebuild: ${error instanceof Error ? error.message : String(error)}`);
   }

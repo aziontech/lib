@@ -7,6 +7,7 @@ import {
   ApiDeleteObjectResponse,
   ApiEditBucketResponse,
   ApiError,
+  ApiGetBucketResponse,
   ApiListBucketsParams,
   ApiListBucketsResponse,
   ApiListObjectsParams,
@@ -20,9 +21,9 @@ import { AzionEnvironment, EdgeAccessType } from '../../types';
  */
 const getBaseUrl = (env: AzionEnvironment = 'production'): string => {
   const urls: Record<AzionEnvironment, string> = {
-    production: 'https://api.azion.com/v4/storage/buckets',
-    development: '/v4/storage/buckets',
-    staging: 'https://stage-api.azion.com/v4/storage/buckets',
+    production: 'https://api.azion.com/v4/edge_storage/buckets',
+    development: '/v4/edge_storage/buckets',
+    staging: 'https://stage-api.azion.com/v4/edge_storage/buckets',
   };
   return urls[env];
 };
@@ -68,6 +69,25 @@ const buildFetchOptions = (method: string, headers: Record<string, string>, body
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleApiError = (fields: string[], data: any, operation: string) => {
   let error = { message: 'Error unknown', operation: operation };
+
+  if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+    const firstError = data.errors[0];
+    if (firstError.detail) {
+      error = {
+        message: firstError.detail,
+        operation: operation,
+      };
+      return error;
+    }
+    if (firstError.title) {
+      error = {
+        message: firstError.title,
+        operation: operation,
+      };
+      return error;
+    }
+  }
+
   fields.forEach((field: string) => {
     if (data[field]) {
       const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
@@ -96,8 +116,11 @@ const getBuckets = async (
   env: AzionEnvironment = 'production',
 ): Promise<ApiListBucketsResponse> => {
   try {
-    const { page_size = 10, page = 1 } = params || {};
+    const { page_size = 10, page = 1, search, ordering, fields } = params || {};
     const queryParams = new URLSearchParams({ page_size: String(page_size), page: String(page) });
+    if (search) queryParams.append('search', search);
+    if (ordering) queryParams.append('ordering', ordering);
+    if (fields) queryParams.append('fields', fields);
     const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
     const options = buildFetchOptions('GET', headers);
     const baseUrl = getBaseUrl(env);
@@ -115,6 +138,53 @@ const getBuckets = async (
     if (debug) console.error('Error getting all buckets:', error);
     return {
       error: { message: error.toString(), operation: 'get all buckets' },
+    };
+  }
+};
+
+/**
+ * Retrieves details from a specific bucket by name using the new dedicated endpoint.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {string} name - Name of the bucket to retrieve.
+ * @param {string} [fields] - Comma-separated list of field names to include in the response.
+ * @param {boolean} [debug] - Enable debug mode for detailed logging.
+ * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
+ * @returns {Promise<ApiGetBucketResponse>} The bucket details or an error if retrieval failed.
+ */
+const getBucketByName = async (
+  token: string,
+  name: string,
+  fields?: string,
+  debug?: boolean,
+  env: AzionEnvironment = 'production',
+): Promise<ApiGetBucketResponse> => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (fields) queryParams.append('fields', fields);
+
+    const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
+    const options = buildFetchOptions('GET', headers);
+    const baseUrl = getBaseUrl(env);
+    const url = `${baseUrl}/${name}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    if (debug) console.log(`GET bucket URL: ${url}`);
+
+    const data = await fetchWithErrorHandling(url, options, debug);
+
+    if (!data.data) {
+      const error = handleApiError(['detail'], data, 'get bucket by name');
+      return {
+        error: error,
+      };
+    }
+
+    if (debug) console.log('Response:', data);
+    return data;
+  } catch (error: any) {
+    if (debug) console.error('Error getting bucket by name:', error);
+    return {
+      error: { message: error.toString(), operation: 'get bucket by name' },
     };
   }
 };
@@ -300,6 +370,7 @@ const getObjects = async (
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to create.
  * @param {string} file - Content of the object.
+ * @param {string} [contentType='application/octet-stream'] - Content type of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The created object or an error if creation failed.
@@ -309,6 +380,7 @@ const postObject = async (
   bucketName: string,
   key: string,
   file: string,
+  contentType: string = 'application/octet-stream',
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
@@ -320,7 +392,7 @@ const postObject = async (
         method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': contentType,
           Authorization: `Token ${token}`,
         },
         body: file,
@@ -389,6 +461,7 @@ const getObjectByKey = async (
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to update.
  * @param {string} file - New content of the object.
+ * @param {string} [contentType='application/octet-stream'] - Content type of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The updated object or an error if update failed.
@@ -398,6 +471,7 @@ const putObject = async (
   bucketName: string,
   key: string,
   file: string,
+  contentType: string = 'application/octet-stream',
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
@@ -409,7 +483,7 @@ const putObject = async (
         method: 'PUT',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': contentType,
           Authorization: `Token ${token}`,
         },
         body: file,
@@ -472,6 +546,7 @@ const deleteObject = async (
 export {
   deleteBucket,
   deleteObject,
+  getBucketByName,
   getBuckets,
   getObjectByKey,
   getObjects,

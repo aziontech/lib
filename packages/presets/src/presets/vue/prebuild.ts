@@ -1,5 +1,6 @@
+import type { BuildConfiguration, BuildContext } from 'azion/config';
 import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
-import { lstat, readFile } from 'fs/promises';
+import { lstat, mkdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
 /**
@@ -50,11 +51,17 @@ async function readViteBuildOutput() {
 /**
  * Runs custom prebuild actions for Vue
  */
-async function prebuild(): Promise<void> {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   const packageManager = await getPackageManager();
   const npmArgsForward = packageManager === 'npm' ? '--' : '';
   const defaultViteOutDir = 'dist';
-  const destPath = '.edge/storage';
+  const destPath = '.edge/assets';
+
+  // If skipFrameworkBuild is true, we need to create the dist folder
+  if (ctx.skipFrameworkBuild) {
+    await mkdir(destPath, { recursive: true });
+    return;
+  }
 
   const isViteProject = await viteConfigExists();
 

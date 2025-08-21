@@ -1,11 +1,11 @@
-import { AzionBuild, defineConfig } from 'azion/config';
+import type { AzionBuild, AzionConfig } from 'azion/config';
 import webpack, { Configuration } from 'webpack';
 
-export default defineConfig({
+const config: AzionConfig = {
   build: {
-    entry: 'handler.ts',
-    preset: 'rustwasm',
+    entry: 'handler.js',
     polyfills: false,
+    bundler: 'webpack',
     extend: (context: Configuration) => {
       context = {
         ...context,
@@ -33,21 +33,78 @@ export default defineConfig({
       return context;
     },
   } as AzionBuild,
-  functions: [
+  edgeFunctions: [
     {
-      name: 'my-rustwasm-function',
-      path: '.edge/functions/handler.js',
+      name: '$EDGE_FUNCTION_NAME',
+      path: './functions/handler.js',
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'Execute Edge F nction',
-        match: '^\\/',
-        behavior: {
-          runFunction: 'my-rustwasm-function',
+  edgeApplications: [
+    {
+      name: '$EDGE_APPLICATION_NAME',
+      rules: {
+        request: [
+          {
+            name: 'Execute Edge Function',
+            description: 'Execute edge function for all requests',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'run_function',
+                attributes: {
+                  value: '$EDGE_FUNCTION_NAME',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      functionsInstances: [
+        {
+          name: '$EDGE_FUNCTION_INSTANCE_NAME',
+          ref: '$EDGE_FUNCTION_NAME',
+        },
+      ],
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
         },
       },
-    ],
-  },
-});
+      deployments: [
+        {
+          name: '$DEPLOYMENT_NAME',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: '$EDGE_APPLICATION_NAME',
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export default config;

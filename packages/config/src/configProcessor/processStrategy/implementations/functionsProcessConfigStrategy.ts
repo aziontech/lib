@@ -1,37 +1,80 @@
-import { AzionConfig } from '../../../types';
+import { AzionConfig, EdgeFunctionExecutionEnvironment, EdgeFunctionRuntime } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * FunctionsProcessConfigStrategy
+ * FunctionsProcessConfigStrategy V4
  * @class FunctionsProcessConfigStrategy
- * @description This class is implementation of the Functions ProcessConfig Strategy.
+ * @description This class is implementation of the Edge Functions Process Config Strategy for API V4.
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
+  /**
+   * Validate storage binding reference
+   */
+  private validateStorageBinding(config: AzionConfig, bucketNameOrId: string | number, functionName: string) {
+    if (typeof bucketNameOrId === 'string') {
+      if (
+        !Array.isArray(config?.edgeStorage) ||
+        !config.edgeStorage.find((storage) => storage.name === bucketNameOrId)
+      ) {
+        throw new Error(
+          `Edge Function "${functionName}" references storage bucket "${bucketNameOrId}" which is not defined in the edgeStorage configuration.`,
+        );
+      }
+    }
+  }
+  /**
+   * Transform azion.config Edge Functions to V4 manifest format
+   */
   transformToManifest(config: AzionConfig) {
-    if (!Array.isArray(config?.functions) || config?.functions.length === 0) {
-      return;
+    if (!Array.isArray(config?.edgeFunctions) || config?.edgeFunctions.length === 0) {
+      return [];
     }
 
-    return config.functions.map((func) => ({
-      name: func.name,
-      target: func.path,
-      args: func.args || {},
-    }));
+    return config.edgeFunctions.map((func) => {
+      // Validate storage binding if exists
+      if (func.bindings?.storage?.bucket) {
+        this.validateStorageBinding(config, func.bindings.storage.bucket, func.name);
+      }
+
+      return {
+        name: func.name,
+        runtime: func.runtime || 'azion_js',
+        default_args: func.defaultArgs || {},
+        execution_environment: func.executionEnvironment || 'application',
+        active: func.active ?? true,
+        path: func.path,
+        bindings: func.bindings,
+      };
+    });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!Array.isArray(payload?.functions) || payload?.functions.length === 0) {
+  /**
+   * Transform V4 manifest format back to azion.config Edge Functions
+   */
+  transformToConfig(
+    payload: {
+      edge_functions?: Array<{
+        name: string;
+        runtime?: string;
+        default_args?: Record<string, unknown>;
+        execution_environment?: string;
+        active?: boolean;
+      }>;
+    },
+    transformedPayload: AzionConfig,
+  ) {
+    if (!Array.isArray(payload?.edge_functions) || payload?.edge_functions.length === 0) {
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.functions = payload.functions.map((func: any) => ({
-      name: func.name,
-      path: func.target,
-      args: func.args || {},
-    }));
 
-    return transformedPayload.functions;
+    transformedPayload.edgeFunctions = payload.edge_functions.map((func) => ({
+      name: func.name,
+      path: `./functions/${func.name}.js`, // Default path since it's not in V4 API
+      runtime: func.runtime as EdgeFunctionRuntime,
+      defaultArgs: func.default_args,
+      executionEnvironment: func.execution_environment as EdgeFunctionExecutionEnvironment,
+      active: func.active,
+    }));
   }
 }
 

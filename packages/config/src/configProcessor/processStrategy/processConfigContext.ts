@@ -38,12 +38,9 @@ class ProcessConfigContext {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig): AzionConfig {
     Object.keys(this.strategies).forEach((key) => {
-      transformedPayload[key as keyof AzionConfig] = this.strategies[key].transformToConfig(
-        payload,
-        transformedPayload,
-      );
+      payload[key] = this.strategies[key].transformToConfig(payload, transformedPayload);
     });
-    return transformedPayload;
+    return payload;
   }
 }
 

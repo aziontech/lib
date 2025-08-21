@@ -1,18 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const requestBehaviors = {
-  setOrigin: {
+  setEdgeConnector: {
     transform: (value: any, payloadCDN: any) => {
-      const origin = payloadCDN.origin?.find((o: any) => o.name === value.name && o.origin_type === value.type);
-
-      if (!origin) {
-        throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
-      } else if (origin.origin_type !== value.type) {
-        throw new Error(`Rule setOrigin originType '${value.type}' does not match the origin settings`);
+      const connectorName = typeof value === 'string' ? value : value.name;
+      const connector = payloadCDN.edgeConnectors?.find((o: any) => o.name === connectorName);
+      if (!connector) {
+        throw new Error(`Rule setEdgeConnector '${connectorName}' not found in the edge connectors list`);
       }
 
       return {
-        name: 'set_origin',
-        target: origin.name,
+        name: 'set_edge_connector',
+        argument: connector.name,
       };
     },
   },
@@ -21,7 +19,7 @@ export const requestBehaviors = {
       const behaviors = [];
       behaviors.push({
         name: 'rewrite_request',
-        target: value,
+        argument: value,
       });
       return behaviors;
     },
@@ -29,20 +27,20 @@ export const requestBehaviors = {
   deliver: {
     transform: () => ({
       name: 'deliver',
-      target: null,
+      argument: null,
     }),
   },
   setCookie: {
     transform: (value: any) => ({
       name: 'add_request_cookie',
-      target: value,
+      argument: value,
     }),
   },
   setHeaders: {
     transform: (value: any) =>
       value.map((header: any) => ({
         name: 'add_request_header',
-        target: header,
+        argument: header,
       })),
   },
   setCache: {
@@ -50,7 +48,7 @@ export const requestBehaviors = {
       if (typeof value === 'string') {
         return {
           name: 'set_cache_policy',
-          target: value,
+          argument: value,
         };
       }
       if (typeof value === 'object') {
@@ -62,7 +60,7 @@ export const requestBehaviors = {
         payloadCDN.cache.push(cacheSetting);
         return {
           name: 'set_cache_policy',
-          target: value.name,
+          argument: value.name,
         };
       }
       return undefined;
@@ -73,7 +71,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'forward_cookies',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -82,7 +80,7 @@ export const requestBehaviors = {
   runFunction: {
     transform: (value: string) => ({
       name: 'run_function',
-      target: value,
+      argument: value,
     }),
   },
   enableGZIP: {
@@ -90,7 +88,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'enable_gzip',
-          target: '',
+          argument: '',
         };
       }
       return undefined;
@@ -101,7 +99,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'bypass_cache_phase',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -112,7 +110,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'redirect_http_to_https',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -121,19 +119,19 @@ export const requestBehaviors = {
   redirectTo301: {
     transform: (value: any) => ({
       name: 'redirect_to_301',
-      target: value,
+      argument: value,
     }),
   },
   redirectTo302: {
     transform: (value: any) => ({
       name: 'redirect_to_302',
-      target: value,
+      argument: value,
     }),
   },
   capture: {
     transform: (value: any) => ({
       name: 'capture_match_groups',
-      target: {
+      argument: {
         regex: value.match,
         captured_array: value.captured,
         subject: `\${${value.subject ?? 'uri'}}`,
@@ -143,13 +141,13 @@ export const requestBehaviors = {
   filterCookie: {
     transform: (value: any) => ({
       name: 'filter_request_cookie',
-      target: value,
+      argument: value,
     }),
   },
   filterHeader: {
     transform: (value: any) => ({
       name: 'filter_request_header',
-      target: value,
+      argument: value,
     }),
   },
   noContent: {
@@ -157,7 +155,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'no_content',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -168,7 +166,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'optimize_images',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -179,7 +177,7 @@ export const requestBehaviors = {
       if (value) {
         return {
           name: 'deny',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -190,14 +188,14 @@ export const responseBehaviors = {
   setCookie: {
     transform: (value: any) => ({
       name: 'set_cookie',
-      target: value,
+      argument: value,
     }),
   },
   setHeaders: {
     transform: (value: any) =>
       value.map((header: any) => ({
         name: 'add_response_header',
-        target: header,
+        argument: header,
       })),
   },
   enableGZIP: {
@@ -205,7 +203,7 @@ export const responseBehaviors = {
       if (value) {
         return {
           name: 'enable_gzip',
-          target: '',
+          argument: '',
         };
       }
       return undefined;
@@ -214,37 +212,37 @@ export const responseBehaviors = {
   filterCookie: {
     transform: (value: any) => ({
       name: 'filter_response_cookie',
-      target: value,
+      argument: value,
     }),
   },
   filterHeader: {
     transform: (value: any) => ({
       name: 'filter_response_header',
-      target: value,
+      argument: value,
     }),
   },
   runFunction: {
     transform: (value: string) => ({
       name: 'run_function',
-      target: value,
+      argument: value,
     }),
   },
   redirectTo301: {
     transform: (value: any) => ({
       name: 'redirect_to_301',
-      target: value,
+      argument: value,
     }),
   },
   redirectTo302: {
     transform: (value: any) => ({
       name: 'redirect_to_302',
-      target: value,
+      argument: value,
     }),
   },
   capture: {
     transform: (value: any) => ({
       name: 'capture_match_groups',
-      target: {
+      argument: {
         regex: value.match,
         captured_array: value.captured,
         subject: `\${${value.subject ?? 'uri'}}`,
@@ -256,7 +254,7 @@ export const responseBehaviors = {
       if (value) {
         return {
           name: 'deliver',
-          target: null,
+          argument: null,
         };
       }
       return undefined;
@@ -265,17 +263,14 @@ export const responseBehaviors = {
 };
 
 export const revertRequestBehaviors = {
-  set_origin: {
+  set_edge_connector: {
     transform: (value: any, payloadCDN: any) => {
-      const origin = payloadCDN.origin?.find((o: any) => o.name === value);
-      if (!origin) {
-        throw new Error(`Rule setOrigin name '${value.name}' not found in the origin settings`);
+      const connector = payloadCDN.edgeConnectors?.find((o: any) => o.name === value);
+      if (!connector) {
+        throw new Error(`Rule setEdgeConnector name '${value.name}' not found in the edge connectors list`);
       }
       return {
-        setOrigin: {
-          name: value,
-          type: origin.type,
-        },
+        setEdgeConnector: value,
       };
     },
   },

@@ -16,18 +16,24 @@ jobs:
   ai-code-review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
-      - name: Install dependencies
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run compile
+
+      - name: Install Action GitHub
         run: |
-          npm  install
-          npm run compile
           npm install @actions/github
 
       - name: Run Azion AI Code Review

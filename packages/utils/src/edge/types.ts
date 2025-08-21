@@ -1,4 +1,4 @@
-import { FetchEvent, Metadata } from 'azion/types';
+import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from 'azion/types';
 
 /**
  * Represents the request URL for the SSG or SPA.
@@ -26,14 +26,14 @@ export type MountSPAFunction = (requestURL: RequestURL) => Promise<Response>;
 
 /**
  * Function that parses and logs the details of an incoming request.
- * @param event - The incoming FetchEvent object.
+ * @param request - The incoming AzionRuntimeRequest object.
  * @returns A promise that resolves to the ParsedRequest object.
  */
-export type ParseRequestFunction = (event: FetchEvent) => Promise<ParsedRequest>;
+export type ParseRequestFunction = (request: AzionRuntimeRequest) => Promise<ParsedRequest>;
 
 /**
  * Function that parses and logs the details of an incoming request.
- * @param event - The incoming FetchEvent object.
+ * @param request - The incoming AzionRuntimeRequest object.
  * @returns A promise that resolves to the request details object.
  */
 export type ParsedRequest = {
@@ -64,5 +64,5 @@ export type ParsedRequest = {
   priority: string;
   host: string;
   authorization: string;
-  metadata: Metadata;
+  metadata: AzionRuntimeRequestMetadata;
 };

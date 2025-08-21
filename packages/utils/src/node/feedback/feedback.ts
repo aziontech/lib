@@ -107,6 +107,22 @@ const scopes = (scope: string = 'Azion') => ({
       types: methods,
     }),
   },
+  storage: {
+    ...global(scope).scope(scope, 'Storage'),
+    interactive: getLogger({
+      interactive: true,
+      scope: [scope, 'Storage'],
+      types: methods,
+    }),
+  },
+  bindings: {
+    ...global(scope).scope(scope, 'Bindings'),
+    interactive: getLogger({
+      interactive: true,
+      scope: [scope, 'Bindings'],
+      types: methods,
+    }),
+  },
   manifest: {
     ...global(scope).scope(scope, 'IaC'),
     interactive: getLogger({

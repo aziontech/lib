@@ -1,6 +1,7 @@
 import {
   deleteBucket,
   deleteObject,
+  getBucketByName,
   getBuckets,
   getObjectByKey,
   getObjects,
@@ -27,8 +28,6 @@ import {
 } from './types';
 
 import { InternalStorageClient, isInternalStorageAvailable } from './services/runtime/index';
-
-import { findBucketByName } from './utils/index';
 
 /**
  * Determines if the code is running in a browser environment.
@@ -124,6 +123,9 @@ export const createBucketMethod = async (
       data: {
         ...apiResponse.data,
         edge_access: apiResponse.data.edge_access as EdgeAccessType,
+        last_editor: apiResponse.data.last_editor,
+        last_modified: apiResponse.data.last_modified,
+        product_version: apiResponse.data.product_version,
         getObjects: ({
           params,
         }: {
@@ -134,19 +136,23 @@ export const createBucketMethod = async (
         createObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          createObjectMethod(token, name, key, content, resolvedOptions),
+          createObjectMethod(token, name, key, content, params, resolvedOptions),
         updateObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          updateObjectMethod(token, name, key, content, resolvedOptions),
+          updateObjectMethod(token, name, key, content, params, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
           deleteObjectMethod(token, name, key, resolvedOptions),
       },
@@ -200,6 +206,9 @@ export const getBucketsMethod = async (
     const buckets = apiResponse.results?.map((bucket) => ({
       ...bucket,
       edge_access: bucket.edge_access as EdgeAccessType,
+      last_editor: bucket.last_editor,
+      last_modified: bucket.last_modified,
+      product_version: bucket.product_version,
       getObjects: ({
         params,
       }: {
@@ -211,19 +220,23 @@ export const getBucketsMethod = async (
       createObject: ({
         key,
         content,
+        params,
       }: {
         key: string;
         content: string;
+        params?: { content_type?: string };
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-        createObjectMethod(token, bucket.name, key, content, resolvedOptions),
+        createObjectMethod(token, bucket.name, key, content, params, resolvedOptions),
       updateObject: ({
         key,
         content,
+        params,
       }: {
         key: string;
         content: string;
+        params?: { content_type?: string };
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-        updateObjectMethod(token, bucket.name, key, content, resolvedOptions),
+        updateObjectMethod(token, bucket.name, key, content, params, resolvedOptions),
       deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
         deleteObjectMethod(token, bucket.name, key, resolvedOptions),
     }));
@@ -240,84 +253,37 @@ export const getBucketsMethod = async (
 };
 
 /**
- * Get a bucket by its name.
+ * Get a bucket by its name using the new dedicated API endpoint.
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to get.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucket>>} - Bucket object or error message.
  */
-const getBucketMethod = createInternalOrExternalMethod(
-  async (token: string, name: string, options?: AzionClientOptions): Promise<AzionStorageResponse<AzionBucket>> => {
-    const resolvedOptions = resolveClientOptions(options);
-    const bucket = await findBucketByName(token, name, resolvedOptions);
-    if (bucket.error || !bucket.data?.name) {
-      return {
-        error: {
-          message: bucket.error?.message ?? 'Bucket not found',
-          operation: 'get bucket',
-        },
-      };
-    }
+const getBucketMethod = async (
+  token: string,
+  name: string,
+  options?: AzionClientOptions,
+): Promise<AzionStorageResponse<AzionBucket>> => {
+  const resolvedOptions = resolveClientOptions(options);
 
-    const internalClient = new InternalStorageClient(token, resolvedOptions.debug);
-    const internalResult = await internalClient.getBucket({ name });
-    if (internalResult) {
-      return {
-        data: {
-          ...internalResult,
-          getObjects: ({
-            params,
-          }: {
-            params: AzionObjectCollectionParams;
-          }): Promise<AzionStorageResponse<AzionBucketObjects>> =>
-            getObjectsMethod(token, name, params, resolvedOptions),
-          getObjectByKey: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-            getObjectByKeyMethod(token, name, key, resolvedOptions),
-          createObject: ({
-            key,
-            content,
-          }: {
-            key: string;
-            content: string;
-          }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-            createObjectMethod(token, name, key, content, resolvedOptions),
-          updateObject: ({
-            key,
-            content,
-          }: {
-            key: string;
-            content: string;
-          }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-            updateObjectMethod(token, name, key, content, resolvedOptions),
-          deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
-            deleteObjectMethod(token, name, key, resolvedOptions),
-        },
-      };
-    }
-    return {
-      error: {
-        message: 'Failed to retrieve bucket',
-        operation: 'get bucket',
-      },
-    };
-  },
-  async (token: string, name: string, options?: AzionClientOptions): Promise<AzionStorageResponse<AzionBucket>> => {
-    const resolvedOptions = resolveClientOptions(options);
-    const bucket = await findBucketByName(token, name, resolvedOptions);
+  const apiResponse = await getBucketByName(
+    resolveToken(token),
+    name,
+    undefined, // fields parameter
+    resolvedOptions.debug,
+    resolvedOptions.env,
+  );
 
-    if (bucket.error || !bucket.data?.name) {
-      return {
-        error: {
-          message: bucket.error?.message ?? 'Bucket not found',
-          operation: 'get bucket',
-        },
-      };
-    }
+  if (apiResponse.data) {
+    const bucket = apiResponse.data;
     return {
       data: {
-        name: bucket.data.name,
-        edge_access: bucket.data?.edge_access as EdgeAccessType,
+        name: bucket.name,
+        edge_access: bucket.edge_access as EdgeAccessType,
+        last_editor: bucket.last_editor,
+        last_modified: bucket.last_modified,
+        product_version: bucket.product_version,
         getObjects: ({
           params,
         }: {
@@ -328,25 +294,36 @@ const getBucketMethod = createInternalOrExternalMethod(
         createObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          createObjectMethod(token, name, key, content, resolvedOptions),
+          createObjectMethod(token, name, key, content, params, resolvedOptions),
         updateObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          updateObjectMethod(token, name, key, content, resolvedOptions),
+          updateObjectMethod(token, name, key, content, params, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
           deleteObjectMethod(token, name, key, resolvedOptions),
       },
     };
-  },
-);
+  }
+
+  return {
+    error: {
+      message: apiResponse.error?.message ?? 'Bucket not found',
+      operation: 'get bucket',
+    },
+  };
+};
 
 /**
  * Updates an existing bucket.
@@ -376,6 +353,9 @@ export const updateBucketMethod = async (
       data: {
         ...apiResponse.data,
         edge_access: apiResponse.data.edge_access as EdgeAccessType,
+        last_editor: apiResponse.data.last_editor,
+        last_modified: apiResponse.data.last_modified,
+        product_version: apiResponse.data.product_version,
         getObjects: ({
           params,
         }: {
@@ -386,19 +366,23 @@ export const updateBucketMethod = async (
         createObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          createObjectMethod(token, name, key, content, resolvedOptions),
+          createObjectMethod(token, name, key, content, params, resolvedOptions),
         updateObject: ({
           key,
           content,
+          params,
         }: {
           key: string;
           content: string;
+          params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-          updateObjectMethod(token, name, key, content, resolvedOptions),
+          updateObjectMethod(token, name, key, content, params, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
           deleteObjectMethod(token, name, key, resolvedOptions),
       },
@@ -406,6 +390,44 @@ export const updateBucketMethod = async (
   }
   return {
     error: apiResponse.error,
+  };
+};
+
+/**
+ * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+ * This is a convenient wrapper that ensures a bucket exists before use.
+ *
+ * @param {string} token - Authentication token for Azion API.
+ * @param {string} name - Name of the bucket to setup.
+ * @param {EdgeAccessType} edge_access - Edge access configuration for the bucket (used only if creating).
+ * @param {AzionClientOptions} [options] - Client options including debug mode.
+ * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+ */
+export const setupStorageMethod = async (
+  token: string,
+  name: string,
+  edge_access: EdgeAccessType,
+  options?: AzionClientOptions,
+): Promise<AzionStorageResponse<AzionBucket>> => {
+  const resolvedOptions = resolveClientOptions(options);
+  const getResult = await getBucketMethod(token, name, resolvedOptions);
+
+  if (getResult.data) {
+    if (resolvedOptions.debug) console.log(`Bucket '${name}' already exists`);
+    return getResult;
+  }
+  if (resolvedOptions.debug) console.log(`Bucket '${name}' not found, creating...`);
+  const createResult = await createBucketMethod(token, name, edge_access, resolvedOptions);
+
+  if (createResult.data) {
+    if (resolvedOptions.debug) console.log(`Bucket '${name}' created successfully`);
+    return createResult;
+  }
+  return {
+    error: {
+      message: createResult.error?.message ?? `Failed to setup storage bucket '${name}'`,
+      operation: 'setup storage',
+    },
   };
 };
 
@@ -535,11 +557,12 @@ const createObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
     internalClient.name = bucket;
-    const internalResult = await internalClient.createObject({ key, content });
+    const internalResult = await internalClient.createObject({ key, content, options: params });
     if (internalResult?.data) {
       return {
         data: internalResult.data,
@@ -557,6 +580,7 @@ const createObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const apiResponse = await postObject(
@@ -564,6 +588,7 @@ const createObjectMethod = createInternalOrExternalMethod(
       bucket,
       key,
       content,
+      params?.content_type ?? 'application/octet-stream',
       resolveDebug(options?.debug),
       resolveEnv(options?.env),
     );
@@ -572,6 +597,7 @@ const createObjectMethod = createInternalOrExternalMethod(
         data: {
           key: apiResponse.data.object_key,
           content,
+          content_type: params?.content_type,
           state: apiResponse.state,
         },
       };
@@ -598,11 +624,12 @@ const updateObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
     internalClient.name = bucket;
-    const internalResult = await internalClient.updateObject({ key, content });
+    const internalResult = await internalClient.updateObject({ key, content, options: params });
     if (internalResult?.data) {
       return {
         data: internalResult.data,
@@ -617,6 +644,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
     bucket: string,
     key: string,
     content: string,
+    params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const apiResponse = await putObject(
@@ -624,6 +652,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
       bucket,
       key,
       content,
+      params?.content_type ?? 'application/octet-stream',
       resolveDebug(options?.debug),
       resolveEnv(options?.env),
     );
@@ -632,6 +661,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
         data: {
           key: apiResponse.data.object_key,
           content,
+          content_type: params?.content_type,
           state: apiResponse.state,
         },
       };
@@ -828,6 +858,39 @@ const updateBucketWrapper = ({
   updateBucketMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
 
 /**
+ * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+ * This is a convenient wrapper that ensures a bucket exists before use.
+ *
+ * @param {Object} params - Parameters for setting up storage.
+ * @param {string} params.name - Name of the bucket to setup.
+ * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket (used only if creating).
+ * @param {AzionClientOptions} [params.options] - Client options including debug mode.
+ * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+ *
+ * @example
+ * const { data: bucket, error } = await setupStorage({
+ *   name: 'my-bucket',
+ *   edge_access: 'read_write',
+ *   options: { debug: true }
+ * });
+ * if (bucket) {
+ *   console.log(`Storage ready: ${bucket.name}`);
+ * } else {
+ *   console.error('Failed to setup storage', error);
+ * }
+ */
+const setupStorageWrapper = ({
+  name,
+  edge_access,
+  options,
+}: {
+  name: string;
+  edge_access: EdgeAccessType;
+  options?: AzionClientOptions;
+}): Promise<AzionStorageResponse<AzionBucket>> =>
+  setupStorageMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
+
+/**
  * Retrieves a list of objects in a specific bucket.
  *
  * @param {Object} params - Parameters for retrieving objects.
@@ -863,11 +926,19 @@ const getObjectsWrapper = ({
  * @param {string} params.bucket - Name of the bucket to create the object in.
  * @param {string} params.key - Key (name) of the object to create.
  * @param {string} params.content - Content of the content to upload.
+ * @param {Object} [params.params] - Object parameters.
+ * @param {string} [params.params.content_type] - Content type of the object (defaults to 'application/octet-stream').
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The created object or error message
  *
  * @example
- * const { data: newObject, error } = await createObject({ bucket: 'my-bucket', key: 'new-content.txt', content: 'content content', options: { debug: true } });
+ * const { data: newObject, error } = await createObject({
+ *   bucket: 'my-bucket',
+ *   key: 'new-content.txt',
+ *   content: 'content content',
+ *   params: { content_type: 'text/plain' },
+ *   options: { debug: true }
+ * });
  * if (newObject) {
  *   console.log(`Object created with key: ${newObject.key}`);
  *   console.log(`Object content: ${newObject.content}`);
@@ -879,14 +950,16 @@ const createObjectWrapper = ({
   bucket,
   key,
   content,
+  params,
   options,
 }: {
   bucket: string;
   key: string;
   content: string;
+  params?: { content_type?: string };
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-  createObjectMethod(resolveToken(), bucket, key, content, resolveClientOptions(options));
+  createObjectMethod(resolveToken(), bucket, key, content, params, resolveClientOptions(options));
 
 /**
  * Retrieves an object from a specific bucket by its key.
@@ -923,11 +996,19 @@ const getObjectByKeyWrapper = ({
  * @param {string} params.bucket - Name of the bucket containing the object.
  * @param {string} params.key - Key of the object to update.
  * @param {string} params.content - New content of the content.
+ * @param {Object} [params.params] - Object parameters.
+ * @param {string} [params.params.content_type] - Content type of the object (defaults to 'application/octet-stream').
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The updated object or error message.
  *
  * @example
- * const { data: updatedObject, error } = await updateObject({ bucket: 'my-bucket', key: 'content.txt', content: 'Updated content', options: { debug: true } });
+ * const { data: updatedObject, error } = await updateObject({
+ *   bucket: 'my-bucket',
+ *   key: 'content.txt',
+ *   content: 'Updated content',
+ *   params: { content_type: 'text/plain' },
+ *   options: { debug: true }
+ * });
  * if (updatedObject) {
  *   console.log(`Object updated: ${updatedObject.key}`);
  *   console.log(`New content: ${updatedObject.content}`);
@@ -939,14 +1020,16 @@ const updateObjectWrapper = ({
   bucket,
   key,
   content,
+  params,
   options,
 }: {
   bucket: string;
   key: string;
   content: string;
+  params?: { content_type?: string };
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
-  updateObjectMethod(resolveToken(), bucket, key, content, resolveClientOptions(options));
+  updateObjectMethod(resolveToken(), bucket, key, content, params, resolveClientOptions(options));
 
 /**
  * Deletes an object from a specific bucket.
@@ -1025,6 +1108,14 @@ const client: CreateAzionStorageClient = (
       deleteBucketMethod(tokenValue, name, resolvedOptions),
     getBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionBucket>> =>
       getBucketMethod(tokenValue, name, resolvedOptions),
+    setupStorage: ({
+      name,
+      edge_access,
+    }: {
+      name: string;
+      edge_access: EdgeAccessType;
+    }): Promise<AzionStorageResponse<AzionBucket>> =>
+      setupStorageMethod(tokenValue, name, edge_access, resolvedOptions),
   } as const;
 
   return client;
@@ -1040,6 +1131,7 @@ export {
   getBucketsWrapper as getBuckets,
   getObjectByKeyWrapper as getObjectByKey,
   getObjectsWrapper as getObjects,
+  setupStorageWrapper as setupStorage,
   updateBucketWrapper as updateBucket,
   updateObjectWrapper as updateObject,
 };

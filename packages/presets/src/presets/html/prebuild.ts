@@ -1,15 +1,12 @@
-import { mkdir, rename } from 'fs/promises';
-import { join } from 'path';
+import { mkdir } from 'fs/promises';
 
 /**
  * Runs custom prebuild actions for HTML
  */
 async function prebuild(): Promise<void> {
-  const sourceDir = process.cwd();
-  const targetDir = join('.', '.edge', 'storage');
+  const outDir = './www';
 
-  await mkdir(targetDir, { recursive: true });
-  await rename(sourceDir, targetDir);
+  await mkdir(outDir, { recursive: true });
 }
 
 export default prebuild;

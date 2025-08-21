@@ -1,520 +1,612 @@
-export default {
+import type {
+  AzionConfig,
+  AzionEdgeConnector,
+  CacheByCookie,
+  CacheByQueryString,
+  CustomPageErrorCode,
+  CustomPageType,
+  EdgeConnectorDnsResolution,
+  EdgeConnectorHttpVersionPolicy,
+  EdgeConnectorTransportPolicy,
+  EdgeConnectorType,
+  NetworkListType,
+  WafSensitivity,
+  WafThreatType,
+  WorkloadInfrastructure,
+  WorkloadMTLSVerification,
+  WorkloadTLSCipher,
+  WorkloadTLSVersion,
+} from 'azion/config';
+
+const config: AzionConfig = {
   build: {
     entry: './src/index.js',
-    preset: {
-      name: 'angular',
-    },
+    preset: 'angular', // V4: 'angular' | 'react' | 'next' | 'vue' | 'nuxt' | 'astro' | etc.
+    bundler: 'webpack', // V4: 'webpack' | 'esbuild'
   },
-  domain: {
-    name: 'my_domain',
-    cnameAccessOnly: false, // Optional, defaults to false
-    cnames: ['www.example.com'], // Optional
-    edgeApplicationId: 12345, // Optional
-    edgeFirewallId: 12345, // Optional
-    digitalCertificateId: 'lets_encrypt', // 'lets_encrypt' or null
-    mtls: {
-      verification: 'enforce', // 'enforce' or 'permissive'
-      trustedCaCertificateId: 12345,
-      crlList: [111, 222],
-    }, // Optional
-  },
-  origin: [
+  edgeApplications: [
     {
-      id: 123, // Optional. ID of your origin. Obtain this value via GET request. Cannot be changed via API.
-      key: 'myorigin', // Optional. Key of your origin. Obtain this value via GET request. Cannot be changed via API.
-      name: 'myneworigin', // Required
-      type: 'single_origin', // Required. single_origin, load_balancer, object_storage, live_ingest. Defaults to single_origin if not provided
-      path: '', // Optional. Default '' if not provided
-      addresses: [
-        // Required for single_origin, load_balancer, live_ingest. Optional for object_storage
-        // or addresses: ['http.bin.org']
+      name: 'my-edge-app',
+      active: true,
+      debug: false,
+      edgeCacheEnabled: true,
+      edgeFunctionsEnabled: false,
+      applicationAcceleratorEnabled: false,
+      imageProcessorEnabled: false,
+      tieredCacheEnabled: false,
+      cache: [
         {
-          address: 'http.bin.org',
-          weight: 1, // Optional. Assign a number from 1 to 10 to determine how much traffic a server can handle.
+          name: 'mycache',
+          stale: false,
+          queryStringSort: false,
+          methods: {
+            post: false,
+            options: false,
+          },
+          browser: {
+            maxAgeSeconds: 1000 * 5, // 5000 seconds
+          },
+          edge: {
+            maxAgeSeconds: 1000,
+          },
+          cacheByQueryString: {
+            option: 'denylist' as CacheByQueryString,
+            list: ['order', 'user'],
+          },
+          cacheByCookie: {
+            option: 'allowlist' as CacheByCookie,
+            list: ['session', 'user'],
+          },
         },
       ],
-      protocolPolicy: 'preserve', // Optional. preserve, https, http. Defaults to preserve if not provided
-      hostHeader: '${host}', // Defaults to '${host}' if not provided
-      connectionTimeout: 60, // Optional. Default 60 if not provided
-      timeoutBetweenBytes: 120, // Optional. Default 120 if not provided
-      redirection: false, // Optional. Default false if not provided
-      hmac: {
-        region: 'us-east-1', // Required for hmac
-        accessKey: 'myaccesskey', // Required for hmac
-        secretKey: 'secretKey', // Required for hmac
-      }, // Optional
-    },
-    {
-      id: 456, // Optional. ID of your origin. Obtain this value via GET request. Cannot be changed via API.
-      key: 'myorigin', // Optional. Key of your origin. Obtain this value via GET request. Cannot be changed via API.
-      name: 'myneworigin', // Required
-      type: 'object_storage', // Required. single_origin, load_balancer, object_storage, live_ingest. Defaults to single_origin if not provided
-      bucket: 'blue-courage', // Required for object_storage
-      prefix: '0101010101001', // Optional. Default '' if not provided
+      rules: {
+        request: [
+          {
+            name: 'rewriteRuleExample',
+            description: 'Rewrite URLs, set cookies and headers, forward cookies.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/rewrite$',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: 'mycache', // Using name reference (validated)
+                },
+              },
+              {
+                type: 'rewrite_request',
+                attributes: {
+                  value: '/new/%{captured[1]}',
+                },
+              },
+              {
+                type: 'set_cookie',
+                attributes: {
+                  value: 'user=12345; Path=/; Secure',
+                },
+              },
+              {
+                type: 'add_response_header',
+                attributes: {
+                  value: 'Cache-Control: no-cache',
+                },
+              },
+              {
+                type: 'forward_cookies',
+              },
+            ],
+          },
+          {
+            name: 'staticContentRuleExample',
+            description: 'Handle static content by setting a specific origin and delivering directly.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/_statics/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_origin',
+                attributes: {
+                  value: 123, // Using ID reference (no validation needed)
+                },
+              },
+              {
+                type: 'deliver',
+              },
+            ],
+          },
+          {
+            name: 'computeFunctionRuleExample',
+            description: 'Executes a serverless function for compute paths.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/compute/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'run_function',
+                attributes: {
+                  value: 'my-edge-function', // Using name reference (validated)
+                },
+              },
+            ],
+          },
+          {
+            name: 'setEdgeConnectorExample',
+            description: 'Routes traffic through edge connector.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/api/',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_edge_connector',
+                attributes: {
+                  value: 'my-http-connector', // Using name reference (validated)
+                },
+              },
+            ],
+          },
+          {
+            name: 'complexCriteriaExample',
+            description: 'Example with multiple criteria groups (AND/OR logic).',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'starts_with',
+                  argument: '/mobile/',
+                },
+                {
+                  variable: '${device_group}',
+                  conditional: 'and',
+                  operator: 'is_equal',
+                  argument: 'mobile-devices',
+                },
+              ],
+              [
+                {
+                  variable: '${host}',
+                  conditional: 'if',
+                  operator: 'is_equal',
+                  argument: 'm.example.com',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'redirect_to_302',
+                attributes: {
+                  value: 'https://mobile.example.com${uri}',
+                },
+              },
+            ],
+          },
+        ],
+        response: [
+          {
+            name: 'apiDataResponseRuleExample',
+            description: 'Manage headers, cookies, and GZIP compression for API data responses.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/api/data',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'add_response_header',
+                attributes: {
+                  value: 'Content-Type: application/json',
+                },
+              },
+              {
+                type: 'enable_gzip',
+              },
+            ],
+          },
+          {
+            name: 'securityHeadersExample',
+            description: 'Add security headers to responses.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${status}',
+                  conditional: 'if',
+                  operator: 'is_equal',
+                  argument: '200',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'add_response_header',
+                attributes: {
+                  value: 'X-Frame-Options: DENY',
+                },
+              },
+              {
+                type: 'add_response_header',
+                attributes: {
+                  value: 'X-Content-Type-Options: nosniff',
+                },
+              },
+              {
+                type: 'filter_response_cookie',
+                attributes: {
+                  value: 'internal_session',
+                },
+              },
+            ],
+          },
+          {
+            name: 'captureGroupsExample',
+            description: 'Example using capture groups behavior.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'matches',
+                  argument: '^/capture/(.+)',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'capture_match_groups',
+                attributes: {
+                  regex: '^/capture/(.+)',
+                  subject: '${uri}',
+                  captured_array: 'captured',
+                },
+              },
+              {
+                type: 'add_response_header',
+                attributes: {
+                  value: 'X-Captured-Path: ${captured[1]}',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      deviceGroups: [
+        {
+          name: 'mobile-devices',
+          userAgent: '(Mobile|Android|iPhone|iPad)',
+        },
+        {
+          name: 'desktop-browsers',
+          userAgent: '(Chrome|Firefox|Safari).*(?!Mobile)',
+        },
+      ],
+      functionsInstances: [
+        {
+          name: 'auth-function-instance',
+          ref: 'my-edge-function', // Using name reference
+          args: {
+            environment: 'production',
+            apiUrl: 'https://api.example.com',
+          },
+        },
+        {
+          name: 'analytics-function-instance',
+          ref: 12345, // Using ID reference (no validation needed)
+          args: {
+            environment: 'production',
+            trackingId: 'UA-12345',
+          },
+        },
+      ],
     },
   ],
-  cache: [
+  edgeConnectors: [
     {
-      name: 'mycache',
-      stale: false,
-      queryStringSort: false,
-      methods: {
-        post: false,
-        options: false,
+      name: 'my-http-connector',
+      active: true,
+      type: 'http' as EdgeConnectorType,
+      attributes: {
+        addresses: [
+          {
+            active: true,
+            address: 'api.example.com',
+            httpPort: 80,
+            httpsPort: 443,
+            modules: null,
+          },
+        ],
+        connectionOptions: {
+          dnsResolution: 'preserve' as EdgeConnectorDnsResolution,
+          transportPolicy: 'preserve' as EdgeConnectorTransportPolicy,
+          httpVersionPolicy: 'http1_1' as EdgeConnectorHttpVersionPolicy,
+          host: '${host}',
+          pathPrefix: '',
+          followingRedirect: false,
+          realIpHeader: 'X-Real-IP',
+          realPortHeader: 'X-Real-PORT',
+        },
+        modules: {
+          loadBalancer: {
+            enabled: false,
+            config: null,
+          },
+          originShield: {
+            enabled: false,
+            config: null,
+          },
+        },
       },
-      browser: {
-        maxAgeSeconds: 1000 * 5, // 5000 seconds
+    } as AzionEdgeConnector,
+    {
+      name: 'my-s3-connector',
+      active: true,
+      type: 'edge_storage' as EdgeConnectorType,
+      attributes: {
+        bucket: 'my-bucket',
+        prefix: '/uploads',
       },
-      edge: {
-        maxAgeSeconds: 1000,
+    } as AzionEdgeConnector,
+  ],
+  edgeFunctions: [
+    {
+      name: 'my-edge-function',
+      path: './functions/index.js',
+      runtime: 'azion_js',
+      defaultArgs: {
+        defaultEnv: 'development',
       },
-      cacheByQueryString: {
-        option: 'blacklist', // ['blacklist', 'whitelist', 'varies', 'ignore]
-        list: ['order', 'user'],
-      },
-      cacheByCookie: {
-        option: 'whitelist', // ['blacklist', 'whitelist', 'varies', 'ignore]
-        list: ['session', 'user'],
+      executionEnvironment: 'application',
+      active: true,
+      bindings: {
+        storage: {
+          bucket: 'my-storage', // Using name reference
+          prefix: 'auth-data/',
+        },
       },
     },
   ],
-  rules: {
-    request: [
-      {
-        name: 'rewriteRuleExample',
-        description: 'Rewrite URLs, set cookies and headers, forward cookies.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/rewrite$',
-        behavior: {
-          setCache: 'mycache1',
-          rewrite: `/new/%{captured[1]}`, // Rewrites /original/image.jpg to /new/image.jpg
-          setCookie: 'user=12345; Path=/; Secure',
-          setHeaders: 'Cache-Control: no-cache',
-          forwardCookies: true,
-        },
-      },
-      {
-        name: 'staticContentRuleExample',
-        description: 'Handle static content by setting a specific origin and delivering directly.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/_statics/',
-        behavior: {
-          setOrigin: {
-            name: 'myneworigin',
-            type: 'object_storage',
-          },
-          deliver: true,
-        },
-      },
-      {
-        name: 'computeFunctionRuleExample',
-        description: 'Executes a serverless function for compute paths.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/compute/',
-        behavior: {
-          runFunction: 'function_name',
-        },
-      },
-      {
-        name: 'permanentRedirectRuleExample',
-        description: 'Permanently redirects from an old URL to a new URL.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/old-url$',
-        behavior: {
-          redirectTo301: 'https://newsite.com/new-url',
-        },
-      },
-      {
-        name: 'gzipCompressionRuleExample',
-        description: 'Enables GZIP compression for specified paths.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/compress',
-        behavior: {
-          enableGZIP: true,
-        },
-      },
-      {
-        name: 'apiHeaderRuleExample',
-        description: 'Sets multiple headers for API responses.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/api',
-        behavior: {
-          setHeaders: ['X-API-Version: 1', 'X-Frame-Options: deny'],
-        },
-      },
-      {
-        name: 'cookieSettingRuleExample',
-        description: 'Sets a secure, HttpOnly cookie.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/check',
-        behavior: {
-          setCookie: 'test=12345; Path=/; Secure; HttpOnly',
-        },
-      },
-      {
-        name: 'userCaptureRuleExample',
-        description: 'Captures user ID from the URL using regex.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/user/(.*)',
-        behavior: {
-          capture: {
-            regex: '^(.*)$',
-            captured: 'user_id',
-            subject: 'uri',
-          },
-        },
-      },
-      {
-        name: 'directCacheRuleExample',
-        description: 'Directly sets caching policies within the rule.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/some-path',
-        behavior: {
-          setCache: {
-            name: 'dynamicCache',
-            stale: true,
-            queryStringSort: true,
-            methods: {
-              post: true,
-              options: true,
-            },
-            browser: {
-              maxAgeSeconds: 3600, // 1 hour
-            },
-            edge: {
-              maxAgeSeconds: 600, // 10 minutes
-            },
-          },
-        },
-      },
-      {
-        name: 'bypassCacheRuleExample',
-        description: 'Ensures data is always fetched fresh, bypassing any cache.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/bypass',
-        behavior: {
-          bypassCache: true,
-        },
-      },
-      {
-        name: 'forceHttpsRuleExample',
-        description: 'Redirects HTTP requests to HTTPS for secure areas.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/secure-area',
-        behavior: {
-          httpToHttps: true,
-        },
-      },
-      {
-        name: 'UriRedirectExample',
-        description: 'Uses the captured path as part of the new URL.',
-        active: true,
-        match: '.*', // Captures all URIs
-        variable: 'uri', // Defines the variable to be captured
-        behavior: {
-          capture: {
-            match: '^(.*)$', // Captures the entire URI path
-            captured: 'uri_path', // Name of the variable where the captured path will be stored
-            subject: 'uri', // Indicates that the capture will be made on the 'uri' variable
-          },
-          redirectTo302: `https://example.com/%{uri_path}`, // Uses the captured path as part of the new URL
-          filterCookie: 'original_uri_cookie', // Removes the original cookie to avoid conflicts or duplicate information
-        },
-      },
-      {
-        name: 'FilterCookieRuleExample and FilterHeaderRuleExample',
-        description: 'Filters out a specific cookie from the request.',
-        active: true,
-        criteria: [
-          {
-            variable: '${uri}',
-            operator: 'matches',
-            conditional: 'if',
-            inputValue: '^/',
-          },
-        ],
-        behavior: {
-          filterCookie: 'cookie_name',
-          filterHeader: 'header_name',
-        },
-      },
-      {
-        name: 'Test behavior noContent',
-        active: true,
-        description: 'Test behavior noContent',
-        criteria: [
-          {
-            variable: '${uri}',
-            operator: 'matches',
-            conditional: 'if',
-            inputValue: '^/',
-          },
-        ],
-        behavior: {
-          noContent: true,
-        },
-      },
-      {
-        name: 'Example Deny',
-        active: true,
-        description: 'Test behavior deny',
-        criteria: [
-          {
-            variable: '${uri}',
-            operator: 'matches',
-            conditional: 'if',
-            inputValue: '^/login',
-          },
-        ],
-        behavior: {
-          deny: true,
-        },
-      },
-    ],
-    response: [
-      {
-        name: 'apiDataResponseRuleExample',
-        description: 'Manage headers, cookies, and GZIP compression for API data responses.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/api/data',
-        behavior: {
-          setHeaders: 'Content-Type: application/json',
-          setCookie: 'session=abcdef; Path=/; HttpOnly',
-          filterHeader: 'Server',
-          filterCookie: 'tracking',
-          enableGZIP: true,
-        },
-      },
-      {
-        name: 'userProfileRedirectRuleExample',
-        description: 'Redirects user profile requests to a new profile page URL.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/user/profile',
-        behavior: {
-          redirectTo301: 'https://newsite.com/profile',
-        },
-      },
-      {
-        name: 'computeResultFunctionRuleExample',
-        description: 'Runs a function and captures full path from the URI for compute results.',
-        active: true,
-        variable: 'uri', // Optional, defaults to 'uri' if not provided
-        match: '^/compute-result',
-        behavior: {
-          runFunction: 'function_name',
-          // This rule captures the full URI path and stores it in a variable named 'full_path_arr'.
-          capture: {
-            match: '^(.*)$', // The regular expression '^(.*)$' captures the entire URI path.
-            captured: 'full_path_arr', // The result of the capture is stored in the variable 'full_path_arr'.
-            subject: 'uri', // The capture is based on the value of the 'uri' variable.
-          },
-          // Permanently redirects to the first element captured in 'full_path_arr'.
-          redirectTo301: '%{full_path_arr[0]}', // Uses the first element of the 'full_path_arr' array as part of the new URL.
-        },
-      },
-      {
-        name: 'userProfileRedirectRuleExample',
-        description: 'Redirects user profile requests based on cookie value.',
-        active: true,
-        // eslint-disable-next-line no-template-curly-in-string
-        variable: 'cookie_name', // Example using cookie value
-        match: '^user-profile$', // Matches based on the cookie value
-        behavior: {
-          redirectTo301: 'https://newsite.com/profile',
-        },
-      },
-      {
-        name: 'temporaryPageRedirectRuleExample',
-        description: 'Temporarily redirects an old page based on query parameters.',
-        active: true,
-        // eslint-disable-next-line no-template-curly-in-string
-        variable: 'args', // All query parameters
-        match: '^old-page$', // Matches based on the presence of specific query parameters
-        behavior: {
-          redirectTo302: 'https://newsite.com/new-page',
-        },
-      },
-      {
-        name: 'Test behavior noContent',
-        active: true,
-        description: 'Test behavior noContent',
-        criteria: [
-          {
-            variable: '${uri}',
-            operator: 'matches',
-            conditional: 'if',
-            inputValue: '^/',
-          },
-        ],
-        behavior: {
-          noContent: true,
-        },
-      },
-      {
-        name: 'Test behavior deliver',
-        active: true,
-        description: 'Test behavior deliver',
-        criteria: [
-          {
-            variable: '${uri}',
-            operator: 'matches',
-            conditional: 'if',
-            inputValue: '^/',
-          },
-        ],
-        behavior: {
-          deliver: true,
-        },
-      },
-    ],
-  },
+  edgeStorage: [
+    {
+      name: 'my-storage',
+      edgeAccess: 'read_write', // 'read_only' | 'read_write' | 'restricted'
+      dir: './storage',
+      prefix: '1236677364374',
+    },
+  ],
   purge: [
     {
       type: 'url',
-      urls: ['http://www.example.com/image.jpg'],
+      items: ['http://www.example.com/image.jpg'],
+      layer: 'edge_cache',
     },
     {
       type: 'cachekey',
-      urls: ['https://example.com/test1', 'https://example.com/test2'],
-      method: 'delete',
+      items: ['https://example.com/test1', 'https://example.com/test2'],
+      layer: 'edge_cache',
     },
     {
       type: 'wildcard',
-      urls: ['http://www.example.com/*'],
+      items: ['http://www.example.com/*'],
     },
   ],
-  firewall: {
-    name: 'my_edge_firewall',
-    domains: ['www.example.com', 'api.example.com'],
-    active: true,
-    edgeFunctions: true,
-    networkProtection: true,
-    waf: true,
-    rules: [
-      {
-        name: 'rateLimit_Then_Drop',
-        active: true,
-        match: '^/api/sensitive/',
-        behavior: {
-          setRateLimit: {
-            type: 'second',
-            limitBy: 'clientIp',
-            averageRateLimit: '10',
-            maximumBurstSize: '20',
-          },
-        },
-      },
-      {
-        name: 'customResponse_Only',
-        active: true,
-        match: '^/custom-error/',
-        behavior: {
-          setCustomResponse: {
-            // Behavior final - nada após isso será executado
-            statusCode: 403,
-            contentType: 'application/json',
-            contentBody: '{"error": "Custom error response"}',
-          },
-        },
-      },
-      {
-        name: 'setHeaders_Then_CustomResponse',
-        active: true,
-        match: '^/api/error/',
-        behavior: {
-          setCustomResponse: {
-            // Behavior final - nada após isso será executado
-            statusCode: 403,
-            contentType: 'application/json',
-            contentBody: '{"error": "Access denied"}',
-          },
-        },
-      },
-      {
-        name: 'run_edge_function_and_set_rate_limit',
-        active: true,
-        match: '^/api/',
-        behavior: {
-          runFunction: 'function_name',
-          setRateLimit: {
-            type: 'second',
-            limitBy: 'clientIp',
-            averageRateLimit: '10',
-            maximumBurstSize: '20',
-          },
-        },
-      },
-    ],
-  },
   networkList: [
     {
-      id: 1,
-      listType: 'ip_cidr',
-      listContent: ['10.0.0.1'],
+      name: 'my-ip-allowlist',
+      type: 'ip_cidr' as NetworkListType,
+      items: ['10.0.0.1/32', '192.168.1.0/24'],
+      active: true,
     },
     {
-      id: 2,
-      listType: 'asn',
-      listContent: [123, 456, 789],
+      name: 'trusted-asn-list',
+      type: 'asn' as NetworkListType,
+      items: ['123', '456', '789'],
+      active: true,
     },
     {
-      id: 3,
-      listType: 'countries',
-      listContent: ['US', 'BR', 'UK'],
+      name: 'allowed-countries',
+      type: 'countries' as NetworkListType,
+      items: ['US', 'BR', 'UK'],
+      active: true,
     },
   ],
   waf: [
     {
-      id: 123, // Optional. ID of your WAF. Obtain this value via GET request. Cannot be changed via API.
-      name: 'my_waf', // Required for WAF configuration
-      active: true, // Required to enable the WAF or false to disable
-      mode: 'blocking', // 'learning', 'blocking' or 'counting'
-      sqlInjection: {
-        // sqlInjection is optional.
-        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      name: 'my-waf-v4',
+      productVersion: '1.0',
+      engineSettings: {
+        engineVersion: '2021-Q3',
+        type: 'score',
+        attributes: {
+          rulesets: [1],
+          thresholds: [
+            { threat: 'sql_injection' as WafThreatType, sensitivity: 'high' as WafSensitivity },
+            { threat: 'cross_site_scripting' as WafThreatType, sensitivity: 'high' as WafSensitivity },
+            { threat: 'remote_file_inclusion' as WafThreatType, sensitivity: 'medium' as WafSensitivity },
+            { threat: 'directory_traversal' as WafThreatType, sensitivity: 'low' as WafSensitivity },
+            { threat: 'evading_tricks' as WafThreatType, sensitivity: 'medium' as WafSensitivity },
+            { threat: 'file_upload' as WafThreatType, sensitivity: 'low' as WafSensitivity },
+            { threat: 'unwanted_access' as WafThreatType, sensitivity: 'high' as WafSensitivity },
+            { threat: 'identified_attack' as WafThreatType, sensitivity: 'medium' as WafSensitivity },
+          ],
+        },
       },
-      remoteFileInclusion: {
-        // remoteFileInclusion is optional.
-        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
+    },
+  ],
+  edgeFirewall: [
+    {
+      name: 'my_edge_firewall',
+      domains: ['www.example.com', 'api.example.com'],
+      active: true,
+      edgeFunctions: true,
+      networkProtection: true,
+      waf: true,
+      rules: [
+        {
+          name: 'rateLimit_Then_Drop',
+          active: true,
+          match: '^/api/sensitive/',
+          behavior: {
+            setRateLimit: {
+              type: 'second',
+              limitBy: 'clientIp',
+              averageRateLimit: '10',
+              maximumBurstSize: '20',
+            },
+          },
+        },
+        {
+          name: 'customResponse_Only',
+          active: true,
+          match: '^/custom-error/',
+          behavior: {
+            setCustomResponse: {
+              statusCode: 403,
+              contentType: 'application/json',
+              contentBody: '{"error": "Custom error response"}',
+            },
+          },
+        },
+      ],
+    },
+  ],
+  workloads: [
+    {
+      name: 'my-production-workload',
+      active: true,
+      infrastructure: 1 as WorkloadInfrastructure, // Production Infrastructure
+      domains: ['example.com', 'www.example.com'],
+      workloadDomainAllowAccess: true,
+      tls: {
+        certificate: 12345,
+        ciphers: 1 as WorkloadTLSCipher, // TLS cipher suite 1
+        minimumVersion: 'tls_1_3' as WorkloadTLSVersion,
       },
-      directoryTraversal: {
-        // directoryTraversal is optional.
-        sensitivity: 'low', // Select the protection sensibility level for this threat family (low, medium, high)
+      protocols: {
+        http: {
+          versions: ['http1', 'http2'],
+          httpPorts: [80],
+          httpsPorts: [443],
+          quicPorts: null,
+        },
       },
-      crossSiteScripting: {
-        // crossSiteScripting is optional.
-        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
+      mtls: {
+        verification: 'enforce' as WorkloadMTLSVerification,
+        certificate: 67890,
+        crl: [1, 2, 3],
       },
-      evadingTricks: {
-        // evadingTricks is optional.
-        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
-      },
-      fileUpload: {
-        // fileUpload is optional.
-        sensitivity: 'low', // Select the protection sensibility level for this threat family (low, medium, high)
-      },
-      unwantedAccess: {
-        // unwantedAccess is optional.
-        sensitivity: 'high', // Select the protection sensibility level for this threat family (low, medium, high)
-      },
-      identifiedAttack: {
-        // identifiedAttack is optional.
-        sensitivity: 'medium', // Select the protection sensibility level for this threat family (low, medium, high)
-      },
-      bypassAddresses: ['10.0.0.1'], // Optional. Define trusted IP/CIDR addresses
+      deployments: [
+        {
+          name: 'production-deployment',
+          current: true,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: 'my-edge-app', // Reference to edge application name
+              edgeFirewall: 'my-edge-firewall', // Reference to edge firewall name
+              customPage: 'my-custom-error-pages', // Reference to custom page name
+            },
+          },
+        },
+        {
+          name: 'staging-deployment',
+          current: false,
+          active: true,
+          strategy: {
+            type: 'default',
+            attributes: {
+              edgeApplication: 67890, // Using ID reference (no validation needed)
+              edgeFirewall: null, // No firewall for staging
+              customPage: null,
+            },
+          },
+        },
+      ],
+    },
+  ],
+  customPages: [
+    {
+      name: 'my-custom-error-pages',
+      active: true,
+      pages: [
+        {
+          code: '404' as CustomPageErrorCode,
+          page: {
+            type: 'page_connector' as CustomPageType,
+            attributes: {
+              connector: 'my-edge-connector', // Using name reference
+              ttl: 3600,
+              uri: '/errors/404.html',
+              customStatusCode: 404,
+            },
+          },
+        },
+        {
+          code: '500' as CustomPageErrorCode,
+          page: {
+            type: 'page_connector' as CustomPageType,
+            attributes: {
+              connector: 12345, // Using ID reference (no validation needed)
+              ttl: 0,
+              uri: '/errors/500.html',
+              customStatusCode: null,
+            },
+          },
+        },
+        {
+          code: 'default' as CustomPageErrorCode,
+          page: {
+            attributes: {
+              connector: 'my-edge-connector',
+              ttl: 1800,
+              uri: '/errors/default.html',
+              customStatusCode: null,
+            },
+          },
+        },
+      ],
     },
   ],
 };
+
+export default config;

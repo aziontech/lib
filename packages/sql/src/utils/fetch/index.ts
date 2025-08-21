@@ -8,11 +8,29 @@ export default async function fetchWithErrorHandling(
   const response = await fetch(url, options);
 
   if (!response.ok) {
-    const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+    try {
+      const errorBody = await response.json();
 
-    if (debug) console.log(`Error in fetch: ${msg}`);
+      if (debug) {
+        console.log('Error response body:', errorBody);
+      }
 
-    throw new Error(msg);
+      if (errorBody.errors && Array.isArray(errorBody.errors) && errorBody.errors.length > 0) {
+        return errorBody;
+      }
+
+      if (errorBody.detail || errorBody.message) {
+        return errorBody;
+      }
+
+      const errorMessage = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+      if (debug) console.log(`Error in fetch: ${errorMessage}`);
+      throw new Error(errorMessage);
+    } catch (parseError) {
+      const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
+      if (debug) console.log(`Error in fetch: ${msg}`);
+      throw new Error(msg);
+    }
   }
 
   if (jsonResponse) {

@@ -31,6 +31,9 @@ export interface AzionBucket {
   name: string;
   edge_access: EdgeAccessType;
   state?: 'executed' | 'executed-runtime' | 'pending';
+  last_editor?: string;
+  last_modified?: string;
+  product_version?: string;
 
   /**
    * Retrieves a list of objects in the bucket.
@@ -62,21 +65,21 @@ export interface AzionBucket {
    * @param {Object} params - Parameters for creating the object.
    * @param {string} params.key - The key for the new object.
    * @param {string} params.content - The content of the new object.
-   * @param {Object} [params.options] - Additional options for the object.
-   * @param {string} [params.options.content_type] - The content type of the object.
+   * @param {Object} [params.params] - Additional parameters for the object.
+   * @param {string} [params.params.content_type] - The content type of the object.
    * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} A promise that resolves to the created bucket object or error message.
    *
    * @example
    * const { data: newObject } = await bucket.createObject({
    *   key: 'new-file.txt',
    *   content: 'Hello, World!',
-   *   options: { content_type: 'text/plain' }
+   *   params: { content_type: 'text/plain' }
    * });
    */
   createObject: (params: {
     key: string;
     content: string;
-    options?: { content_type?: string };
+    params?: { content_type?: string };
   }) => Promise<AzionStorageResponse<AzionBucketObject>>;
 
   /**
@@ -85,21 +88,21 @@ export interface AzionBucket {
    * @param {Object} params - Parameters for updating the object.
    * @param {string} params.key - The key of the object to update.
    * @param {string} params.content - The new content for the object.
-   * @param {Object} [params.options] - Additional options for the object.
-   * @param {string} [params.options.content_type] - The new content type for the object.
+   * @param {Object} [params.params] - Additional parameters for the object.
+   * @param {string} [params.params.content_type] - The new content type for the object.
    * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} A promise that resolves to the updated bucket object or error message.
    *
    * @example
    * const { data: updatedObject } = await bucket.updateObject({
    *   key: 'existing-file.txt',
    *   content: 'Updated content',
-   *   options: { content_type: 'text/plain' }
+   *   params: { content_type: 'text/plain' }
    * });
    */
   updateObject: (params: {
     key: string;
     content: string;
-    options?: { content_type?: string };
+    params?: { content_type?: string };
   }) => Promise<AzionStorageResponse<AzionBucketObject>>;
 
   /**
@@ -185,11 +188,22 @@ export interface AzionStorageClient {
    * @returns {Promise<AzionStorageResponse<AzionBucket>>} The retrieved bucket or error message.
    */
   getBucket: (params: { name: string }) => Promise<AzionStorageResponse<AzionBucket>>;
+  /**
+   * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
+   * @param {Object} params - Parameters for setting up storage.
+   * @param {string} params.name - Name of the bucket to setup.
+   * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket (used only if creating).
+   * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
+   */
+  setupStorage: (params: { name: string; edge_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
 }
 
 export type AzionBucketCollectionParams = {
   page?: number;
   page_size?: number;
+  search?: string;
+  ordering?: string;
+  fields?: string;
 };
 
 export type AzionObjectCollectionParams = {

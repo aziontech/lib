@@ -20,16 +20,18 @@ function getUrlFromResource(context, resource) {
  * @param {object} context - The context object.
  * @param {URL|Request|string} resource - The resource to fetch.
  * @param {object} [options] - The fetch options.
+ * @param {string} pathBucket - The path to the storage bucket.
+ * @param {string} prefixBucket - The prefix to the storage bucket.
  * @returns {Promise<Response>} A Promise that resolves to the Response object.
  */
-async function fetchContext(context, resource, options) {
+async function fetchContext(context, resource, options, pathBucket = '', prefixBucket = '') {
   const { Headers, Response, RESERVED_FETCH } = context;
 
   const urlObj = getUrlFromResource(context, resource);
 
   if (urlObj.href.startsWith('file://')) {
     const file = urlObj.pathname;
-    const filePath = join(process.cwd(), '.edge', 'storage', file);
+    const filePath = join(process.cwd(), '.edge', 'storage', pathBucket, prefixBucket, file);
 
     const fileContent = readFileSync(filePath);
     const contentType = mime.lookup(filePath) || 'application/octet-stream';

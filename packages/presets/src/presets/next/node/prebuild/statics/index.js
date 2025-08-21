@@ -108,7 +108,7 @@ function moduleTest(pathFile) {
  *      ],
  *      excludeDirs: ["./.next/cache"],
  *      out: "tmp-next-build",
- *      staticOutDir: ".edge/storage"
+ *      staticOutDir: ".edge/storage/next-build-assets"
  *   });
  *
  *   buildStatic.run();
@@ -121,14 +121,14 @@ class BuildStatic {
    * @param {string[]} config.includeDirs - directories for the build. e.g [".next"]
    * @param {string[]} config.excludeDirs - exclude directories. e.g [".next/cache"]
    * @param {string} config.out - directory where the file will be generated
-   * @param {string} config.staticOutDir - folder where statics are sent for upload default (.edge/storage)
+   * @param {string} config.staticOutDir - folder where statics are sent for upload default (.edge/storage/next-build-assets)
    * @param {Array<{ name: string, replace?: string | undefined }>} config.staticDirs - static directories.
    * @param {string} config.staticDirs.name - name static directory e.g './.next/static' | './public'.
    * @param {string | undefined} config.staticDirs.replace - this field is used to replace the original path e.g './.next/static' to './_next/static'.
    */
   constructor(config) {
     this.config = config;
-    this.config.staticOutDir = this.config.staticOutDir || '.edge/storage';
+    this.config.staticOutDir = this.config.staticOutDir || '.edge/storage/next-build-assets';
   }
 
   run = () => {

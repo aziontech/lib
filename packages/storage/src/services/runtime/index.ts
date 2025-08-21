@@ -42,6 +42,7 @@ export class InternalStorageClient implements AzionBucket {
   }
 
   name: string = '';
+  // @ts-expect-error - edge_access is not defined in the AzionBucket interface
   edge_access: string = 'unknown';
 
   /**
@@ -57,6 +58,7 @@ export class InternalStorageClient implements AzionBucket {
       this.name = name;
       return {
         name,
+        // @ts-expect-error - edge_access is not defined in the AzionBucket interface
         edge_access: 'unknown',
         state: 'executed-runtime',
         getObjects: this.getObjects.bind(this),
@@ -135,7 +137,7 @@ export class InternalStorageClient implements AzionBucket {
           key: removeLeadingSlash(key),
           size: storageObject.contentLength,
           content: content,
-          content_type: storageObject.metadata.get('content-type'),
+          content_type: storageObject.metadata?.get('content-type'),
         },
       };
     } catch (error) {
@@ -173,7 +175,7 @@ export class InternalStorageClient implements AzionBucket {
     try {
       const contentBuffer = new TextEncoder().encode(content);
       await retryWithBackoff(() =>
-        this.storage!.put(key, contentBuffer, {
+        this.storage!.put(key, contentBuffer.buffer, {
           'content-type': options?.content_type,
         }),
       );

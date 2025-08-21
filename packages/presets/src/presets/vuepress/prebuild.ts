@@ -1,3 +1,4 @@
+import type { BuildConfiguration, BuildContext } from 'azion/config';
 import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
 import { lstat, rm } from 'fs/promises';
 
@@ -16,13 +17,19 @@ async function docsFolderExists(): Promise<boolean> {
 /**
  * Runs custom prebuild actions for VitePress
  */
-async function prebuild(): Promise<void> {
+async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
   const packageManager = await getPackageManager();
-  const newOutDir = '.edge/storage';
+  const newOutDir = '.edge/assets';
 
   // The main folder for VuePress usually is 'docs',
   // however the users also might use the root folder
   const outDir = (await docsFolderExists()) ? 'docs/.vuepress/dist' : '.vuepress/dist';
+
+  // If skipFrameworkBuild is true, we need to remove the dist folder
+  if (ctx.skipFrameworkBuild) {
+    await rm(outDir, { recursive: true, force: true });
+    return;
+  }
 
   await exec(`${packageManager} run docs:build`, {
     scope: 'VuePress',
@@ -31,8 +38,6 @@ async function prebuild(): Promise<void> {
 
   // move files to vulcan default path
   copyDirectory(outDir, newOutDir);
-
-  rm(outDir, { recursive: true, force: true });
 }
 
 export default prebuild;
