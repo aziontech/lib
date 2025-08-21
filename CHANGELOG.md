@@ -1,3 +1,87 @@
+## [2.0.0](https://github.com/aziontech/lib/compare/v1.20.2...v2.0.0) (2025-08-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Major configuration structure changes
+
+- Remove `domain` and `origin` → Add `workloads` for domain/infrastructure management
+- Remove root-level `cache` → Move to `edgeApplications[].cache`
+- Rename `functions` → `edgeFunctions`
+- Add `edgeApplications` array with embedded cache and rules
+- Add `edgeConnectors` for HTTP/storage/live ingest connections
+- Add `edgeStorage` for storage bucket configuration
+- Add `customPages` for error page management
+- Update rules to criteria-based structure with behaviors array
+- Replace cache 'whitelist'/'blacklist' → 'allowlist'/'denylist'
+- Update WAF to v4 structure with engineSettings
+
+Migration:
+- Move domain config to `workloads` array
+- Move cache config inside `edgeApplications`
+- Rename `functions` to `edgeFunctions`
+- Update cache options to allowlist/denylist
+- Migrate rules to new criteria/behaviors format
+* - Remove `clientId`, `createdAt`, `updatedAt`, and `deletedAt` from the `AzionDatabase` interface.
+- Add `active`, `lastModified`, `lastEditor`, and `productVersion` to the `AzionDatabase` interface.
+- Update `useExecute` and `useQuery` hooks to reflect the new API structure.
+- Update `AzionDatabaseQueryResponse` and `AzionDatabaseExecutionResponse` to include the new fields.
+- Add an `error` field to `QueryResult` to capture errors when any statement fails during query execution.
+- Remove `id` from the `AzionDatabaseDeleteResponse` interface.
+- Update `status` in `AzionDatabase` interface to `creating | created | deleting`
+- Update README examples to reflect the new API structure and usage patterns.
+
+### Features
+
+*  azion api v4 (#171) ([ad875f1](https://github.com/aziontech/lib/commit/ad875f1214df3988098399a70b106f54321fd2f9))
+* Azion IaC API v4  (#200) ([6ec9c84](https://github.com/aziontech/lib/commit/6ec9c84d446bf738215d7f19a1f6476b6287162c))
+* export validateManifest method ([936338e](https://github.com/aziontech/lib/commit/936338e14f66d79e9ca71bba8fecf0daa900039a))
+* **storage:** setupBucket method ([92c77da](https://github.com/aziontech/lib/commit/92c77da6ecda5b782c87fe0d68404246574b0529))
+* **utils:** feedback new scopes ([3575c26](https://github.com/aziontech/lib/commit/3575c260652a102a40f3be80d63b2d465d6cfb82))
+
+
+### Bug Fixes
+
+* add storage prefix support across all presets and configurations (#208) ([0869f60](https://github.com/aziontech/lib/commit/0869f60d4c2af4c6b505ded764403feddc8f5cfc))
+* azion storage binding prefix is optional ([f546d8c](https://github.com/aziontech/lib/commit/f546d8c71d5a4d81593b06fbdbe08b200d8b57ef))
+* azion.config criteria variable ([7e5096f](https://github.com/aziontech/lib/commit/7e5096f1a5962713201128bbaaeeaf0068ce7729))
+* **bundler:** add optional chaining assignment support for esbuild (#194) ([a4523c9](https://github.com/aziontech/lib/commit/a4523c95e283b9901184e0c12298dfbb5b834bbb))
+* **config:** add AzionBucket prefix (#201) ([09da565](https://github.com/aziontech/lib/commit/09da5657f005bc018f076dc79adef55d596e6159))
+* **config:** compile rules package ([5739539](https://github.com/aziontech/lib/commit/5739539f4dfa7b6b3a372a7ccc9ea7351d452cfe))
+* **config:** correct strategy naming inconsistencies ([feabea4](https://github.com/aziontech/lib/commit/feabea451363964fc19a03bed507e59ccf1a2c9c))
+* dynamically import handleRequest function in Next.js handler (#189) ([6279bfa](https://github.com/aziontech/lib/commit/6279bfa8f5d7e2766e5d424e3b354be6be13da55))
+* enable application accelerator by default and set bucket edge access to read_write (#210) ([fd90219](https://github.com/aziontech/lib/commit/fd902197d67ee10442ce694e6ccb0a5492e4f9c2))
+* export validateManifest ([9b6c46b](https://github.com/aziontech/lib/commit/9b6c46b103dff8da2bf24937e26746a9fc9f647e))
+* manifest props names ([2794529](https://github.com/aziontech/lib/commit/2794529e220ac489c738a2c70d035b9d8ce42bb7))
+* manifest schema ([d3168d8](https://github.com/aziontech/lib/commit/d3168d89dd0074810c9cfb89d67ce6f1780b3da8))
+* move bindings from function instances to edge functions ([c58173b](https://github.com/aziontech/lib/commit/c58173b4267b871724af4a060877826c5fd9eee7))
+* remove hardcoded production environment from edge function instances (#211) ([369be30](https://github.com/aziontech/lib/commit/369be30ed123fc2a94d5e0e2aff2375c5ee50fcb))
+* rename functions to functionsInstances, add active and update purge layer (#205) ([6a0d0b8](https://github.com/aziontech/lib/commit/6a0d0b84b01026488d28005134581d957790134a))
+* reorder exports in storage polyfills for consistency (#188) ([8f2fb71](https://github.com/aziontech/lib/commit/8f2fb71ec45a213c4a7834d70faf084eb24f50f6))
+* require prefix field in storage bindings and update error messages (#209) ([7679357](https://github.com/aziontech/lib/commit/76793571c23f223877aa54f3c1ad38453e0db044))
+* storage binding bucket property type ([c1348e1](https://github.com/aziontech/lib/commit/c1348e1a9f1a9eb76dbc365abda223fa9dde35e0))
+* **storage:** migrate to v4 API with search params and direct bucket endpoint ([a7d6974](https://github.com/aziontech/lib/commit/a7d6974b78b7c15b64c6470908b15f1e7c523e41))
+* update presets to use api v4 (#207) ([4691cba](https://github.com/aziontech/lib/commit/4691cba04135a6c5aa6d45c71722850820d29f7a))
+* update storage paths and enable edge functions by default across presets (#206) ([cfbdab7](https://github.com/aziontech/lib/commit/cfbdab75f647daec8cf0c60639253c9ea77e6feb))
+* updated error feedback according to Azion's new API (#192) ([cdd84e4](https://github.com/aziontech/lib/commit/cdd84e43a01a6afaca9c8e499be51d1740c0731d))
+* workloads and workloads deployments ([f519b45](https://github.com/aziontech/lib/commit/f519b458585307827bbf93d454dc2558d71be8f2))
+* write function path in manifest ([99dbf7f](https://github.com/aziontech/lib/commit/99dbf7f3c6cfe80d25dc8b09b1b5d71e60248cd7))
+
+
+### Reverts
+
+* Revert "fix(config): add AzionBucket prefix (#201)" (#202) ([b600879](https://github.com/aziontech/lib/commit/b6008794c59d196e87432c01ef831298e72cd3fe))
+
+
+### Code Refactoring
+
+* major enhancements and breaking changes in `packages/sql` with SQL API v4 update (#187) ([55188ee](https://github.com/aziontech/lib/commit/55188eefd6f42cdd0185c22eea77c6dd084f7f59))
+
+
+### Documentation
+
+* restructure configuration API to workloads-based architecture (#212) ([fce95a6](https://github.com/aziontech/lib/commit/fce95a6dea55fd30a1da7ff583b7cbe4a8272373))
+
 ## [2.0.0-stage.28](https://github.com/aziontech/lib/compare/v2.0.0-stage.27...v2.0.0-stage.28) (2025-08-18)
 
 
