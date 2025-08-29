@@ -2,7 +2,7 @@ import type { AzionRules } from 'azion/config';
 import { ALL_EXTENSIONS } from '../constants';
 
 /**
- * Creates rules for a Single Page Application (SPA) on Azion Edge Platform.
+ * Creates rules for a Single Page Application (SPA) on Azion Platform.
  * This configuration is optimized for SPA hosting with proper routing and asset delivery.
  *
  * Features:
@@ -11,23 +11,23 @@ import { ALL_EXTENSIONS } from '../constants';
  * - Automatic fallback to index.html for all routes
  *
  * @param options Configuration options for the SPA rules
- * @param options.edgeConnector The name of the edge connector to use
+ * @param options.connector The name of the edge connector to use
  * @param options.staticExtensions List of file extensions to be treated as static assets
  * @returns Array of rules configured for SPA hosting on Azion Edge
  */
 export function createSPARules(
   options: {
-    edgeConnector?: string;
+    connector?: string;
     staticExtensions?: string[];
   } = {},
 ): AzionRules {
-  const { edgeConnector = 'edge-connector', staticExtensions = ALL_EXTENSIONS } = options;
+  const { connector = 'name-connector', staticExtensions = ALL_EXTENSIONS } = options;
 
   return {
     request: [
       {
         name: 'Deliver Static Assets',
-        description: 'Deliver static assets directly from edge storage',
+        description: 'Deliver static assets directly from storage',
         active: true,
         criteria: [
           [
@@ -41,9 +41,9 @@ export function createSPARules(
         ],
         behaviors: [
           {
-            type: 'set_edge_connector',
+            type: 'set_connector',
             attributes: {
-              value: edgeConnector,
+              value: connector,
             },
           },
           {
@@ -67,9 +67,9 @@ export function createSPARules(
         ],
         behaviors: [
           {
-            type: 'set_edge_connector',
+            type: 'set_connector',
             attributes: {
-              value: edgeConnector,
+              value: connector,
             },
           },
           {

@@ -1,7 +1,7 @@
 import { AzionClientOptions, AzionDatabaseQueryResponse, AzionDatabaseResponse, QueryResult } from '../types';
 import { limitArraySize } from '../utils';
 import { toObjectQueryExecutionResponse } from '../utils/mappers/to-object';
-import { getEdgeDatabases, postQueryEdgeDatabase } from './api/index';
+import { getDatabases, postQueryDatabase } from './api/index';
 import { InternalAzionSql } from './runtime/index';
 
 // Api Query Internal Method to execute a query on a database
@@ -11,7 +11,7 @@ export const apiQuery = async (
   statements: string[],
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
-  const databaseResponse = await getEdgeDatabases(token, { search: name, page_size: 1 }, options?.debug, options?.env);
+  const databaseResponse = await getDatabases(token, { search: name, page_size: 1 }, options?.debug, options?.env);
 
   if (databaseResponse?.error) {
     return { error: databaseResponse.error };
@@ -27,14 +27,8 @@ export const apiQuery = async (
     };
   }
 
-  // call the postQueryEdgeDatabase function to execute the query
-  const { state, data, error } = await postQueryEdgeDatabase(
-    token,
-    database.id,
-    statements,
-    options?.debug,
-    options?.env,
-  );
+  // call the postQueryDatabase function to execute the query
+  const { state, data, error } = await postQueryDatabase(token, database.id, statements, options?.debug, options?.env);
 
   if (error) {
     return {

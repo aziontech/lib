@@ -1,14 +1,14 @@
 import type {
   AzionConfig,
-  AzionEdgeConnector,
+  AzionConnector,
   CacheByCookie,
   CacheByQueryString,
+  ConnectorDnsResolution,
+  ConnectorHttpVersionPolicy,
+  ConnectorTransportPolicy,
+  ConnectorType,
   CustomPageErrorCode,
   CustomPageType,
-  EdgeConnectorDnsResolution,
-  EdgeConnectorHttpVersionPolicy,
-  EdgeConnectorTransportPolicy,
-  EdgeConnectorType,
   NetworkListType,
   WafSensitivity,
   WafThreatType,
@@ -24,13 +24,13 @@ const config: AzionConfig = {
     preset: 'angular', // V4: 'angular' | 'react' | 'next' | 'vue' | 'nuxt' | 'astro' | etc.
     bundler: 'webpack', // V4: 'webpack' | 'esbuild'
   },
-  edgeApplications: [
+  applications: [
     {
-      name: 'my-edge-app',
+      name: 'my--app',
       active: true,
       debug: false,
       edgeCacheEnabled: true,
-      edgeFunctionsEnabled: false,
+      functionsEnabled: false,
       applicationAcceleratorEnabled: false,
       imageProcessorEnabled: false,
       tieredCacheEnabled: false,
@@ -149,14 +149,14 @@ const config: AzionConfig = {
               {
                 type: 'run_function',
                 attributes: {
-                  value: 'my-edge-function', // Using name reference (validated)
+                  value: 'my--function', // Using name reference (validated)
                 },
               },
             ],
           },
           {
-            name: 'setEdgeConnectorExample',
-            description: 'Routes traffic through edge connector.',
+            name: 'setConnectorExample',
+            description: 'Routes traffic through  connector.',
             active: true,
             criteria: [
               [
@@ -170,7 +170,7 @@ const config: AzionConfig = {
             ],
             behaviors: [
               {
-                type: 'set_edge_connector',
+                type: 'set_connector',
                 attributes: {
                   value: 'my-http-connector', // Using name reference (validated)
                 },
@@ -323,7 +323,7 @@ const config: AzionConfig = {
       functionsInstances: [
         {
           name: 'auth-function-instance',
-          ref: 'my-edge-function', // Using name reference
+          ref: 'my--function', // Using name reference
           args: {
             environment: 'production',
             apiUrl: 'https://api.example.com',
@@ -340,11 +340,11 @@ const config: AzionConfig = {
       ],
     },
   ],
-  edgeConnectors: [
+  connectors: [
     {
       name: 'my-http-connector',
       active: true,
-      type: 'http' as EdgeConnectorType,
+      type: 'http' as ConnectorType,
       attributes: {
         addresses: [
           {
@@ -356,9 +356,9 @@ const config: AzionConfig = {
           },
         ],
         connectionOptions: {
-          dnsResolution: 'preserve' as EdgeConnectorDnsResolution,
-          transportPolicy: 'preserve' as EdgeConnectorTransportPolicy,
-          httpVersionPolicy: 'http1_1' as EdgeConnectorHttpVersionPolicy,
+          dnsResolution: 'preserve' as ConnectorDnsResolution,
+          transportPolicy: 'preserve' as ConnectorTransportPolicy,
+          httpVersionPolicy: 'http1_1' as ConnectorHttpVersionPolicy,
           host: '${host}',
           pathPrefix: '',
           followingRedirect: false,
@@ -376,20 +376,20 @@ const config: AzionConfig = {
           },
         },
       },
-    } as AzionEdgeConnector,
+    } as AzionConnector,
     {
       name: 'my-s3-connector',
       active: true,
-      type: 'edge_storage' as EdgeConnectorType,
+      type: 'edge_storage' as ConnectorType,
       attributes: {
         bucket: 'my-bucket',
         prefix: '/uploads',
       },
-    } as AzionEdgeConnector,
+    } as AzionConnector,
   ],
-  edgeFunctions: [
+  functions: [
     {
-      name: 'my-edge-function',
+      name: 'my--function',
       path: './functions/index.js',
       runtime: 'azion_js',
       defaultArgs: {
@@ -405,7 +405,7 @@ const config: AzionConfig = {
       },
     },
   ],
-  edgeStorage: [
+  storage: [
     {
       name: 'my-storage',
       edgeAccess: 'read_write', // 'read_only' | 'read_write' | 'restricted'
@@ -472,12 +472,12 @@ const config: AzionConfig = {
       },
     },
   ],
-  edgeFirewall: [
+  firewall: [
     {
-      name: 'my_edge_firewall',
+      name: 'my_firewall',
       domains: ['www.example.com', 'api.example.com'],
       active: true,
-      edgeFunctions: true,
+      functions: true,
       networkProtection: true,
       waf: true,
       rules: [
@@ -542,8 +542,8 @@ const config: AzionConfig = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: 'my-edge-app', // Reference to edge application name
-              edgeFirewall: 'my-edge-firewall', // Reference to edge firewall name
+              application: 'my--app', // Reference to  application name
+              firewall: 'my--firewall', // Reference to  firewall name
               customPage: 'my-custom-error-pages', // Reference to custom page name
             },
           },
@@ -555,8 +555,8 @@ const config: AzionConfig = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: 67890, // Using ID reference (no validation needed)
-              edgeFirewall: null, // No firewall for staging
+              application: 67890, // Using ID reference (no validation needed)
+              firewall: null, // No firewall for staging
               customPage: null,
             },
           },
@@ -574,7 +574,7 @@ const config: AzionConfig = {
           page: {
             type: 'page_connector' as CustomPageType,
             attributes: {
-              connector: 'my-edge-connector', // Using name reference
+              connector: 'my--connector', // Using name reference
               ttl: 3600,
               uri: '/errors/404.html',
               customStatusCode: 404,
@@ -597,7 +597,7 @@ const config: AzionConfig = {
           code: 'default' as CustomPageErrorCode,
           page: {
             attributes: {
-              connector: 'my-edge-connector',
+              connector: 'my--connector',
               ttl: 1800,
               uri: '/errors/default.html',
               customStatusCode: null,

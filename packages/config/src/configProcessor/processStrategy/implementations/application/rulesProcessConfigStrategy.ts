@@ -1,6 +1,6 @@
 import {
-  AzionEdgeConnector,
-  AzionEdgeFunction,
+  AzionConnector,
+  AzionFunction,
   AzionManifestRule,
   AzionRule,
   AzionRuleBehavior,
@@ -19,7 +19,7 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   /**
    * Validates function references in rules
    */
-  private validateFunctionReferences(applicationRules: AzionRules, functions?: AzionEdgeFunction[]) {
+  private validateFunctionReferences(applicationRules: AzionRules, functions?: AzionFunction[]) {
     if (!functions) return;
 
     const definedFunctions = new Set(functions.map((f) => f.name));
@@ -58,22 +58,22 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   /**
-   * Validates edge connector references in rules
+   * Validates  connector references in rules
    */
-  private validateEdgeConnectorReferences(applicationRules: AzionRules, edgeConnectors?: AzionEdgeConnector[]) {
-    if (!edgeConnectors) return;
+  private validateConnectorReferences(applicationRules: AzionRules, connectors?: AzionConnector[]) {
+    if (!connectors) return;
 
-    const definedConnectors = new Set(edgeConnectors.map((c) => c.name));
+    const definedConnectors = new Set(connectors.map((c) => c.name));
 
     // Check request rules
     if (applicationRules.request) {
       for (const rule of applicationRules.request) {
         for (const behavior of rule.behaviors) {
-          if (behavior.type === 'set_edge_connector' && behavior.attributes) {
+          if (behavior.type === 'set_connector' && behavior.attributes) {
             // Only validate if it's a string (name), skip validation for numbers (IDs)
             if (typeof behavior.attributes.value === 'string' && !definedConnectors.has(behavior.attributes.value)) {
               throw new Error(
-                `Edge Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the edgeConnectors array.`,
+                `Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the connectors array.`,
               );
             }
           }
@@ -85,11 +85,11 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
     if (applicationRules.response) {
       for (const rule of applicationRules.response) {
         for (const behavior of rule.behaviors) {
-          if (behavior.type === 'set_edge_connector' && behavior.attributes) {
+          if (behavior.type === 'set_connector' && behavior.attributes) {
             // Only validate if it's a string (name), skip validation for numbers (IDs)
             if (typeof behavior.attributes.value === 'string' && !definedConnectors.has(behavior.attributes.value)) {
               throw new Error(
-                `Edge Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the edgeConnectors array.`,
+                `Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the connectors array.`,
               );
             }
           }
@@ -103,14 +103,14 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy {
    */
   transformToManifest(
     applicationRules: AzionRules,
-    functions?: AzionEdgeFunction[],
-    edgeConnectors?: AzionEdgeConnector[],
+    functions?: AzionFunction[],
+    connectors?: AzionConnector[],
   ): AzionManifestRule[] {
     // Validate function references
     this.validateFunctionReferences(applicationRules, functions);
 
-    // Validate edge connector references
-    this.validateEdgeConnectorReferences(applicationRules, edgeConnectors);
+    // Validate  connector references
+    this.validateConnectorReferences(applicationRules, connectors);
 
     const payload: AzionManifestRule[] = [];
 

@@ -1,4 +1,4 @@
-import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase } from './services/api/index';
+import { deleteDatabase, getDatabases, postDatabase } from './services/api/index';
 import { ApiDatabase } from './services/api/types';
 import { apiQuery, runtimeQuery } from './services/index';
 import { getAzionSql } from './services/runtime/index';
@@ -82,7 +82,7 @@ const createDatabaseMethod = async (
 ): Promise<AzionDatabaseResponse<AzionDatabase>> => {
   try {
     const resolvedOptions = resolveClientOptions(options);
-    const apiResponse = await postEdgeDatabase(resolveToken(token), name, resolvedOptions.debug, resolvedOptions.env);
+    const apiResponse = await postDatabase(resolveToken(token), name, resolvedOptions.debug, resolvedOptions.env);
     if (apiResponse.data) {
       const databaseTransformed: Partial<AzionDatabase> = AzionDatabaseTransform.parse(apiResponse.data);
       return {
@@ -121,7 +121,7 @@ const deleteDatabaseMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseDeleteResponse>> => {
   const resolvedOptions = resolveClientOptions(options);
-  const apiResponse = await deleteEdgeDatabase(resolveToken(token), id, resolvedOptions.debug, resolvedOptions.env);
+  const apiResponse = await deleteDatabase(resolveToken(token), id, resolvedOptions.debug, resolvedOptions.env);
   if (apiResponse?.state) {
     return {
       data: {
@@ -149,7 +149,7 @@ const getDatabaseMethod = async (
   try {
     const resolvedOptions = resolveClientOptions(options);
 
-    const apiResponse = await getEdgeDatabases(
+    const apiResponse = await getDatabases(
       resolveToken(token),
       { search: name, page_size: 1 },
       resolvedOptions.debug,
@@ -203,7 +203,7 @@ const getDatabasesMethod = async (
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseCollections>> => {
   const resolvedOptions = resolveClientOptions(options);
-  const apiResponse = await getEdgeDatabases(resolveToken(token), params, resolvedOptions.debug, resolvedOptions.env);
+  const apiResponse = await getDatabases(resolveToken(token), params, resolvedOptions.debug, resolvedOptions.env);
 
   // If the API response contains an error, return it
   if (apiResponse.error) {
@@ -493,7 +493,7 @@ const useExecute = async (
   executeDatabaseMethod(resolveToken(), name, statements, options);
 
 /**
- * Creates an SQL client with methods to interact with Azion Edge SQL databases.
+ * Creates an SQL client with methods to interact with Azion SQL databases.
  *
  * @param {Partial<{ token?: string; options?: AzionClientOptions; }>} [config] - Configuration options for the SQL client.
  * @returns {AzionSQLClient} An object with methods to interact with SQL databases.

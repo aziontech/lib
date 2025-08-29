@@ -1,6 +1,6 @@
-# Azion Edge Purge Client
+# Azion Purge Client
 
-Azion Edge Purge Client provides a simple interface to interact with the Azion Edge Cache Purge API, allowing you to purge URLs, Cache Keys, and Wildcard expressions from the cache. This client is configurable and supports both debug mode and environment variable-based configuration.
+Azion Purge Client provides a simple interface to interact with the Azion Cache Purge API, allowing you to purge URLs, Cache Keys, and Wildcard expressions from the cache. This client is configurable and supports both debug mode and environment variable-based configuration.
 
 ## Table of Contents
 
@@ -238,7 +238,7 @@ if (purgeWildCardResponse) {
 
 ### `purgeURL`
 
-Purge a URL from the Azion Edge cache.
+Purge a URL from the Azion cache.
 
 **Parameters:**
 
@@ -251,7 +251,7 @@ Purge a URL from the Azion Edge cache.
 
 ### `purgeCacheKey`
 
-Purge a Cache Key from the Azion Edge cache.
+Purge a Cache Key from the Azion cache.
 
 **Parameters:**
 
@@ -264,7 +264,7 @@ Purge a Cache Key from the Azion Edge cache.
 
 ### `purgeWildCard`
 
-Purge using a wildcard expression from the Azion Edge cache.
+Purge using a wildcard expression from the Azion cache.
 
 **Parameters:**
 
@@ -277,7 +277,7 @@ Purge using a wildcard expression from the Azion Edge cache.
 
 ### `createClient`
 
-Creates a Purge client with methods to interact with Azion Edge Purge.
+Creates a Purge client with methods to interact with Azion Purge.
 
 **Parameters:**
 

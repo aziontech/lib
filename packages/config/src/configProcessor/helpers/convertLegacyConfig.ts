@@ -181,7 +181,7 @@ function convertV3BehaviorsToV4(legacyBehavior: any, isRequestPhase: boolean = t
     runFunction: (value: string | number) => ({ type: 'run_function', attributes: { value } }),
     setCache: (value: string | number) => ({ type: 'set_cache_policy', attributes: { value } }),
     setOrigin: (value: string | number) => ({ type: 'set_origin', attributes: { value } }),
-    setEdgeConnector: (value: string | number) => ({ type: 'set_edge_connector', attributes: { value } }),
+    setConnector: (value: string | number) => ({ type: 'set_connector', attributes: { value } }),
 
     // Header behaviors (context-aware: request vs response)
     setHeaders: (value: string | string[]) => {

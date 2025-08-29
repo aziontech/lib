@@ -1,22 +1,22 @@
-import { AzionConfig, AzionEdgeApplication } from '../../../../types';
+import { AzionApplication, AzionConfig } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
 import DeviceGroupsProcessConfigStrategy from './deviceGroupsProcessConfigStrategy';
 import FunctionInstancesProcessConfigStrategy from './functionInstancesProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
 
-class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
+class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
   private cacheStrategy = new CacheProcessConfigStrategy();
   private rulesStrategy = new RulesProcessConfigStrategy();
   private deviceGroupsStrategy = new DeviceGroupsProcessConfigStrategy();
   private functionInstancesStrategy = new FunctionInstancesProcessConfigStrategy();
 
   transformToManifest(config: AzionConfig) {
-    if (!config.edgeApplications || !Array.isArray(config.edgeApplications)) {
+    if (!config.applications || !Array.isArray(config.applications)) {
       return [];
     }
 
-    return config.edgeApplications.map((app: AzionEdgeApplication) => {
+    return config.applications.map((app: AzionApplication) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const application: Record<string, any> = {
         name: app.name,
@@ -26,9 +26,9 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
           edge_cache: {
             enabled: app.edgeCacheEnabled ?? true,
           },
-          edge_functions: {
+          functions: {
             enabled:
-              app.edgeFunctionsEnabled || (app.functionsInstances && app.functionsInstances.length > 0) ? true : false,
+              app.functionsEnabled || (app.functionsInstances && app.functionsInstances.length > 0) ? true : false,
           },
           application_accelerator: {
             enabled: app.applicationAcceleratorEnabled ?? true,
@@ -47,11 +47,7 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       }
 
       if (app.rules) {
-        application.rules = this.rulesStrategy.transformToManifest(
-          app.rules,
-          config.edgeFunctions,
-          config.edgeConnectors,
-        );
+        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.functions, config.connectors);
       }
 
       if (app.deviceGroups) {
@@ -71,19 +67,19 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    if (!payload.edge_applications || !Array.isArray(payload.edge_applications)) {
-      transformedPayload.edgeApplications = [];
-      return transformedPayload.edgeApplications;
+    if (!payload.applications || !Array.isArray(payload.applications)) {
+      transformedPayload.applications = [];
+      return transformedPayload.applications;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformedPayload.edgeApplications = payload.edge_applications.map((app: any) => {
+    transformedPayload.applications = payload.applications.map((app: any) => {
       return {
         name: app.name,
         active: app.active,
         debug: app.debug,
         edgeCacheEnabled: app.modules?.edge_cache?.enabled,
-        edgeFunctionsEnabled: app.modules?.edge_functions?.enabled,
+        functionsEnabled: app.modules?.functions?.enabled,
         applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
         imageProcessorEnabled: app.modules?.image_processor?.enabled,
         tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
@@ -96,8 +92,8 @@ class EdgeApplicationProcessConfigStrategy extends ProcessConfigStrategy {
       };
     });
 
-    return transformedPayload.edgeApplications;
+    return transformedPayload.applications;
   }
 }
 
-export default EdgeApplicationProcessConfigStrategy;
+export default ApplicationProcessConfigStrategy;

@@ -559,7 +559,7 @@ const azionConfigSchema = {
             additionalProperties: "No additional properties are allowed in the 'build' object",
           },
         },
-        edgeApplications: {
+        applications: {
           type: 'array',
           items: {
             type: 'object',
@@ -585,10 +585,10 @@ const azionConfigSchema = {
                 default: true,
                 errorMessage: "The 'edgeCacheEnabled' field must be a boolean",
               },
-              edgeFunctionsEnabled: {
+              functionsEnabled: {
                 type: 'boolean',
                 default: false,
-                errorMessage: "The 'edgeFunctionsEnabled' field must be a boolean",
+                errorMessage: "The 'functionsEnabled' field must be a boolean",
               },
               applicationAcceleratorEnabled: {
                 type: 'boolean',
@@ -835,7 +835,7 @@ const azionConfigSchema = {
                     ref: {
                       type: ['string', 'number'],
                       errorMessage:
-                        "The 'ref' field must be a string or number referencing an existing Edge Function name or ID",
+                        "The 'ref' field must be a string or number referencing an existing Function name or ID",
                     },
                     args: {
                       type: 'object',
@@ -861,7 +861,7 @@ const azionConfigSchema = {
             required: ['name'],
             additionalProperties: false,
           },
-          errorMessage: "The 'edgeApplications' field must be an array of application objects",
+          errorMessage: "The 'applications' field must be an array of application objects",
         },
         workloads: {
           type: 'array',
@@ -1024,15 +1024,15 @@ const azionConfigSchema = {
                         attributes: {
                           type: 'object',
                           properties: {
-                            edgeApplication: {
+                            application: {
                               type: ['string', 'number'],
                               errorMessage:
-                                "The 'edgeApplication' field must be a string or number referencing an existing Edge Application name or ID",
+                                "The 'application' field must be a string or number referencing an existing Application name or ID",
                             },
-                            edgeFirewall: {
+                            firewall: {
                               type: ['string', 'number', 'null'],
                               errorMessage:
-                                "The 'edgeFirewall' field must be a string or number referencing an existing Edge Firewall name/ID or null",
+                                "The 'firewall' field must be a string or number referencing an existing Firewall name/ID or null",
                             },
                             customPage: {
                               type: ['string', 'number', 'null'],
@@ -1041,11 +1041,11 @@ const azionConfigSchema = {
                                 "The 'customPage' field must be a string or number referencing a custom page name/ID or null",
                             },
                           },
-                          required: ['edgeApplication'],
+                          required: ['application'],
                           additionalProperties: false,
                           errorMessage: {
                             additionalProperties: 'No additional properties are allowed in strategy attributes',
-                            required: "The 'edgeApplication' field is required in strategy attributes",
+                            required: "The 'application' field is required in strategy attributes",
                           },
                         },
                       },
@@ -1115,20 +1115,20 @@ const azionConfigSchema = {
             },
           },
         },
-        edgeFirewall: {
+        firewall: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
               name: {
                 type: 'string',
-                errorMessage: "The edgeFirewall configuration must have a 'name' field of type string",
+                errorMessage: "The firewall configuration must have a 'name' field of type string",
               },
               domains: {
                 type: 'array',
                 items: {
                   type: 'string',
-                  errorMessage: "Each domain in the edge firewall's domains list must be a string",
+                  errorMessage: "Each domain in the  firewall's domains list must be a string",
                 },
               },
               active: {
@@ -1139,9 +1139,9 @@ const azionConfigSchema = {
                 type: 'boolean',
                 errorMessage: "The firewall's 'debugRules' field must be a boolean",
               },
-              edgeFunctions: {
+              functions: {
                 type: 'boolean',
-                errorMessage: "The firewall's 'edgeFunctions' field must be a boolean",
+                errorMessage: "The firewall's 'functions' field must be a boolean",
               },
               networkProtection: {
                 type: 'boolean',
@@ -1310,13 +1310,13 @@ const azionConfigSchema = {
             required: ['name'],
             additionalProperties: false,
             errorMessage: {
-              type: 'Each edgeFirewall item must be an object',
-              additionalProperties: 'No additional properties are allowed in the edgeFirewall object',
-              required: "The 'name' field is required in each edge firewall object",
+              type: 'Each firewall item must be an object',
+              additionalProperties: 'No additional properties are allowed in the firewall object',
+              required: "The 'name' field is required in each  firewall object",
             },
           },
           errorMessage: {
-            type: "The 'edgeFirewall' field must be an array of edge firewall objects",
+            type: "The 'firewall' field must be an array of  firewall objects",
           },
         },
         networkList: {
@@ -1475,7 +1475,7 @@ const azionConfigSchema = {
             type: "The 'waf' field must be an array",
           },
         },
-        edgeConnectors: {
+        connectors: {
           type: 'array',
           items: {
             type: 'object',
@@ -1495,7 +1495,7 @@ const azionConfigSchema = {
               type: {
                 type: 'string',
                 enum: EDGE_CONNECTOR_TYPES,
-                errorMessage: "The 'type' field must be one of: http, edge_storage, live_ingest",
+                errorMessage: "The 'type' field must be one of: http, storage, live_ingest",
               },
               attributes: {
                 oneOf: [
@@ -1519,7 +1519,7 @@ const azionConfigSchema = {
                     },
                     required: ['bucket', 'prefix'],
                     additionalProperties: false,
-                    errorMessage: 'Edge storage attributes must have bucket and prefix',
+                    errorMessage: 'Storage attributes must have bucket and prefix',
                   },
                   {
                     type: 'object',
@@ -1778,14 +1778,14 @@ const azionConfigSchema = {
                   },
                 ],
                 errorMessage:
-                  "The 'attributes' field must match either edge storage format (bucket, prefix) or HTTP/Live Ingest format (addresses, connectionOptions, modules).",
+                  "The 'attributes' field must match either  storage format (bucket, prefix) or HTTP/Live Ingest format (addresses, connectionOptions, modules).",
               },
             },
             required: ['name', 'type', 'attributes'],
             additionalProperties: false,
           },
         },
-        edgeFunctions: {
+        functions: {
           type: 'array',
           items: schemaFunction,
         },
@@ -1891,16 +1891,16 @@ const azionConfigSchema = {
           },
           errorMessage: "The 'customPages' field must be an array of custom page objects",
         },
-        edgeStorage: {
+        storage: {
           type: 'array',
           items: schemaStorage,
-          errorMessage: "The 'edgeStorage' field must be an array of edge storage items.",
+          errorMessage: "The 'storage' field must be an array of  storage items.",
         },
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: build, edgeFunctions, edgeApplications, workloads, purge, edgefirewall, networkList, waf, edgeConnectors, customPages',
+          'Config can only contain the following properties: build, functions, applications, workloads, purge, edgefirewall, networkList, waf, connectors, customPages',
         type: 'Configuration must be an object',
       },
     },
