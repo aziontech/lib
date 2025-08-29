@@ -5,7 +5,7 @@ const config: AzionConfig = {
   build: {
     bundler: 'esbuild',
   },
-  edgeStorage: [
+  storage: [
     {
       name: '$BUCKET_NAME',
       prefix: '$BUCKET_PREFIX',
@@ -13,22 +13,22 @@ const config: AzionConfig = {
       edgeAccess: 'read_only',
     },
   ],
-  edgeConnectors: [
+  connectors: [
     {
-      name: '$EDGE_CONNECTOR_NAME',
+      name: '$CONNECTOR_NAME',
       active: true,
-      type: 'edge_storage',
+      type: 'storage',
       attributes: {
         bucket: '$BUCKET_NAME',
         prefix: '$BUCKET_PREFIX',
       },
     },
   ],
-  edgeApplications: [
+  applications: [
     {
-      name: '$EDGE_APPLICATION_NAME',
+      name: '$APPLICATION_NAME',
       rules: createSPARules({
-        edgeConnector: '$EDGE_CONNECTOR_NAME',
+        connector: '$CONNECTOR_NAME',
       }),
     },
   ],
@@ -53,7 +53,7 @@ const config: AzionConfig = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: '$EDGE_APPLICATION_NAME',
+              application: '$APPLICATION_NAME',
             },
           },
         },

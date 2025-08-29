@@ -13,7 +13,7 @@ export interface AzionPurge {
 
 export interface AzionPurgeClient {
   /**
-   * Purge a URL from the Azion Edge cache.
+   * Purge a URL from the Azion cache.
    *
    * @param {string[]} url - URLs to purge.
    * @param {AzionClientOptions} [options] - Client options including debug mode.
@@ -29,7 +29,7 @@ export interface AzionPurgeClient {
    */
   purgeURL: (urls: string[]) => Promise<AzionPurgeResponse<AzionPurge>>;
   /**
-   * Purge a Cache Key from the Azion Edge cache.
+   * Purge a Cache Key from the Azion cache.
    *
    * @param {string[]} cacheKey - Cache Keys to purge.
    * @param {AzionClientOptions} [options] - Client options including debug mode.
@@ -45,7 +45,7 @@ export interface AzionPurgeClient {
    */
   purgeCacheKey: (cacheKeys: string[]) => Promise<AzionPurgeResponse<AzionPurge>>;
   /**
-   * Purge using a wildcard expression from the Azion Edge cache.
+   * Purge using a wildcard expression from the Azion cache.
    *
    * @param {string[]} wildcard - Wildcard expressions to purge.
    * @param {AzionClientOptions} [options] - Client options including debug mode.

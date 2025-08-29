@@ -114,7 +114,7 @@ async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Pro
     await runNodeBuild(minorVersion, buildConfig);
   }
 
-  // build routing system and edge functions
+  // build routing system and functions
   const prebuildResult = await runDefaultBuild({
     vcConfigObjects,
     nextVersion,

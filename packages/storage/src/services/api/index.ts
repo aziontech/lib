@@ -21,9 +21,9 @@ import { AzionEnvironment, EdgeAccessType } from '../../types';
  */
 const getBaseUrl = (env: AzionEnvironment = 'production'): string => {
   const urls: Record<AzionEnvironment, string> = {
-    production: 'https://api.azion.com/v4/edge_storage/buckets',
-    development: '/v4/edge_storage/buckets',
-    staging: 'https://stage-api.azion.com/v4/edge_storage/buckets',
+    production: 'https://api.azion.com/v4//workspace/storage',
+    development: '/v4//workspace/storage',
+    staging: 'https://stage-api.azion.com/v4//workspace/storage',
   };
   return urls[env];
 };

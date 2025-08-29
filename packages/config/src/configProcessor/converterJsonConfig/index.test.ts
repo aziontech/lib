@@ -2,16 +2,16 @@
 import { convertJsonConfigToObject } from '.';
 
 describe('convertJsonConfigToObject', () => {
-  describe('Edge Applications', () => {
+  describe('Applications', () => {
     it('should correctly process edge applications with domain configuration', () => {
       const jsonConfig = {
-        edgeApplications: [
+        applications: [
           {
             name: 'my-edge-app',
             active: true,
             debug: false,
             edgeCacheEnabled: true,
-            edgeFunctionsEnabled: false,
+            functionsEnabled: false,
             applicationAcceleratorEnabled: false,
             imageProcessorEnabled: false,
             tieredCacheEnabled: false,
@@ -70,14 +70,14 @@ describe('convertJsonConfigToObject', () => {
       };
 
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-      expect(result.edgeApplications).toEqual(
+      expect(result.applications).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             name: 'my-edge-app',
             active: true,
             debug: false,
             edgeCacheEnabled: true,
-            edgeFunctionsEnabled: false,
+            functionsEnabled: false,
             applicationAcceleratorEnabled: false,
             imageProcessorEnabled: false,
             tieredCacheEnabled: false,
@@ -160,10 +160,10 @@ describe('convertJsonConfigToObject', () => {
     });
   });
 
-  describe('Edge Functions', () => {
-    it('should correctly process edge functions', () => {
+  describe('Functions', () => {
+    it('should correctly process functions', () => {
       const jsonConfig = {
-        edgeFunctions: [
+        functions: [
           {
             name: 'my-function',
             path: './functions/myFunction.js',
@@ -176,7 +176,7 @@ describe('convertJsonConfigToObject', () => {
       };
 
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-      expect(result.edgeFunctions).toEqual(
+      expect(result.functions).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             name: 'my-function',
@@ -191,10 +191,10 @@ describe('convertJsonConfigToObject', () => {
     });
   });
 
-  describe('Edge Connectors', () => {
+  describe('Connectors', () => {
     it('should correctly process edge connectors', () => {
       const jsonConfig = {
-        edgeConnectors: [
+        connectors: [
           {
             name: 'my-connector',
             active: true,
@@ -234,7 +234,7 @@ describe('convertJsonConfigToObject', () => {
       };
 
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-      expect(result.edgeConnectors).toEqual(
+      expect(result.connectors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             name: 'my-connector',
@@ -276,10 +276,10 @@ describe('convertJsonConfigToObject', () => {
     });
   });
 
-  describe('Edge Storage', () => {
+  describe('Storage', () => {
     it('should correctly process edge storage', () => {
       const jsonConfig = {
-        edgeStorage: [
+        storage: [
           {
             name: 'my-storage',
             dir: './public',
@@ -289,7 +289,7 @@ describe('convertJsonConfigToObject', () => {
       };
 
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-      expect(result.edgeStorage).toEqual(
+      expect(result.storage).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             name: 'my-storage',
@@ -436,10 +436,10 @@ describe('convertJsonConfigToObject', () => {
                 current: true,
                 active: true,
                 strategy: {
-                  type: 'edge_application',
+                  type: 'application',
                   attributes: {
-                    edgeApplication: 'my-edge-app',
-                    edgeFirewall: null,
+                    application: 'my-edge-app',
+                    firewall: null,
                     customPage: null,
                   },
                 },
@@ -482,10 +482,10 @@ describe('convertJsonConfigToObject', () => {
                 current: true,
                 active: true,
                 strategy: expect.objectContaining({
-                  type: 'edge_application',
+                  type: 'application',
                   attributes: expect.objectContaining({
-                    edgeApplication: 'my-edge-app',
-                    edgeFirewall: null,
+                    application: 'my-edge-app',
+                    firewall: null,
                     customPage: null,
                   }),
                 }),
@@ -548,15 +548,15 @@ describe('convertJsonConfigToObject', () => {
     });
   });
 
-  describe('Edge Firewall', () => {
+  describe('Firewall', () => {
     it('should correctly process edge firewall', () => {
       const jsonConfig = {
-        edgeFirewall: [
+        firewall: [
           {
             name: 'my-firewall',
             domains: ['example.com'],
             active: true,
-            edgeFunctions: true,
+            functions: true,
             networkProtection: true,
             waf: true,
             variable: 'request_uri',
@@ -584,13 +584,13 @@ describe('convertJsonConfigToObject', () => {
       };
 
       const result = convertJsonConfigToObject(JSON.stringify(jsonConfig));
-      expect(result.edgeFirewall).toEqual(
+      expect(result.firewall).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             name: 'my-firewall',
             domains: ['example.com'],
             active: true,
-            edgeFunctions: true,
+            functions: true,
             networkProtection: true,
             waf: true,
             variable: 'request_uri',

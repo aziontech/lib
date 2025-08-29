@@ -1,6 +1,6 @@
 # Azion Utils
 
-The Azion Utils package provides a set of utility functions designed to simplify common tasks when working with Azion edge functions. These utilities cover tasks such as routing for Single Page Applications (SPA) and Multi-Page Applications (MPA), as well as parsing and debugging incoming requests.
+The Azion Utils package provides a set of utility functions designed to simplify common tasks when working with Azion functions. These utilities cover tasks such as routing for Single Page Applications (SPA) and Multi-Page Applications (MPA), as well as parsing and debugging incoming requests.
 
 ## Table of Contents
 

@@ -8,11 +8,11 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class StorageProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    if (!Array.isArray(config?.edgeStorage) || config?.edgeStorage.length === 0) {
+    if (!Array.isArray(config?.storage) || config?.storage.length === 0) {
       return;
     }
 
-    return config.edgeStorage.map((item) => ({
+    return config.storage.map((item) => ({
       name: item.name,
       edge_access: item.edgeAccess || 'read_only',
       dir: item.dir,
@@ -22,19 +22,19 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    const storageConfig = payload.edge_storage;
+    const storageConfig = payload.storage;
     if (!Array.isArray(storageConfig) || storageConfig.length === 0) {
       return;
     }
 
-    transformedPayload.edgeStorage = storageConfig.map((item) => ({
+    transformedPayload.storage = storageConfig.map((item) => ({
       name: item.name,
       edgeAccess: item.edge_access || 'read_only',
       dir: item.dir,
       prefix: item.prefix,
     }));
 
-    return transformedPayload.edgeStorage;
+    return transformedPayload.storage;
   }
 }
 

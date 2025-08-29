@@ -2,8 +2,8 @@ import { ApiPurgeResponse } from './types';
 
 const BASE_URL =
   process.env.AZION_ENV === 'stage'
-    ? 'https://stage-api.azion.com/v4/edge/purge'
-    : 'https://api.azion.com/v4/edge/purge';
+    ? 'https://stage-api.azion.com/v4/workspace/purge'
+    : 'https://api.azion.com/v4/workspace/purge';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleApiError = (fields: string[], data: any, operation: string) => {
@@ -57,7 +57,7 @@ async function fetchWithErrorHandling(
 }
 
 /**
- * Purge URLs from the Azion Edge cache.
+ * Purge URLs from the Azion cache.
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - URLs to purge.
@@ -69,7 +69,7 @@ const postPurgeURL = async (token: string, urls: string[], debug?: boolean): Pro
 };
 
 /**
- * Purge cache keys from the Azion Edge cache.
+ * Purge cache keys from the Azion cache.
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - Cache keys to purge.
@@ -81,7 +81,7 @@ const postPurgeCacheKey = async (token: string, urls: string[], debug?: boolean)
 };
 
 /**
- * Purge using wildcard expressions from the Azion Edge cache.
+ * Purge using wildcard expressions from the Azion cache.
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string[]} urls - Wildcard expressions to purge.
@@ -93,7 +93,7 @@ const postPurgeWildcard = async (token: string, urls: string[], debug?: boolean)
 };
 
 /**
- * Helper function to send a purge request to the Azion Edge cache.
+ * Helper function to send a purge request to the Azion cache.
  *
  * @param {string} url - The API endpoint for the purge request.
  * @param {string} token - Authentication token for Azion API.

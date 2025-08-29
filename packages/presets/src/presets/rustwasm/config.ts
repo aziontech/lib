@@ -33,20 +33,20 @@ const config: AzionConfig = {
       return context;
     },
   } as AzionBuild,
-  edgeFunctions: [
+  functions: [
     {
-      name: '$EDGE_FUNCTION_NAME',
+      name: '$FUNCTION_NAME',
       path: './functions/handler.js',
     },
   ],
-  edgeApplications: [
+  applications: [
     {
-      name: '$EDGE_APPLICATION_NAME',
+      name: '$APPLICATION_NAME',
       rules: {
         request: [
           {
-            name: 'Execute Edge Function',
-            description: 'Execute edge function for all requests',
+            name: 'Execute Function',
+            description: 'Execute function for all requests',
             active: true,
             criteria: [
               [
@@ -62,7 +62,7 @@ const config: AzionConfig = {
               {
                 type: 'run_function',
                 attributes: {
-                  value: '$EDGE_FUNCTION_NAME',
+                  value: '$FUNCTION_NAME',
                 },
               },
             ],
@@ -71,8 +71,8 @@ const config: AzionConfig = {
       },
       functionsInstances: [
         {
-          name: '$EDGE_FUNCTION_INSTANCE_NAME',
-          ref: '$EDGE_FUNCTION_NAME',
+          name: '$FUNCTION_INSTANCE_NAME',
+          ref: '$FUNCTION_NAME',
         },
       ],
     },
@@ -98,7 +98,7 @@ const config: AzionConfig = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: '$EDGE_APPLICATION_NAME',
+              application: '$APPLICATION_NAME',
             },
           },
         },

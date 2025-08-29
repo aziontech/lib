@@ -1,4 +1,4 @@
-import { AzionConfig, AzionEdgeFunction, AzionFunctionInstance } from '../../../../types';
+import { AzionConfig, AzionFunction, AzionFunctionInstance } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 
 /**
@@ -8,19 +8,17 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
  */
 class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
   /**
-   * Validate that referenced Edge Function exists
+   * Validate that referenced Function exists
    */
   private validateEdgeFunctionReference(
-    edgeFunctions: AzionEdgeFunction[] | undefined,
+    functions: AzionFunction[] | undefined,
     functionNameOrId: string | number,
     instanceName: string,
   ) {
     // Only validate if it's a string (name), skip validation for numbers (IDs)
     if (typeof functionNameOrId === 'string') {
-      if (!Array.isArray(edgeFunctions) || !edgeFunctions.find((func) => func.name === functionNameOrId)) {
-        throw new Error(
-          `Function instance "${instanceName}" references non-existent Edge Function "${functionNameOrId}".`,
-        );
+      if (!Array.isArray(functions) || !functions.find((func) => func.name === functionNameOrId)) {
+        throw new Error(`Function instance "${instanceName}" references non-existent Function "${functionNameOrId}".`);
       }
     }
   }
@@ -34,12 +32,12 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
     }
 
     return functionInstances.map((instance) => {
-      // Validate Edge Function reference
-      this.validateEdgeFunctionReference(config.edgeFunctions, instance.ref, instance.name);
+      // Validate Function reference
+      this.validateEdgeFunctionReference(config.functions, instance.ref, instance.name);
 
       return {
         name: instance.name,
-        edge_function: instance.ref,
+        function: instance.ref,
         args: instance.args || {},
         active: instance.active ?? true,
       };
@@ -48,11 +46,11 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
 
   /**
    * Transform V4 manifest format back to azion.config Function Instances
-   * Note: API V4 returns edge_function as ID, but azion.config expects function name.
+   * Note: API V4 returns function as ID, but azion.config expects function name.
    * The CLI should resolve ID to name before calling this method.
    */
   transformToConfig(
-    payload: Array<{ name: string; edge_function: number | string; args?: Record<string, unknown>; active?: boolean }>,
+    payload: Array<{ name: string; function: number | string; args?: Record<string, unknown>; active?: boolean }>,
   ): AzionFunctionInstance[] {
     if (!Array.isArray(payload) || payload.length === 0) {
       return [];
@@ -60,7 +58,7 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy {
 
     return payload.map((instance) => ({
       name: instance.name,
-      ref: instance.edge_function,
+      ref: instance.function,
       args: instance.args,
       active: instance.active ?? true,
     }));

@@ -53,7 +53,7 @@ const purgeWildCardMethod = async (
 };
 
 /**
- * Purge a URL from the Azion Edge cache.
+ * Purge a URL from the Azion cache.
  *
  * @param {string[]} url - URLs to purge.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
@@ -71,7 +71,7 @@ const purgeURLWrapper = (url: string[], options?: AzionClientOptions): Promise<A
   purgeURLMethod(resolveToken(), url, options);
 
 /**
- * Purge a Cache Key from the Azion Edge cache.
+ * Purge a Cache Key from the Azion cache.
  *
  * @param {string[]} cacheKey - Cache Keys to purge.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
@@ -91,7 +91,7 @@ const purgeCacheKeyWrapper = (
 ): Promise<AzionPurgeResponse<AzionPurge>> => purgeCacheKeyMethod(resolveToken(), cacheKey, options);
 
 /**
- * Purge using a wildcard expression from the Azion Edge cache.
+ * Purge using a wildcard expression from the Azion cache.
  *
  * @param {string[]} wildcard - Wildcard expressions to purge.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
@@ -111,7 +111,7 @@ const purgeWildCardWrapper = (
 ): Promise<AzionPurgeResponse<AzionPurge>> => purgeWildCardMethod(resolveToken(), wildcard, options);
 
 /**
- * Creates a Purge client with methods to interact with Azion Edge Purge.
+ * Creates a Purge client with methods to interact with Azion Purge.
  *
  * @param {Partial<{ token: string; options?: AzionClientOptions }>} [config] - Configuration options for the Purge client.
  * @returns {AzionPurgeClient} An object with methods to interact with Purge.
