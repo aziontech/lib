@@ -1,3 +1,10 @@
+## [2.1.0-stage.1](https://github.com/aziontech/lib/compare/v2.0.0...v2.1.0-stage.1) (2025-08-29)
+
+
+### Features
+
+* rename properties to remove "Edge" prefix (#215) ([3734403](https://github.com/aziontech/lib/commit/373440334a7448c45e8d9656c8453ff9f8c71765))
+
 ## [2.0.0](https://github.com/aziontech/lib/compare/v1.20.2...v2.0.0) (2025-08-21)
 
 
