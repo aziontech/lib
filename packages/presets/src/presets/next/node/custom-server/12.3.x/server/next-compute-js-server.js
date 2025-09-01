@@ -610,8 +610,8 @@ export default class NextComputeJsServer extends BaseServer {
   generateCatchAllMiddlewareRoute() {
     // TODO: Edge Functions / Middleware
     // These are challenging at the moment to run in C@E, because
-    // Next.js builds middleware as edge functions, and edge functions
-    // are built as "edge functions" meant to run in Vercel's runtime.
+    // Next.js builds middleware as functions, and functions
+    // are built as "functions" meant to run in Vercel's runtime.
     return [];
   }
 

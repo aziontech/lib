@@ -5,25 +5,25 @@ import {
   EDGE_CONNECTOR_LOAD_BALANCE_METHOD,
   EDGE_CONNECTOR_TRANSPORT_POLICY,
 } from '../../../constants';
-import { AzionConfig, AzionEdgeConnector, EdgeConnectorType } from '../../../types';
+import { AzionConfig, AzionConnector, ConnectorType } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
- * EdgeConnectorProcessConfigStrategy V4
- * @class EdgeConnectorProcessConfigStrategy
- * @description This class is implementation of the Edge Connector ProcessConfig Strategy for API V4.
+ * ConnectorProcessConfigStrategy V4
+ * @class ConnectorProcessConfigStrategy
+ * @description This class is implementation of the Connector ProcessConfig Strategy for API V4.
  */
-class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
+class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
   /**
-   * Transform azion.config edge connectors to V4 manifest format
+   * Transform azion.config  connectors to V4 manifest format
    */
   transformToManifest(config: AzionConfig) {
-    const edgeConnectors = config?.edgeConnectors;
-    if (!edgeConnectors || edgeConnectors.length === 0) {
+    const connectors = config?.connectors;
+    if (!connectors || connectors.length === 0) {
       return;
     }
 
-    return edgeConnectors.map((connector: AzionEdgeConnector) => {
+    return connectors.map((connector: AzionConnector) => {
       const baseConnector = {
         name: connector.name,
         active: connector.active ?? true,
@@ -31,7 +31,7 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       };
 
       // Handle different connector types
-      if (connector.type === 'edge_storage') {
+      if (connector.type === 'storage') {
         return {
           ...baseConnector,
           attributes: {
@@ -108,16 +108,16 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   /**
-   * Transform V4 manifest format back to azion.config edge connectors
+   * Transform V4 manifest format back to azion.config  connectors
    */
   transformToConfig(
     payload: {
-      edge_connectors?: Array<{
+      connectors?: Array<{
         name: string;
         active?: boolean;
-        type: EdgeConnectorType;
+        type: ConnectorType;
         attributes: {
-          // For edge_storage
+          // For storage
           bucket?: string;
           prefix?: string;
           // For http and live_ingest
@@ -126,7 +126,7 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
             address: string;
             http_port?: number;
             https_port?: number;
-            modules?: import('../../../types').EdgeConnectorAddressModules | null;
+            modules?: import('../../../types').ConnectorAddressModules | null;
           }>;
           connection_options?: {
             dns_resolution?: string;
@@ -174,11 +174,11 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
     },
     transformedPayload: AzionConfig,
   ) {
-    if (!payload.edge_connectors || payload.edge_connectors.length === 0) {
+    if (!payload.connectors || payload.connectors.length === 0) {
       return;
     }
 
-    transformedPayload.edgeConnectors = payload.edge_connectors.map((connector) => {
+    transformedPayload.connectors = payload.connectors.map((connector) => {
       const baseConnector = {
         name: connector.name,
         active: connector.active,
@@ -186,14 +186,14 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
       };
 
       // Handle different connector types
-      if (connector.type === 'edge_storage') {
+      if (connector.type === 'storage') {
         return {
           ...baseConnector,
           attributes: {
             bucket: connector.attributes.bucket!,
             prefix: connector.attributes.prefix,
           },
-        } as AzionEdgeConnector;
+        } as AzionConnector;
       }
 
       // Handle http and live_ingest connectors
@@ -205,7 +205,7 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
             address: addr.address,
             httpPort: addr.http_port,
             httpsPort: addr.https_port,
-            modules: addr.modules as import('../../../types').EdgeConnectorAddressModules | null,
+            modules: addr.modules as import('../../../types').ConnectorAddressModules | null,
           })),
           connectionOptions: {
             dnsResolution: connector.attributes.connection_options!
@@ -263,11 +263,11 @@ class EdgeConnectorProcessConfigStrategy extends ProcessConfigStrategy {
             },
           },
         },
-      } as AzionEdgeConnector;
+      } as AzionConnector;
     });
 
-    return transformedPayload.edgeConnectors;
+    return transformedPayload.connectors;
   }
 }
 
-export default EdgeConnectorProcessConfigStrategy;
+export default ConnectorProcessConfigStrategy;

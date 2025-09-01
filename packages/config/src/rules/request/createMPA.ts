@@ -2,7 +2,7 @@ import type { AzionRules } from 'azion/config';
 import { ALL_EXTENSIONS } from '../constants';
 
 /**
- * Creates rules for a Multi Page Application (MPA) on Azion Edge Platform.
+ * Creates rules for a Multi Page Application (MPA) on Azion Platform.
  * This configuration is optimized for static site hosting with proper routing and asset delivery.
  *
  * Features:
@@ -11,23 +11,23 @@ import { ALL_EXTENSIONS } from '../constants';
  * - Automatic index.html handling for clean URLs
  *
  * @param options Configuration options for the MPA rules
- * @param options.edgeConnector The name of the edge connector to use
+ * @param options.connector The name of the edge connector to use
  * @param options.staticExtensions List of file extensions to be treated as static assets
  * @returns Array of rules configured for MPA hosting on Azion Edge
  */
 export function createMPARules(
   options: {
-    edgeConnector?: string;
+    connector?: string;
     staticExtensions?: string[];
   } = {},
 ): AzionRules {
-  const { edgeConnector = 'edge-connector', staticExtensions = ALL_EXTENSIONS } = options;
+  const { connector = 'name-connector', staticExtensions = ALL_EXTENSIONS } = options;
 
   return {
     request: [
       {
         name: 'Deliver Static Assets',
-        description: 'Deliver static assets directly from edge storage',
+        description: 'Deliver static assets directly from storage',
         active: true,
         criteria: [
           [
@@ -41,9 +41,9 @@ export function createMPARules(
         ],
         behaviors: [
           {
-            type: 'set_edge_connector',
+            type: 'set_connector',
             attributes: {
-              value: edgeConnector,
+              value: connector,
             },
           },
           {
@@ -67,9 +67,9 @@ export function createMPARules(
         ],
         behaviors: [
           {
-            type: 'set_edge_connector',
+            type: 'set_connector',
             attributes: {
-              value: edgeConnector,
+              value: connector,
             },
           },
           {
@@ -96,9 +96,9 @@ export function createMPARules(
         ],
         behaviors: [
           {
-            type: 'set_edge_connector',
+            type: 'set_connector',
             attributes: {
-              value: edgeConnector,
+              value: connector,
             },
           },
           {

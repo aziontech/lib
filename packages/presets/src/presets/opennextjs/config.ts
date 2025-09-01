@@ -7,7 +7,7 @@ const config: AzionConfig = {
     bundler: 'esbuild',
     preset: 'opennextjs',
   } as AzionBuild,
-  edgeStorage: [
+  storage: [
     {
       name: '$BUCKET_NAME',
       prefix: '$BUCKET_PREFIX',
@@ -15,20 +15,20 @@ const config: AzionConfig = {
       edgeAccess: 'read_write',
     },
   ],
-  edgeConnectors: [
+  connectors: [
     {
-      name: '$EDGE_CONNECTOR_NAME',
+      name: '$CONNECTOR_NAME',
       active: true,
-      type: 'edge_storage',
+      type: 'storage',
       attributes: {
         bucket: '$BUCKET_NAME',
         prefix: '$BUCKET_PREFIX',
       },
     },
   ],
-  edgeFunctions: [
+  functions: [
     {
-      name: '$EDGE_FUNCTION_NAME',
+      name: '$FUNCTION_NAME',
       path: './functions/worker.js',
       bindings: {
         storage: {
@@ -38,9 +38,9 @@ const config: AzionConfig = {
       },
     },
   ],
-  edgeApplications: [
+  applications: [
     {
-      name: '$EDGE_APPLICATION_NAME',
+      name: '$APPLICATION_NAME',
       rules: {
         request: [
           {
@@ -59,9 +59,9 @@ const config: AzionConfig = {
             ],
             behaviors: [
               {
-                type: 'set_edge_connector',
+                type: 'set_connector',
                 attributes: {
-                  value: '$EDGE_CONNECTOR_NAME',
+                  value: '$CONNECTOR_NAME',
                 },
               },
               {
@@ -85,9 +85,9 @@ const config: AzionConfig = {
             ],
             behaviors: [
               {
-                type: 'set_edge_connector',
+                type: 'set_connector',
                 attributes: {
-                  value: '$EDGE_CONNECTOR_NAME',
+                  value: '$CONNECTOR_NAME',
                 },
               },
               {
@@ -96,8 +96,8 @@ const config: AzionConfig = {
             ],
           },
           {
-            name: 'Execute Edge Function',
-            description: 'Execute edge function for all requests',
+            name: 'Execute Function',
+            description: 'Execute function for all requests',
             active: true,
             criteria: [
               [
@@ -113,7 +113,7 @@ const config: AzionConfig = {
               {
                 type: 'run_function',
                 attributes: {
-                  value: '$EDGE_FUNCTION_NAME',
+                  value: '$FUNCTION_NAME',
                 },
               },
               {
@@ -125,8 +125,8 @@ const config: AzionConfig = {
       },
       functionsInstances: [
         {
-          name: '$EDGE_FUNCTION_INSTANCE_NAME',
-          ref: '$EDGE_FUNCTION_NAME',
+          name: '$FUNCTION_INSTANCE_NAME',
+          ref: '$FUNCTION_NAME',
         },
       ],
     },
@@ -152,7 +152,7 @@ const config: AzionConfig = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: '$EDGE_APPLICATION_NAME',
+              application: '$APPLICATION_NAME',
             },
           },
         },

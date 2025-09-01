@@ -248,7 +248,7 @@ const schemaStorageManifest = {
   required: ['name', 'dir'],
   additionalProperties: false,
   errorMessage: {
-    additionalProperties: 'No additional properties are allowed in edge storage items.',
+    additionalProperties: 'No additional properties are allowed in  storage items.',
     required: "The 'name' and 'dir' fields are required.",
   },
 };
@@ -501,9 +501,9 @@ const schemaFirewallManifest = {
           type: 'boolean',
           errorMessage: "The 'is_active' field must be a boolean.",
         },
-        edge_functions_enabled: {
+        functions_enabled: {
           type: 'boolean',
-          errorMessage: "The 'edge_functions_enabled' field must be a boolean.",
+          errorMessage: "The 'functions_enabled' field must be a boolean.",
         },
         network_protection_enabled: {
           type: 'boolean',
@@ -633,7 +633,7 @@ const schemaApplicationCacheSettings = {
             topology: {
               type: 'string',
               enum: TIERED_CACHE_TOPOLOGY,
-              errorMessage: "The 'topology' must be one of: near-edge, br-east-1, us-east-1.",
+              errorMessage: "The 'topology' must be one of: near-, br-east-1, us-east-1.",
             },
           },
           required: ['topology'],
@@ -1064,7 +1064,7 @@ const schemaApplicationManifest = {
           required: ['enabled'],
           additionalProperties: false,
         },
-        edge_functions: {
+        functions: {
           type: 'object',
           properties: {
             enabled: {
@@ -1170,21 +1170,21 @@ const schemaApplicationManifest = {
             pattern: '.*',
             errorMessage: "The 'name' field must be a string between 1 and 100 characters.",
           },
-          edge_function: {
+          function: {
             oneOf: [
               {
                 type: 'string',
                 minLength: 1,
                 maxLength: 250,
-                errorMessage: "The 'edge_function' field must be a string between 1 and 250 characters.",
+                errorMessage: "The 'function' field must be a string between 1 and 250 characters.",
               },
               {
                 type: 'integer',
                 minimum: 1,
-                errorMessage: "The 'edge_function' field must be an integer >= 1.",
+                errorMessage: "The 'function' field must be an integer >= 1.",
               },
             ],
-            errorMessage: "The 'edge_function' field must be either a string (function name) or integer (function ID).",
+            errorMessage: "The 'function' field must be either a string (function name) or integer (function ID).",
           },
           args: {
             type: 'object',
@@ -1197,11 +1197,11 @@ const schemaApplicationManifest = {
             errorMessage: "The 'active' field must be a boolean.",
           },
         },
-        required: ['name', 'edge_function'],
+        required: ['name', 'function'],
         additionalProperties: false,
         errorMessage: {
           additionalProperties: 'No additional properties are allowed in function instance objects.',
-          required: "The 'name' and 'edge_function' fields are required in each function instance.",
+          required: "The 'name' and 'function' fields are required in each function instance.",
         },
       },
       errorMessage: "The 'functions_instances' field must be an array of function instance objects.",
@@ -1348,7 +1348,7 @@ const schemaWorkloadManifest = {
   },
 };
 
-const schemaEdgeConnectorManifest = {
+const schemaConnectorManifest = {
   type: ['object', 'null'],
   properties: {
     name: {
@@ -1366,7 +1366,7 @@ const schemaEdgeConnectorManifest = {
     type: {
       type: 'string',
       enum: EDGE_CONNECTOR_TYPES,
-      errorMessage: "The 'type' must be one of: http, edge_storage, live_ingest",
+      errorMessage: "The 'type' must be one of: http, storage, live_ingest",
     },
     attributes: {
       oneOf: [
@@ -1391,8 +1391,8 @@ const schemaEdgeConnectorManifest = {
           required: ['bucket'],
           additionalProperties: false,
           errorMessage: {
-            additionalProperties: 'No additional properties are allowed in edge storage attributes.',
-            required: "The 'bucket' field is required in edge storage attributes.",
+            additionalProperties: 'No additional properties are allowed in  storage attributes.',
+            required: "The 'bucket' field is required in  storage attributes.",
           },
         },
         {
@@ -1693,14 +1693,14 @@ const schemaEdgeConnectorManifest = {
         },
       ],
       errorMessage:
-        "The 'attributes' field must match either edge storage format (bucket, prefix) or HTTP/Live Ingest format (addresses, connection_options, modules).",
+        "The 'attributes' field must match either  storage format (bucket, prefix) or HTTP/Live Ingest format (addresses, connection_options, modules).",
     },
   },
   required: ['name', 'type', 'attributes'],
   additionalProperties: false,
   errorMessage: {
-    additionalProperties: 'No additional properties are allowed in edge connector items.',
-    required: "The 'name', 'type' and 'attributes' fields are required in each edge connector item.",
+    additionalProperties: 'No additional properties are allowed in  connector items.',
+    required: "The 'name', 'type' and 'attributes' fields are required in each  connector item.",
   },
 };
 
@@ -1719,17 +1719,17 @@ const schemaManifest = {
         type: "The 'waf' field must be an array",
       },
     },
-    edge_firewall: {
+    firewall: {
       type: 'array',
       items: schemaFirewallManifest,
       errorMessage: {
-        type: "The 'edge_firewall' field must be an array of edge firewall objects",
+        type: "The 'firewall' field must be an array of  firewall objects",
       },
     },
-    edge_applications: {
+    applications: {
       type: 'array',
       items: schemaApplicationManifest,
-      errorMessage: "The 'edge_applications' field must be an array of edge application items.",
+      errorMessage: "The 'applications' field must be an array of  application items.",
     },
     workloads: {
       type: 'array',
@@ -1771,15 +1771,15 @@ const schemaManifest = {
               attributes: {
                 type: 'object',
                 properties: {
-                  edge_application: {
+                  application: {
                     type: 'integer',
                     minimum: 1,
-                    errorMessage: "The 'edge_application' field must be an integer >= 1.",
+                    errorMessage: "The 'application' field must be an integer >= 1.",
                   },
-                  edge_firewall: {
+                  firewall: {
                     type: ['integer', 'null'],
                     minimum: 1,
-                    errorMessage: "The 'edge_firewall' field must be an integer >= 1 or null.",
+                    errorMessage: "The 'firewall' field must be an integer >= 1 or null.",
                   },
                   custom_page: {
                     type: ['integer', 'null'],
@@ -1787,11 +1787,11 @@ const schemaManifest = {
                     errorMessage: "The 'custom_page' field must be an integer >= 1 or null.",
                   },
                 },
-                required: ['edge_application'],
+                required: ['application'],
                 additionalProperties: false,
                 errorMessage: {
                   additionalProperties: 'No additional properties are allowed in strategy attributes.',
-                  required: "The 'edge_application' field is required in strategy attributes.",
+                  required: "The 'application' field is required in strategy attributes.",
                 },
               },
             },
@@ -1812,11 +1812,11 @@ const schemaManifest = {
       },
       errorMessage: "The 'workload_deployments' field must be an array of workload deployment objects.",
     },
-    edge_connectors: {
+    connectors: {
       type: 'array',
-      items: schemaEdgeConnectorManifest,
+      items: schemaConnectorManifest,
       errorMessage: {
-        type: "The 'edge_connectors' field must be an array",
+        type: "The 'connectors' field must be an array",
       },
     },
     custom_pages: {
@@ -1923,15 +1923,15 @@ const schemaManifest = {
       },
       errorMessage: "The 'custom_pages' field must be an array of custom page objects.",
     },
-    edge_functions: {
+    functions: {
       type: 'array',
       items: schemaFunctionManifest,
-      errorMessage: "The 'edge_functions' field must be an array of edge function items.",
+      errorMessage: "The 'functions' field must be an array of  function items.",
     },
-    edge_storage: {
+    storage: {
       type: 'array',
       items: schemaStorageManifest,
-      errorMessage: "The 'edge_storage' field must be an array of edge storage items.",
+      errorMessage: "The 'storage' field must be an array of  storage items.",
     },
   },
 };

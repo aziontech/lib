@@ -1,4 +1,4 @@
-import { AzionConfig, AzionCustomPage, AzionEdgeConnector, CustomPageErrorCode, CustomPageType } from '../../../types';
+import { AzionConfig, AzionConnector, AzionCustomPage, CustomPageErrorCode, CustomPageType } from '../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
 
 /**
@@ -8,19 +8,19 @@ import ProcessConfigStrategy from '../processConfigStrategy';
  */
 class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy {
   /**
-   * Validate Edge Connector references
+   * Validate Connector references
    */
-  private validateEdgeConnectorReference(
-    edgeConnectors: AzionEdgeConnector[] | undefined,
+  private validateConnectorReference(
+    connectors: AzionConnector[] | undefined,
     connectorNameOrId: string | number,
     customPageName: string,
     errorCode: string,
   ) {
     // Only validate if it's a string (name), skip validation for numbers (IDs)
     if (typeof connectorNameOrId === 'string') {
-      if (!Array.isArray(edgeConnectors) || !edgeConnectors.find((connector) => connector.name === connectorNameOrId)) {
+      if (!Array.isArray(connectors) || !connectors.find((connector) => connector.name === connectorNameOrId)) {
         throw new Error(
-          `Custom page "${customPageName}" with error code "${errorCode}" references non-existent Edge Connector "${connectorNameOrId}".`,
+          `Custom page "${customPageName}" with error code "${errorCode}" references non-existent Connector "${connectorNameOrId}".`,
         );
       }
     }
@@ -38,8 +38,8 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy {
     return customPages.map((customPage: AzionCustomPage) => {
       // Validate connector references
       customPage.pages.forEach((pageEntry) => {
-        this.validateEdgeConnectorReference(
-          config.edgeConnectors,
+        this.validateConnectorReference(
+          config.connectors,
           pageEntry.page.attributes.connector,
           customPage.name,
           pageEntry.code,

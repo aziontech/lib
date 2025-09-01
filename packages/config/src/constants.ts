@@ -224,7 +224,7 @@ export const REQUEST_ONLY_BEHAVIORS = [
   'filter_request_cookie',
   'set_origin',
   'redirect_http_to_https',
-  'set_edge_connector',
+  'set_connector',
   'set_cache_policy',
   'rewrite_request',
   'add_request_header',
@@ -266,7 +266,7 @@ export const NO_ARGS_BEHAVIORS = [
 export const STRING_BEHAVIORS = ['redirect_to_301', 'redirect_to_302', 'rewrite_request'] as const;
 
 // Behaviors com ID value
-export const ID_BEHAVIORS = ['run_function', 'set_cache_policy', 'set_edge_connector', 'set_origin'] as const;
+export const ID_BEHAVIORS = ['run_function', 'set_cache_policy', 'set_connector', 'set_origin'] as const;
 
 // Behaviors de header
 export const HEADER_BEHAVIORS = [
@@ -295,15 +295,15 @@ export const WORKLOAD_MTLS_VERIFICATION = ['enforce', 'permissive'] as const;
 
 export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
 
-// Constantes para Edge Connector V4
-export const EDGE_CONNECTOR_TYPES = ['http', 'edge_storage', 'live_ingest'] as const;
+// Constantes para Connector V4
+export const EDGE_CONNECTOR_TYPES = ['http', 'storage', 'live_ingest'] as const;
 export const EDGE_CONNECTOR_DNS_RESOLUTION = ['preserve', 'force_ipv4', 'force_ipv6'] as const;
 export const EDGE_CONNECTOR_TRANSPORT_POLICY = ['preserve', 'force_https', 'force_http'] as const;
 export const EDGE_CONNECTOR_HTTP_VERSION_POLICY = ['http1_1'] as const;
 export const EDGE_CONNECTOR_LOAD_BALANCE_METHOD = ['round_robin', 'least_conn', 'ip_hash'] as const;
 export const EDGE_CONNECTOR_HMAC_TYPE = ['aws4_hmac_sha256'] as const;
 
-// Edge Functions V4 Constants
+// Functions V4 Constants
 export const EDGE_FUNCTION_RUNTIMES = ['azion_js'] as const;
 
 export const EDGE_FUNCTION_EXECUTION_ENVIRONMENTS = ['application', 'firewall'] as const;

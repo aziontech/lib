@@ -1,6 +1,6 @@
-# Azion Edge Platform Configuration
+# Azion Configuration
 
-This module provides comprehensive configuration and validation for the Azion Edge Platform. It supports edge applications, workloads, edge connectors, edge functions, storage, firewall rules, WAF settings, network lists, custom pages, and purge operations.
+This module provides comprehensive configuration and validation for the Azion Platform. It supports applications, workloads, connectors, functions, storage, firewall rules, WAF settings, network lists, custom pages, and purge operations.
 
 ## Table of Contents
 
@@ -16,16 +16,16 @@ This module provides comprehensive configuration and validation for the Azion Ed
 - [Types](#types)
   - [`AzionBuild`](#azionbuild)
   - [`AzionConfig`](#azionconfig)
-  - [`AzionEdgeApplication`](#azionedgeapplication)
+  - [`AzionApplication`](#azionapplication)
   - [`AzionWorkload`](#azionworkload)
-  - [`AzionEdgeConnector`](#azionedgeconnector)
-  - [`AzionEdgeFunction`](#azionedgefunction)
-  - [`AzionEdgeStorage`](#azionedgestorage)
+  - [`AzionConnector`](#azionconnector)
+  - [`AzionFunction`](#azionfunction)
+  - [`AzionStorage`](#azionstorage)
   - [`AzionCache`](#azioncache)
   - [`AzionRules`](#azionrules)
   - [`AzionPurge`](#azionpurge)
   - [`AzionNetworkList`](#azionnetworklist)
-  - [`AzionEdgeFirewall`](#azionedgefirewall)
+  - [`AzionFirewall`](#azionfirewall)
   - [`AzionWaf`](#azionwaf)
   - [`AzionCustomPages`](#azioncustompages)
 
@@ -47,7 +47,7 @@ yarn add azion
 
 ### Example Configuration
 
-Here are two examples of how to configure the Azion Edge Application:
+Here are two examples of how to configure the Azion Application:
 
 1. Using JSDoc to provide type information:
 
@@ -69,13 +69,13 @@ const config = defineConfig({
     preset: 'angular', // 'angular' | 'react' | 'next' | 'vue' | 'nuxt' | 'astro' | etc.
     bundler: 'webpack', // 'webpack' | 'esbuild'
   },
-  edgeApplications: [
+  applications: [
     {
-      name: 'my-edge-app',
+      name: 'my--app',
       active: true,
       debug: false,
       edgeCacheEnabled: true,
-      edgeFunctionsEnabled: false,
+      functionsEnabled: false,
       applicationAcceleratorEnabled: false,
       imageProcessorEnabled: false,
       tieredCacheEnabled: false,
@@ -168,7 +168,7 @@ const config = defineConfig({
       functionsInstances: [
         {
           name: 'auth-function-instance',
-          ref: 'my-edge-function',
+          ref: 'my--function',
           args: {
             environment: 'production',
             apiUrl: 'https://api.example.com',
@@ -177,7 +177,7 @@ const config = defineConfig({
       ],
     },
   ],
-  edgeConnectors: [
+  connectors: [
     {
       name: 'my-http-connector',
       active: true,
@@ -212,9 +212,9 @@ const config = defineConfig({
       },
     },
   ],
-  edgeFunctions: [
+  functions: [
     {
-      name: 'my-edge-function',
+      name: 'my--function',
       path: './functions/index.js',
       runtime: 'azion_js',
       defaultArgs: {
@@ -230,7 +230,7 @@ const config = defineConfig({
       },
     },
   ],
-  edgeStorage: [
+  storage: [
     {
       name: 'my-storage',
       edgeAccess: 'read_write',
@@ -271,8 +271,8 @@ const config = defineConfig({
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: 'my-edge-app',
-              edgeFirewall: 'my-edge-firewall',
+              application: 'my--app',
+              firewall: 'my--firewall',
               customPage: 'my-custom-error-pages',
             },
           },
@@ -280,12 +280,12 @@ const config = defineConfig({
       ],
     },
   ],
-  edgeFirewall: [
+  firewall: [
     {
-      name: 'my_edge_firewall',
+      name: 'my_firewall',
       domains: ['www.example.com', 'api.example.com'],
       active: true,
-      edgeFunctions: true,
+      functions: true,
       networkProtection: true,
       waf: true,
       rules: [
@@ -340,7 +340,7 @@ const config = defineConfig({
           page: {
             type: 'page_connector',
             attributes: {
-              connector: 'my-edge-connector',
+              connector: 'my--connector',
               ttl: 3600,
               uri: '/errors/404.html',
               customStatusCode: 404,
@@ -416,7 +416,7 @@ const manifestJson = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: 'my-edge-app',
+              application: 'my--app',
             },
           },
         },
@@ -462,7 +462,7 @@ const manifestJson = {
           strategy: {
             type: 'default',
             attributes: {
-              edgeApplication: 'my-edge-app',
+              application: 'my--app',
             },
           },
         },
@@ -480,11 +480,11 @@ console.log(config);
 
 ### `defineConfig`
 
-Configures and validates the options for the Azion Edge Application.
+Configures and validates the options for the Azion Application.
 
 **Parameters:**
 
-- `config: AzionConfig` - The configuration object for the Azion Edge Application.
+- `config: AzionConfig` - The configuration object for the Azion Application.
 
 ### `processConfig`
 
@@ -500,7 +500,7 @@ Converts a Azion JSON configuration object to a AzionConfig object.
 
 **Parameters:**
 
-- `config: AzionConfig` - The configuration object for the Azion Edge Application.
+- `config: AzionConfig` - The configuration object for the Azion Application.
 
 ## Types
 
@@ -509,14 +509,14 @@ Converts a Azion JSON configuration object to a AzionConfig object.
 **Properties:**
 
 - `build?: AzionBuild` - The build configuration.
-- `edgeApplications?: AzionEdgeApplication[]` - List of edge applications.
+- `applications?: AzionApplication[]` - List of applications.
 - `workloads?: AzionWorkload[]` - List of workloads for domain management.
-- `edgeConnectors?: AzionEdgeConnector[]` - List of edge connectors (HTTP, storage, live ingest).
-- `edgeFunctions?: AzionEdgeFunction[]` - List of edge functions.
-- `edgeStorage?: AzionEdgeStorage[]` - List of edge storage configurations.
+- `connectors?: AzionConnector[]` - List of connectors (HTTP, storage, live ingest).
+- `functions?: AzionFunction[]` - List of functions.
+- `storage?: AzionStorage[]` - List of storage configurations.
 - `purge?: AzionPurge[]` - List of URLs or cache keys to purge.
 - `networkList?: AzionNetworkList[]` - List of network lists.
-- `edgeFirewall?: AzionEdgeFirewall[]` - List of edge firewall configurations.
+- `firewall?: AzionFirewall[]` - List of firewall configurations.
 - `waf?: AzionWaf[]` - List of WAF configurations.
 - `customPages?: AzionCustomPages[]` - List of custom error page configurations.
 
@@ -612,17 +612,17 @@ Type definition for the preset metadata.
 - `registry?: string` - Preset registry.
 - `ext?: string` - File extension.
 
-### `AzionEdgeApplication`
+### `AzionApplication`
 
-Type definition for edge application configuration.
+Type definition for application configuration.
 
 **Properties:**
 
-- `name: string` - Name of the edge application (1-250 characters).
+- `name: string` - Name of the application (1-250 characters).
 - `active?: boolean` - Whether the application is active (default: true).
 - `debug?: boolean` - Whether debug mode is enabled (default: false).
 - `edgeCacheEnabled?: boolean` - Whether edge cache is enabled (default: true).
-- `edgeFunctionsEnabled?: boolean` - Whether edge functions are enabled (default: false).
+- `functionsEnabled?: boolean` - Whether functions are enabled (default: false).
 - `applicationAcceleratorEnabled?: boolean` - Whether application accelerator is enabled (default: false).
 - `imageProcessorEnabled?: boolean` - Whether image processor is enabled (default: false).
 - `tieredCacheEnabled?: boolean` - Whether tiered cache is enabled (default: false).
@@ -654,16 +654,16 @@ Type definition for workload configuration (domain management).
   - `crl?: number[] | null` - Certificate Revocation Lists.
 - `deployments: Deployment[]` - List of deployments.
 
-### `AzionEdgeConnector`
+### `AzionConnector`
 
-Type definition for edge connector configuration.
+Type definition for connector configuration.
 
 **Properties:**
 
-- `name: string` - Name of the edge connector (1-255 characters).
+- `name: string` - Name of the connector (1-255 characters).
 - `active?: boolean` - Whether the connector is active (default: true).
-- `type: 'http' | 'edge_storage' | 'live_ingest'` - Type of edge connector.
-- `attributes: EdgeConnectorAttributes` - Connector-specific attributes.
+- `type: 'http' | 'storage' | 'live_ingest'` - Type of connector.
+- `attributes: ConnectorAttributes` - Connector-specific attributes.
 
 **For HTTP/Live Ingest connectors:**
 
@@ -671,18 +671,18 @@ Type definition for edge connector configuration.
 - `connectionOptions: ConnectionOptions` - Connection configuration.
 - `modules: ConnectorModules` - Load balancer and origin shield modules.
 
-**For Edge Storage connectors:**
+**For Storage connectors:**
 
 - `bucket: string` - Storage bucket name.
 - `prefix: string` - Storage prefix path.
 
-### `AzionEdgeFunction`
+### `AzionFunction`
 
-Type definition for edge function configuration.
+Type definition for function configuration.
 
 **Properties:**
 
-- `name: string` - Name of the edge function (1-250 characters).
+- `name: string` - Name of the function (1-250 characters).
 - `path: string` - Path to the function file.
 - `runtime?: 'azion_js'` - Runtime environment (default: 'azion_js').
 - `defaultArgs?: object` - Default arguments for the function (default: {}).
@@ -690,15 +690,15 @@ Type definition for edge function configuration.
 - `active?: boolean` - Whether the function is active (default: true).
 - `bindings?: FunctionBindings` - Function bindings (e.g., storage).
 
-### `AzionEdgeStorage`
+### `AzionStorage`
 
-Type definition for edge storage configuration.
+Type definition for storage configuration.
 
 **Properties:**
 
 - `name: string` - Name of the storage (6-63 characters).
 - `dir: string` - Local directory path.
-- `edgeAccess?: 'read_only' | 'read_write' | 'restricted'` - Edge access permissions.
+- `edgeAccess?: 'read_only' | 'read_write' | 'restricted'` - access permissions.
 - `prefix: string` - Storage prefix.
 
 ### `AzionCache`
@@ -715,7 +715,7 @@ Type definition for the cache configuration.
   - `options?: boolean` - Whether to cache OPTIONS requests.
 - `browser?: BrowserCacheConfig` - Browser cache settings.
   - `maxAgeSeconds: number | string` - Maximum age for browser cache in seconds (supports mathematical expressions).
-- `edge?: EdgeCacheConfig` - Edge cache settings.
+- `edge?: EdgeCacheConfig` - cache settings.
   - `maxAgeSeconds: number | string` - Maximum age for edge cache in seconds (supports mathematical expressions).
 - `cacheByCookie?: CacheByCookieConfig` - Cache by cookie settings.
   - `option: 'ignore' | 'all' | 'allowlist' | 'denylist'` - Cache by cookie option.
@@ -771,7 +771,7 @@ Type definition for rule behaviors.
 - `rewrite_request` - Rewrite the request URL
 - `set_cookie` - Set a cookie
 - `add_request_header` / `add_response_header` - Add headers
-- `run_function` - Execute an edge function
+- `run_function` - Execute an function
 - `redirect_to_301` / `redirect_to_302` - Redirect requests
 - `deliver` - Deliver content directly
 - `enable_gzip` - Enable GZIP compression
@@ -798,9 +798,9 @@ Type definition for the network list configuration.
 - `items: string[]` - List of IP CIDRs, ASNs, or countries (1-20000 items).
 - `active?: boolean` - Whether the network list is active (default: true).
 
-### `AzionEdgeFirewall`
+### `AzionFirewall`
 
-Type definition for the Edge Firewall configuration.
+Type definition for the Firewall configuration.
 
 **Properties:**
 
@@ -808,7 +808,7 @@ Type definition for the Edge Firewall configuration.
 - `domains?: string[]` - List of domains associated with the firewall.
 - `active?: boolean` - Whether the firewall is active.
 - `debugRules?: boolean` - Whether debug mode is enabled for rules.
-- `edgeFunctions?: boolean` - Whether Edge Functions are enabled.
+- `functions?: boolean` - Whether Functions are enabled.
 - `networkProtection?: boolean` - Whether Network Protection is enabled.
 - `waf?: boolean` - Whether WAF is enabled.
 - `variable?: string` - Variable to be used in matches.

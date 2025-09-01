@@ -228,7 +228,7 @@ const config = {
       },
     },
   ],
-  edgeConnectors: [
+  connectors: [
     {
       name: 'My Origin',
       type: 'http',
@@ -246,9 +246,9 @@ const config = {
       },
     },
   ],
-  edgeApplications: [
+  applications: [
     {
-      name: 'My Edge App',
+      name: 'My App',
       active: true,
       cache: [
         {
@@ -294,7 +294,7 @@ const config = {
       listContent: ['10.0.0.1'],
     },
   ],
-  edgeFirewall: {
+  firewall: {
     name: 'My Firewall',
     active: true,
     rules: [
@@ -430,7 +430,7 @@ export default defineConfig({
       removePathPrefix: './src',
     },
   },
-  // Workloads, edge connectors, and other configurations...
+  // Workloads,  connectors, and other configurations...
 });
 ```
 

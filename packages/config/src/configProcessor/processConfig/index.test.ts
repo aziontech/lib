@@ -33,7 +33,7 @@
 //           {
 //             name: 'testCache',
 //             browser: { maxAgeSeconds: '2 * 3' },
-//             edge: { maxAgeSeconds: 'invalidExpression' },
+//             : { maxAgeSeconds: 'invalidExpression' },
 //           },
 //         ],
 //         rules: {
@@ -48,9 +48,9 @@
 
 //     it('should process a cache object directly in the rule', () => {
 //       const azionConfig: any = {
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -81,17 +81,17 @@
 //       };
 
 //       const result = processConfig(azionConfig);
-//       expect(result.edgeApplications[0]).toHaveProperty('cache');
-//       expect(result.edgeApplications[0].cache).toEqual(
+//       expect(result.applications[0]).toHaveProperty('cache');
+//       expect(result.applications[0].cache).toEqual(
 //         expect.arrayContaining([expect.objectContaining({ name: 'directCache' })]),
 //       );
 //     });
 
 //     it('should handle rewrites directly as a string', () => {
 //       const azionConfig: any = {
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -122,7 +122,7 @@
 //       };
 
 //       const result = processConfig(azionConfig);
-//       expect(result.edgeApplications[0].rules.request[0].behaviors).toEqual(
+//       expect(result.applications[0].rules.request[0].behaviors).toEqual(
 //         expect.arrayContaining([
 //           expect.objectContaining({
 //             type: 'rewrite_request',
@@ -136,14 +136,14 @@
 
 //     it('should correctly calculate numerical values', () => {
 //       const azionConfig: any = {
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             cache: [
 //               {
 //                 name: 'calcCache',
 //                 browser: { maxAgeSeconds: '2 * 3' },
-//                 edge: { maxAgeSeconds: '4 + 1' },
+//                 : { maxAgeSeconds: '4 + 1' },
 //               },
 //             ],
 //           },
@@ -151,7 +151,7 @@
 //       };
 
 //       const result = processConfig(azionConfig);
-//       expect(result.edgeApplications[0].cache[0]).toEqual(
+//       expect(result.applications[0].cache[0]).toEqual(
 //         expect.objectContaining({
 //           browser_cache_settings_maximum_ttl: 6,
 //           cdn_cache_settings_maximum_ttl: 5,
@@ -161,15 +161,15 @@
 
 //     it('should correctly handle the absence of cache settings', () => {
 //       const azionConfig: any = {
-//         edgeFunctions: [
+//         functions: [
 //           {
 //             name: 'handler',
-//             path: '.edge/worker.js',
+//             path: './worker.js',
 //           },
 //         ],
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -200,12 +200,12 @@
 //       };
 
 //       const result = processConfig(azionConfig);
-//       expect(result.edgeApplications[0].cache).toBeUndefined();
+//       expect(result.applications[0].cache).toBeUndefined();
 //     });
 
 //     it('should correctly convert request rules', () => {
 //       const azionConfig: any = {
-//         edgeConnectors: [
+//         connectors: [
 //           {
 //             name: 'my-connector',
 //             active: true,
@@ -242,9 +242,9 @@
 //             },
 //           },
 //         ],
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -261,7 +261,7 @@
 //                   ],
 //                   behaviors: [
 //                     {
-//                       type: 'set_edge_connector',
+//                       type: 'set_connector',
 //                       attributes: {
 //                         value: 'my-connector',
 //                       },
@@ -275,7 +275,7 @@
 //       };
 
 //       const result = processConfig(azionConfig);
-//       expect(result.edgeApplications[0].rules.request).toEqual(
+//       expect(result.applications[0].rules.request).toEqual(
 //         expect.arrayContaining([
 //           expect.objectContaining({
 //             criteria: expect.arrayContaining([
@@ -287,7 +287,7 @@
 //             ]),
 //             behaviors: expect.arrayContaining([
 //               expect.objectContaining({
-//                 type: 'set_edge_connector',
+//                 type: 'set_connector',
 //                 attributes: expect.objectContaining({
 //                   value: 'my-connector',
 //                 }),
@@ -300,14 +300,14 @@
 
 //     it('should correctly calculate complex mathematical expressions', () => {
 //       const azionConfig: any = {
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             cache: [
 //               {
 //                 name: 'complexMathCache',
 //                 browser: { maxAgeSeconds: '(2 * 3) + 5' },
-//                 edge: { maxAgeSeconds: '10 / 2' },
+//                 : { maxAgeSeconds: '10 / 2' },
 //               },
 //             ],
 //           },
@@ -315,7 +315,7 @@
 //       };
 
 //       const result = processConfig(azionConfig);
-//       expect(result.edgeApplications[0].cache[0]).toEqual(
+//       expect(result.applications[0].cache[0]).toEqual(
 //         expect.objectContaining({
 //           browser_cache_settings_maximum_ttl: 11,
 //           cdn_cache_settings_maximum_ttl: 5,
@@ -329,7 +329,7 @@
 //           {
 //             name: 'typeValidationCache',
 //             browser: { maxAgeSeconds: true }, // Invalid boolean type for maxAgeSeconds
-//             edge: { maxAgeSeconds: '10' },
+//             : { maxAgeSeconds: '10' },
 //           },
 //         ],
 //       };
@@ -407,9 +407,9 @@
 //       );
 //     });
 
-//     it('should correctly process the setEdgeConnector rule with all optional fields provided', () => {
+//     it('should correctly process the setConnector rule with all optional fields provided', () => {
 //       const azionConfigWithAllFields = {
-//         edgeConnectors: [
+//         connectors: [
 //           {
 //             name: 'my-connector',
 //             active: true,
@@ -446,9 +446,9 @@
 //             },
 //           },
 //         ],
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -465,7 +465,7 @@
 //                   ],
 //                   behaviors: [
 //                     {
-//                       type: 'set_edge_connector',
+//                       type: 'set_connector',
 //                       attributes: {
 //                         value: 'my-connector',
 //                       },
@@ -478,10 +478,10 @@
 //         ],
 //       };
 //       const resultWithAllFields = processConfig(azionConfigWithAllFields);
-//       expect(resultWithAllFields.edgeApplications[0].rules.request[0].behaviors).toEqual(
+//       expect(resultWithAllFields.applications[0].rules.request[0].behaviors).toEqual(
 //         expect.arrayContaining([
 //           expect.objectContaining({
-//             type: 'set_edge_connector',
+//             type: 'set_connector',
 //             attributes: expect.objectContaining({
 //               value: 'my-connector',
 //             }),
@@ -515,9 +515,9 @@
 
 //     it('should throw an error for an undefined property', () => {
 //       const azionConfigWithUndefinedProperty = {
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             cache: [
 //               {
 //                 name: 'testCache',
@@ -535,15 +535,15 @@
 
 //     it('should correctly process the runFunction behavior with only the required path', () => {
 //       const azionConfigWithRunFunctionOnlyPath = {
-//         edgeFunctions: [
+//         functions: [
 //           {
 //             name: 'handler',
-//             path: '.edge/worker.js',
+//             path: './worker.js',
 //           },
 //         ],
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -574,7 +574,7 @@
 //       };
 
 //       const result = processConfig(azionConfigWithRunFunctionOnlyPath);
-//       expect(result.edgeApplications[0].rules.request[0].behaviors).toEqual(
+//       expect(result.applications[0].rules.request[0].behaviors).toEqual(
 //         expect.arrayContaining([
 //           expect.objectContaining({
 //             type: 'run_function',
@@ -588,15 +588,15 @@
 
 //     it('should throw an error when runFunction references a non-existent function', () => {
 //       const azionConfig = {
-//         edgeFunctions: [
+//         functions: [
 //           {
 //             name: 'existingFunction',
-//             path: '.edge/worker.js',
+//             path: './worker.js',
 //           },
 //         ],
-//         edgeApplications: [
+//         applications: [
 //           {
-//             name: 'my-edge-app',
+//             name: 'my--app',
 //             rules: {
 //               request: [
 //                 {
@@ -1945,7 +1945,7 @@
 //         functions: [
 //           {
 //             name: 'handler',
-//             path: '.edge/worker.js',
+//             path: './worker.js',
 //           },
 //         ],
 //         rules: {
@@ -1998,7 +1998,7 @@
 //               ],
 //               behavior: {
 //                 runFunction: {
-//                   path: '.edge/worker.js',
+//                   path: './worker.js',
 //                 },
 //               },
 //             },
@@ -2014,7 +2014,7 @@
 //         functions: [
 //           {
 //             name: 'handler',
-//             path: '.edge/worker.js',
+//             path: './worker.js',
 //           },
 //         ],
 //         rules: {
@@ -2067,7 +2067,7 @@
 //         functions: [
 //           {
 //             name: 'handler',
-//             path: '.edge/worker.js',
+//             path: './worker.js',
 //           },
 //         ],
 //         rules: {
@@ -2589,7 +2589,7 @@
 //       expect(result.domain).toEqual(
 //         expect.objectContaining({
 //           name: 'mydomain',
-//           edge_firewall_id: 12345,
+//           firewall_id: 12345,
 //         }),
 //       );
 //     });
@@ -2616,7 +2616,7 @@
 //       expect(result.domain).toEqual(
 //         expect.objectContaining({
 //           name: 'mydomain',
-//           edge_firewall_id: null,
+//           firewall_id: null,
 //         }),
 //       );
 //     });

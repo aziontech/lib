@@ -1,4 +1,4 @@
-import { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase, postQueryEdgeDatabase, retrieveEdgeDatabase } from '.';
+import { deleteDatabase, getDatabases, postDatabase, postQueryDatabase, retrieveDatabase } from '.';
 import * as fetchWithErrorHandling from '../../utils/fetch/index';
 
 jest.mock('../../utils/fetch/index', () => ({
@@ -7,7 +7,7 @@ jest.mock('../../utils/fetch/index', () => ({
 }));
 
 describe('SQL API Service', () => {
-  describe('postEdgeDatabase', () => {
+  describe('postDatabase', () => {
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
@@ -30,7 +30,7 @@ describe('SQL API Service', () => {
           product_version: 'string',
         },
       });
-      const result = await postEdgeDatabase('valid_token', dbName, true, 'production');
+      const result = await postDatabase('valid_token', dbName, true, 'production');
       expect(result).toEqual({
         state: 'executed',
         data: expect.objectContaining({
@@ -62,7 +62,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await postEdgeDatabase('valid_token', dbName, true, 'production');
+      const result = await postDatabase('valid_token', dbName, true, 'production');
       expect(result).toEqual({
         error: expect.objectContaining({
           message: 'error message',
@@ -72,7 +72,7 @@ describe('SQL API Service', () => {
     });
   });
 
-  describe('retrieveEdgeDatabase', () => {
+  describe('retrieveDatabase', () => {
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
@@ -93,7 +93,7 @@ describe('SQL API Service', () => {
           product_version: 'string',
         },
       });
-      const result = await retrieveEdgeDatabase('valid_token', 1, true, 'production');
+      const result = await retrieveDatabase('valid_token', 1, true, 'production');
       expect(result).toEqual({
         data: {
           id: 0,
@@ -124,7 +124,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await retrieveEdgeDatabase('valid_token', 1, true, 'production');
+      const result = await retrieveDatabase('valid_token', 1, true, 'production');
       expect(result).toEqual({
         error: expect.objectContaining({
           message: 'error message',
@@ -134,7 +134,7 @@ describe('SQL API Service', () => {
     });
   });
 
-  describe('deleteEdgeDatabase', () => {
+  describe('deleteDatabase', () => {
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
@@ -147,7 +147,7 @@ describe('SQL API Service', () => {
       (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
         state: 'executed',
       });
-      const result = await deleteEdgeDatabase('valid_token', 1, true, 'production');
+      const result = await deleteDatabase('valid_token', 1, true, 'production');
       expect(result).toEqual({
         state: 'executed',
       });
@@ -157,7 +157,7 @@ describe('SQL API Service', () => {
       (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
         state: 'pending',
       });
-      const result = await deleteEdgeDatabase('valid_token', 1, true, 'production');
+      const result = await deleteDatabase('valid_token', 1, true, 'production');
       expect(result).toEqual({
         state: 'pending',
       });
@@ -180,7 +180,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await deleteEdgeDatabase('valid_token', 1, true, 'production');
+      const result = await deleteDatabase('valid_token', 1, true, 'production');
       expect(result).toEqual({
         error: expect.objectContaining({
           message: 'error message',
@@ -190,7 +190,7 @@ describe('SQL API Service', () => {
     });
   });
 
-  describe('postQueryEdgeDatabase', () => {
+  describe('postQueryDatabase', () => {
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
@@ -211,7 +211,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await postQueryEdgeDatabase('valid_token', 1, ['SELECT * FROM test'], true, 'production');
+      const result = await postQueryDatabase('valid_token', 1, ['SELECT * FROM test'], true, 'production');
       expect(result).toEqual({
         state: 'executed',
         data: [
@@ -237,7 +237,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await postQueryEdgeDatabase('valid_token', 1, ['SELECT * FROM test'], true, 'production');
+      const result = await postQueryDatabase('valid_token', 1, ['SELECT * FROM test'], true, 'production');
       expect(result).toEqual({
         state: 'pending',
         data: [
@@ -268,7 +268,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await postQueryEdgeDatabase('valid_token', 1, ['SELECT * FROM test'], true, 'production');
+      const result = await postQueryDatabase('valid_token', 1, ['SELECT * FROM test'], true, 'production');
       expect(result).toEqual({
         error: expect.objectContaining({
           message: 'error message',
@@ -278,7 +278,7 @@ describe('SQL API Service', () => {
     });
   });
 
-  describe('getEdgeDatabases', () => {
+  describe('getDatabases', () => {
     beforeAll(() => {
       jest.spyOn(console, 'log').mockImplementation();
     });
@@ -302,7 +302,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await getEdgeDatabases('valid_token', { search: 'test-db' }, true, 'production');
+      const result = await getDatabases('valid_token', { search: 'test-db' }, true, 'production');
       expect(result).toEqual({
         count: 10,
         results: [
@@ -336,7 +336,7 @@ describe('SQL API Service', () => {
           },
         ],
       });
-      const result = await getEdgeDatabases('valid_token', { page: 2 }, true, 'production');
+      const result = await getDatabases('valid_token', { page: 2 }, true, 'production');
       expect(result).toEqual({
         error: expect.objectContaining({
           message: 'error message',

@@ -1,6 +1,6 @@
-# Azion Edge SQL Client
+# Azion SQL Client
 
-Azion Edge SQL Client provides a simple interface to interact with the Azion Edge SQL API, allowing you to create, delete, and query databases. This client is configurable and supports both debug mode and environment variable-based configuration.
+Azion SQL Client provides a simple interface to interact with the Azion SQL API, allowing you to create, delete, and query databases. This client is configurable and supports both debug mode and environment variable-based configuration.
 
 ## Table of Contents
 
@@ -462,7 +462,7 @@ if (data) {
 
 ### `createClient`
 
-Creates an SQL client with methods to interact with Azion Edge SQL databases.
+Creates an SQL client with methods to interact with Azion SQL databases.
 
 **Parameters:**
 

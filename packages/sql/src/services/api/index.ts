@@ -18,9 +18,9 @@ import { AzionEnvironment } from '../../types';
  */
 const getBaseUrl = (env: AzionEnvironment = 'production'): string => {
   const urls: Record<AzionEnvironment, string> = {
-    production: 'https://api.azion.com/v4/edge_sql/databases',
-    development: '/v4/edge_sql/databases',
-    staging: 'https://stage-api.azion.com/v4/edge_sql/databases',
+    production: 'https://api.azion.com/v4/workspace/sql/databases',
+    development: '/v4/workspace/sql/databases',
+    staging: 'https://stage-api.azion.com/v4/workspace/sql/databases',
   };
   return urls[env];
 };
@@ -95,9 +95,9 @@ const handleApiError = (fields: string[], data: any, operation: string): ApiErro
 };
 
 /**
- * Creates a new Edge Database.
+ * Creates a new Database.
  */
-const postEdgeDatabase = async (
+const postDatabase = async (
   token: string,
   name: string,
   debug?: boolean,
@@ -132,9 +132,9 @@ const postEdgeDatabase = async (
 };
 
 /**
- * Deletes an existing Edge Database.
+ * Deletes an existing Database.
  */
-const deleteEdgeDatabase = async (
+const deleteDatabase = async (
   token: string,
   id: number,
   debug?: boolean,
@@ -162,9 +162,9 @@ const deleteEdgeDatabase = async (
 };
 
 /**
- * Executes a query on an Edge Database.
+ * Executes a query on an Database.
  */
-const postQueryEdgeDatabase = async (
+const postQueryDatabase = async (
   token: string,
   id: number,
   statements: string[],
@@ -212,9 +212,9 @@ const postQueryEdgeDatabase = async (
 };
 
 /**
- * Retrieves a list of Edge Databases.
+ * Retrieves a list of Databases.
  */
-const getEdgeDatabases = async (
+const getDatabases = async (
   token: string,
   params?: Partial<AzionDatabaseCollectionOptions>,
   debug?: boolean,
@@ -266,9 +266,9 @@ const getEdgeDatabases = async (
 };
 
 /**
- * Retrieve of Edge Databases.
+ * Retrieve of Databases.
  */
-const retrieveEdgeDatabase = async (
+const retrieveDatabase = async (
   token: string,
   id: number,
   debug?: boolean,
@@ -306,4 +306,4 @@ const retrieveEdgeDatabase = async (
   }
 };
 
-export { deleteEdgeDatabase, getEdgeDatabases, postEdgeDatabase, postQueryEdgeDatabase, retrieveEdgeDatabase };
+export { deleteDatabase, getDatabases, postDatabase, postQueryDatabase, retrieveDatabase };

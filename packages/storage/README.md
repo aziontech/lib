@@ -1,6 +1,6 @@
-# Azion Edge Storage Client
+# Azion Storage Client
 
-Azion Edge Storage Client provides a simple interface to interact with the Azion Edge Storage API, allowing you to manage buckets and objects. This client is configurable and supports both debug mode and environment variable-based configuration.
+Azion Storage Client provides a simple interface to interact with the Azion Storage API, allowing you to manage buckets and objects. This client is configurable and supports both debug mode and environment variable-based configuration.
 
 ## Table of Contents
 
@@ -712,7 +712,7 @@ Deletes an object from a specific bucket.
 
 ### `createClient`
 
-Creates a Storage client with methods to interact with Azion Edge Storage.
+Creates a Storage client with methods to interact with Azion Storage.
 
 **Parameters:**
 
