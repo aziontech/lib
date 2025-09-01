@@ -1,3 +1,10 @@
+## [2.1.0-stage.2](https://github.com/aziontech/lib/compare/v2.1.0-stage.1...v2.1.0-stage.2) (2025-09-01)
+
+
+### Bug Fixes
+
+* remove duplicate forward slashes in API endpoint URLs (#217) ([d732f95](https://github.com/aziontech/lib/commit/d732f9589c613f09f33a12be832eb63a6036475b))
+
 ## [2.1.0-stage.1](https://github.com/aziontech/lib/compare/v2.0.0...v2.1.0-stage.1) (2025-08-29)
 
 
