@@ -1,3 +1,15 @@
+## [2.1.0](https://github.com/aziontech/lib/compare/v2.0.0...v2.1.0) (2025-09-01)
+
+
+### Features
+
+* rename properties to remove "Edge" prefix (#215) ([3734403](https://github.com/aziontech/lib/commit/373440334a7448c45e8d9656c8453ff9f8c71765))
+
+
+### Bug Fixes
+
+* remove duplicate forward slashes in API endpoint URLs (#217) ([d732f95](https://github.com/aziontech/lib/commit/d732f9589c613f09f33a12be832eb63a6036475b))
+
 ## [2.1.0-stage.2](https://github.com/aziontech/lib/compare/v2.1.0-stage.1...v2.1.0-stage.2) (2025-09-01)
 
 
