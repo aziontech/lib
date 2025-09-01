@@ -18,9 +18,9 @@ import { AzionEnvironment } from '../../types';
  */
 const getBaseUrl = (env: AzionEnvironment = 'production'): string => {
   const urls: Record<AzionEnvironment, string> = {
-    production: 'https://api.azion.com/v4//workspace/sql/databases',
-    development: '/v4//workspace/sql/databases',
-    staging: 'https://stage-api.azion.com/v4//workspace/sql/databases',
+    production: 'https://api.azion.com/v4/workspace/sql/databases',
+    development: '/v4/workspace/sql/databases',
+    staging: 'https://stage-api.azion.com/v4/workspace/sql/databases',
   };
   return urls[env];
 };
