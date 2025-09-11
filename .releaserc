@@ -5,7 +5,8 @@
       "name": "stage",
       "prerelease": true,
       "channel": "stage"
-    }
+    },
+    "1.x"
   ],
   "plugins": [
     [
