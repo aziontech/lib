@@ -202,7 +202,7 @@ export const getBucketsMethod = async (
   const resolvedOptions = resolveClientOptions(options);
 
   const apiResponse = await getBuckets(resolveToken(token), params, resolvedOptions.debug, resolvedOptions.env);
-  if (apiResponse?.results && apiResponse.results.length > 0) {
+  if (apiResponse?.results) {
     const buckets = apiResponse.results?.map((bucket) => ({
       ...bucket,
       edge_access: bucket.edge_access as EdgeAccessType,
