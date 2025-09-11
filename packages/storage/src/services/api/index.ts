@@ -439,7 +439,7 @@ const getObjectByKey = async (
 
     const data = await fetchWithErrorHandling(`${baseUrl}/buckets/${bucketName}/objects/${key}`, options, debug, false);
 
-    if (data.error) {
+    if (data.error || data.errors) {
       const error = handleApiError(['detail'], data, 'get object by key');
       return { error };
     }
@@ -490,6 +490,13 @@ const putObject = async (
       },
       debug,
     );
+
+    if (data.error || data.errors) {
+      data.error = handleApiError(['detail'], data, 'put object');
+      return {
+        error: data.error ?? JSON.stringify(data),
+      };
+    }
     if (debug) console.log('Response:', data);
     return data;
   } catch (error: any) {
