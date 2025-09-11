@@ -124,7 +124,7 @@ const getBuckets = async (
     const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
     const options = buildFetchOptions('GET', headers);
     const baseUrl = getBaseUrl(env);
-    const data = await fetchWithErrorHandling(`${baseUrl}?${queryParams.toString()}`, options, debug);
+    const data = await fetchWithErrorHandling(`${baseUrl}/buckets?${queryParams.toString()}`, options, debug);
 
     if (!data.results) {
       data.error = handleApiError(['detail'], data, 'get all buckets');
@@ -166,7 +166,7 @@ const getBucketByName = async (
     const headers = buildHeaders(token, { Accept: 'application/json; version=3' });
     const options = buildFetchOptions('GET', headers);
     const baseUrl = getBaseUrl(env);
-    const url = `${baseUrl}/${name}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const url = `${baseUrl}/buckets/${name}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
     if (debug) console.log(`GET bucket URL: ${url}`);
 
@@ -209,7 +209,7 @@ const postBucket = async (
   try {
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      baseUrl,
+      `${baseUrl}/buckets`,
       {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
@@ -253,7 +253,7 @@ const patchBucket = async (
   try {
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${baseUrl}/${name}`,
+      `${baseUrl}/buckets/${name}`,
       {
         method: 'PATCH',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
@@ -295,7 +295,7 @@ const deleteBucket = async (
   try {
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${baseUrl}/${name}`,
+      `${baseUrl}/buckets/${name}`,
       {
         method: 'DELETE',
         headers: { Accept: 'application/json', Authorization: `Token ${token}` },
@@ -340,7 +340,7 @@ const getObjects = async (
     const queryParams = new URLSearchParams({ max_object_count: String(max_object_count) });
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${baseUrl}/${bucketName}/objects?${queryParams.toString()}`,
+      `${baseUrl}/buckets/${bucketName}/objects?${queryParams.toString()}`,
       {
         method: 'GET',
         headers: { Accept: 'application/json', Authorization: `Token ${token}` },
@@ -387,7 +387,7 @@ const postObject = async (
   try {
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${baseUrl}/${bucketName}/objects/${key}`,
+      `${baseUrl}/buckets/${bucketName}/objects/${key}`,
       {
         method: 'POST',
         headers: {
@@ -437,7 +437,7 @@ const getObjectByKey = async (
     const headers = buildHeaders(token);
     const options = buildFetchOptions('GET', headers);
 
-    const data = await fetchWithErrorHandling(`${baseUrl}/${bucketName}/objects/${key}`, options, debug);
+    const data = await fetchWithErrorHandling(`${baseUrl}/buckets/${bucketName}/objects/${key}`, options, debug, false);
 
     if (data.error) {
       const error = handleApiError(['detail'], data, 'get object by key');
@@ -478,7 +478,7 @@ const putObject = async (
   try {
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${baseUrl}/${bucketName}/objects/${key}`,
+      `${baseUrl}/buckets/${bucketName}/objects/${key}`,
       {
         method: 'PUT',
         headers: {
@@ -520,7 +520,7 @@ const deleteObject = async (
   try {
     const baseUrl = getBaseUrl(env);
     const data = await fetchWithErrorHandling(
-      `${baseUrl}/${bucketName}/objects/${key}`,
+      `${baseUrl}/buckets/${bucketName}/objects/${key}`,
       {
         method: 'DELETE',
         headers: { Accept: 'application/json', Authorization: `Token ${token}` },
