@@ -1,3 +1,10 @@
+### [2.1.1-stage.1](https://github.com/aziontech/lib/compare/v2.1.0...v2.1.1-stage.1) (2025-09-11)
+
+
+### Bug Fixes
+
+* storage package with api v4 (#219) ([ceb9194](https://github.com/aziontech/lib/commit/ceb9194f42fd0a8997f20400a06643f152795116))
+
 ## [2.1.0](https://github.com/aziontech/lib/compare/v2.0.0...v2.1.0) (2025-09-01)
 
 
