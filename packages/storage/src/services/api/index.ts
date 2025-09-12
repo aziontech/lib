@@ -68,6 +68,25 @@ const buildFetchOptions = (method: string, headers: Record<string, string>, body
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleApiError = (fields: string[], data: any, operation: string) => {
   let error = { message: 'Error unknown', operation: operation };
+
+  if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+    const firstError = data.errors[0];
+    if (firstError.detail) {
+      error = {
+        message: firstError.detail,
+        operation: operation,
+      };
+      return error;
+    }
+    if (firstError.title) {
+      error = {
+        message: firstError.title,
+        operation: operation,
+      };
+      return error;
+    }
+  }
+
   fields.forEach((field: string) => {
     if (data[field]) {
       const message = Array.isArray(data[field]) ? data[field].join(', ') : data[field];
@@ -365,7 +384,7 @@ const getObjectByKey = async (
     const headers = buildHeaders(token);
     const options = buildFetchOptions('GET', headers);
 
-    const data = await fetchWithErrorHandling(`${baseUrl}/${bucketName}/objects/${key}`, options, debug);
+    const data = await fetchWithErrorHandling(`${baseUrl}/${bucketName}/objects/${key}`, options, debug, false);
 
     if (data.error) {
       const error = handleApiError(['detail'], data, 'get object by key');
