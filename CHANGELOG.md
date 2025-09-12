@@ -1,3 +1,10 @@
+### [1.20.4](https://github.com/aziontech/lib/compare/v1.20.3...v1.20.4) (2025-09-12)
+
+
+### Bug Fixes
+
+* storage pkg - error handling and get object based on content type (#223) ([03a8d68](https://github.com/aziontech/lib/commit/03a8d68ef78de012599dccab91e24b70e31aa7e0))
+
 ### [1.20.3](https://github.com/aziontech/lib/compare/v1.20.2...v1.20.3) (2025-09-12)
 
 
