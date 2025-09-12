@@ -1,3 +1,11 @@
+### [1.20.3](https://github.com/aziontech/lib/compare/v1.20.2...v1.20.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* add maintenance branch ([3fe0abd](https://github.com/aziontech/lib/commit/3fe0abd112359dc98044d4bb184c59811bdbee63))
+* update maintenance branch (only accept fix) ([a37fd2c](https://github.com/aziontech/lib/commit/a37fd2c2b6900a76be9eee54708d67197c99b750))
+
 ### [1.20.2](https://github.com/aziontech/lib/compare/v1.20.1...v1.20.2) (2025-07-16)
 
 
