@@ -1,4 +1,4 @@
-import ipLib from 'ip';
+import ipCidrLib from 'ip-cidr';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import nodePath from 'node:path';
@@ -65,7 +65,12 @@ class NetworkListContext {
     if (!listContent || listContent.length === 0) return false;
     return listContent.some((currentIp) => {
       if (currentIp.includes('/')) {
-        return ipLib.cidrSubnet(currentIp).contains(ipAddress);
+        try {
+          const cidr = new ipCidrLib(currentIp);
+          return cidr.contains(ipAddress);
+        } catch {
+          return false; // Invalid CIDR format
+        }
       }
       return currentIp === ipAddress;
     });
