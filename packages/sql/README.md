@@ -1,6 +1,6 @@
-# Azion Edge SQL Client
+# Azion SQL Client
 
-Azion Edge SQL Client provides a simple interface to interact with the Azion Edge SQL API, allowing you to create, delete, and query databases. This client is configurable and supports both debug mode and environment variable-based configuration.
+Azion SQL Client provides a simple interface to interact with the Azion SQL API, allowing you to create, delete, and query databases. This client is configurable and supports both debug mode and environment variable-based configuration.
 
 ## Table of Contents
 
@@ -355,7 +355,7 @@ Deletes a database by its ID.
 ```javascript
 const { data, error } = await sqlClient.deleteDatabase(123);
 if (data) {
-  console.log(`Database ${data.id} deleted successfully`);
+  console.log(`Database deleted with state: ${data.state}`);
 } else {
   console.error('Failed to delete database', error);
 }
@@ -429,7 +429,7 @@ Executes a query on a specific database.
 ```javascript
 const { data, error } = await sqlClient.query('my-db', ['SELECT * FROM users']);
 if (data) {
-  console.log(`Query executed. Rows returned: ${data.rows.length}`);
+  console.log(`Query executed. Rows returned: ${data.results?.rows?.length}`);
 } else {
   console.error('Query execution failed', error);
 }
@@ -462,7 +462,7 @@ if (data) {
 
 ### `createClient`
 
-Creates an SQL client with methods to interact with Azion Edge SQL databases.
+Creates an SQL client with methods to interact with Azion SQL databases.
 
 **Parameters:**
 
@@ -500,11 +500,11 @@ The database object.
 
 - `id: number`
 - `name: string`
-- `clientId: string`
 - `status: string`
-- `createdAt: string`
-- `updatedAt: string`
-- `deletedAt: string | null`
+- `active: boolean`
+- `lastModified: string`
+- `lastEditor: string | null`
+- `productVersion: string`
 - `query: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
 - `execute: (statements: string[], options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseExecutionResponse>>`
 - `getTables: (options?: AzionClientOptions) => Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>>`
@@ -522,6 +522,7 @@ The response object from a database operation.
 - `columns: string[]`
 - `statement: string`
 - `rows: (number | string)[][]`
+- `error?: string`
 
 ### `AzionClientOptions`
 

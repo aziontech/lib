@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
-    "test": "jest --clearCache && jest",
+    "test": "jest --clearCache && jest --maxWorkers=1",
     "test:watch": "jest -c jest.config.js . --watch",
     "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
   },
