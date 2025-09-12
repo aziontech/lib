@@ -8,7 +8,7 @@ export type JsonObjectQueryExecutionResponse = {
   }[];
 };
 
-export const toObjectQueryExecutionResponse = ({ results }: AzionDatabaseQueryResponse) => {
+export const toObjectQueryExecutionResponse = ({ state, results }: AzionDatabaseQueryResponse) => {
   let transformedData: any = [];
   if (results instanceof Array) {
     if (results.length === 0) {
@@ -36,6 +36,7 @@ export const toObjectQueryExecutionResponse = ({ results }: AzionDatabaseQueryRe
     });
   }
   return {
+    state: state as AzionDatabaseQueryResponse['state'],
     results: transformedData,
   };
 };
