@@ -1,3 +1,10 @@
+### [1.20.5](https://github.com/aziontech/lib/compare/v1.20.4...v1.20.5) (2025-09-12)
+
+
+### Bug Fixes
+
+* update database response types and API endpoints for SQL client ([278b5ad](https://github.com/aziontech/lib/commit/278b5adade63b81c92fe9311797f5706389586d2))
+
 ### [1.20.4](https://github.com/aziontech/lib/compare/v1.20.3...v1.20.4) (2025-09-12)
 
 
