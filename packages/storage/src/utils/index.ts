@@ -2,6 +2,12 @@ import { getBuckets } from '../services/api/index';
 import { ApiGetBucket } from '../services/api/types';
 import { AzionClientOptions } from '../types';
 
+type ErrorBody = {
+  detail?: string;
+  message?: string;
+  errors?: string[];
+};
+
 /**
  * Removes the leading slash from a key if it exists.
  *
@@ -85,6 +91,38 @@ export const findBucketByName = async (
   };
 };
 
+// handle possible storage api returns
+async function handleResponseData(
+  response: Response,
+  expectAJsonResponse: boolean,
+  debug?: boolean,
+): Promise<unknown | string | ArrayBuffer> {
+  const contentType = response.headers.get('Content-Type');
+  const isAJsonReturn = contentType?.includes('application/json');
+
+  if (!isAJsonReturn && expectAJsonResponse) {
+    const textResponse = await response.text();
+    const msg = `Expected JSON response, but got: ${textResponse}`;
+
+    if (debug) console.log(`Error in fetch: ${msg}`);
+
+    throw new Error(msg);
+  }
+
+  if (isAJsonReturn) {
+    return response.json();
+  }
+
+  if (contentType?.includes('application/octet-stream')) {
+    // TODO: improve the return based on content type
+    // this wil generate a breaking change!
+    // `return response.arrayBuffer()`
+    return response.text();
+  }
+
+  return response.text();
+}
+
 export async function fetchWithErrorHandling(
   url: string,
   options?: RequestInit,
@@ -96,12 +134,17 @@ export async function fetchWithErrorHandling(
 
   if (!response.ok) {
     try {
-      const errorBody = await response.json();
+      const errorBody = (await handleResponseData(response, true, debug)) as ErrorBody;
 
       if (debug) {
         console.log('Error response body:', errorBody);
       }
 
+      if (errorBody.errors && Array.isArray(errorBody.errors) && errorBody.errors.length > 0) {
+        return errorBody;
+      }
+
+      // Handle other error formats
       if (errorBody.detail || errorBody.message) {
         return errorBody;
       }
@@ -115,19 +158,7 @@ export async function fetchWithErrorHandling(
     }
   }
 
-  if (jsonResponse) {
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const textResponse = await response.text();
-      const msg = `Expected JSON response, but got: ${textResponse}`;
-      if (debug) console.log(`Error in fetch: ${msg}`);
-      throw new Error(msg);
-    }
+  const data = await handleResponseData(response, jsonResponse, debug);
 
-    const data = await response.json();
-    return data;
-  } else {
-    const data = await response.text();
-    return data;
-  }
+  return data;
 }
