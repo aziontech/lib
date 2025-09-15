@@ -1,0 +1,35 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+      - stage
+
+permissions: write-all
+
+jobs:
+  lint_and_build:
+    name: Lint and Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Build
+        run: npm run compile
