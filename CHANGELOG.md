@@ -1,3 +1,10 @@
+### [1.20.6](https://github.com/aziontech/lib/compare/v1.20.5...v1.20.6) (2025-09-15)
+
+
+### Bug Fixes
+
+* move Storage class export to bottom of file for better organization ([b031b1d](https://github.com/aziontech/lib/commit/b031b1d4d5e18a83a46bca5ca1793ae5513cd4e2))
+
 ### [1.20.5](https://github.com/aziontech/lib/compare/v1.20.4...v1.20.5) (2025-09-12)
 
 
