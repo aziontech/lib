@@ -16,7 +16,7 @@ const PRIVATE_CONSTRUCTOR = Symbol('PRIVATE_CONSTRUCTOR');
  * Class representing a storage container.
  * @class
  */
-export default class Storage {
+class Storage {
   #bucketName;
 
   /**
@@ -200,3 +200,5 @@ export class StorageObjectList {
 
 globalThis.Azion = globalThis.Azion || {};
 globalThis.Azion.Storage = Storage;
+
+export default Storage;
