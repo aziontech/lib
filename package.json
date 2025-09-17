@@ -9,7 +9,8 @@
     "lint:fix": "npm run eslint lint:fix --workspaces --if-present",
     "format": "npm run prettier --workspaces --if-present",
     "format:check": "npm run prettier:check --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present ./packages/*",
+    "test:e2e": "npx jest ./tests/e2e/*",
     "download:cli": "node ./cli/scripts/download-cli.mjs",
     "build": "npm run compile"
   },
