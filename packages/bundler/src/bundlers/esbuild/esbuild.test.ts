@@ -1,16 +1,30 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { jest } from '@jest/globals';
-import { BuildConfiguration, BuildContext } from 'azion/config';
-import { javascript } from 'azion/presets';
 import fs from 'fs';
 import path from 'path';
 import tmp from 'tmp';
+
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { createAzionESBuildConfig } from './esbuild';
 import helper from './plugins/node-polyfills/helper';
+
+// Mock preset to avoid loading modules that might cause issues
+const mockJavascriptPreset = {
+  config: {
+    build: {
+      entry: 'index.js',
+    },
+  },
+  metadata: {
+    name: 'javascript',
+    ext: 'js',
+  },
+};
 
 describe('Esbuild Bundler', () => {
   let tmpDir: tmp.DirResult;
   let tmpEntry: tmp.FileResult;
+
   beforeEach(async () => {
     tmpDir = tmp.dirSync();
     tmpEntry = tmp.fileSync({
@@ -25,7 +39,7 @@ describe('Esbuild Bundler', () => {
     fs.rmSync(tmpDir.name, { recursive: true, force: true });
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.restoreAllMocks();
   });
 
@@ -35,7 +49,7 @@ describe('Esbuild Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
@@ -69,7 +83,7 @@ describe('Esbuild Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
@@ -105,7 +119,7 @@ describe('Esbuild Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -139,7 +153,7 @@ describe('Esbuild Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
@@ -186,7 +200,7 @@ describe('Esbuild Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         extend(context: any) {
           const config = context;
