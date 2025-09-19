@@ -249,7 +249,7 @@
     "cookie": "^1.0.2",
     "crypto-browserify": "^3.12.1",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.10",
     "events": "^3.3.0",
     "fast-glob": "^3.3.3",
     "inherits": "^2.0.4",
