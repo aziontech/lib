@@ -256,7 +256,7 @@
     "ip-cidr": "^4.0.2",
     "lodash-es": "^4.17.21",
     "mathjs": "^13.1.1",
-    "mime": "^3.0.0",
+    "mime": "^4.1.0",
     "mime-types": "^2.1.35",
     "pcre-to-regexp": "^1.1.0",
     "progress": "^2.0.3",
