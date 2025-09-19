@@ -1,17 +1,31 @@
 import { jest } from '@jest/globals';
-import { BuildConfiguration, BuildContext } from 'azion/config';
-import { javascript } from 'azion/presets';
 import fs from 'fs';
 import path from 'path';
 import tmp from 'tmp';
+
+import { BuildConfiguration, BuildContext } from 'azion/config';
 import { Configuration as WebpackConfig } from 'webpack';
 import NodePolyfills from './plugins/node-polyfills';
 import { createAzionWebpackConfig } from './webpack';
 import AzionWebpackConfig from './webpack.config';
 
+// Mock preset to avoid loading modules that might cause issues
+const mockJavascriptPreset = {
+  config: {
+    build: {
+      entry: 'index.js',
+    },
+  },
+  metadata: {
+    name: 'javascript',
+    ext: 'js',
+  },
+};
+
 describe('Webpack Bundler', () => {
   let tmpDir: tmp.DirResult;
   let tmpEntry: tmp.FileResult;
+
   beforeEach(async () => {
     tmpDir = tmp.dirSync();
     tmpEntry = tmp.fileSync({
@@ -26,17 +40,17 @@ describe('Webpack Bundler', () => {
     fs.rmSync(tmpDir.name, { recursive: true, force: true });
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.restoreAllMocks();
   });
 
   describe('createAzionWebpackConfig', () => {
     it('should create base webpack config', () => {
-      const bundlerConfig: BuildConfiguration = {
+      const bundlerConfig = {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -64,7 +78,7 @@ describe('Webpack Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         extend: (config) => {
           (config as WebpackConfig).optimization = {
             minimize: false,
@@ -106,7 +120,7 @@ describe('Webpack Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -158,7 +172,7 @@ describe('Webpack Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
@@ -198,7 +212,7 @@ describe('Webpack Bundler', () => {
         entry: { output: tmpEntry.name },
         baseOutputDir: tmpDir.name,
         polyfills: true,
-        preset: javascript,
+        preset: mockJavascriptPreset,
         setup: {
           contentToInject: 'console.log("Hello World")',
           defineVars: {
