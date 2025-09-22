@@ -12,7 +12,7 @@ async function viteConfigExists(): Promise<boolean> {
     try {
       await lstat(file);
       return true;
-    } catch (err) {
+    } catch {
       return false;
     }
   });
@@ -43,7 +43,7 @@ async function readViteBuildOutput() {
     // eslint-disable-next-line no-eval
     const buildConfigObject = JSON.parse(buildConfig[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
     return Promise.resolve({ build: buildConfigObject });
-  } catch (err) {
+  } catch {
     return null;
   }
 }
