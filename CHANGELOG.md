@@ -1,3 +1,10 @@
+### [2.1.2](https://github.com/aziontech/lib/compare/v2.1.1...v2.1.2) (2025-09-19)
+
+
+### Bug Fixes
+
+* update pkgs dependencies (#235) ([dc2dca2](https://github.com/aziontech/lib/commit/dc2dca279aecbce210f02522e00a0b896f80c3cc))
+
 ### [2.1.1](https://github.com/aziontech/lib/compare/v2.1.0...v2.1.1) (2025-09-12)
 
 
