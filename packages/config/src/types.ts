@@ -837,6 +837,7 @@ export interface ConnectorAddress {
   modules?: ConnectorAddressModules | null;
 }
 
+// eslint-disable-next-line
 export interface ConnectorAddressModules {
   // Address-specific modules (to be defined based on future API spec)
 }
