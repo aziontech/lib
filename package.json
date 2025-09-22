@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Azion Packages for Edge Computing.",
   "scripts": {
     "prepare": "husky",
@@ -46,7 +46,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.1",
     "@commitlint/config-conventional": "^18.4.0",
-    "@eslint/js": "^9.6.0",
+    "@eslint/js": "^9.36.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^10.0.1",
     "@semantic-release/git": "^10.0.1",
@@ -60,7 +60,7 @@
     "eslint": "^8.57.0",
     "globals": "^16.4.0",
     "husky": "^9.0.11",
-    "prettier": "^3.2.5",
+    "prettier": "^3.6.2",
     "semantic-release": "^22.0.12",
     "tsup": "^8.5.0",
     "typescript": "^5.5.3",
@@ -233,7 +233,7 @@
     }
   },
   "dependencies": {
-    "@babel/plugin-proposal-optional-chaining-assign": "^7.25.9",
+    "@babel/plugin-proposal-optional-chaining-assign": "^7.27.1",
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-typescript": "^7.27.0",
     "@edge-runtime/primitives": "^3.1.1",
@@ -249,7 +249,7 @@
     "cookie": "^1.0.2",
     "crypto-browserify": "^3.12.1",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.10",
     "events": "^3.3.0",
     "fast-glob": "^3.3.3",
     "inherits": "^2.0.4",
