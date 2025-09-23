@@ -87,7 +87,7 @@ async function fixAppDirRoutes() {
   let appPathRoutesManifest;
   try {
     appPathRoutesManifest = await readManifestFile('app-path-routes-manifest.json');
-  } catch (error) {
+  } catch {
     feedback.prebuild.info('app dir use not detected in project.');
     return;
   }
