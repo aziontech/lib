@@ -1,4 +1,3 @@
-/* eslint-disable */
 import crypto from 'crypto-browserify';
 
 crypto.webcrypto = globalThis.crypto;

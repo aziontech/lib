@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { Buffer } from 'buffer';
 import bPath from 'path';
 

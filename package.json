@@ -6,7 +6,7 @@
     "prepare": "husky",
     "compile": "npm run compile --workspaces",
     "lint": "npm run lint --workspaces --if-present",
-    "lint:fix": "npm run eslint lint:fix --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
     "format": "npm run prettier --workspaces --if-present",
     "format:check": "npm run prettier:check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present ./packages/*",
