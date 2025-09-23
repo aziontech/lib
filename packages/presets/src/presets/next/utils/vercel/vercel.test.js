@@ -68,7 +68,6 @@ describe('runVercelBuild', () => {
   });
 
   it('should resolve the promise when the command succeeds', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     spyOnSpawn.mockImplementationOnce((cmd, args, options) => {
       const execProcess = {
         on: jest.fn(),
@@ -93,7 +92,6 @@ describe('runVercelBuild', () => {
   });
 
   it('should reject the promise when the command fails', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     spyOnSpawn.mockImplementationOnce((cmd, args, options) => {
       const execProcess = {
         on: jest.fn(),

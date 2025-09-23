@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { jest } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
