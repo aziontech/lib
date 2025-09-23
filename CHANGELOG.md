@@ -1,3 +1,10 @@
+### [2.1.3-stage.1](https://github.com/aziontech/lib/compare/v2.1.2...v2.1.3-stage.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* update pkgs version (#249) ([f460362](https://github.com/aziontech/lib/commit/f460362c89777ee1cd6360291aacbcf88758048d))
+
 ### [2.1.2](https://github.com/aziontech/lib/compare/v2.1.1...v2.1.2) (2025-09-19)
 
 
