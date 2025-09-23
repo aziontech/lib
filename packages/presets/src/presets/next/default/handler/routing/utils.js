@@ -83,7 +83,6 @@ async function runOrFetchBuildOutputItem(item, { request, assetsFetcher, ctx }, 
       }
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error(e);
     return new Response('Internal Server Error', { status: 500 });
   }

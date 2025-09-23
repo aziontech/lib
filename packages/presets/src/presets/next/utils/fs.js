@@ -88,10 +88,7 @@ export async function readPathsRecursively(dir) {
       files.map(async (file) => {
         const path = resolve(dir, file);
 
-        return (await validateDir(path))
-          ? // eslint-disable-next-line no-return-await
-            await readPathsRecursively(path)
-          : [path];
+        return (await validateDir(path)) ? await readPathsRecursively(path) : [path];
       }),
     );
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { AzionConfig, NetworkListType } from '../../../../types';
 import NetworkListProcessConfigStrategy from './networkListProcessConfigStrategy';
 
