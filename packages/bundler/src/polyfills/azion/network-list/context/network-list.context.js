@@ -99,7 +99,7 @@ class NetworkListContext {
     try {
       const config = await this.#loadConfigFile();
       this.#networkList = config.networkList;
-    } catch (error) {
+    } catch {
       this.#networkList = [];
     }
   }
