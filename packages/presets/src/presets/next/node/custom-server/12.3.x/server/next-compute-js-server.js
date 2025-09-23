@@ -185,7 +185,7 @@ export default class NextComputeJsServer extends BaseServer {
     let found = false;
     try {
       found = !!this.getPagePath(pathname, this.nextConfig.i18n?.locales);
-    } catch (_) {
+    } catch {
       /* empty */
     }
 
