@@ -26,7 +26,7 @@ export default async function fetchWithErrorHandling(
       const errorMessage = `HTTP error! Status: ${response.status} - ${response.statusText}`;
       if (debug) console.log(`Error in fetch: ${errorMessage}`);
       throw new Error(errorMessage);
-    } catch (parseError) {
+    } catch {
       const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
       if (debug) console.log(`Error in fetch: ${msg}`);
       throw new Error(msg);

@@ -17,7 +17,7 @@ async function viteConfigExists() {
     try {
       await lstat(file);
       return true;
-    } catch (err) {
+    } catch {
       return false;
     }
   });
@@ -53,7 +53,7 @@ async function readViteBuildOutput() {
     const buildConfigObject = JSON.parse(buildConfig[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
 
     return Promise.resolve({ build: buildConfigObject });
-  } catch (err) {
+  } catch {
     return null;
   }
 }
