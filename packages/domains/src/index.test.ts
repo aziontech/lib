@@ -443,7 +443,7 @@ describe('Domains Package', () => {
 
       const result = await updateDomain(
         170,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         { name: 'Overwritten Domain', active: false, edgeApplicationId: undefined } as any,
         { debug: mockDebug },
       );
