@@ -580,7 +580,7 @@ const schemaApplicationCacheSettings = {
     modules: {
       type: 'object',
       properties: {
-        edge_cache: {
+        cache: {
           type: 'object',
           properties: {
             behavior: {
@@ -623,20 +623,20 @@ const schemaApplicationCacheSettings = {
               required: ['enabled', 'offset'],
               additionalProperties: false,
             },
-          },
-          required: ['behavior', 'max_age'],
-          additionalProperties: false,
-        },
-        tiered_cache: {
-          type: ['object', 'null'],
-          properties: {
-            topology: {
-              type: 'string',
-              enum: TIERED_CACHE_TOPOLOGY,
-              errorMessage: "The 'topology' must be one of: near-, br-east-1, us-east-1.",
+            tiered_cache: {
+              type: ['object', 'null'],
+              properties: {
+                topology: {
+                  type: 'string',
+                  enum: TIERED_CACHE_TOPOLOGY,
+                  errorMessage: "The 'topology' must be one of: near-, br-east-1, us-east-1.",
+                },
+              },
+              required: ['topology'],
+              additionalProperties: false,
             },
           },
-          required: ['topology'],
+          required: ['behavior', 'max_age'],
           additionalProperties: false,
         },
         application_accelerator: {
@@ -720,7 +720,7 @@ const schemaApplicationCacheSettings = {
           additionalProperties: false,
         },
       },
-      required: ['edge_cache', 'application_accelerator'],
+      required: ['cache', 'application_accelerator'],
       additionalProperties: false,
     },
   },
@@ -1052,7 +1052,7 @@ const schemaApplicationManifest = {
     modules: {
       type: 'object',
       properties: {
-        edge_cache: {
+        cache: {
           type: 'object',
           properties: {
             enabled: {
@@ -1089,18 +1089,6 @@ const schemaApplicationManifest = {
           additionalProperties: false,
         },
         image_processor: {
-          type: 'object',
-          properties: {
-            enabled: {
-              type: 'boolean',
-              default: false,
-              errorMessage: "The 'enabled' field must be a boolean.",
-            },
-          },
-          required: ['enabled'],
-          additionalProperties: false,
-        },
-        tiered_cache: {
           type: 'object',
           properties: {
             enabled: {

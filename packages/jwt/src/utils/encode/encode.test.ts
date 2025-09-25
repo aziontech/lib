@@ -45,6 +45,8 @@ describe('base64', () => {
     [str2UInt8Array('sure.'), 'c3VyZS4='],
   ])('stdDecoded: %s ; stdEncoded: %s', (stdDecoded, stdEncoded) => {
     it('encode', () => {
+      // eslint-disable-next-line
+      // @ts-ignore
       const got = encodeBase64Url(stdDecoded);
       const want = toURLBase64(stdEncoded);
       expect(got).toStrictEqual(want);

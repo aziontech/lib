@@ -45,6 +45,8 @@ function getImageResponse(image: photon.PhotonImage, format: SupportedImageForma
       break;
   }
 
+  // eslint-disable-next-line
+  // @ts-ignore
   return new Response(finalImage, { headers: { 'Content-Type': contentType } });
 }
 
