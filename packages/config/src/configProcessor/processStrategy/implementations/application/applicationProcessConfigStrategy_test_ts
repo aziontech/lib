@@ -68,7 +68,7 @@ describe('ApplicationProcessConfigStrategy', () => {
           active: true,
           debug: false,
           modules: {
-            edge_cache: {
+            cache: {
               enabled: true,
             },
             functions: {
@@ -78,9 +78,6 @@ describe('ApplicationProcessConfigStrategy', () => {
               enabled: true,
             },
             image_processor: {
-              enabled: false,
-            },
-            tiered_cache: {
               enabled: false,
             },
           },
@@ -94,13 +91,13 @@ describe('ApplicationProcessConfigStrategy', () => {
         name: 'test-cache',
         browser_cache: { behavior: 'override', max_age: 3600 },
         modules: {
-          edge_cache: {
+          cache: {
             behavior: 'override',
             max_age: 60,
             stale_cache: { enabled: false },
-            large_file_cache: { enabled: false, offset: 1024 }
+            large_file_cache: { enabled: false, offset: 1024 },
+            tiered_cache: { topology: 'near-edge' }
           },
-          tiered_cache: { topology: 'near-edge' },
           application_accelerator: {
             cache_vary_by_method: [],
             cache_vary_by_querystring: { behavior: 'ignore', fields: [], sort_enabled: false },
@@ -158,8 +155,11 @@ describe('ApplicationProcessConfigStrategy', () => {
           active: false,
           debug: true,
           modules: {
-            edge_cache: {
+            cache: {
               enabled: false,
+              tiered_cache: {
+                topology: 'near-edge'
+              }
             },
             functions: {
               enabled: true,
@@ -170,21 +170,18 @@ describe('ApplicationProcessConfigStrategy', () => {
             image_processor: {
               enabled: true,
             },
-            tiered_cache: {
-              enabled: true,
-            },
           },
           cache_settings: [{
             name: 'test-cache',
             browser_cache: { behavior: 'override', max_age: 3600 },
             modules: {
-              edge_cache: {
+              cache: {
                 behavior: 'override',
                 max_age: 60,
                 stale_cache: { enabled: false },
-                large_file_cache: { enabled: false, offset: 1024 }
+                large_file_cache: { enabled: false, offset: 1024 },
+                tiered_cache: { topology: 'near-edge' }
               },
-              tiered_cache: { topology: 'near-edge' },
               application_accelerator: {
                 cache_vary_by_method: [],
                 cache_vary_by_querystring: { behavior: 'ignore', fields: [], sort_enabled: false },
@@ -307,7 +304,7 @@ describe('ApplicationProcessConfigStrategy', () => {
             active: true,
             debug: false,
             modules: {
-              edge_cache: {
+              cache: {
                 enabled: true,
               },
               functions: {
@@ -317,9 +314,6 @@ describe('ApplicationProcessConfigStrategy', () => {
                 enabled: true,
               },
               image_processor: {
-                enabled: false,
-              },
-              tiered_cache: {
                 enabled: false,
               },
             },
@@ -362,8 +356,11 @@ describe('ApplicationProcessConfigStrategy', () => {
             active: false,
             debug: true,
             modules: {
-              edge_cache: {
+              cache: {
                 enabled: false,
+                tiered_cache: {
+                  topology: 'near-edge'
+                }
               },
               functions: {
                 enabled: true,
@@ -372,9 +369,6 @@ describe('ApplicationProcessConfigStrategy', () => {
                 enabled: false,
               },
               image_processor: {
-                enabled: true,
-              },
-              tiered_cache: {
                 enabled: true,
               },
             },
@@ -451,7 +445,7 @@ describe('ApplicationProcessConfigStrategy', () => {
             name: 'app-1',
             active: true,
             modules: {
-              edge_cache: { enabled: true },
+              cache: { enabled: true },
             },
           },
           {
