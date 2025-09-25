@@ -1,3 +1,10 @@
+### [2.1.3-stage.3](https://github.com/aziontech/lib/compare/v2.1.3-stage.2...v2.1.3-stage.3) (2025-09-25)
+
+
+### Bug Fixes
+
+* update cache attr names in config and move tiered cache (#262) ([334b79e](https://github.com/aziontech/lib/commit/334b79ec7677213445daaf70ffc0ef5a06c5901f))
+
 ### [2.1.3-stage.2](https://github.com/aziontech/lib/compare/v2.1.3-stage.1...v2.1.3-stage.2) (2025-09-24)
 
 
