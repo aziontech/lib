@@ -159,7 +159,7 @@ export type CacheByQueryString = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheByCookie = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheAdaptiveDelivery = 'ignore' | 'allowlist';
 export type CacheVaryByMethod = 'options' | 'post';
-export type TieredCacheTopology = 'near-edge' | 'br-east-1' | 'us-east-1';
+export type TieredCacheTopology = 'near-edge' | 'br-east-1' | 'us-east-1' | 'global';
 
 // Build types
 export type BuildBundler = 'webpack' | 'esbuild';
@@ -225,6 +225,13 @@ export type AzionCache = {
   stale?: boolean;
   /** Indicates if query string parameters should be sorted */
   queryStringSort?: boolean;
+  /** Tiered cache configuration */
+  tiered_cache?: {
+    /** Indicates if tiered cache should be enabled */
+    enabled: boolean;
+    /** Tiered cache topology */
+    topology: TieredCacheTopology;
+  };
   /** HTTP methods to be cached */
   methods?: {
     /** Cache POST requests */
@@ -542,8 +549,6 @@ export type AzionApplication = {
   applicationAcceleratorEnabled?: boolean;
   /** Enable image processor */
   imageProcessorEnabled?: boolean;
-  /** Enable tiered cache */
-  tieredCacheEnabled?: boolean;
   /** Indicates if the application is active */
   active?: boolean;
   /** Enable debug mode */

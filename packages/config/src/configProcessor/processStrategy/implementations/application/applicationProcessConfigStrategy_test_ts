@@ -96,7 +96,7 @@ describe('ApplicationProcessConfigStrategy', () => {
             max_age: 60,
             stale_cache: { enabled: false },
             large_file_cache: { enabled: false, offset: 1024 },
-            tiered_cache: { topology: 'near-edge' }
+            tiered_cache: { enabled: false, topology: 'near-edge' }
           },
           application_accelerator: {
             cache_vary_by_method: [],
@@ -136,8 +136,14 @@ describe('ApplicationProcessConfigStrategy', () => {
             functionsEnabled: true,
             applicationAcceleratorEnabled: false,
             imageProcessorEnabled: true,
-            tieredCacheEnabled: true,
-            cache: [{ name: 'test-cache', browser: { maxAgeSeconds: 3600 } }],
+            cache: [{ 
+              name: 'test-cache', 
+              browser: { maxAgeSeconds: 3600 },
+              tiered_cache: {
+                enabled: true,
+                topology: 'global'
+              }
+            }],
             rules: { request: [], response: [] },
             deviceGroups: [{ name: 'test-device-group', userAgent: 'test-agent' }],
             functionsInstances: [{ name: 'test-function-instance', ref: 'test-function' }],
@@ -158,6 +164,7 @@ describe('ApplicationProcessConfigStrategy', () => {
             cache: {
               enabled: false,
               tiered_cache: {
+                enabled: true,
                 topology: 'near-edge'
               }
             },
@@ -180,7 +187,7 @@ describe('ApplicationProcessConfigStrategy', () => {
                 max_age: 60,
                 stale_cache: { enabled: false },
                 large_file_cache: { enabled: false, offset: 1024 },
-                tiered_cache: { topology: 'near-edge' }
+                tiered_cache: { enabled: false, topology: 'near-edge' }
               },
               application_accelerator: {
                 cache_vary_by_method: [],
@@ -333,7 +340,6 @@ describe('ApplicationProcessConfigStrategy', () => {
           functionsEnabled: false,
           applicationAcceleratorEnabled: true,
           imageProcessorEnabled: false,
-          tieredCacheEnabled: false,
           cache: undefined,
           rules: undefined,
           deviceGroups: undefined,
@@ -359,6 +365,7 @@ describe('ApplicationProcessConfigStrategy', () => {
               cache: {
                 enabled: false,
                 tiered_cache: {
+                  enabled: true,
                   topology: 'near-edge'
                 }
               },
@@ -392,7 +399,6 @@ describe('ApplicationProcessConfigStrategy', () => {
           functionsEnabled: true,
           applicationAcceleratorEnabled: false,
           imageProcessorEnabled: true,
-          tieredCacheEnabled: true,
           cache: [{ name: 'test-cache', browser: { maxAgeSeconds: 3600 } }],
           rules: { request: [], response: [] },
           deviceGroups: [{ name: 'test-device-group', userAgent: 'test-agent' }],
@@ -429,7 +435,6 @@ describe('ApplicationProcessConfigStrategy', () => {
           functionsEnabled: undefined,
           applicationAcceleratorEnabled: undefined,
           imageProcessorEnabled: undefined,
-          tieredCacheEnabled: undefined,
           cache: undefined,
           rules: undefined,
           deviceGroups: undefined,

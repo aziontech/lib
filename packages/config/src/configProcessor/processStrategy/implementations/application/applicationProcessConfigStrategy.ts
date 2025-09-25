@@ -79,7 +79,6 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         functionsEnabled: app.modules?.functions?.enabled,
         applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
         imageProcessorEnabled: app.modules?.image_processor?.enabled,
-        tieredCacheEnabled: app.modules?.cache?.tiered_cache?.enabled !== undefined ? true : false,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules) : undefined,
         deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,
