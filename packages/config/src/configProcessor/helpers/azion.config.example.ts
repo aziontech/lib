@@ -33,7 +33,6 @@ const config: AzionConfig = {
       functionsEnabled: false,
       applicationAcceleratorEnabled: false,
       imageProcessorEnabled: false,
-      tieredCacheEnabled: false,
       cache: [
         {
           name: 'mycache',
@@ -48,6 +47,10 @@ const config: AzionConfig = {
           },
           edge: {
             maxAgeSeconds: 1000,
+          },
+          tiered_cache: {
+            enabled: true,
+            topology: 'global',
           },
           cacheByQueryString: {
             option: 'denylist' as CacheByQueryString,
