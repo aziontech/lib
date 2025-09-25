@@ -3,6 +3,7 @@ export interface ApiBaseDeviceGroupPayload {
   user_agent: string;
 }
 
+// eslint-disable-next-line
 export interface ApiCreateDeviceGroupPayload extends ApiBaseDeviceGroupPayload {}
 
 export interface ApiDeviceGroup extends ApiBaseDeviceGroupPayload {
@@ -37,6 +38,7 @@ export interface ApiCreateDeviceGroupResponse {
   schema_version: number;
 }
 
+// eslint-disable-next-line
 export interface ApiUpdateDeviceGroupPayload extends Partial<ApiBaseDeviceGroupPayload> {}
 
 export interface ApiUpdateDeviceGroupResponse {

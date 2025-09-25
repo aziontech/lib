@@ -67,7 +67,6 @@ function readDirAndIncludeFiles(
     }
     if (entry.isFile() && includeDirs.some((dir) => nameAsset.startsWith(normalizeDirPath(dir)))) {
       if (isTraceFile(nameAsset)) {
-        // eslint-disable-next-line no-continue
         continue;
       }
       result.push({

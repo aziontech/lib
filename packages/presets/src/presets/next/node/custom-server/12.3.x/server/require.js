@@ -9,7 +9,7 @@ import { Buffer } from 'buffer';
 import { join, relative } from 'path';
 
 // imports user project dependencies (node_modules)
-/* eslint-disable */
+
 import {
   APP_PATHS_MANIFEST,
   FONT_MANIFEST,
@@ -21,7 +21,6 @@ import { normalizeLocalePath } from 'next/dist/shared/lib/i18n/normalize-locale-
 import { denormalizePagePath } from 'next/dist/shared/lib/page-path/denormalize-page-path';
 import { normalizePagePath } from 'next/dist/shared/lib/page-path/normalize-page-path';
 import { MissingStaticPage, PageNotFoundError } from 'next/dist/shared/lib/utils';
-/* eslint-enable */
 
 /**
  * Check if asset dir exists

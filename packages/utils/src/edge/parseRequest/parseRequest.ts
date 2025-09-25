@@ -57,7 +57,7 @@ const parseRequest: ParseRequestFunction = async (request: AzionRuntimeRequest):
   if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
     try {
       body = await request.clone().text();
-    } catch (error) {
+    } catch {
       body = 'Unable to read body';
     }
   }

@@ -1,0 +1,863 @@
+import {
+    AzionConnector,
+    AzionFunction,
+    AzionManifestRule,
+    AzionRules
+} from '../../../../types';
+import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
+
+describe('RulesProcessConfigStrategy', () => {
+    let strategy: RulesProcessConfigStrategy;
+
+    beforeEach(() => {
+        strategy = new RulesProcessConfigStrategy();
+    });
+
+    describe('transformToManifest', () => {
+        it('should return empty array when no rules are provided', () => {
+            const applicationRules: AzionRules = {};
+            const result = strategy.transformToManifest(applicationRules);
+            expect(result).toEqual([]);
+        });
+
+        it('should return empty array when rules object is empty', () => {
+            const applicationRules: AzionRules = { request: [], response: [] };
+            const result = strategy.transformToManifest(applicationRules);
+            expect(result).toEqual([]);
+        });
+
+        it('should transform request rules to manifest format', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-request-rule',
+                        description: 'Test request rule',
+                        active: true,
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const result = strategy.transformToManifest(applicationRules);
+
+            expect(result).toEqual([
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-request-rule',
+                        description: 'Test request rule',
+                        active: true,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                },
+            ]);
+        });
+
+        it('should transform response rules to manifest format', () => {
+            const applicationRules: AzionRules = {
+                response: [
+                    {
+                        name: 'test-response-rule',
+                        description: 'Test response rule',
+                        active: false,
+                        criteria: [
+                            [
+                                {
+                                    variable: 'status',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '404',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'add_response_header',
+                                attributes: {
+                                    value: 'X-Custom-Header: Value',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const result = strategy.transformToManifest(applicationRules);
+
+            expect(result).toEqual([
+                {
+                    phase: 'response',
+                    rule: {
+                        name: 'test-response-rule',
+                        description: 'Test response rule',
+                        active: false,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${status}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '404',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'add_response_header',
+                                attributes: {
+                                    value: 'X-Custom-Header: Value',
+                                },
+                            },
+                        ],
+                    },
+                },
+            ]);
+        });
+
+        it('should transform both request and response rules to manifest format', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-request-rule',
+                        active: true,
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                ],
+                response: [
+                    {
+                        name: 'test-response-rule',
+                        active: false,
+                        criteria: [
+                            [
+                                {
+                                    variable: 'status',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '404',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'add_response_header',
+                                attributes: {
+                                    value: 'X-Custom-Header: Value',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const result = strategy.transformToManifest(applicationRules);
+
+            expect(result).toHaveLength(2);
+            expect(result[0].phase).toBe('request');
+            expect(result[1].phase).toBe('response');
+        });
+
+        it('should handle variable with ${} prefix correctly', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const result = strategy.transformToManifest(applicationRules);
+
+            expect(result[0].rule.criteria[0][0].variable).toBe('${request_uri}');
+        });
+
+        it('should set default active status to true if not provided', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const result = strategy.transformToManifest(applicationRules);
+
+            expect(result[0].rule.active).toBe(true);
+        });
+
+        it('should include behavior attributes when present', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'run_function',
+                                attributes: {
+                                    value: 'test-function',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const result = strategy.transformToManifest(applicationRules);
+
+            expect(result[0].rule.behaviors[0]).toEqual({
+                type: 'run_function',
+                attributes: {
+                    value: 'test-function',
+                },
+            });
+        });
+
+        it('should validate function references and not throw error when function exists', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'run_function',
+                                attributes: {
+                                    value: 'test-function',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const functions: AzionFunction[] = [
+                {
+                    name: 'test-function',
+                    path: './functions/test-function.js',
+                },
+            ];
+
+            expect(() => strategy.transformToManifest(applicationRules, functions)).not.toThrow();
+        });
+
+        it('should validate function references and throw error when function does not exist', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'run_function',
+                                attributes: {
+                                    value: 'non-existent-function',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const functions: AzionFunction[] = [
+                {
+                    name: 'test-function',
+                    path: './functions/test-function.js',
+                },
+            ];
+
+            expect(() => strategy.transformToManifest(applicationRules, functions)).toThrow(
+                'Function "non-existent-function" referenced in rule "test-rule" is not defined in the functions array.'
+            );
+        });
+
+        it('should not validate function references when function is a number (ID)', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'run_function',
+                                attributes: {
+                                    value: 123,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const functions: AzionFunction[] = [
+                {
+                    name: 'test-function',
+                    path: './functions/test-function.js',
+                },
+            ];
+
+            expect(() => strategy.transformToManifest(applicationRules, functions)).not.toThrow();
+        });
+
+        it('should validate connector references and not throw error when connector exists', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'set_connector',
+                                attributes: {
+                                    value: 'test-connector',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const connectors: AzionConnector[] = [
+                {
+                    name: 'test-connector',
+                    type: 'http',
+                    attributes: {
+                        addresses: [],
+                        connectionOptions: {},
+                    },
+                },
+            ];
+
+            expect(() => strategy.transformToManifest(applicationRules, undefined, connectors)).not.toThrow();
+        });
+
+        it('should validate connector references and throw error when connector does not exist', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'set_connector',
+                                attributes: {
+                                    value: 'non-existent-connector',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const connectors: AzionConnector[] = [
+                {
+                    name: 'test-connector',
+                    type: 'http',
+                    attributes: {
+                        addresses: [],
+                        connectionOptions: {},
+                    },
+                },
+            ];
+
+            expect(() => strategy.transformToManifest(applicationRules, undefined, connectors)).toThrow(
+                'Connector "non-existent-connector" referenced in rule "test-rule" is not defined in the connectors array.'
+            );
+        });
+
+        it('should not validate connector references when connector is a number (ID)', () => {
+            const applicationRules: AzionRules = {
+                request: [
+                    {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: 'request_uri',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'set_connector',
+                                attributes: {
+                                    value: 123,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            const connectors: AzionConnector[] = [
+                {
+                    name: 'test-connector',
+                    type: 'http',
+                    attributes: {
+                        addresses: [],
+                        connectionOptions: {},
+                    },
+                },
+            ];
+
+            expect(() => strategy.transformToManifest(applicationRules, undefined, connectors)).not.toThrow();
+        });
+    });
+
+    describe('transformToConfig', () => {
+        it('should return empty rules object when no rules are provided', () => {
+            const rulesPayload: AzionManifestRule[] = [];
+            const result = strategy.transformToConfig(rulesPayload);
+            expect(result).toEqual({ request: [], response: [] });
+        });
+
+        it('should handle non-array input', () => {
+            const rulesPayload = {} as any;
+            const result = strategy.transformToConfig(rulesPayload);
+            expect(result).toEqual({ request: [], response: [] });
+        });
+
+        it('should transform request rules from manifest format to config format', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-request-rule',
+                        description: 'Test request rule',
+                        active: true,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result).toEqual({
+                request: [
+                    {
+                        name: 'test-request-rule',
+                        description: 'Test request rule',
+                        active: true,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                ],
+                response: [],
+            });
+        });
+
+        it('should transform response rules from manifest format to config format', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'response',
+                    rule: {
+                        name: 'test-response-rule',
+                        description: 'Test response rule',
+                        active: false,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${status}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '404',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'add_response_header',
+                                attributes: {
+                                    value: 'X-Custom-Header: Value',
+                                },
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result).toEqual({
+                request: [],
+                response: [
+                    {
+                        name: 'test-response-rule',
+                        description: 'Test response rule',
+                        active: false,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${status}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '404',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'add_response_header',
+                                attributes: {
+                                    value: 'X-Custom-Header: Value',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        it('should transform both request and response rules from manifest format to config format', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-request-rule',
+                        active: true,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                },
+                {
+                    phase: 'response',
+                    rule: {
+                        name: 'test-response-rule',
+                        active: false,
+                        criteria: [
+                            [
+                                {
+                                    variable: '${status}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '404',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'add_response_header',
+                                attributes: {
+                                    value: 'X-Custom-Header: Value',
+                                },
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result.request).toHaveLength(1);
+            expect(result.response).toHaveLength(1);
+            expect(result.request![0].name).toBe('test-request-rule');
+            expect(result.response![0].name).toBe('test-response-rule');
+        });
+
+        it('should handle criteria with argument', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result.request![0].criteria[0][0]).toEqual({
+                variable: '${request_uri}',
+                conditional: 'if',
+                operator: 'is_equal',
+                argument: '/test',
+            });
+        });
+
+        it('should handle criteria without argument', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'exists',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result.request![0].criteria[0][0]).toEqual({
+                variable: '${request_uri}',
+                conditional: 'if',
+                operator: 'exists',
+            });
+        });
+
+        it('should handle behavior with attributes', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'run_function',
+                                attributes: {
+                                    value: 'test-function',
+                                },
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result.request![0].behaviors[0]).toEqual({
+                type: 'run_function',
+                attributes: {
+                    value: 'test-function',
+                },
+            });
+        });
+
+        it('should handle behavior without attributes', () => {
+            const rulesPayload: AzionManifestRule[] = [
+                {
+                    phase: 'request',
+                    rule: {
+                        name: 'test-rule',
+                        criteria: [
+                            [
+                                {
+                                    variable: '${request_uri}',
+                                    conditional: 'if',
+                                    operator: 'is_equal',
+                                    argument: '/test',
+                                },
+                            ],
+                        ],
+                        behaviors: [
+                            {
+                                type: 'deliver',
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            const result = strategy.transformToConfig(rulesPayload);
+
+            expect(result.request![0].behaviors[0]).toEqual({
+                type: 'deliver',
+            });
+        });
+    });
+});

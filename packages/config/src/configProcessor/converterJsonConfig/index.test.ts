@@ -1,6 +1,5 @@
 // TODO: review firewall module and enable this tests again
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // import { convertJsonConfigToObject } from '.';
 
 describe('convertJsonConfigToObject', () => {

@@ -8,10 +8,9 @@
 import { join } from 'path';
 
 // imports user project dependencies (node_modules)
-/* eslint-disable */
+
 import { BUILD_MANIFEST, FLIGHT_MANIFEST, REACT_LOADABLE_MANIFEST } from 'next/constants';
 import { interopDefault } from 'next/dist/lib/interop-default';
-/* eslint-enable */
 
 import { readAssetManifest, requirePage } from './require.js';
 

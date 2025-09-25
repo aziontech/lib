@@ -61,6 +61,8 @@ export async function importPrivateKey(key: SignatureKey, alg: KeyImporterAlgori
   }
   if (key.includes('PRIVATE')) {
     // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#pkcs_8_import
+    // eslint-disable-next-line
+    // @ts-ignore
     return await crypto.subtle.importKey('pkcs8', pemToBinary(key), alg, false, usages);
   }
   return await crypto.subtle.importKey('raw', utf8Encoder.encode(key), alg, false, usages);
@@ -78,6 +80,8 @@ export async function importPublicKey(key: SignatureKey, alg: KeyImporterAlgorit
   }
   if (typeof key === 'string' && key.includes('PRIVATE')) {
     // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#pkcs_8_import
+    // eslint-disable-next-line
+    // @ts-ignore
     const privateKey = await crypto.subtle.importKey('pkcs8', pemToBinary(key), alg, true, [CryptoKeyUsage.Sign]);
     key = await exportPublicJwkFrom(privateKey);
   }
@@ -88,6 +92,8 @@ export async function importPublicKey(key: SignatureKey, alg: KeyImporterAlgorit
   }
   if (key.includes('PUBLIC')) {
     // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
+    // eslint-disable-next-line
+    // @ts-ignore
     return await crypto.subtle.importKey('spki', pemToBinary(key), alg, false, usages);
   }
   return await crypto.subtle.importKey('raw', utf8Encoder.encode(key), alg, false, usages);

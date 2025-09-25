@@ -59,7 +59,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
           max_age: maxAgeSecondsBrowser,
         },
         modules: {
-          edge_cache: {
+          cache: {
             behavior: cache?.edge ? 'override' : 'honor',
             max_age: maxAgeSecondsEdge,
             stale_cache: {
@@ -69,9 +69,10 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
               enabled: false, // Default for now, could be extended later
               offset: 1024, // Default offset
             },
-          },
-          tiered_cache: {
-            topology: 'near-edge', // Default topology
+            tiered_cache: {
+              enabled: cache?.tieredCache?.enabled || false,
+              topology: cache?.tieredCache?.topology || 'global',
+            },
           },
           application_accelerator: {
             cache_vary_by_method: cacheVaryByMethod,
@@ -100,13 +101,13 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
       const maxAgeSecondsBrowser = cache.browser_cache?.max_age
         ? this.evaluateMathExpression(cache.browser_cache.max_age)
         : 0;
-      const maxAgeSecondsEdge = cache.modules?.edge_cache?.max_age
-        ? this.evaluateMathExpression(cache.modules.edge_cache.max_age)
+      const maxAgeSecondsEdge = cache.modules?.cache?.max_age
+        ? this.evaluateMathExpression(cache.modules.cache.max_age)
         : 60;
 
       const cacheSetting: AzionCache = {
         name: cache.name,
-        stale: cache.modules?.edge_cache?.stale_cache?.enabled || false,
+        stale: cache.modules?.cache?.stale_cache?.enabled || false,
         browser: {
           maxAgeSeconds: maxAgeSecondsBrowser,
         },
@@ -118,6 +119,10 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
           options: cache.modules?.application_accelerator?.cache_vary_by_method?.includes('options') || false,
         },
         queryStringSort: cache.modules?.application_accelerator?.cache_vary_by_querystring?.sort_enabled || false,
+        tieredCache: {
+          enabled: cache.modules?.cache?.tiered_cache?.enabled || false,
+          topology: cache.modules?.cache?.tiered_cache?.topology || 'global',
+        },
       };
 
       // Handle cache by query string

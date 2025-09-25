@@ -248,7 +248,7 @@ function convertV3BehaviorsToV4(legacyBehavior: any, isRequestPhase: boolean = t
         } else if (result) {
           v4Behaviors.push(result);
         }
-      } catch (error) {
+      } catch {
         // Silent warning for failed conversions
       }
     } else if (value !== null && value !== undefined) {

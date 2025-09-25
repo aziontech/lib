@@ -9,6 +9,7 @@ import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import OptionalChainingAssignmentPlugin from './plugins/babel-custom';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 
+// eslint-disable-next-line
 interface ESBuildConfig extends esbuild.BuildOptions {}
 
 interface ESBuildBundler {

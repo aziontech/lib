@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import { AzionDomainsClient } from 'azion/domains';
 import { AzionAIClient } from '../../ai/src/types';
 import { AzionApplicationsClient } from '../../applications/src/types';

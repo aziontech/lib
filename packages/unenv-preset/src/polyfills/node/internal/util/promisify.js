@@ -1,4 +1,3 @@
-/* eslint-disable */
 const customSymbol = Symbol.for('nodejs.util.promisify.custom');
 
 function _promisify(fn) {

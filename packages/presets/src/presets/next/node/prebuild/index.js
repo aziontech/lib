@@ -26,7 +26,7 @@ async function run(nextVersion, buildContext) {
   const outPathCustomServer = path.resolve(OUT_DIR_CUSTOM_SERVER, 'custom-server');
   try {
     copyDirectory(customServerPath, outPathCustomServer);
-  } catch (error) {
+  } catch {
     feedback.prebuild.error(`Custom server path not found for version ${CURRENT_VERSION}!`);
     fs.rmSync(OUT_DIR_CUSTOM_SERVER, { recursive: true });
     process.exit(1);
