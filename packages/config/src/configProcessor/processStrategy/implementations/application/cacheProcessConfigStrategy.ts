@@ -70,8 +70,8 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
               offset: 1024, // Default offset
             },
             tiered_cache: {
-              enabled: cache?.tiered_cache?.enabled || false,
-              topology: cache?.tiered_cache?.topology || 'global',
+              enabled: cache?.tieredCache?.enabled || false,
+              topology: cache?.tieredCache?.topology || 'global',
             },
           },
           application_accelerator: {
@@ -119,7 +119,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
           options: cache.modules?.application_accelerator?.cache_vary_by_method?.includes('options') || false,
         },
         queryStringSort: cache.modules?.application_accelerator?.cache_vary_by_querystring?.sort_enabled || false,
-        tiered_cache: {
+        tieredCache: {
           enabled: cache.modules?.cache?.tiered_cache?.enabled || false,
           topology: cache.modules?.cache?.tiered_cache?.topology || 'global',
         },

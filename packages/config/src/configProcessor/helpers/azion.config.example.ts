@@ -48,7 +48,7 @@ const config: AzionConfig = {
           edge: {
             maxAgeSeconds: 1000,
           },
-          tiered_cache: {
+          tieredCache: {
             enabled: true,
             topology: 'global',
           },

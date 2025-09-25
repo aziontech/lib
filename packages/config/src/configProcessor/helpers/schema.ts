@@ -620,7 +620,7 @@ const azionConfigSchema = {
                       type: 'boolean',
                       errorMessage: "The 'queryStringSort' field must be a boolean.",
                     },
-                    tiered_cache: {
+                    tieredCache: {
                       type: 'object',
                       properties: {
                         enabled: {
