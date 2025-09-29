@@ -478,7 +478,6 @@ const config: AzionConfig = {
   firewall: [
     {
       name: 'my_firewall',
-      domains: ['www.example.com', 'api.example.com'],
       active: true,
       functions: true,
       networkProtection: true,

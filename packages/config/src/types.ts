@@ -612,8 +612,8 @@ export type AzionFirewallCriteriaBase = {
 export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
-  /** Input value for comparison */
-  inputValue: string;
+  /** Argument for comparison */
+  argument: string;
 };
 
 export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
@@ -649,8 +649,6 @@ export type AzionFirewallRule = {
 export type AzionFirewall = {
   /** Firewall name */
   name: string;
-  /** List of domains */
-  domains?: string[];
   /** Indicates if the firewall is active */
   active?: boolean;
   /** Indicates if Functions are enabled */
