@@ -65,7 +65,6 @@ const buildFetchOptions = (method: string, headers: Record<string, string>, body
   return options;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleApiError = (fields: string[], data: any, operation: string) => {
   let error = { message: 'Error unknown', operation: operation };
 

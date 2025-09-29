@@ -59,7 +59,6 @@ class NetworkListContext {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #networkCIDR(ipAddress, network) {
     const listContent = network?.listContent;
     if (!listContent || listContent.length === 0) return false;
@@ -71,7 +70,6 @@ class NetworkListContext {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #networkAsn(asn, network) {
     const listContent = network?.listContent;
     if (!listContent || listContent.length === 0) return false;
@@ -80,7 +78,6 @@ class NetworkListContext {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #networkCountries(country, network) {
     const listContent = network?.listContent;
     if (!listContent || listContent.length === 0) return false;
@@ -89,17 +86,15 @@ class NetworkListContext {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #init() {
     try {
       const config = await this.#loadConfigFile();
       this.#networkList = config.networkList;
-    } catch (error) {
+    } catch {
       this.#networkList = [];
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #loadConfigFile() {
     const { configFilePath, rootPath } = this.#getConfigFilePath();
 
@@ -115,7 +110,6 @@ class NetworkListContext {
     return config?.default || config;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #getConfigFilePath() {
     const projectRoot = process.cwd();
     const isWindows = process.platform === 'win32';
@@ -128,7 +122,6 @@ class NetworkListContext {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #importEsmModule(rootPath, originalConfigPath, changed) {
     let pathCache = originalConfigPath;
     if (!this.#cacheDynamicImport) {
@@ -141,7 +134,6 @@ class NetworkListContext {
     return config;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #importCjsModule(rootPath, configFilePath, changed, matchPaths) {
     if (!this.#cacheDynamicImport) {
       delete require.cache[configFilePath];
@@ -156,7 +148,6 @@ class NetworkListContext {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #checkFileImportType(originalConfigPath) {
     const file = readFileSync(originalConfigPath, 'utf8');
     if (file?.includes('export default')) {
@@ -172,7 +163,6 @@ class NetworkListContext {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #changeEsmImports(originalConfigPath, file) {
     const regex = /import\s+(.*)\s+from\s+['"]\.(.*)['"]/g;
     let changed = false;
@@ -188,7 +178,6 @@ class NetworkListContext {
     return { changed, currentConfigPath: originalConfigPath };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #changeCjsImports(file) {
     let changed = false;
     const regex = /require\(['"]([^'"]+)['"]\)/g;

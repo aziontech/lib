@@ -1094,7 +1094,7 @@ describe('processConfig', () => {
             target: {
               regex: '^/user/(.*)',
               captured_array: 'userId',
-              // eslint-disable-next-line no-template-curly-in-string
+
               subject: '${uri}',
             },
           }),
