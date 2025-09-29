@@ -23,7 +23,7 @@ class EnvVarsContext {
     const envFilePathEdge = join(outputPath, `${this.#pathDefaultEdge}/${this.#envFile}`);
 
     // Load .env file
-    dotenv.config({ path: [envFilePathRoot, envFilePathEdge] });
+    dotenv.config({ path: [envFilePathRoot, envFilePathEdge], quiet: true });
 
     this.#cloneEnvRootToEdgeEnv(outputPath);
 
