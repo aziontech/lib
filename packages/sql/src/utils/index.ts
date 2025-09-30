@@ -57,7 +57,7 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 
   while (Date.now() - startTime < maxTime) {
     try {
       return await fn();
-    } catch (error) {
+    } catch {
       if (attempt === 0) {
         console.warn('Attempting to synchronize. The content may not be synchronized on the edge yet.');
       }

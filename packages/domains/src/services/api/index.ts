@@ -34,7 +34,6 @@ const createDomain = async (
   { debug }: AzionClientOptions,
 ): Promise<ApiAzionDomainResult> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let body: any = {
       name: domain.name,
       cnames: domain?.cnames ?? [],
@@ -166,7 +165,6 @@ const updateDomain = async (
   options?: AzionClientOptions,
 ): Promise<ApiAzionDomainResult> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let body: any = {
       name: domain.name,
       cnames: domain?.cnames ?? [],

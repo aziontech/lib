@@ -494,7 +494,6 @@ Type definition for the response rule configuration.
 - `match: string` - Match criteria for the rule.
 - `variable?: string` - Variable to be used in the match.
 - `behavior?: ResponseBehavior` - Behavior to apply when the rule matches.
-
   - `setCookie?: string | null` - Set a cookie.
   - `setHeaders?: string[]` - Set headers.
   - `deliver?: boolean | null` - Deliver the content.
@@ -511,7 +510,6 @@ Type definition for the response rule configuration.
   Type definition for the rule set.
 
   **Properties:**
-
   - `request: AzionRequestRule[]` - Ruleset for Request phase.
   - `response?: AzionResponseRule[]` - Ruleset for Response phase.
 
@@ -520,7 +518,6 @@ Type definition for the response rule configuration.
   Type definition for the purge configuration.
 
   **Properties:**
-
   - `type: 'url' | 'cachekey' | 'wildcard'` - The type of purge to be performed.
   - `urls: string[]` - List of URLs or patterns to be purged.
   - `method?: 'delete'` - HTTP method for the purge request.
@@ -531,7 +528,6 @@ Type definition for the response rule configuration.
   Type definition for the network list configuration.
 
   **Properties:**
-
   - `id: number` - ID of the network list.
   - `listType: 'ip_cidr' | 'asn' | 'countries'` - Type of the network list.
   - `listContent: string[] | number[]` - List of IP CIDRs, ASNs, or countries
@@ -541,7 +537,6 @@ Type definition for the response rule configuration.
   Type definition for the Edge Firewall configuration.
 
   **Properties:**
-
   - `name: string` - Name of the firewall.
   - `domains?: string[]` - List of domains associated with the firewall.
   - `active?: boolean` - Whether the firewall is active.
@@ -557,7 +552,6 @@ Type definition for the response rule configuration.
   Type definition for firewall rules.
 
   **Properties:**
-
   - `name: string` - Name of the rule.
   - `description?: string` - Description of the rule.
   - `active?: boolean` - Whether the rule is active.
@@ -571,7 +565,6 @@ Type definition for the response rule configuration.
   Type definition for firewall rule behaviors.
 
   **Properties:**
-
   - `runFunction?: { path: string }` - Run a serverless function.
   - `setWafRuleset?: { wafMode: FirewallWafMode; wafId: string }` - Set WAF ruleset.
   - `setRateLimit?: {` - Set rate limit configuration.
@@ -591,7 +584,6 @@ Type definition for the response rule configuration.
   Type definition for firewall rule criteria.
 
   **Properties:**
-
   - `variable: RuleVariable` - Variable to be evaluated.
   - `conditional: RuleConditional` - Conditional type.
   - `operator: RuleOperatorWithValue | RuleOperatorWithoutValue` - Comparison operator.
@@ -602,7 +594,6 @@ Type definition for the response rule configuration.
   Type definition for the Web Application Firewall (WAF) configuration.
 
   **Properties:**
-
   - `id?: number` - ID of the WAF.
   - `name: string` - Name of the WAF.
   - `active: boolean` - Whether the WAF is active.

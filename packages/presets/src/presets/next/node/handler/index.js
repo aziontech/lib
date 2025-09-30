@@ -1,5 +1,5 @@
 // .edge files are dynamically generated
-// eslint-disable-next-line
+
 import { assets } from './.edge/next-build/statics.js';
 const createServer =
   // eslint-disable-next-line

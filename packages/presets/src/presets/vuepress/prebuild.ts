@@ -8,7 +8,7 @@ async function docsFolderExists(): Promise<boolean> {
   try {
     await lstat('docs/');
     return true;
-  } catch (err) {
+  } catch {
     return false;
   }
 }

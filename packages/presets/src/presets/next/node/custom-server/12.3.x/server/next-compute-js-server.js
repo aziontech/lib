@@ -10,7 +10,7 @@ import { join, relative, resolve } from 'path';
 import { format as formatUrl } from 'url';
 
 // imports user project dependencies (node_modules)
-/* eslint-disable */
+
 import {
   APP_PATHS_MANIFEST,
   BUILD_ID_FILE,
@@ -47,9 +47,6 @@ import { getPathMatch } from 'next/dist/shared/lib/router/utils/path-match';
 import { prepareDestination } from 'next/dist/shared/lib/router/utils/prepare-destination';
 import { removeTrailingSlash } from 'next/dist/shared/lib/router/utils/remove-trailing-slash';
 import { PageNotFoundError } from 'next/dist/shared/lib/utils';
-/* eslint-enable */
-
-/* eslint-disable no-underscore-dangle */
 
 import getBackendInfo from './compute-js.js';
 import loadComponents from './load-components.js';
@@ -155,7 +152,6 @@ export default class NextComputeJsServer extends BaseServer {
     // NOTE: No ENV in Fastly Compute@Edge, at least for now
   }
 
-  // eslint-disable-next-line
   getResponseCache() {
     return new ComputeJsResponseCache();
   }
@@ -185,7 +181,7 @@ export default class NextComputeJsServer extends BaseServer {
     let found = false;
     try {
       found = !!this.getPagePath(pathname, this.nextConfig.i18n?.locales);
-    } catch (_) {
+    } catch {
       /* empty */
     }
 
@@ -227,7 +223,6 @@ export default class NextComputeJsServer extends BaseServer {
     return Object.assign(customRoutes, { rewrites });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   generateImageRoutes() {
     // TODO: Image Optimizer
     return [];
@@ -255,7 +250,6 @@ export default class NextComputeJsServer extends BaseServer {
       : [];
   }
 
-  // eslint-disable-next-line class-methods-use-this
   setImmutableAssetCacheControl(res) {
     res.setHeader('Cache-Control', ' max-age=31536000, immutable');
   }
@@ -380,11 +374,9 @@ export default class NextComputeJsServer extends BaseServer {
       userFilesStatic = assetDirectory(this.serverOptions.computeJs.assets, join(this.distDir, 'static'), this.dir);
     }
 
-    // eslint-disable-next-line no-return-assign
     return (this._validFilesystemPathSet = new Set([...nextFilesStatic, ...userFilesPublic, ...userFilesStatic]));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async sendRenderResult(req, res, options) {
     const result = await sendRenderResult({
       req: req.originalRequest,
@@ -440,7 +432,6 @@ export default class NextComputeJsServer extends BaseServer {
       proto,
     };
 
-    // eslint-disable-next-line func-names
     ['for', 'port', 'proto'].forEach(function (header) {
       const arr = [];
       let strs = req.headers[`x-forwarded-${header}`];
@@ -552,7 +543,6 @@ export default class NextComputeJsServer extends BaseServer {
     return renderToHTML(req.originalRequest, res.originalResponse, pathname, query, renderOpts);
   }
 
-  // eslint-disable-next-line consistent-return
   async serveStatic(req, res, path, parsedUrl) {
     if (!this.isServeableUrl(path)) {
       return this.render404(req, res, parsedUrl);
@@ -606,7 +596,6 @@ export default class NextComputeJsServer extends BaseServer {
     return filesystemUrls.has(`/${resolved}`);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   generateCatchAllMiddlewareRoute() {
     // TODO: Edge Functions / Middleware
     // These are challenging at the moment to run in C@E, because
@@ -766,13 +755,11 @@ export default class NextComputeJsServer extends BaseServer {
     return requireFontManifest(this.serverOptions.computeJs.assets, this.distDir, this.dir, this._isLikeServerless);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getServerComponentManifest() {
     // TODO: If we want to support Server Components
     return undefined;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getServerCSSManifest() {
     // TODO: If we want to support Server Components
     return undefined;
@@ -1053,7 +1040,7 @@ export default class NextComputeJsServer extends BaseServer {
     }
     const manifestFile = join(this.distDir, PRERENDER_MANIFEST);
     const manifest = readAssetManifest(this.serverOptions.computeJs.assets, manifestFile, this.dir);
-    // eslint-disable-next-line no-return-assign
+
     return (this._cachedPreviewManifest = manifest);
   }
 

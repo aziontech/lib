@@ -71,16 +71,16 @@ import { createApplication, getApplications } from 'azion/applications';
 
 // Create a new application
 const { data: newApp, error } = await createApplication({
-  data: { 
-    name: "My Edge Application",
-    delivery_protocol: "http,https",
-    application_acceleration: true
-  }
+  data: {
+    name: 'My Edge Application',
+    delivery_protocol: 'http,https',
+    application_acceleration: true,
+  },
 });
 
 // List all applications
 const { data: apps, error } = await getApplications({
-  params: { page: 1, page_size: 20 }
+  params: { page: 1, page_size: 20 },
 });
 ```
 
@@ -91,12 +91,12 @@ import createClient from 'azion/applications';
 
 const client = createClient({
   token: 'your-api-token',
-  options: { debug: true }
+  options: { debug: true },
 });
 
 // Create application using client
 const { data: app } = await client.createApplication({
-  data: { name: "My Edge Application" }
+  data: { name: 'My Edge Application' },
 });
 ```
 
@@ -207,9 +207,7 @@ Retrieve a specific cache setting.
 **Returns**:
 
 - `Promise<AzionApplicationResponse<AzionCacheSetting>>` - The retrieved cache setting object or error if not found.
--
-
----
+- ***
 
 #### getCacheSettings
 
@@ -223,7 +221,7 @@ List all cache settings.
 **Returns**:
 
 - `Promise<AzionApplicationCollectionResponse<AzionCacheSetting>>` - A collection of cache settings or error if retrieval failed.
-  
+
 ---
 
 #### updateCacheSetting
@@ -573,7 +571,7 @@ import type {
   AzionFunctionInstance,
   AzionOrigin,
   AzionRule,
-  AzionClientOptions
+  AzionClientOptions,
 } from 'azion/applications';
 ```
 

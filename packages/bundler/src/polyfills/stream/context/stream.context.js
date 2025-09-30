@@ -1,4 +1,3 @@
-/* eslint-disable */
 import stream from 'node:stream';
 
 const localStream = {};

@@ -19,7 +19,7 @@ async function isDirectoryInProjectRoot(directoryName: string) {
   try {
     const stats = await fsPromises.stat(dirPath);
     return stats.isDirectory();
-  } catch (error) {
+  } catch {
     return false;
   }
 }

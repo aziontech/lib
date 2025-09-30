@@ -100,9 +100,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
 
       if (cache.cache_by_query_string) {
         cacheSetting.cacheByQueryString = {
-          option:
-            // eslint-disable-next-line no-nested-ternary
-            cache.cache_by_query_string === 'varies' ? 'all' : cache.cache_by_query_string,
+          option: cache.cache_by_query_string === 'varies' ? 'all' : cache.cache_by_query_string,
         };
         if (cache.cache_by_query_string === 'whitelist' || cache.cache_by_query_string === 'blacklist') {
           cacheSetting.cacheByQueryString = {

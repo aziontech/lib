@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as async_hooks from 'async_hooks';
 
 export class AsyncLocalStorage extends async_hooks.AsyncLocalStorage {}

@@ -10,7 +10,7 @@ async function handler(event: FetchEvent): Promise<Response> {
   try {
     const myApp = await mountSPA(event.request.url);
     return myApp;
-  } catch (e) {
+  } catch {
     return new Response('Not Found', { status: 500 });
   }
 }
