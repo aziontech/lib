@@ -1140,13 +1140,6 @@ const azionConfigSchema = {
                 type: 'string',
                 errorMessage: "The firewall configuration must have a 'name' field of type string",
               },
-              domains: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  errorMessage: "Each domain in the  firewall's domains list must be a string",
-                },
-              },
               active: {
                 type: 'boolean',
                 errorMessage: "The firewall's 'active' field must be a boolean",

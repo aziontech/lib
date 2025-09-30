@@ -8,56 +8,62 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
  */
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   transformToManifest(config: AzionConfig) {
-    const firewall = config?.firewall;
-    if (!firewall || Object.keys(firewall).length === 0) {
-      return;
+    if (!config.firewall || !Array.isArray(config.firewall)) {
+      return [];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const payload: any = {
-      main_settings: {
-        name: firewall.name,
-        domains: firewall.domains || [],
-        is_active: firewall.active ?? true,
-        functions_enabled: firewall.functions ?? false,
-        network_protection_enabled: firewall.networkProtection ?? false,
-        waf_enabled: firewall.waf ?? false,
-        debug_rules: firewall.debugRules ?? false,
-      },
-    };
+    return config.firewall.map((fw) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        name: fw.name,
+        modules: {
+          functions: {
+            enabled: fw.functions ?? true,
+          },
+          network_protection: {
+            enabled: fw.networkProtection ?? true,
+          },
+          waf: {
+            enabled: fw.waf ?? false,
+          },
+        },
+        debug: false,
+        active: true,
+      };
 
-    if (firewall.rules && firewall.rules.length > 0) {
-      payload.rules_engine = firewall.rules.map((rule) => ({
-        name: rule.name,
-        description: rule.description || '',
-        is_active: rule.active ?? true,
-        behaviors: this.transformBehaviorsToManifest(rule.behavior),
-        criteria: rule.criteria
-          ? [
-              rule.criteria.map((criterion) => {
-                const isWithValue = 'inputValue' in criterion;
-                const { inputValue, ...rest } = criterion as AzionFirewallCriteriaWithValue;
-                return {
-                  ...rest,
-                  variable: criterion.variable,
-                  ...(isWithValue && { input_value: inputValue }),
-                };
-              }),
-            ]
-          : [
-              [
-                {
-                  variable: rule.variable,
-                  operator: 'matches',
-                  conditional: 'if',
-                  input_value: rule.match,
-                },
+      if (fw.rules && fw.rules.length > 0) {
+        payload.rules_engine = fw.rules.map((rule) => ({
+          name: rule.name,
+          description: rule.description || '',
+          active: rule.active ?? true,
+          behaviors: this.transformBehaviorsToManifest(rule.behavior),
+          criteria: rule.criteria
+            ? [
+                rule.criteria.map((criterion) => {
+                  const isWithArgument = 'argument' in criterion;
+                  const { argument, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  return {
+                    ...rest,
+                    variable: criterion.variable,
+                    ...(isWithArgument && { argument }),
+                  };
+                }),
+              ]
+            : [
+                [
+                  {
+                    variable: rule.variable,
+                    operator: 'matches',
+                    conditional: 'if',
+                    argument: rule.match,
+                  },
+                ],
               ],
-            ],
-      }));
-    }
+        }));
+      }
 
-    return payload;
+      return payload;
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,15 +72,17 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
 
     if (behavior.runFunction) {
       behaviors.push({
-        name: 'run_function',
-        target: behavior.runFunction,
+        type: 'run_function',
+        attributes: {
+          value: behavior.runFunction,
+        },
       });
     }
 
     if (behavior.setWafRuleset) {
       behaviors.push({
-        name: 'set_waf_ruleset',
-        target: {
+        type: 'set_waf_ruleset',
+        attributes: {
           mode: behavior.setWafRuleset.wafMode,
           waf_id: behavior.setWafRuleset.wafId,
         },
@@ -83,33 +91,33 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
 
     if (behavior.setRateLimit) {
       behaviors.push({
-        name: 'set_rate_limit',
-        target: {
-          type: behavior.setRateLimit.type,
+        type: 'set_rate_limit',
+        attributes: {
+          type: behavior.setRateLimit.type || 'second',
           value: behavior.setRateLimit.value,
           limit_by: behavior.setRateLimit.limitBy,
+          average_rate_limit: behavior.setRateLimit.averageRateLimit,
+          maximum_burst_size: behavior.setRateLimit.maximumBurstSize,
         },
       });
     }
 
     if (behavior.deny) {
       behaviors.push({
-        name: 'deny',
-        target: '',
+        type: 'deny',
       });
     }
 
     if (behavior.drop) {
       behaviors.push({
-        name: 'drop',
-        target: '',
+        type: 'drop',
       });
     }
 
     if (behavior.setCustomResponse) {
       behaviors.push({
-        name: 'set_custom_response',
-        target: {
+        type: 'set_custom_response',
+        attributes: {
           status_code: behavior.setCustomResponse.statusCode,
           content_type: behavior.setCustomResponse.contentType,
           content_body: behavior.setCustomResponse.contentBody,
@@ -122,45 +130,46 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformToConfig(payload: any, transformedPayload: AzionConfig) {
-    const firewall = payload.firewall;
-    if (!firewall || Object.keys(firewall).length === 0) {
-      return;
+    if (!payload.firewall || !Array.isArray(payload.firewall)) {
+      transformedPayload.firewall = [];
+      return transformedPayload.firewall;
     }
 
-    const firewallConfig: AzionFirewall = {
-      name: firewall.main_settings?.name,
-      domains: firewall?.main_settings?.domains || [],
-      active: firewall?.main_settings?.is_active ?? true,
-      functions: firewall?.main_settings?.functions_enabled ?? false,
-      networkProtection: firewall?.main_settings?.network_protection_enabled ?? false,
-      waf: firewall?.main_settings?.waf_enabled ?? false,
-      debugRules: firewall?.main_settings?.debug_rules ?? false,
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    transformedPayload.firewall = payload.firewall.map((fw: any) => {
+      const firewallConfig: AzionFirewall = {
+        name: fw?.name,
+        active: fw?.active ?? true,
+        functions: fw?.modules?.functions?.enabled ?? false,
+        networkProtection: fw?.modules?.network_protection?.enabled ?? false,
+        waf: fw?.modules?.waf?.enabled ?? false,
+        debugRules: fw?.debug_rules ?? false,
+      };
 
-    if (firewall.rules_engine && firewall.rules_engine.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      firewallConfig.rules = firewall.rules_engine.map((rule: any) => {
-        const firewallRule: AzionFirewallRule = {
-          name: rule.name,
-          description: rule.description || '',
-          active: rule.is_active ?? true,
-          behavior: this.transformBehaviorsToConfig(rule.behaviors),
-          criteria:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            rule.criteria?.[0].map((criterion: any) => {
-              const isWithValue = 'input_value' in criterion;
-              const { input_value, ...rest } = criterion;
-              return {
-                ...rest,
-                ...(isWithValue && { inputValue: input_value }),
-              };
-            }) || [],
-        };
-        return firewallRule;
-      });
-    }
+      if (fw.rules_engine && fw.rules_engine.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        firewallConfig.rules = fw.rules_engine.map((rule: any) => {
+          const firewallRule: AzionFirewallRule = {
+            name: rule.type,
+            active: rule.active ?? true,
+            behavior: this.transformBehaviorsToConfig(rule.behaviors),
+            criteria:
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              rule.criteria?.[0].map((criterion: any) => {
+                const isWithArgument = 'argument' in criterion;
+                const { argument, ...rest } = criterion;
+                return {
+                  ...rest,
+                  ...(isWithArgument && { argument }),
+                };
+              }) || [],
+          };
+          return firewallRule;
+        });
+      }
 
-    transformedPayload.firewall = firewallConfig;
+      return firewallConfig;
+    });
     return transformedPayload.firewall;
   }
 
@@ -170,23 +179,25 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     const behavior: any = {};
 
     behaviors.forEach((b) => {
-      switch (b.name) {
+      switch (b.type) {
         case 'run_function':
           behavior.runFunction = {
-            path: b.target,
+            path: b.attributes.value,
           };
           break;
         case 'set_waf_ruleset':
           behavior.setWafRuleset = {
-            wafMode: b.target.mode,
-            wafId: b.target.waf_id,
+            wafMode: b.attributes.mode,
+            wafId: b.attributes.waf_id,
           };
           break;
         case 'set_rate_limit':
           behavior.setRateLimit = {
-            type: b.target.type,
-            value: b.target.value,
-            limitBy: b.target.limit_by,
+            type: b.attributes.type,
+            value: b.attributes.value,
+            limitBy: b.attributes.limit_by,
+            averageRateLimit: b.attributes.average_rate_limit,
+            maximumBurstSize: b.attributes.maximum_burst_size,
           };
           break;
         case 'deny':
@@ -197,9 +208,9 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           break;
         case 'set_custom_response':
           behavior.setCustomResponse = {
-            statusCode: b.target.status_code,
-            contentType: b.target.content_type,
-            contentBody: b.target.content_body,
+            statusCode: b.attributes.status_code,
+            contentType: b.attributes.content_type,
+            contentBody: b.attributes.content_body,
           };
           break;
       }
