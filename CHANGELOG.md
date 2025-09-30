@@ -1,3 +1,10 @@
+### [2.1.3-stage.4](https://github.com/aziontech/lib/compare/v2.1.3-stage.3...v2.1.3-stage.4) (2025-09-30)
+
+
+### Bug Fixes
+
+* firewall module and local networkList (#264) ([5d13541](https://github.com/aziontech/lib/commit/5d1354113cfc783750324fd184b55ec00ea95469))
+
 ### [2.1.3-stage.3](https://github.com/aziontech/lib/compare/v2.1.3-stage.2...v2.1.3-stage.3) (2025-09-25)
 
 
