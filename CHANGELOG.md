@@ -1,3 +1,13 @@
+### [2.1.3](https://github.com/aziontech/lib/compare/v2.1.2...v2.1.3) (2025-10-01)
+
+
+### Bug Fixes
+
+* firewall module and local networkList (#264) ([5d13541](https://github.com/aziontech/lib/commit/5d1354113cfc783750324fd184b55ec00ea95469))
+* update cache attr names in config and move tiered cache (#262) ([334b79e](https://github.com/aziontech/lib/commit/334b79ec7677213445daaf70ffc0ef5a06c5901f))
+* update pkgs - second wave (#261) ([962602d](https://github.com/aziontech/lib/commit/962602d537631b1cd6cacf40a8ac55c55bba1c06))
+* update pkgs version (#249) ([f460362](https://github.com/aziontech/lib/commit/f460362c89777ee1cd6360291aacbcf88758048d))
+
 ### [2.1.3-stage.4](https://github.com/aziontech/lib/compare/v2.1.3-stage.3...v2.1.3-stage.4) (2025-09-30)
 
 
