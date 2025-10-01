@@ -600,11 +600,6 @@ const azionConfigSchema = {
                 default: false,
                 errorMessage: "The 'imageProcessorEnabled' field must be a boolean",
               },
-              tieredCacheEnabled: {
-                type: 'boolean',
-                default: false,
-                errorMessage: "The 'tieredCacheEnabled' field must be a boolean",
-              },
               cache: {
                 type: 'array',
                 items: {
@@ -624,6 +619,27 @@ const azionConfigSchema = {
                     queryStringSort: {
                       type: 'boolean',
                       errorMessage: "The 'queryStringSort' field must be a boolean.",
+                    },
+                    tieredCache: {
+                      type: 'object',
+                      properties: {
+                        enabled: {
+                          type: 'boolean',
+                          default: false,
+                          errorMessage: "The 'enabled' field must be a boolean.",
+                        },
+                        topology: {
+                          type: 'string',
+                          enum: ['near-edge', 'br-east-1', 'us-east-1', 'global'],
+                          default: 'global',
+                          errorMessage:
+                            "The 'topology' field must be one of 'near-edge', 'br-east-1', 'us-east-1', or 'global'.",
+                        },
+                      },
+                      additionalProperties: false,
+                      errorMessage: {
+                        additionalProperties: "No additional properties are allowed in the 'tiered_cache' object.",
+                      },
                     },
                     methods: {
                       type: 'object',
@@ -1123,13 +1139,6 @@ const azionConfigSchema = {
               name: {
                 type: 'string',
                 errorMessage: "The firewall configuration must have a 'name' field of type string",
-              },
-              domains: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  errorMessage: "Each domain in the  firewall's domains list must be a string",
-                },
               },
               active: {
                 type: 'boolean',

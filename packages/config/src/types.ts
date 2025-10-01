@@ -159,7 +159,7 @@ export type CacheByQueryString = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheByCookie = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheAdaptiveDelivery = 'ignore' | 'allowlist';
 export type CacheVaryByMethod = 'options' | 'post';
-export type TieredCacheTopology = 'near-edge' | 'br-east-1' | 'us-east-1';
+export type TieredCacheTopology = 'global';
 
 // Build types
 export type BuildBundler = 'webpack' | 'esbuild';
@@ -225,6 +225,13 @@ export type AzionCache = {
   stale?: boolean;
   /** Indicates if query string parameters should be sorted */
   queryStringSort?: boolean;
+  /** Tiered cache configuration */
+  tieredCache?: {
+    /** Indicates if tiered cache should be enabled */
+    enabled: boolean;
+    /** Tiered cache topology */
+    topology: TieredCacheTopology;
+  };
   /** HTTP methods to be cached */
   methods?: {
     /** Cache POST requests */
@@ -542,8 +549,6 @@ export type AzionApplication = {
   applicationAcceleratorEnabled?: boolean;
   /** Enable image processor */
   imageProcessorEnabled?: boolean;
-  /** Enable tiered cache */
-  tieredCacheEnabled?: boolean;
   /** Indicates if the application is active */
   active?: boolean;
   /** Enable debug mode */
@@ -607,8 +612,8 @@ export type AzionFirewallCriteriaBase = {
 export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
-  /** Input value for comparison */
-  inputValue: string;
+  /** Argument for comparison */
+  argument: string;
 };
 
 export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
@@ -644,8 +649,6 @@ export type AzionFirewallRule = {
 export type AzionFirewall = {
   /** Firewall name */
   name: string;
-  /** List of domains */
-  domains?: string[];
   /** Indicates if the firewall is active */
   active?: boolean;
   /** Indicates if Functions are enabled */
@@ -837,6 +840,7 @@ export interface ConnectorAddress {
   modules?: ConnectorAddressModules | null;
 }
 
+// eslint-disable-next-line
 export interface ConnectorAddressModules {
   // Address-specific modules (to be defined based on future API spec)
 }

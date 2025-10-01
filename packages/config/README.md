@@ -283,7 +283,6 @@ const config = defineConfig({
   firewall: [
     {
       name: 'my_firewall',
-      domains: ['www.example.com', 'api.example.com'],
       active: true,
       functions: true,
       networkProtection: true,
@@ -805,7 +804,6 @@ Type definition for the Firewall configuration.
 **Properties:**
 
 - `name: string` - Name of the firewall.
-- `domains?: string[]` - List of domains associated with the firewall.
 - `active?: boolean` - Whether the firewall is active.
 - `debugRules?: boolean` - Whether debug mode is enabled for rules.
 - `functions?: boolean` - Whether Functions are enabled.

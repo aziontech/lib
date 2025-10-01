@@ -29,6 +29,8 @@ import { utf8Decoder, utf8Encoder } from '../utils/utf8';
  * console.log(encodedHeader);
  */
 const encodeJwtPart = (part: unknown): string =>
+  // eslint-disable-next-line
+  // @ts-ignore
   encodeBase64Url(utf8Encoder.encode(JSON.stringify(part))).replace(/=/g, '');
 
 /**
@@ -148,6 +150,8 @@ export const verify = async (
   }
 
   const headerPayload = token.substring(0, token.lastIndexOf('.'));
+  // eslint-disable-next-line
+  // @ts-ignore
   const verified = await verifying(publicKey, alg, decodeBase64Url(tokenParts[2]), utf8Encoder.encode(headerPayload));
   if (!verified) {
     throw new JwtTokenSignatureMismatched(token);
@@ -174,7 +178,7 @@ export const decode = (token: string): { header: TokenHeader; payload: JWTPayloa
       header,
       payload,
     };
-  } catch (e) {
+  } catch {
     throw new JwtTokenInvalid(token);
   }
 };

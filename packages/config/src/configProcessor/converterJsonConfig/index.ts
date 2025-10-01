@@ -34,7 +34,7 @@ function convertJsonConfigToObject(config: string): AzionConfig {
   let configObject = {};
   try {
     configObject = JSON.parse(config);
-  } catch (error) {
+  } catch {
     throw new Error('Invalid JSON configuration.');
   }
   validateConfig(configObject, schemaManifest);

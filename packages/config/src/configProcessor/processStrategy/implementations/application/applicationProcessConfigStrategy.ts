@@ -23,7 +23,7 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         active: app.active ?? true,
         debug: app.debug ?? false,
         modules: {
-          edge_cache: {
+          cache: {
             enabled: app.edgeCacheEnabled ?? true,
           },
           functions: {
@@ -35,9 +35,6 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
           },
           image_processor: {
             enabled: app.imageProcessorEnabled ?? false,
-          },
-          tiered_cache: {
-            enabled: app.tieredCacheEnabled ?? false,
           },
         },
       };
@@ -78,11 +75,10 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         name: app.name,
         active: app.active,
         debug: app.debug,
-        edgeCacheEnabled: app.modules?.edge_cache?.enabled,
+        edgeCacheEnabled: app.modules?.cache?.enabled,
         functionsEnabled: app.modules?.functions?.enabled,
         applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
         imageProcessorEnabled: app.modules?.image_processor?.enabled,
-        tieredCacheEnabled: app.modules?.tiered_cache?.enabled,
         cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
         rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules) : undefined,
         deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,

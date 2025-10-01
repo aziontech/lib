@@ -1,5 +1,5 @@
 import ipCidrLib from 'ip-cidr';
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import nodePath from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,7 +21,11 @@ class NetworkListContext {
 
   #workDir = '.edge';
 
-  #configFile = 'azion.config.js';
+  #configFile = 'azion.config';
+
+  #configFileTypes = ['.cjs', '.js', '.ts', '.mjs'];
+
+  #configFileExtension = '.js';
 
   /**
    * Creates an instance of NetworkListContext.
@@ -40,14 +44,16 @@ class NetworkListContext {
    * @memberof NetworkListContext
    */
   contains(networkListId, value) {
-    const network = this.#networkList.find(
-      (networkItem) => parseInt(networkItem.id, 10) === parseInt(networkListId, 10),
-    );
+    const network = this.#networkList.find((networkItem) => {
+      // At runtime, networkListId is the id of the network list, but in this local context,
+      // it is not the name of the object in the networkList[] array. Instead, it is the id property of the object.
+      return networkItem.name === networkListId;
+    });
     return this.#containsType(network, value);
   }
 
   #containsType(network, value) {
-    switch (network?.listType) {
+    switch (network?.type) {
       case 'ip_cidr':
         return this.#networkCIDR(value, network);
       case 'asn':
@@ -59,9 +65,8 @@ class NetworkListContext {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #networkCIDR(ipAddress, network) {
-    const listContent = network?.listContent;
+    const listContent = network?.items;
     if (!listContent || listContent.length === 0) return false;
     return listContent.some((currentIp) => {
       if (currentIp.includes('/')) {
@@ -76,40 +81,34 @@ class NetworkListContext {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #networkAsn(asn, network) {
-    const listContent = network?.listContent;
+    const listContent = network?.items;
     if (!listContent || listContent.length === 0) return false;
     return listContent.some((currentAsn) => {
       return parseInt(currentAsn, 10) === parseInt(asn, 10);
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #networkCountries(country, network) {
-    const listContent = network?.listContent;
+    const listContent = network?.items;
     if (!listContent || listContent.length === 0) return false;
     return listContent.some((currentCountry) => {
       return currentCountry === country;
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #init() {
     try {
       const config = await this.#loadConfigFile();
       this.#networkList = config.networkList;
-    } catch (error) {
+    } catch {
       this.#networkList = [];
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #loadConfigFile() {
     const { configFilePath, rootPath } = this.#getConfigFilePath();
-
     const { type: typeImport, changed, currentConfigPath, matchPaths } = this.#checkFileImportType(configFilePath);
-
     let config;
     if (typeImport === 'esm') {
       config = await this.#importEsmModule(rootPath, currentConfigPath, changed);
@@ -120,20 +119,21 @@ class NetworkListContext {
     return config?.default || config;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #getConfigFilePath() {
     const projectRoot = process.cwd();
     const isWindows = process.platform === 'win32';
     const rootPath = isWindows
       ? fileURLToPath(new URL(`file:///${nodePath.resolve(projectRoot, '.')}`))
       : nodePath.resolve(projectRoot, '.');
+    const configFiles = this.#configFileTypes.map((type) => nodePath.resolve(rootPath, `${this.#configFile}${type}`));
+    const configFilePath = configFiles.find((filePath) => existsSync(filePath));
+    this.#configFileExtension = configFilePath?.split('.').pop();
     return {
-      configFilePath: nodePath.resolve(rootPath, this.#configFile),
+      configFilePath: configFilePath || '',
       rootPath,
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #importEsmModule(rootPath, originalConfigPath, changed) {
     let pathCache = originalConfigPath;
     if (!this.#cacheDynamicImport) {
@@ -146,7 +146,6 @@ class NetworkListContext {
     return config;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async #importCjsModule(rootPath, configFilePath, changed, matchPaths) {
     if (!this.#cacheDynamicImport) {
       delete require.cache[configFilePath];
@@ -161,7 +160,6 @@ class NetworkListContext {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #checkFileImportType(originalConfigPath) {
     const file = readFileSync(originalConfigPath, 'utf8');
     if (file?.includes('export default')) {
@@ -177,7 +175,6 @@ class NetworkListContext {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #changeEsmImports(originalConfigPath, file) {
     const regex = /import\s+(.*)\s+from\s+['"]\.(.*)['"]/g;
     let changed = false;
@@ -185,7 +182,7 @@ class NetworkListContext {
     if (file.match(regex)) {
       changed = true;
       fileUpdated = file.replace(regex, `import $1 from "..$2?u=${Date.now()}"`);
-      const tmpFile = this.#configFile.replace('.js', '.temp.js');
+      const tmpFile = this.#configFile.replace(this.#configFileExtension, '.temp.js');
       const tmpConfigPath = nodePath.join(process.cwd(), this.#workDir, tmpFile);
       writeFileSync(tmpConfigPath, fileUpdated, 'utf8');
       return { changed, currentConfigPath: tmpConfigPath };
@@ -193,7 +190,6 @@ class NetworkListContext {
     return { changed, currentConfigPath: originalConfigPath };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   #changeCjsImports(file) {
     let changed = false;
     const regex = /require\(['"]([^'"]+)['"]\)/g;

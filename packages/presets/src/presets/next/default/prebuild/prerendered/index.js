@@ -154,14 +154,12 @@ async function fixPrerenderedRoutes(prerenderedRoutes, files, baseDir) {
   for (let index = 0; index < configs.length; index++) {
     const file = configs[index];
 
-    // eslint-disable-next-line no-await-in-loop
     const routeInfo = await validateRoute(baseDir, file, outputDir);
-    // eslint-disable-next-line no-continue
+
     if (!routeInfo) continue;
 
     const { config, originalFile, destFile, destRoute } = routeInfo;
 
-    // eslint-disable-next-line no-await-in-loop
     await copyFileWithDir(originalFile, destFile);
 
     prerenderedRoutes.set(`/${destRoute}`, {

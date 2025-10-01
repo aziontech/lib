@@ -33,7 +33,6 @@ const config: AzionConfig = {
       functionsEnabled: false,
       applicationAcceleratorEnabled: false,
       imageProcessorEnabled: false,
-      tieredCacheEnabled: false,
       cache: [
         {
           name: 'mycache',
@@ -48,6 +47,10 @@ const config: AzionConfig = {
           },
           edge: {
             maxAgeSeconds: 1000,
+          },
+          tieredCache: {
+            enabled: true,
+            topology: 'global',
           },
           cacheByQueryString: {
             option: 'denylist' as CacheByQueryString,
@@ -475,7 +478,6 @@ const config: AzionConfig = {
   firewall: [
     {
       name: 'my_firewall',
-      domains: ['www.example.com', 'api.example.com'],
       active: true,
       functions: true,
       networkProtection: true,
