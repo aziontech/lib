@@ -255,7 +255,7 @@
     "inherits": "^2.0.4",
     "ip-cidr": "^4.0.2",
     "lodash-es": "^4.17.21",
-    "mathjs": "^13.1.1",
+    "mathjs": "^14.8.2",
     "mime": "^4.1.0",
     "mime-types": "^3.0.1",
     "pcre-to-regexp": "^1.1.0",
