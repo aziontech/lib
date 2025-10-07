@@ -353,7 +353,7 @@ const config = defineConfig({
     {
       type: 'url',
       items: ['http://www.example.com/image.jpg'],
-      layer: 'edge_cache',
+      layer: 'cache',
     },
   ],
 });
@@ -784,7 +784,7 @@ Type definition for the purge configuration.
 
 - `type: 'url' | 'cachekey' | 'wildcard'` - The type of purge to be performed.
 - `items: string[]` - List of URLs or patterns to be purged (minimum 1 item).
-- `layer?: 'edge_cache' | 'tiered_cache'` - Cache layer to be purged.
+- `layer?: 'cache' | 'tiered_cache'` - Cache layer to be purged.
 
 ### `AzionNetworkList`
 
