@@ -433,7 +433,7 @@ export type AzionPurge = {
   /** Items to be purged */
   items: string[];
   /** Cache layer to be purged */
-  layer?: 'edge_cache' | 'tiered_cache';
+  layer?: 'cache' | 'tiered_cache';
   /** Purge type */
   type: 'url' | 'cachekey' | 'wildcard';
 };

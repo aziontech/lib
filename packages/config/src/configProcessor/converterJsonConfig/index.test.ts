@@ -315,7 +315,7 @@ describe('convertJsonConfigToObject', () => {
 //           {
 //             type: 'url',
 //             items: ['https://example.com'],
-//             layer: 'edge_cache',
+//             layer: 'cache',
 //           },
 //         ],
 //       };
@@ -326,7 +326,7 @@ describe('convertJsonConfigToObject', () => {
 //           expect.objectContaining({
 //             type: 'url',
 //             items: ['https://example.com'],
-//             layer: 'edge_cache',
+//             layer: 'cache',
 //           }),
 //         ]),
 //       );
