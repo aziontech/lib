@@ -27,7 +27,7 @@ describe('PurgeProcessConfigStrategy', () => {
           {
             type: 'url',
             items: ['https://example.com/path'],
-            layer: 'edge_cache',
+            layer: 'cache',
           },
         ],
       };
@@ -38,7 +38,7 @@ describe('PurgeProcessConfigStrategy', () => {
         {
           type: 'url',
           items: ['https://example.com/path'],
-          layer: 'edge_cache',
+          layer: 'cache',
         },
       ]);
     });
@@ -55,7 +55,7 @@ describe('PurgeProcessConfigStrategy', () => {
 
       const result = strategy.transformToManifest(config);
 
-      expect(result![0].layer).toBe('edge_cache');
+      expect(result![0].layer).toBe('cache');
     });
 
     it('should transform multiple purge configurations to manifest format', () => {
@@ -64,7 +64,7 @@ describe('PurgeProcessConfigStrategy', () => {
           {
             type: 'url',
             items: ['https://example.com/path1'],
-            layer: 'edge_cache',
+            layer: 'cache',
           },
           {
             type: 'wildcard',
@@ -79,7 +79,7 @@ describe('PurgeProcessConfigStrategy', () => {
       expect(result).toHaveLength(2);
       expect(result![0].type).toBe('url');
       expect(result![1].type).toBe('wildcard');
-      expect(result![0].layer).toBe('edge_cache');
+      expect(result![0].layer).toBe('cache');
       expect(result![1].layer).toBe('tiered_cache');
     });
 
@@ -153,7 +153,7 @@ describe('PurgeProcessConfigStrategy', () => {
           {
             type: 'url',
             items: ['https://example.com/path'],
-            layer: 'edge_cache',
+            layer: 'cache',
           },
         ],
       };
@@ -165,14 +165,14 @@ describe('PurgeProcessConfigStrategy', () => {
         {
           type: 'url',
           items: ['https://example.com/path'],
-          layer: 'edge_cache',
+          layer: 'cache',
         },
       ]);
       expect(transformedPayload.purge).toEqual([
         {
           type: 'url',
           items: ['https://example.com/path'],
-          layer: 'edge_cache',
+          layer: 'cache',
         },
       ]);
     });
@@ -190,7 +190,7 @@ describe('PurgeProcessConfigStrategy', () => {
 
       const result = strategy.transformToConfig(payload, transformedPayload);
 
-      expect(result![0].layer).toBe('edge_cache');
+      expect(result![0].layer).toBe('cache');
     });
 
     it('should transform multiple purge manifests to config format', () => {
@@ -199,7 +199,7 @@ describe('PurgeProcessConfigStrategy', () => {
           {
             type: 'url',
             items: ['https://example.com/path1'],
-            layer: 'edge_cache',
+            layer: 'cache',
           },
           {
             type: 'wildcard',
@@ -256,7 +256,7 @@ describe('PurgeProcessConfigStrategy', () => {
           {
             type: 'url',
             items: ['https://example.com/new-path'],
-            layer: 'edge_cache',
+            layer: 'cache',
           },
         ],
       };
@@ -265,7 +265,7 @@ describe('PurgeProcessConfigStrategy', () => {
           {
             type: 'url',
             items: ['https://example.com/existing-path'],
-            layer: 'edge_cache',
+            layer: 'cache',
           },
         ],
       };

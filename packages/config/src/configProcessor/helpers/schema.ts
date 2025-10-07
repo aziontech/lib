@@ -1119,8 +1119,8 @@ const azionConfigSchema = {
               },
               layer: {
                 type: 'string',
-                enum: ['edge_cache', 'tiered_cache'],
-                errorMessage: "The 'layer' field must be either 'edge_cache' or 'tiered_cache'.",
+                enum: ['cache', 'tiered_cache'],
+                errorMessage: "The 'layer' field must be either 'cache' or 'tiered_cache'.",
               },
             },
             required: ['type', 'items'],

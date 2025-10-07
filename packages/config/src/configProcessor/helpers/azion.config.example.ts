@@ -420,12 +420,12 @@ const config: AzionConfig = {
     {
       type: 'url',
       items: ['http://www.example.com/image.jpg'],
-      layer: 'edge_cache',
+      layer: 'cache',
     },
     {
       type: 'cachekey',
       items: ['https://example.com/test1', 'https://example.com/test2'],
-      layer: 'edge_cache',
+      layer: 'cache',
     },
     {
       type: 'wildcard',

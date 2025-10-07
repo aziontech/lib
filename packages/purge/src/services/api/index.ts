@@ -113,7 +113,7 @@ const postPurge = async (url: string, token: string, urls: string[], debug?: boo
           Accept: 'application/json; version=3',
         },
         credentials: 'include',
-        body: JSON.stringify({ items: urls, layer: 'edge_cache' }),
+        body: JSON.stringify({ items: urls, layer: 'cache' }),
       },
       debug,
     );
