@@ -1,3 +1,10 @@
+### [2.1.4](https://github.com/aziontech/lib/compare/v2.1.3...v2.1.4) (2025-10-07)
+
+
+### Bug Fixes
+
+* rename edge_cache to cache in purge (#279) ([9f39bd2](https://github.com/aziontech/lib/commit/9f39bd2cca9f6e7ca649cd6c36ae1442fb2cd3d4))
+
 ### [2.1.4-stage.1](https://github.com/aziontech/lib/compare/v2.1.3...v2.1.4-stage.1) (2025-10-07)
 
 
