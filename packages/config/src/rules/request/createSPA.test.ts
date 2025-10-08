@@ -1,5 +1,4 @@
 import type { AzionRuleCriteriaWithValue } from '../../types';
-import { ALL_EXTENSIONS } from '../constants';
 import { createSPARules } from './createSPA';
 
 describe('createSPARules', () => {
@@ -26,7 +25,7 @@ describe('createSPARules', () => {
             variable: '${uri}',
             conditional: 'if',
             operator: 'matches',
-            argument: `\\.(${ALL_EXTENSIONS.join('|')})$`,
+            argument: `\\.[a-zA-Z0-9-._]+`,
           },
         ],
       ],
