@@ -1,5 +1,4 @@
 import type { AzionRules } from 'azion/config';
-import { ALL_EXTENSIONS } from '../constants';
 
 /**
  * Creates rules for a Multi Page Application (MPA) on Azion Platform.
@@ -21,7 +20,8 @@ export function createMPARules(
     staticExtensions?: string[];
   } = {},
 ): AzionRules {
-  const { connector = 'name-connector', staticExtensions = ALL_EXTENSIONS } = options;
+  const { connector = 'name-connector', staticExtensions } = options;
+  const staticAssetsArgument = staticExtensions ? `\\.(${staticExtensions.join('|')})$` : `\\.[a-zA-Z0-9-._]+`;
 
   return {
     request: [
@@ -35,7 +35,7 @@ export function createMPARules(
               variable: '${uri}',
               conditional: 'if',
               operator: 'matches',
-              argument: `\\.(${staticExtensions.join('|')})$`,
+              argument: staticAssetsArgument,
             },
           ],
         ],

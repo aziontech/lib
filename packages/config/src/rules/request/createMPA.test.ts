@@ -1,5 +1,4 @@
 import type { AzionRuleCriteriaWithValue } from '../../types';
-import { ALL_EXTENSIONS } from '../constants';
 import { createMPARules } from './createMPA';
 
 describe('createMPARules', () => {
@@ -26,7 +25,7 @@ describe('createMPARules', () => {
             variable: '${uri}',
             conditional: 'if',
             operator: 'matches',
-            argument: `\\.(${ALL_EXTENSIONS.join('|')})$`,
+            argument: `\\.[a-zA-Z0-9-._]+`,
           },
         ],
       ],
