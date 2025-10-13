@@ -434,7 +434,13 @@ export default defineConfig({
 });
 ```
 
-Read more in the [AzionConfig README](./packages/config/README.md).
+Read more in the [AzionConfig README](https://github.com/aziontech/lib/tree/main/packages/config/README.md).
+
+## Presets
+
+The Presets package provides pre-configured presets for different frameworks and libraries to simplify the development process.
+
+Read more in the [Presets README](https://github.com/aziontech/lib/tree/main/packages/presets/README.md).
 
 ## Contributing
 
