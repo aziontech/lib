@@ -1,3 +1,10 @@
+### [1.20.7](https://github.com/aziontech/lib/compare/v1.20.6...v1.20.7) (2025-10-14)
+
+
+### Bug Fixes
+
+* update pkgs version in v1.20.x (#263) ([1fd7fd4](https://github.com/aziontech/lib/commit/1fd7fd4d0a73814780e84ba54fe95b6d5f937c5d))
+
 ### [1.20.6](https://github.com/aziontech/lib/compare/v1.20.5...v1.20.6) (2025-09-15)
 
 
