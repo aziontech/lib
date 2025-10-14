@@ -77,7 +77,7 @@
     "packages/unenv-preset/src/polyfills/*",
     "packages/bundler/src/polyfills/*",
     "packages/presets/src/presets/next/*",
-    "packages/presets/src/presets/nuxt/*"
+    "packages/presets/src/presets/nuxt/nitro/*"
   ],
   "exports": {
     ".": {
