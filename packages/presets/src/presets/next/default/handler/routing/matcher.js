@@ -8,6 +8,7 @@
  * @returns {boolean} Whether the request matches the `has` record conditions.
  */
 function hasField(has, { url, cookies, headers }) {
+  // eslint-disable-next-line default-case
   switch (has.type) {
     case 'host': {
       return url.hostname === has.value;

@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function inherits(ctor, superCtor) {
   if (!superCtor) {
     return;

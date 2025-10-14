@@ -11,7 +11,7 @@ async function getNextProjectConfig() {
 
   try {
     config = (await import(path)).default;
-  } catch {
+  } catch (error) {
     feedback.prebuild.info("Configuration file ('next.config.js') not found.");
   }
 

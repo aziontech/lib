@@ -37,11 +37,12 @@ yarn add azion
 The preset can be used with unenv to provide compatibility between Node.js and Azion Edge Runtime environments:
 
 ```javascript
-import { preset } from 'azion/unenv-preset';
+
+import { preset } from 'azion/unenv-preset'
 // Use with unenv
 export default {
-  preset: preset,
-};
+  preset: preset
+}
 ```
 
 ## Features
@@ -65,15 +66,15 @@ This preset provides polyfills for common Node.js APIs to ensure compatibility w
 Example using crypto polyfill:
 
 ```javascript
-import { createHash, randomUUID } from 'azion/unenv-preset/polyfills/node/crypto';
+import { createHash, randomUUID } from 'azion/unenv-preset/polyfills/node/crypto'
 
 // Create a hash
-const hash = createHash('sha256');
-hash.update('some data');
-console.log(hash.digest('hex'));
+const hash = createHash('sha256')
+hash.update('some data')
+console.log(hash.digest('hex'))
 
 // Generate a UUID
-const uuid = randomUUID();
+const uuid = randomUUID()
 ```
 
 ### File System Polyfills
@@ -83,56 +84,57 @@ The preset includes comprehensive file system polyfills that mirror Node.js's `f
 #### Basic File Operations
 
 ```javascript
-import { readFileSync, writeFileSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { readFileSync, writeFileSync } from 'azion/unenv-preset/polyfills/node/fs'
 
 // Read a file
-const content = readFileSync('/path/to/file.txt', 'utf8');
+const content = readFileSync('/path/to/file.txt', 'utf8')
 
 // Write to a file
-writeFileSync('/path/to/new-file.txt', 'Hello World', 'utf8');
+writeFileSync('/path/to/new-file.txt', 'Hello World', 'utf8')
 ```
 
 #### Directory Operations
 
 ```javascript
-import { readdirSync, mkdirSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { readdirSync, mkdirSync } from 'azion/unenv-preset/polyfills/node/fs'
 
 // List directory contents
-const files = readdirSync('/path/to/dir');
+const files = readdirSync('/path/to/dir')
 
 // Create a directory
-mkdirSync('/path/to/new-dir');
+mkdirSync('/path/to/new-dir')
 ```
 
 #### File Stats and Information
 
 ```javascript
-import { statSync, existsSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { statSync, existsSync } from 'azion/unenv-preset/polyfills/node/fs'
 
 // Check if file exists
 if (existsSync('/path/to/file.txt')) {
+  
   // Get file stats
-  const stats = statSync('/path/to/file.txt');
-  console.log(`File size: ${stats.size}`);
-  console.log(`Is directory: ${stats.isDirectory()}`);
-  console.log(`Is file: ${stats.isFile()}`);
+  const stats = statSync('/path/to/file.txt')
+  console.log(`File size: ${stats.size}`)
+  console.log(`Is directory: ${stats.isDirectory()}`)
+  console.log(`Is file: ${stats.isFile()}`)
 }
 ```
 
 #### File Descriptors
 
 ```javascript
-import { openSync, closeSync, readSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { openSync, closeSync, readSync } from 'azion/unenv-preset/polyfills/node/fs'
 
 // Open file and get file descriptor
-const fd = openSync('/path/to/file.txt', 'r');
+const fd = openSync('/path/to/file.txt', 'r')
 
 // Read from file descriptor
-const buffer = Buffer.alloc(1024);
-readSync(fd, buffer, 0, 1024, 0);
+const buffer = Buffer.alloc(1024)
+readSync(fd, buffer, 0, 1024, 0)
 
 // Close file descriptor
-closeSync(fd);
+closeSync(fd)
 ```
 
 ### Global Polyfills
@@ -148,7 +150,7 @@ The preset also provides polyfills for Node.js global variables and objects:
 The preset also handles injection of these globals through the unenv configuration:
 
 ```javascript
-import { preset } from 'azion/unenv-preset';
+import { preset } from 'azion/unenv-preset'
 
 // Preset configuration automatically injects globals
 export default {
@@ -157,9 +159,9 @@ export default {
     __filename: preset.inject.__filename,
     process: preset.inject.process,
     performance: preset.inject.performance,
-    navigator: preset.inject.navigator,
-  },
-};
+    navigator: preset.inject.navigator
+  }
+}
 ```
 
 ## API Reference
@@ -182,8 +184,8 @@ Decodes file content and returns it as either a Buffer or string.
 **Example:**
 
 ```javascript
-const fileBuffer = getFileContent(file); // returns Buffer
-const fileString = getFileContent(file, false); // returns string
+const fileBuffer = getFileContent(file) // returns Buffer
+const fileString = getFileContent(file, false) // returns string
 ```
 
 ### closeSync
@@ -197,7 +199,7 @@ Synchronously closes the file descriptor.
 **Example:**
 
 ```javascript
-closeSync(fd);
+closeSync(fd)
 ```
 
 ### openSync
@@ -217,7 +219,7 @@ Synchronously opens a file.
 **Example:**
 
 ```javascript
-const fd = openSync('/path/to/file.txt', 'r');
+const fd = openSync('/path/to/file.txt', 'r')
 ```
 
 ### statSync
@@ -236,7 +238,7 @@ Synchronously retrieves the `fs.Stats` for the specified path.
 **Example:**
 
 ```javascript
-const stats = statSync('/path/to/file.txt');
+const stats = statSync('/path/to/file.txt')
 ```
 
 ### readFileSync
@@ -255,7 +257,7 @@ Synchronously reads the entire contents of a file.
 **Example:**
 
 ```javascript
-const content = readFileSync('/path/to/file.txt', 'utf8');
+const content = readFileSync('/path/to/file.txt', 'utf8')
 ```
 
 ### readdirSync
@@ -274,7 +276,7 @@ Synchronously reads the contents of a directory.
 **Example:**
 
 ```javascript
-const files = readdirSync('/path/to/dir');
+const files = readdirSync('/path/to/dir')
 ```
 
 ## Contributing

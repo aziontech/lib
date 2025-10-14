@@ -52,7 +52,6 @@ export interface ApiBaseCacheSettingPayload {
   l2_region?: string | null;
 }
 
-// eslint-disable-next-line
 export interface ApiCreateCacheSettingPayload extends ApiBaseCacheSettingPayload {}
 
 export interface ApiCacheSetting extends ApiBaseCacheSettingPayload {
@@ -87,7 +86,6 @@ export interface ApiCreateCacheSettingResponse {
   schema_version: number;
 }
 
-// eslint-disable-next-line
 export interface ApiUpdateCacheSettingPayload extends Partial<ApiBaseCacheSettingPayload> {}
 
 export interface ApiUpdateCacheSettingResponse {

@@ -47,6 +47,7 @@ class FirewallEventContext extends primitives.FetchEvent {
     this.#request = request;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   #rawRequest(request) {
     let rawRequest = `${request.method} ${request.url} HTTP/1.1\n`;
     Array.from(request.headers.entries()).forEach(([header, value]) => {
@@ -57,7 +58,7 @@ class FirewallEventContext extends primitives.FetchEvent {
   }
 
   // metadata defined by Nginx, but is mocked here
-
+  // eslint-disable-next-line class-methods-use-this
   #metadata() {
     return {
       geoip_city_continent_code: 'NA',
@@ -79,6 +80,7 @@ class FirewallEventContext extends primitives.FetchEvent {
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   #response() {
     const response = this.#currentResponse;
     // clone headers to avoid modifying the original response

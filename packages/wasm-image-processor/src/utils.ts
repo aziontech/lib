@@ -9,7 +9,7 @@ function isUrl(pathOrUrl: string | null | undefined): boolean {
     new URL(pathOrUrl);
 
     return true;
-  } catch {
+  } catch (err) {
     return false;
   }
 }

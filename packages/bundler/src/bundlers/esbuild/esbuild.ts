@@ -8,7 +8,6 @@ import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 
-// eslint-disable-next-line
 interface ESBuildConfig extends esbuild.BuildOptions {}
 
 interface ESBuildBundler {

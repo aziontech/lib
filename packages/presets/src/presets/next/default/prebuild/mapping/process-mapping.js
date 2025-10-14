@@ -23,12 +23,14 @@ function normalizeRouteSrc(route) {
   // Route src should always start with a '^'
   // see: https://github.com/vercel/vercel/blob/ea5bc88/packages/routing-utils/src/index.ts#L77
   if (!route.src.startsWith('^')) {
+    // eslint-disable-next-line no-param-reassign
     route.src = `^${route.src}`;
   }
 
   // Route src should always end with a '$'
   // see: https://github.com/vercel/vercel/blob/ea5bc88/packages/routing-utils/src/index.ts#L82
   if (!route.src.endsWith('$')) {
+    // eslint-disable-next-line no-param-reassign
     route.src = `${route.src}$`;
   }
 }
@@ -99,6 +101,7 @@ function collectMiddlewarePaths(routes) {
  * @param {Set} middlewarePaths - Set of middleware paths.
  */
 function rewriteMiddlewarePaths(processedOutput, middlewarePaths) {
+  // eslint-disable-next-line no-restricted-syntax
   for (const middlewarePath of middlewarePaths) {
     const withLeadingSlash = addLeadingSlash(middlewarePath);
     const entry = processedOutput.get(withLeadingSlash);

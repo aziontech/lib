@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 /**
  * Fixes the function contents in miscellaneous ways.
  *

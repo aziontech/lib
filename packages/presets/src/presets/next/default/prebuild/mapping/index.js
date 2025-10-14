@@ -54,6 +54,7 @@ async function tryToFixInvalidFunctions({ functionsMap, invalidFunctions }) {
     return;
   }
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const rawPath of invalidFunctions) {
     const formattedPath = formatRoutePath(rawPath);
 
@@ -77,7 +78,7 @@ async function tryToFixInvalidFunctions({ functionsMap, invalidFunctions }) {
  * @param {object} vcObject object with the content of .vc-config.json
  * @returns {Promise<void>}
  */
-
+// eslint-disable-next-line consistent-return
 async function mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject) {
   const functionsDir = join('.vercel', 'output', 'functions');
   const path = vcObject.path.replace('/.vc-config.json', '');
@@ -97,7 +98,7 @@ async function mapAndAdaptFunction(applicationMapping, tmpFunctionsDir, vcObject
   if (vcObject.content.entrypoint === 'middleware.js' && isEdge) {
     isMiddleware = true;
     utils.feedback.prebuild.info('Founded middleware!');
-
+    // eslint-disable-next-line no-param-reassign
     vcObject.content.entrypoint = 'index';
   }
 

@@ -9,7 +9,7 @@ async function handler(event) {
   try {
     const myApp = await mountMPA(event.request.url);
     return myApp;
-  } catch {
+  } catch (e) {
     return new Response('Not Found', { status: 404 });
   }
 }

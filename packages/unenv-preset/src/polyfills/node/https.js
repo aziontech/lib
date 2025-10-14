@@ -1,3 +1,4 @@
+/* eslint-disable */
 // https://nodejs.org/api/https.html
 import { EventEmitter } from 'node:events';
 

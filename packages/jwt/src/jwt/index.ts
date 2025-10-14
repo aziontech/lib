@@ -174,7 +174,7 @@ export const decode = (token: string): { header: TokenHeader; payload: JWTPayloa
       header,
       payload,
     };
-  } catch {
+  } catch (e) {
     throw new JwtTokenInvalid(token);
   }
 };

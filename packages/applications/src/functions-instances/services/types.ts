@@ -47,7 +47,6 @@ export interface ApiCreateFunctionInstanceResponse {
   schema_version: number;
 }
 
-// eslint-disable-next-line
 export interface ApiUpdateFunctionInstancePayload extends Partial<ApiBaseFunctionInstancePayload> {}
 
 export interface ApiUpdateFunctionInstanceResponse {

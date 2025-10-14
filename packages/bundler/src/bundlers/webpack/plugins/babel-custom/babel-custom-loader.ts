@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign,class-methods-use-this */
 import { createRequire } from 'module';
 import { Compiler, WebpackPluginInstance } from 'webpack';
 

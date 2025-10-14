@@ -84,6 +84,7 @@ class RoutesMatcher {
       return;
     }
 
+    // eslint-disable-next-line consistent-return
     return srcMatch;
   }
 
@@ -99,6 +100,7 @@ class RoutesMatcher {
     if (overrideHeader) {
       const overridenHeaderKeys = new Set(overrideHeader.split(',').map((h) => h.trim()));
 
+      // eslint-disable-next-line no-restricted-syntax
       for (const key of overridenHeaderKeys.keys()) {
         const valueKey = `x-middleware-request-${key}`;
         const value = resp.headers.get(valueKey);
@@ -393,6 +395,7 @@ class RoutesMatcher {
         // This happens with invalid `/_next/static/...` and `/_next/data/...` requests.
 
         if (phase !== 'miss') {
+          // eslint-disable-next-line no-return-await
           return await this.checkPhase(getNextPhase(phase));
         }
 
@@ -402,6 +405,7 @@ class RoutesMatcher {
         // avoids rewrites in `none` that do the opposite of those in `miss`, and would cause infinite
         // loops (e.g. i18n). If it is in the build output, remove a potentially applied `404` status.
         if (!(this.path in this.output)) {
+          // eslint-disable-next-line no-return-await
           return await this.checkPhase('filesystem');
         }
 
@@ -411,7 +415,7 @@ class RoutesMatcher {
       } else {
         // In all other instances, we need to enter the `none` phase so we can ensure that requests
         // for the `RSC` variant of pages are served correctly.
-
+        // eslint-disable-next-line no-return-await
         return await this.checkPhase('none');
       }
     }
@@ -431,6 +435,7 @@ class RoutesMatcher {
    */
   async checkPhase(phase) {
     if (this.checkPhaseCounter++ >= 50) {
+      // eslint-disable-next-line no-console
       console.error(`Routing encountered an infinite loop while checking ${this.url.pathname}`);
       this.status = 500;
       return 'error';
@@ -440,7 +445,9 @@ class RoutesMatcher {
     this.middlewareInvoked = [];
     let shouldContinue = true;
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const route of this.routes[phase]) {
+      // eslint-disable-next-line no-await-in-loop
       const result = await this.checkRoute(phase, route);
 
       if (result === 'error') {
@@ -463,7 +470,7 @@ class RoutesMatcher {
       // redirect all requests (including /api/ ones) to the catch-all route, the only
       // way to prevent this erroneous behavior is to remove the locale here if the
       // path without the locale exists in the vercel build output
-
+      // eslint-disable-next-line no-restricted-syntax
       for (const locale of this.locales) {
         const localeRegExp = new RegExp(`/${locale}(/.*)`);
         const match = this.path.match(localeRegExp);
@@ -503,6 +510,7 @@ class RoutesMatcher {
       nextPhase = getNextPhase(phase);
     }
 
+    // eslint-disable-next-line no-return-await
     return await this.checkPhase(nextPhase);
   }
 
