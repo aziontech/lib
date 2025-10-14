@@ -21,7 +21,7 @@ function isPrerenderedRoute(url, manifest) {
 
 async function getPrerenderedAsset(request) {
   const newUrl = new URL(request.url);
-  newUrl.pathname = `${newUrl.pathname}/index.html`;
+  newUrl.pathname = `${newUrl.pathname === '/' ? '' : newUrl.pathname}/index.html`;
   const prerenderedRequest = new Request(newUrl.toString(), request);
   return await getStorageAsset(prerenderedRequest);
 }
