@@ -1,3 +1,10 @@
+## [2.2.0-stage.2](https://github.com/aziontech/lib/compare/v2.2.0-stage.1...v2.2.0-stage.2) (2025-10-14)
+
+
+### Bug Fixes
+
+* update exports path for nuxt presets to include nitro subdirectory (#288) ([96caa80](https://github.com/aziontech/lib/commit/96caa8070386e00e8087b16bb25d32ddb3e8ea8b))
+
 ## [2.2.0-stage.1](https://github.com/aziontech/lib/compare/v2.1.4...v2.2.0-stage.1) (2025-10-14)
 
 
