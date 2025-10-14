@@ -1,3 +1,10 @@
+## [2.2.0-stage.1](https://github.com/aziontech/lib/compare/v2.1.4...v2.2.0-stage.1) (2025-10-14)
+
+
+### Features
+
+* add Azion deployment support with SSR and static presets (#286) ([8cea74c](https://github.com/aziontech/lib/commit/8cea74c42faef605554ccb156e45a0ee148a038c))
+
 ### [2.1.4](https://github.com/aziontech/lib/compare/v2.1.3...v2.1.4) (2025-10-07)
 
 
