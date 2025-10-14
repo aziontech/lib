@@ -85,7 +85,7 @@ const config: AzionConfig = {
               {
                 type: 'set_connector',
                 attributes: {
-                  value: 'nuxt-ssr-test-2',
+                  value: '$CONNECTOR_NAME',
                 },
               },
               {
@@ -114,7 +114,7 @@ const config: AzionConfig = {
               {
                 type: 'set_connector',
                 attributes: {
-                  value: 'nuxt-ssr-test-2',
+                  value: '$CONNECTOR_NAME',
                 },
               },
               {
@@ -144,7 +144,7 @@ const config: AzionConfig = {
               {
                 type: 'set_connector',
                 attributes: {
-                  value: 'nuxt-ssr-test-2',
+                  value: '$CONNECTOR_NAME',
                 },
               },
               {
