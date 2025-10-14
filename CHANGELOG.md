@@ -1,3 +1,10 @@
+### [1.20.8](https://github.com/aziontech/lib/compare/v1.20.7...v1.20.8) (2025-10-14)
+
+
+### Bug Fixes
+
+* revert update pkgs version in v1.20.x (#287) ([25e50eb](https://github.com/aziontech/lib/commit/25e50eb2c3e54e251e7e45983ef91c5a89b22360))
+
 ### [1.20.7](https://github.com/aziontech/lib/compare/v1.20.6...v1.20.7) (2025-10-14)
 
 
