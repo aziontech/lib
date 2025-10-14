@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function notImplemented(name) {
   const fn = () => {
     throw createNotImplementedError(name);

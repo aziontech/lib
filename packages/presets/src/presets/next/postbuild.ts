@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BuildConfiguration, BuildContext } from 'azion/config';
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';

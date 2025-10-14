@@ -56,7 +56,6 @@ export interface ApiCreateRulePayload {
   description?: string;
 }
 
-// eslint-disable-next-line
 export interface ApiUpdateRulePayload extends Partial<ApiCreateRulePayload> {}
 
 export interface ApiRuleResponse {
@@ -121,7 +120,6 @@ export interface ApiCreateRulePayload {
   description?: string;
 }
 
-// eslint-disable-next-line
 export interface ApiUpdateRulePayload extends Partial<ApiCreateRulePayload> {}
 
 export interface ApiRuleResponse {

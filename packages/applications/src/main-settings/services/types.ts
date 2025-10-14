@@ -56,7 +56,6 @@ export interface ApiBaseApplicationPayload {
   supported_ciphers?: SupportedCiphers;
 }
 
-// eslint-disable-next-line
 export interface ApiCreateApplicationPayload extends ApiBaseApplicationPayload {}
 
 export interface ApiApplication extends ApiBaseApplicationPayload {
@@ -91,7 +90,6 @@ export interface ApiCreateApplicationResponse {
   schema_version: number;
 }
 
-// eslint-disable-next-line
 export interface ApiUpdateApplicationPayload extends Partial<ApiBaseApplicationPayload> {}
 
 export interface ApiUpdateApplicationResponse {

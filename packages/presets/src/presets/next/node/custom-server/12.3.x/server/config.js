@@ -8,12 +8,13 @@
 import { basename, extname, isAbsolute, relative, resolve } from 'path';
 
 // imports user project dependencies (node_modules)
-
+/* eslint-disable */
 import { CONFIG_FILES } from 'next/constants';
 import * as Log from 'next/dist/build/output/log';
 import { defaultConfig, normalizeConfig, validateConfig } from 'next/dist/server/config-shared';
 import { VALID_LOADERS, imageConfigDefault } from 'next/dist/shared/lib/image-config';
 import { execOnce } from 'next/dist/shared/lib/utils';
+/* eslint-enable */
 
 const targets = ['server'];
 
@@ -129,6 +130,7 @@ function assignDefaults(srcUserConfig) {
         ...Object.keys(value).reduce((c, k) => {
           const v = value[k];
           if (v !== undefined && v !== null) {
+            // eslint-disable-next-line no-param-reassign
             c[k] = v;
           }
           return c;
@@ -524,7 +526,7 @@ function assignDefaults(srcUserConfig) {
 
             for (let j = 0; j < (i18n.domains || []).length; j++) {
               const domainItem = i18n.domains[j];
-
+              // eslint-disable-next-line no-continue
               if (domainItem === item) continue;
               if (domainItem.locales && domainItem.locales.includes(locale)) {
                 console.warn(

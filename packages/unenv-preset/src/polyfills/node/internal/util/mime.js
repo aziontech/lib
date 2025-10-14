@@ -1,3 +1,4 @@
+/* eslint-disable */
 // https://nodejs.org/api/util.html#class-utilmimetype
 
 export class MIMEType {

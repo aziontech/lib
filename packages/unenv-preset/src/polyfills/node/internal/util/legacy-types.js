@@ -19,6 +19,7 @@ export const isSymbol = (val) => typeof val === 'symbol';
 
 export const isUndefined = (val) => val === undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export const isFunction = (val) => typeof val === 'function';
 
 export const isBuffer = (val) => {
@@ -34,7 +35,10 @@ export const isBuffer = (val) => {
 export const isDeepStrictEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 export const isObject = (val) =>
-  val !== null && typeof val === 'object' && Object.getPrototypeOf(val).isPrototypeOf(Object);
+  val !== null &&
+  typeof val === 'object' &&
+  // eslint-disable-next-line no-prototype-builtins
+  Object.getPrototypeOf(val).isPrototypeOf(Object);
 
 export const isError = (val) => val instanceof Error;
 

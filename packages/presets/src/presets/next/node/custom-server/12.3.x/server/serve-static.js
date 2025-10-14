@@ -31,6 +31,7 @@ export default async function serveStatic(assets, req, res, path, dir) {
   for (let i = 0; i < headersEntries.length; i++) {
     const [key, value] = headersEntries[i];
     if (value == null) {
+      // eslint-disable-next-line no-continue
       continue;
     }
     if (Array.isArray(value)) {

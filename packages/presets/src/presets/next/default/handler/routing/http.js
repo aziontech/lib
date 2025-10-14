@@ -9,6 +9,7 @@ import { applyPCREMatches } from './pcre.js';
 function applyHeaders(target, source, pcreMatch) {
   const entries = source instanceof Headers ? source.entries() : Object.entries(source);
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const [key, value] of entries) {
     const lowerKey = key.toLowerCase();
     const newValue = pcreMatch?.match ? applyPCREMatches(value, pcreMatch.match, pcreMatch.captureGroupKeys) : value;
@@ -38,6 +39,7 @@ function isUrl(url) {
  * @param {string} source Source search params to apply to the target.
  */
 function applySearchParams(target, source) {
+  // eslint-disable-next-line no-restricted-syntax
   for (const [key, value] of source.entries()) {
     if (!target.has(key) || !!value) {
       target.set(key, value);

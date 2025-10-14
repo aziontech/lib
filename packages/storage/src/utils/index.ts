@@ -38,7 +38,7 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 
   while (Date.now() - startTime < maxTime) {
     try {
       return await fn();
-    } catch {
+    } catch (error) {
       if (attempt === 0) {
         console.warn('Attempting to synchronize. The content may not be synchronized on the edge yet.');
       }
@@ -151,7 +151,7 @@ export async function fetchWithErrorHandling(
       const errorMessage = `HTTP error! Status: ${response.status} - ${response.statusText}`;
       if (debug) console.log(`Error in fetch: ${errorMessage}`);
       throw new Error(errorMessage);
-    } catch {
+    } catch (parseError) {
       const msg = `HTTP error! Status: ${response.status} - ${response.statusText}`;
       if (debug) console.log(`Error in fetch: ${msg}`);
       throw new Error(msg);

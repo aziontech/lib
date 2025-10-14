@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as crypto from 'node:crypto';
 
 export var { Cipher } = crypto;

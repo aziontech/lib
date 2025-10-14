@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { jest } from '@jest/globals';
 import { BuildConfiguration, BuildContext } from 'azion/config';
 import { javascript } from 'azion/presets';

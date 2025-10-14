@@ -16,6 +16,7 @@ function filenamesList(rootDirectory) {
   function walk(directory, list) {
     // never step on node_modules
     if (directory !== 'node_modules') {
+      // eslint-disable-next-line no-restricted-syntax
       for (const item of readdirSync(directory, { withFileTypes: true })) {
         if (item.isDirectory()) {
           walk(join(directory, item.name), list);

@@ -8,9 +8,10 @@
 import { toComputeResponse, toReqRes } from '@fastly/http-compute-js';
 
 // imports user project dependencies (node_modules)
-
+/* eslint-disable */
 import accepts from 'accepts';
 import { PHASE_PRODUCTION_SERVER } from 'next/constants';
+/* eslint-enable */
 
 import { ComputeJsNextRequest, ComputeJsNextResponse } from './base-http/compute-js.js';
 import loadConfig from './config.js';

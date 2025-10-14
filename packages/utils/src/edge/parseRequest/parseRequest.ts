@@ -58,7 +58,7 @@ const parseRequest: ParseRequestFunction = async (event: FetchEvent): Promise<Pa
   if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
     try {
       body = await request.clone().text();
-    } catch {
+    } catch (error) {
       body = 'Unable to read body';
     }
   }

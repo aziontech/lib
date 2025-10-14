@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { PluginBuild } from 'esbuild';
 import fs from 'fs';
 import path from 'path';

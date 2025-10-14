@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign,class-methods-use-this */
 import { Compiler, WebpackPluginInstance } from 'webpack';
 import AzionLocalPolyfills from '../../../../helpers/azion-local-polyfills';
 import { generateWebpackBanner } from './../../helpers';
