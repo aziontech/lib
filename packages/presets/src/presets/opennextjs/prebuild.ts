@@ -60,7 +60,7 @@ async function indentifyPackageManager(): Promise<string> {
     try {
       await readFile(filePath, 'utf-8');
       return lockFile.includes('yarn') ? 'yarn' : lockFile.includes('pnpm') ? 'pnpm' : 'npm';
-    } catch (error) {
+    } catch {
       // File not found, continue to the next one
     }
   }
