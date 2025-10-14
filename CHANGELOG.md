@@ -1,3 +1,10 @@
+## [2.2.0-stage.3](https://github.com/aziontech/lib/compare/v2.2.0-stage.2...v2.2.0-stage.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* replace hardcoded connector name with environment variable (#289) ([08b9c23](https://github.com/aziontech/lib/commit/08b9c2388bf39ba16a2e8688cf01485a612ed318))
+
 ## [2.2.0-stage.2](https://github.com/aziontech/lib/compare/v2.2.0-stage.1...v2.2.0-stage.2) (2025-10-14)
 
 
