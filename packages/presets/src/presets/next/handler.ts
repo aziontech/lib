@@ -71,7 +71,7 @@ async function handlerDefault(request: AzionRuntimeRequest, ctx: AzionRuntimeCtx
   };
 
   const context = {
-    waitUntil: ctx.waitUntil,
+    waitUntil: ctx.waitUntil.bind(ctx),
     passThroughOnException: () => null,
   };
 
