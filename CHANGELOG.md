@@ -1,3 +1,19 @@
+## [2.2.0](https://github.com/aziontech/lib/compare/v2.1.4...v2.2.0) (2025-10-15)
+
+
+### Features
+
+* add Azion deployment support with SSR and static presets (#286) ([8cea74c](https://github.com/aziontech/lib/commit/8cea74c42faef605554ccb156e45a0ee148a038c))
+
+
+### Bug Fixes
+
+* handle root path correctly when fetching prerendered assets (#290) ([a33c1b9](https://github.com/aziontech/lib/commit/a33c1b9e98d985624a71b98dc98cb6e9ba630bd0))
+* next handler wait until bind (#293) ([ceffe0a](https://github.com/aziontech/lib/commit/ceffe0a439e3413d415071de7374bcc2e804f17e))
+* remove extra slash in rewrite request URI pattern for Nuxt preset (#292) ([c9cde09](https://github.com/aziontech/lib/commit/c9cde09587588d0d4eefb178038a46f4023ae28b))
+* replace hardcoded connector name with environment variable (#289) ([08b9c23](https://github.com/aziontech/lib/commit/08b9c2388bf39ba16a2e8688cf01485a612ed318))
+* update exports path for nuxt presets to include nitro subdirectory (#288) ([96caa80](https://github.com/aziontech/lib/commit/96caa8070386e00e8087b16bb25d32ddb3e8ea8b))
+
 ## [2.2.0-stage.6](https://github.com/aziontech/lib/compare/v2.2.0-stage.5...v2.2.0-stage.6) (2025-10-15)
 
 

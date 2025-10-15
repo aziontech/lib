@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "2.2.0-stage.6",
+  "version": "2.2.0",
   "description": "Azion Packages for Edge Computing.",
   "scripts": {
     "prepare": "husky",
