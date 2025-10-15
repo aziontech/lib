@@ -1,3 +1,10 @@
+## [2.2.0-stage.4](https://github.com/aziontech/lib/compare/v2.2.0-stage.3...v2.2.0-stage.4) (2025-10-15)
+
+
+### Bug Fixes
+
+* handle root path correctly when fetching prerendered assets (#290) ([a33c1b9](https://github.com/aziontech/lib/commit/a33c1b9e98d985624a71b98dc98cb6e9ba630bd0))
+
 ## [2.2.0-stage.3](https://github.com/aziontech/lib/compare/v2.2.0-stage.2...v2.2.0-stage.3) (2025-10-14)
 
 
