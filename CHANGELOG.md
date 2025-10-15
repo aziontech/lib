@@ -1,3 +1,10 @@
+## [2.2.0-stage.5](https://github.com/aziontech/lib/compare/v2.2.0-stage.4...v2.2.0-stage.5) (2025-10-15)
+
+
+### Bug Fixes
+
+* remove extra slash in rewrite request URI pattern for Nuxt preset (#292) ([c9cde09](https://github.com/aziontech/lib/commit/c9cde09587588d0d4eefb178038a46f4023ae28b))
+
 ## [2.2.0-stage.4](https://github.com/aziontech/lib/compare/v2.2.0-stage.3...v2.2.0-stage.4) (2025-10-15)
 
 
