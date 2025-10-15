@@ -120,7 +120,7 @@ const config: AzionConfig = {
               {
                 type: 'rewrite_request',
                 attributes: {
-                  value: '${uri}/index.html',
+                  value: '${uri}index.html',
                 },
               },
             ],

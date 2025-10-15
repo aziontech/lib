@@ -88,6 +88,7 @@
       "require": "./packages/presets/dist/index.cjs",
       "import": "./packages/presets/dist/index.js"
     },
+    "./presets/preset/*": "./packages/presets/dist/presets/*",
     "./preset/nuxt/*": "./packages/presets/src/presets/nuxt/nitro/*/index.js",
     "./bundler": {
       "require": "./packages/bundler/dist/index.cjs",
