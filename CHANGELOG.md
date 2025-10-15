@@ -1,3 +1,10 @@
+## [2.2.0-stage.6](https://github.com/aziontech/lib/compare/v2.2.0-stage.5...v2.2.0-stage.6) (2025-10-15)
+
+
+### Bug Fixes
+
+* next handler wait until bind (#293) ([ceffe0a](https://github.com/aziontech/lib/commit/ceffe0a439e3413d415071de7374bcc2e804f17e))
+
 ## [2.2.0-stage.5](https://github.com/aziontech/lib/compare/v2.2.0-stage.4...v2.2.0-stage.5) (2025-10-15)
 
 
