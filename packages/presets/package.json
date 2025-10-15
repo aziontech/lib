@@ -18,6 +18,7 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.js"
     },
+    "./preset/nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
     "./presets/preset/*": "./dist/presets/*"
   },
   "author": "aziontech",
@@ -25,7 +26,9 @@
   "files": [
     "dist",
     "package.json",
-    "src/presets/next/*"
+    "README.md",
+    "src/presets/next/*",
+    "src/presets/nuxt/nitro/*"
   ],
   "dependencies": {
     "cookie": "^1.0.2",

@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "2.1.4",
+  "version": "2.2.0-stage.6",
   "description": "Azion Packages for Edge Computing.",
   "scripts": {
     "prepare": "husky",
@@ -76,7 +76,8 @@
     "cli/**/*",
     "packages/unenv-preset/src/polyfills/*",
     "packages/bundler/src/polyfills/*",
-    "packages/presets/src/presets/next/*"
+    "packages/presets/src/presets/next/*",
+    "packages/presets/src/presets/nuxt/nitro/*"
   ],
   "exports": {
     ".": {
@@ -88,6 +89,7 @@
       "import": "./packages/presets/dist/index.js"
     },
     "./presets/preset/*": "./packages/presets/dist/presets/*",
+    "./preset/nuxt/*": "./packages/presets/src/presets/nuxt/nitro/*/index.js",
     "./bundler": {
       "require": "./packages/bundler/dist/index.cjs",
       "import": "./packages/bundler/dist/index.js"
