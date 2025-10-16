@@ -12,27 +12,31 @@ export default defineConfig({
       type: 'object_storage',
     },
   ],
+  functions: [
+    {
+      name: 'handler',
+      path: '.edge/functions/handler.js',
+    },
+  ],
   rules: {
     request: [
       {
-        name: 'Set Storage Origin for All Requests',
-        match: '^\\/',
-        behavior: {
-          setOrigin: {
-            name: 'origin-storage-default',
-            type: 'object_storage',
-          },
-        },
-      },
-      {
-        name: 'Deliver Static Assets',
-        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$',
+        name: 'Nuxt Static Assets',
+        match: '^\\/_nuxt\\/', // starts with '/_nuxt/'
         behavior: {
           setOrigin: {
             name: 'origin-storage-default',
             type: 'object_storage',
           },
           deliver: true,
+        },
+      },
+      {
+        name: 'Redirect to index.html for Subpaths',
+        match: '^(?!.*/$)(?![sS]*.[a-zA-Z0-9]+$).*',
+        behavior: {
+          // eslint-disable-next-line no-template-curly-in-string
+          rewrite: '${uri}/index.html',
         },
       },
       {
@@ -44,11 +48,23 @@ export default defineConfig({
         },
       },
       {
-        name: 'Redirect to index.html for Subpaths',
-        match: '^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*',
+        name: 'Deliver Static Assets',
+        match:
+          '.(jpg|jpeg|png|gif|bmp|webp|svg|ico|ttf|otf|woff|woff2|eot|pdf|doc|docx|xls|xlsx|ppt|pptx|mp4|webm|mp3|wav|ogg|css|js|json|xml|html|txt|csv|zip|rar|7z|tar|gz|webmanifest|map|md|yaml|yml)$',
         behavior: {
-          // eslint-disable-next-line no-template-curly-in-string
-          rewrite: '${uri}/index.html',
+          setOrigin: {
+            name: 'origin-storage-default',
+            type: 'object_storage',
+          },
+          deliver: true,
+        },
+      },
+      {
+        name: 'Execute Edge Function',
+        match: '^/',
+        behavior: {
+          runFunction: 'handler',
+          forwardCookies: true,
         },
       },
     ],
