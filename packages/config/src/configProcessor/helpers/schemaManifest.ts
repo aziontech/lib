@@ -1435,7 +1435,7 @@ const schemaConnectorManifest = {
                   type: 'string',
                   enum: EDGE_CONNECTOR_DNS_RESOLUTION,
                   default: 'preserve',
-                  errorMessage: "The 'dns_resolution' must be one of: preserve, force_ipv4, force_ipv6",
+                  errorMessage: "The 'dns_resolution' must be one of: both, force_ipv4",
                 },
                 transport_policy: {
                   type: 'string',

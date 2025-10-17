@@ -53,7 +53,7 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
             modules: addr.modules || null,
           })),
           connection_options: {
-            dns_resolution: connector.attributes.connectionOptions.dnsResolution ?? 'preserve',
+            dns_resolution: connector.attributes.connectionOptions.dnsResolution ?? 'both',
             transport_policy: connector.attributes.connectionOptions.transportPolicy ?? 'preserve',
             http_version_policy: connector.attributes.connectionOptions.httpVersionPolicy ?? 'http1_1',
             host: connector.attributes.connectionOptions.host ?? '${host}',

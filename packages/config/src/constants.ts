@@ -297,7 +297,7 @@ export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
 
 // Constantes para Connector V4
 export const EDGE_CONNECTOR_TYPES = ['http', 'storage', 'live_ingest'] as const;
-export const EDGE_CONNECTOR_DNS_RESOLUTION = ['preserve', 'force_ipv4', 'force_ipv6'] as const;
+export const EDGE_CONNECTOR_DNS_RESOLUTION = ['both', 'force_ipv4'] as const;
 export const EDGE_CONNECTOR_TRANSPORT_POLICY = ['preserve', 'force_https', 'force_http'] as const;
 export const EDGE_CONNECTOR_HTTP_VERSION_POLICY = ['http1_1'] as const;
 export const EDGE_CONNECTOR_LOAD_BALANCE_METHOD = ['round_robin', 'least_conn', 'ip_hash'] as const;

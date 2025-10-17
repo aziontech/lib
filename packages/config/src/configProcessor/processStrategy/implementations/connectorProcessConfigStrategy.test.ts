@@ -88,7 +88,7 @@ describe('ConnectorProcessConfigStrategy', () => {
               },
             ],
             connection_options: {
-              dns_resolution: 'preserve',
+              dns_resolution: 'both',
               transport_policy: 'preserve',
               http_version_policy: 'http1_1',
               host: '${host}',
@@ -256,7 +256,7 @@ describe('ConnectorProcessConfigStrategy', () => {
                 },
               ],
               connectionOptions: {
-                dnsResolution: 'preserve',
+                dnsResolution: 'both',
                 transportPolicy: 'preserve',
               },
             },
@@ -282,7 +282,7 @@ describe('ConnectorProcessConfigStrategy', () => {
               },
             ],
             connection_options: {
-              dns_resolution: 'preserve',
+              dns_resolution: 'both',
               transport_policy: 'preserve',
               http_version_policy: 'http1_1',
               host: '${host}',
@@ -417,7 +417,7 @@ describe('ConnectorProcessConfigStrategy', () => {
                 },
               ],
               connection_options: {
-                dns_resolution: 'preserve',
+                dns_resolution: 'both',
                 transport_policy: 'preserve',
                 http_version_policy: 'http1_1',
                 host: '${host}',
@@ -453,7 +453,7 @@ describe('ConnectorProcessConfigStrategy', () => {
       expect(httpAttributes.addresses[0].address).toBe('example.com');
       expect(httpAttributes.addresses[0].httpPort).toBe(80);
       expect(httpAttributes.addresses[0].httpsPort).toBe(443);
-      expect(httpAttributes.connectionOptions.dnsResolution).toBe('preserve');
+      expect(httpAttributes.connectionOptions.dnsResolution).toBe('both');
       expect(transformedPayload.connectors).toEqual(result);
     });
 
@@ -563,7 +563,7 @@ describe('ConnectorProcessConfigStrategy', () => {
                 },
               ],
               connection_options: {
-                dns_resolution: 'preserve',
+                dns_resolution: 'both',
                 transport_policy: 'preserve',
                 http_version_policy: 'http1_1',
                 host: '${host}',
@@ -626,7 +626,7 @@ describe('ConnectorProcessConfigStrategy', () => {
                 },
               ],
               connection_options: {
-                dns_resolution: 'preserve',
+                dns_resolution: 'both',
                 transport_policy: 'preserve',
                 http_version_policy: 'http1_1',
               },
