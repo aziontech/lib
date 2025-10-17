@@ -1,3 +1,10 @@
+### [1.20.9](https://github.com/aziontech/lib/compare/v1.20.8...v1.20.9) (2025-10-17)
+
+
+### Bug Fixes
+
+* add Nuxt.js preset support with SSR and SSG capabilities ([79054f3](https://github.com/aziontech/lib/commit/79054f3054a8653a5f3f107355d7551ac90d882b))
+
 ### [1.20.8](https://github.com/aziontech/lib/compare/v1.20.7...v1.20.8) (2025-10-14)
 
 
