@@ -1,3 +1,10 @@
+### [2.2.1-stage.1](https://github.com/aziontech/lib/compare/v2.2.0...v2.2.1-stage.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* update DNS resolution schema with api (#295) ([95f51e4](https://github.com/aziontech/lib/commit/95f51e4924c09730c587b13f6f026c089067a4e3))
+
 ## [2.2.0](https://github.com/aziontech/lib/compare/v2.1.4...v2.2.0) (2025-10-15)
 
 
