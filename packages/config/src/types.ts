@@ -178,7 +178,7 @@ export type WorkloadHTTPVersion = 'http1' | 'http2';
 
 // Connector types
 export type ConnectorType = 'http' | 'storage' | 'live_ingest';
-export type ConnectorDnsResolution = 'preserve' | 'force_ipv4' | 'force_ipv6';
+export type ConnectorDnsResolution = 'both' | 'force_ipv4';
 export type ConnectorTransportPolicy = 'preserve' | 'force_https' | 'force_http';
 export type ConnectorHttpVersionPolicy = 'http1_1';
 export type ConnectorLoadBalanceMethod = 'round_robin' | 'least_conn' | 'ip_hash';

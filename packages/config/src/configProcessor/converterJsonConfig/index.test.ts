@@ -216,7 +216,7 @@ describe('convertJsonConfigToObject', () => {
 //                 },
 //               ],
 //               connectionOptions: {
-//                 dnsResolution: 'preserve',
+//                 dnsResolution: 'both',
 //                 transportPolicy: 'preserve',
 //                 httpVersionPolicy: 'http1_1',
 //                 host: '${host}',
@@ -257,7 +257,7 @@ describe('convertJsonConfigToObject', () => {
 //                 }),
 //               ]),
 //               connectionOptions: expect.objectContaining({
-//                 dnsResolution: 'preserve',
+//                 dnsResolution: 'both',
 //                 transportPolicy: 'preserve',
 //                 httpVersionPolicy: 'http1_1',
 //                 host: '${host}',

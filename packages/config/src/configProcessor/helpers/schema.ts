@@ -1581,8 +1581,8 @@ const azionConfigSchema = {
                           dnsResolution: {
                             type: 'string',
                             enum: EDGE_CONNECTOR_DNS_RESOLUTION,
-                            default: 'preserve',
-                            errorMessage: "The 'dnsResolution' must be one of: preserve, force_ipv4, force_ipv6",
+                            default: 'both',
+                            errorMessage: "The 'dnsResolution' must be one of: both, force_ipv4",
                           },
                           transportPolicy: {
                             type: 'string',
