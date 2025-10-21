@@ -50,7 +50,7 @@ const config: AzionConfig = {
           },
           tieredCache: {
             enabled: true,
-            topology: 'global',
+            topology: 'nearest-region',
           },
           cacheByQueryString: {
             option: 'denylist' as CacheByQueryString,

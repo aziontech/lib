@@ -71,7 +71,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
             },
             tiered_cache: {
               enabled: cache?.tieredCache?.enabled || false,
-              topology: cache?.tieredCache?.topology || 'global',
+              topology: cache?.tieredCache?.topology || 'nearest-region',
             },
           },
           application_accelerator: {
@@ -121,7 +121,7 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
         queryStringSort: cache.modules?.application_accelerator?.cache_vary_by_querystring?.sort_enabled || false,
         tieredCache: {
           enabled: cache.modules?.cache?.tiered_cache?.enabled || false,
-          topology: cache.modules?.cache?.tiered_cache?.topology || 'global',
+          topology: cache.modules?.cache?.tiered_cache?.topology || 'nearest-region',
         },
       };
 

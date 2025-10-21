@@ -186,7 +186,7 @@ export const CACHE_BY_QUERY_STRING = ['ignore', 'all', 'allowlist', 'denylist'] 
 export const CACHE_BY_COOKIE = ['ignore', 'all', 'allowlist', 'denylist'] as const;
 export const CACHE_ADAPTIVE_DELIVERY = ['ignore', 'allowlist'] as const;
 export const CACHE_VARY_BY_METHOD = ['options', 'post'] as const;
-export const TIERED_CACHE_TOPOLOGY = ['near-edge', 'br-east-1', 'us-east-1'] as const;
+export const TIERED_CACHE_TOPOLOGY = ['nearest-region', 'us-east-1', 'br-east-1'] as const;
 export const CACHE_L2_REGION = [null, 'sa-brazil', 'na-united-states'] as const;
 
 // Constantes para Build
