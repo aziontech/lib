@@ -159,7 +159,7 @@ export type CacheByQueryString = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheByCookie = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheAdaptiveDelivery = 'ignore' | 'allowlist';
 export type CacheVaryByMethod = 'options' | 'post';
-export type TieredCacheTopology = 'global';
+export type TieredCacheTopology = 'nearest-region' | 'br-east-1' | 'us-east-1';
 
 // Build types
 export type BuildBundler = 'webpack' | 'esbuild';

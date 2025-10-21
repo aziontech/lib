@@ -630,10 +630,10 @@ const azionConfigSchema = {
                         },
                         topology: {
                           type: 'string',
-                          enum: ['near-edge', 'br-east-1', 'us-east-1', 'global'],
-                          default: 'global',
+                          enum: ['nearest-region', 'us-east-1', 'br-east-1'],
+                          default: 'nearest-region',
                           errorMessage:
-                            "The 'topology' field must be one of 'near-edge', 'br-east-1', 'us-east-1', or 'global'.",
+                            "The 'topology' field must be one of 'nearest-region', 'br-east-1', 'us-east-1'.",
                         },
                       },
                       additionalProperties: false,
