@@ -629,7 +629,7 @@ const schemaApplicationCacheSettings = {
                 topology: {
                   type: 'string',
                   enum: TIERED_CACHE_TOPOLOGY,
-                  errorMessage: "The 'topology' must be one of: near-, br-east-1, us-east-1.",
+                  errorMessage: "The 'topology' must be one of: nearest-region, us-east-1, br-east-1.",
                 },
               },
               required: ['topology'],
@@ -1435,7 +1435,7 @@ const schemaConnectorManifest = {
                   type: 'string',
                   enum: EDGE_CONNECTOR_DNS_RESOLUTION,
                   default: 'preserve',
-                  errorMessage: "The 'dns_resolution' must be one of: preserve, force_ipv4, force_ipv6",
+                  errorMessage: "The 'dns_resolution' must be one of: both, force_ipv4",
                 },
                 transport_policy: {
                   type: 'string',

@@ -159,7 +159,7 @@ export type CacheByQueryString = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheByCookie = 'ignore' | 'all' | 'allowlist' | 'denylist';
 export type CacheAdaptiveDelivery = 'ignore' | 'allowlist';
 export type CacheVaryByMethod = 'options' | 'post';
-export type TieredCacheTopology = 'global';
+export type TieredCacheTopology = 'nearest-region' | 'br-east-1' | 'us-east-1';
 
 // Build types
 export type BuildBundler = 'webpack' | 'esbuild';
@@ -178,7 +178,7 @@ export type WorkloadHTTPVersion = 'http1' | 'http2';
 
 // Connector types
 export type ConnectorType = 'http' | 'storage' | 'live_ingest';
-export type ConnectorDnsResolution = 'preserve' | 'force_ipv4' | 'force_ipv6';
+export type ConnectorDnsResolution = 'both' | 'force_ipv4';
 export type ConnectorTransportPolicy = 'preserve' | 'force_https' | 'force_http';
 export type ConnectorHttpVersionPolicy = 'http1_1';
 export type ConnectorLoadBalanceMethod = 'round_robin' | 'least_conn' | 'ip_hash';

@@ -186,7 +186,7 @@ export const CACHE_BY_QUERY_STRING = ['ignore', 'all', 'allowlist', 'denylist'] 
 export const CACHE_BY_COOKIE = ['ignore', 'all', 'allowlist', 'denylist'] as const;
 export const CACHE_ADAPTIVE_DELIVERY = ['ignore', 'allowlist'] as const;
 export const CACHE_VARY_BY_METHOD = ['options', 'post'] as const;
-export const TIERED_CACHE_TOPOLOGY = ['near-edge', 'br-east-1', 'us-east-1'] as const;
+export const TIERED_CACHE_TOPOLOGY = ['nearest-region', 'us-east-1', 'br-east-1'] as const;
 export const CACHE_L2_REGION = [null, 'sa-brazil', 'na-united-states'] as const;
 
 // Constantes para Build
@@ -297,7 +297,7 @@ export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
 
 // Constantes para Connector V4
 export const EDGE_CONNECTOR_TYPES = ['http', 'storage', 'live_ingest'] as const;
-export const EDGE_CONNECTOR_DNS_RESOLUTION = ['preserve', 'force_ipv4', 'force_ipv6'] as const;
+export const EDGE_CONNECTOR_DNS_RESOLUTION = ['both', 'force_ipv4'] as const;
 export const EDGE_CONNECTOR_TRANSPORT_POLICY = ['preserve', 'force_https', 'force_http'] as const;
 export const EDGE_CONNECTOR_HTTP_VERSION_POLICY = ['http1_1'] as const;
 export const EDGE_CONNECTOR_LOAD_BALANCE_METHOD = ['round_robin', 'least_conn', 'ip_hash'] as const;

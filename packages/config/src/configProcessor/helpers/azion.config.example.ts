@@ -50,7 +50,7 @@ const config: AzionConfig = {
           },
           tieredCache: {
             enabled: true,
-            topology: 'global',
+            topology: 'nearest-region',
           },
           cacheByQueryString: {
             option: 'denylist' as CacheByQueryString,
@@ -359,7 +359,7 @@ const config: AzionConfig = {
           },
         ],
         connectionOptions: {
-          dnsResolution: 'preserve' as ConnectorDnsResolution,
+          dnsResolution: 'both' as ConnectorDnsResolution,
           transportPolicy: 'preserve' as ConnectorTransportPolicy,
           httpVersionPolicy: 'http1_1' as ConnectorHttpVersionPolicy,
           host: '${host}',

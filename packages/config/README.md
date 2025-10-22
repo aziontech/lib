@@ -192,7 +192,7 @@ const config = defineConfig({
           },
         ],
         connectionOptions: {
-          dnsResolution: 'preserve',
+          dnsResolution: 'both',
           transportPolicy: 'preserve',
           httpVersionPolicy: 'http1_1',
           host: '${host}',

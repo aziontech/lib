@@ -630,10 +630,10 @@ const azionConfigSchema = {
                         },
                         topology: {
                           type: 'string',
-                          enum: ['near-edge', 'br-east-1', 'us-east-1', 'global'],
-                          default: 'global',
+                          enum: ['nearest-region', 'us-east-1', 'br-east-1'],
+                          default: 'nearest-region',
                           errorMessage:
-                            "The 'topology' field must be one of 'near-edge', 'br-east-1', 'us-east-1', or 'global'.",
+                            "The 'topology' field must be one of 'nearest-region', 'br-east-1', 'us-east-1'.",
                         },
                       },
                       additionalProperties: false,
@@ -1581,8 +1581,8 @@ const azionConfigSchema = {
                           dnsResolution: {
                             type: 'string',
                             enum: EDGE_CONNECTOR_DNS_RESOLUTION,
-                            default: 'preserve',
-                            errorMessage: "The 'dnsResolution' must be one of: preserve, force_ipv4, force_ipv6",
+                            default: 'both',
+                            errorMessage: "The 'dnsResolution' must be one of: both, force_ipv4",
                           },
                           transportPolicy: {
                             type: 'string',
