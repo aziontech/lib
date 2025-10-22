@@ -1,3 +1,11 @@
+### [2.2.1](https://github.com/aziontech/lib/compare/v2.2.0...v2.2.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* update DNS resolution schema with api (#295) ([95f51e4](https://github.com/aziontech/lib/commit/95f51e4924c09730c587b13f6f026c089067a4e3))
+* update tiered cache topologies (#297) ([b50d71e](https://github.com/aziontech/lib/commit/b50d71e4cc0ea8909c0e7302aca9c11447a4b7c2))
+
 ### [2.2.1-stage.2](https://github.com/aziontech/lib/compare/v2.2.1-stage.1...v2.2.1-stage.2) (2025-10-21)
 
 
