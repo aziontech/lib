@@ -1,3 +1,11 @@
+### [1.20.10](https://github.com/aziontech/lib/compare/v1.20.9...v1.20.10) (2025-10-29)
+
+
+### Bug Fixes
+
+* add console.time and console.timeEnd polyfills for node globals ([71f093a](https://github.com/aziontech/lib/commit/71f093ab1b1d82da289677439bcb489ca9cb1ec7))
+* add rule to handle @nuxt/content API requests in function ([740d1f5](https://github.com/aziontech/lib/commit/740d1f5273524ba82a04c2c917224c319b968186))
+
 ### [1.20.9](https://github.com/aziontech/lib/compare/v1.20.8...v1.20.9) (2025-10-17)
 
 
