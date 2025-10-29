@@ -48,6 +48,24 @@ export default defineConfig({
         },
       },
       {
+        name: 'Execute Nuxt Function when starts with /api/_content',
+        description:
+          'Handle @nuxt/content API requests - executes Nuxt function for content management endpoints. Remove this rule if your project does not use the @nuxt/content library.',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'starts_with',
+            conditional: 'if',
+            inputValue: '/api/_content',
+          },
+        ],
+        behavior: {
+          runFunction: 'handler',
+          forwardCookies: true,
+          deliver: true,
+        },
+      },
+      {
         name: 'Deliver Static Assets',
         match:
           '.(jpg|jpeg|png|gif|bmp|webp|svg|ico|ttf|otf|woff|woff2|eot|pdf|doc|docx|xls|xlsx|ppt|pptx|mp4|webm|mp3|wav|ogg|css|js|json|xml|html|txt|csv|zip|rar|7z|tar|gz|webmanifest|map|md|yaml|yml)$',
