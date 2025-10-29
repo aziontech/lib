@@ -1,3 +1,10 @@
+### [2.2.2-stage.1](https://github.com/aziontech/lib/compare/v2.2.1...v2.2.2-stage.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* routing rule for handling Nuxt content API requests and adds a polyfill for the Node.js console (#300) ([356198b](https://github.com/aziontech/lib/commit/356198b4135c1242476bcc32778f583a48a197a0))
+
 ### [2.2.1](https://github.com/aziontech/lib/compare/v2.2.0...v2.2.1) (2025-10-22)
 
 
