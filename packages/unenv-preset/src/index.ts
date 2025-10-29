@@ -15,6 +15,7 @@ export default {
     performance: `unenv/polyfill/performance`,
     setInterval: `${polyfillsPath}/node/globals/set-interval.js`,
     clearInterval: `${polyfillsPath}/node/globals/clear-interval.js`,
+    console: `${polyfillsPath}/node/globals/console.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',

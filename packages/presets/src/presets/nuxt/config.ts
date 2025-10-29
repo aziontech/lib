@@ -126,6 +126,36 @@ const config: AzionConfig = {
             ],
           },
           {
+            name: 'Execute Nuxt Function when starts with /api/_content',
+            description:
+              'Handle @nuxt/content API requests - executes Nuxt function for content management endpoints. Remove this rule if your project does not use the @nuxt/content library.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'starts_with',
+                  argument: '/api/_content',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'run_function',
+                attributes: {
+                  value: '$FUNCTION_NAME',
+                },
+              },
+              {
+                type: 'forward_cookies',
+              },
+              {
+                type: 'deliver',
+              },
+            ],
+          },
+          {
             name: 'Deliver Static Assets',
             description: 'Deliver static assets directly from storage',
             active: true,
