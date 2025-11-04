@@ -1309,22 +1309,31 @@ const schemaWorkloadManifest = {
     mtls: {
       type: 'object',
       properties: {
-        verification: {
-          type: 'string',
-          enum: WORKLOAD_MTLS_VERIFICATION,
-          default: 'enforce',
+        enabled: {
+          type: 'boolean',
+          default: false,
         },
-        certificate: {
-          type: ['integer', 'null'],
-          minimum: 1,
-        },
-        crl: {
-          type: ['array', 'null'],
-          items: { type: 'integer' },
-          maxItems: 100,
+        config: {
+          type: 'object',
+          properties: {
+            verification: {
+              type: 'string',
+              enum: WORKLOAD_MTLS_VERIFICATION,
+              default: 'enforce',
+            },
+            certificate: {
+              type: ['integer', 'null'],
+              minimum: 1,
+            },
+            crl: {
+              type: ['array', 'null'],
+              items: { type: 'integer' },
+              maxItems: 100,
+            },
+          },
+          additionalProperties: false,
         },
       },
-      required: ['verification'],
       additionalProperties: false,
     },
   },
