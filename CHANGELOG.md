@@ -1,3 +1,10 @@
+### [2.2.3-stage.1](https://github.com/aziontech/lib/compare/v2.2.2...v2.2.3-stage.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* update mtls attribute in workload configuration (#306) ([f6bc044](https://github.com/aziontech/lib/commit/f6bc044344b1c5e9919b48576125b816183d75ee))
+
 ### [2.2.2](https://github.com/aziontech/lib/compare/v2.2.1...v2.2.2) (2025-10-29)
 
 
