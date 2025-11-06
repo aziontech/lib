@@ -81,9 +81,12 @@ describe('WorkloadProcessConfigStrategy', () => {
               },
             },
             mtls: {
-              verification: 'permissive',
-              certificate: 456,
-              crl: [789],
+              enabled: true,
+              config: {
+                verification: 'permissive',
+                certificate: 456,
+                crl: [789],
+              },
             },
           },
         ],
@@ -112,9 +115,12 @@ describe('WorkloadProcessConfigStrategy', () => {
             },
           },
           mtls: {
-            verification: 'permissive',
-            certificate: 456,
-            crl: [789],
+            enabled: true,
+            config: {
+              verification: 'permissive',
+              certificate: 456,
+              crl: [789],
+            },
           },
         }),
       ]);
@@ -232,9 +238,12 @@ describe('WorkloadProcessConfigStrategy', () => {
               },
             },
             mtls: {
-              verification: 'permissive',
-              certificate: 456,
-              crl: [789],
+              enabled: true,
+              config: {
+                verification: 'permissive',
+                certificate: 456,
+                crl: [789],
+              },
             },
           },
         ],
@@ -264,9 +273,12 @@ describe('WorkloadProcessConfigStrategy', () => {
               },
             },
             mtls: {
-              verification: 'permissive',
-              certificate: 456,
-              crl: [789],
+              enabled: true,
+              config: {
+                verification: 'permissive',
+                certificate: 456,
+                crl: [789],
+              },
             },
           }),
         ],
@@ -352,7 +364,7 @@ describe('WorkloadProcessConfigStrategy', () => {
       };
 
       const result = strategy.transformToConfig(payload) as {
-        workloads: Array<{ mtls?: { verification: string; certificate?: number | null; crl?: number[] | null } }>;
+        workloads: Array<{ mtls?: {  enabled?: false; config?: { verification: string; certificate?: number | null; crl?: number[] | null } } }>;
       };
 
       expect(result.workloads[0].mtls).toBeUndefined();

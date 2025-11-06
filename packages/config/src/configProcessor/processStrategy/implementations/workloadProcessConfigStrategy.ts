@@ -33,9 +33,12 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       },
       mtls: workload.mtls
         ? {
-            verification: workload.mtls.verification || 'enforce',
-            certificate: workload.mtls.certificate,
-            crl: workload.mtls.crl,
+            enabled: workload.mtls.enabled || false,
+            config: {
+              verification: workload.mtls.config.verification || 'enforce',
+              certificate: workload.mtls.config.certificate,
+              crl: workload.mtls.config.crl,
+            },
           }
         : undefined,
     }));
@@ -68,9 +71,12 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       },
       mtls: workload.mtls
         ? {
-            verification: workload.mtls.verification,
-            certificate: workload.mtls.certificate,
-            crl: workload.mtls.crl,
+            enabled: workload.mtls.enabled || false,
+            config: {
+              verification: workload.mtls.config.verification || 'enforce',
+              certificate: workload.mtls.config.certificate,
+              crl: workload.mtls.config.crl,
+            },
           }
         : undefined,
     }));

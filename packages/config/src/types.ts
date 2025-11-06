@@ -776,9 +776,12 @@ export type AzionWorkloadProtocols = {
 };
 
 export type AzionWorkloadMTLS = {
-  verification: WorkloadMTLSVerification;
-  certificate?: number | null;
-  crl?: number[] | null;
+  enabled: boolean;
+  config: {
+    verification: WorkloadMTLSVerification;
+    certificate?: number | null;
+    crl?: number[] | null;
+  };
 };
 
 /**

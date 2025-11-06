@@ -532,9 +532,12 @@ const config: AzionConfig = {
         },
       },
       mtls: {
-        verification: 'enforce' as WorkloadMTLSVerification,
-        certificate: 67890,
-        crl: [1, 2, 3],
+        enabled: true,
+        config: {
+          verification: 'enforce' as WorkloadMTLSVerification,
+          certificate: 67890,
+          crl: [1, 2, 3],
+        },
       },
       deployments: [
         {
