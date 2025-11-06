@@ -1,3 +1,10 @@
+### [1.20.11](https://github.com/aziontech/lib/compare/v1.20.10...v1.20.11) (2025-11-06)
+
+
+### Bug Fixes
+
+* implement custom WASM loader for Nuxt SSR builds ([e5e7cab](https://github.com/aziontech/lib/commit/e5e7cab1707189021e8ffe6725b5f85c1cc32986))
+
 ### [1.20.10](https://github.com/aziontech/lib/compare/v1.20.9...v1.20.10) (2025-10-29)
 
 
