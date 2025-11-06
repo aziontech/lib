@@ -1,3 +1,11 @@
+### [2.2.3](https://github.com/aziontech/lib/compare/v2.2.2...v2.2.3) (2025-11-06)
+
+
+### Bug Fixes
+
+* implement custom WASM loader for Nuxt SSR builds (#307) ([3fec9d8](https://github.com/aziontech/lib/commit/3fec9d8919e52d2df983f35676d5af7a6e2156a9))
+* update mtls attribute in workload configuration (#306) ([f6bc044](https://github.com/aziontech/lib/commit/f6bc044344b1c5e9919b48576125b816183d75ee))
+
 ### [2.2.3-stage.2](https://github.com/aziontech/lib/compare/v2.2.3-stage.1...v2.2.3-stage.2) (2025-11-06)
 
 
