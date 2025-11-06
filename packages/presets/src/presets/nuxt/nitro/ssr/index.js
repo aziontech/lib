@@ -1,6 +1,7 @@
 import { writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { resolve } from 'pathe';
+import rollupWasmLoader from './plugins/rollup-wasm-loader';
 
 export default {
   extends: 'base-worker',
@@ -18,10 +19,16 @@ export default {
     },
   },
   wasm: {
-    lazy: false,
-    esmImport: true,
+    lazy: true,
   },
   hooks: {
+    'build:before': (nitro) => {
+      nitro.options.rollupConfig.plugins.push(
+        rollupWasmLoader({
+          outputDir: `${nitro.options.output.dir}/public`,
+        }),
+      );
+    },
     async compiled(nitro) {
       await writeFile(
         resolve(nitro.options.output.dir, 'package.json'),
