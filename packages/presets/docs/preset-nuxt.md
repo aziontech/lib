@@ -41,6 +41,28 @@ export default defineNuxtConfig({
 });
 ```
 
+### Using nuxt-og-image with SSR
+
+If you're using `nuxt-og-image` in your project with SSR, you need to add the following configuration to your `nuxt.config.ts`:
+
+```typescript
+export default defineNuxtConfig({
+  modules: ['nuxt-og-image'],
+  nitro: {
+    preset: require.resolve('azion/preset/nuxt/ssr'),
+  },
+  ogImage: {
+    compatibility: {
+      runtime: {
+        resvg: 'wasm',
+      },
+    },
+  },
+});
+```
+
+This configuration ensures that the `resvg` library uses the WASM runtime, which is compatible with the Azion edge environment.
+
 ## Configuration SSG
 
 Configure your `nuxt.config.ts` to use the Azion SSG preset:
