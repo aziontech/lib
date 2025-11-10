@@ -1,6 +1,7 @@
 import ApplicationProcessConfigStrategy from './implementations/application/applicationProcessConfigStrategy';
 import BuildProcessConfigStrategy from './implementations/buildProcessConfigStrategy';
 import ConnectorProcessConfigStrategy from './implementations/connectorProcessConfigStrategy';
+import CustomPagesProcessConfigStrategy from './implementations/customPagesProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
 import PurgeProcessConfigStrategy from './implementations/purgeProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
@@ -21,9 +22,10 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('firewall', new FirewallProcessConfigStrategy());
   processConfigContext.setStrategy('functions', new FunctionsProcessConfigStrategy());
   processConfigContext.setStrategy('applications', new ApplicationProcessConfigStrategy());
-  processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
   processConfigContext.setStrategy('connectors', new ConnectorProcessConfigStrategy());
+  processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
   processConfigContext.setStrategy('workload_deployments', new WorkloadDeploymentsProcessConfigStrategy());
+  processConfigContext.setStrategy('custom_pages', new CustomPagesProcessConfigStrategy());
   return processConfigContext;
 }
 
