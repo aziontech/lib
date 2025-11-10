@@ -915,7 +915,6 @@ const azionConfigSchema = {
                   maxLength: 250,
                   errorMessage: 'Each domain must be a string between 1 and 250 characters',
                 },
-                minItems: 1,
                 errorMessage: "The 'domains' field must be an array of domain strings",
               },
               tls: {
@@ -1002,7 +1001,7 @@ const azionConfigSchema = {
                       certificate: {
                         type: ['integer', 'null'],
                         minimum: 1,
-                     },
+                      },
                       crl: {
                         type: ['array', 'null'],
                         items: { type: 'integer' },
