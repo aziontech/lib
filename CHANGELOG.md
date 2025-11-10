@@ -1,3 +1,10 @@
+### [2.2.4-stage.1](https://github.com/aziontech/lib/compare/v2.2.3...v2.2.4-stage.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* improve performance of pem cleanup in the jws package (#311) ([4e24b26](https://github.com/aziontech/lib/commit/4e24b266882692c37488295f500068dbffc59a0d))
+
 ### [2.2.3](https://github.com/aziontech/lib/compare/v2.2.2...v2.2.3) (2025-11-06)
 
 
