@@ -128,40 +128,55 @@ class WorkloadDeploymentsProcessConfigStrategy extends ProcessConfigStrategy {
    * Note: This recreates deployments but doesn't assign them back to specific workloads
    * The CLI should handle the workload association logic
    */
-  transformToConfig(payload: {
-    workload_deployments?: Array<{
-      name: string;
-      current?: boolean;
-      active?: boolean;
-      strategy: {
-        type: string;
-        attributes: {
-          application: number | string;
-          firewall?: number | string | null;
-          custom_page?: number | null;
+  transformToConfig(
+    payload: {
+      workload_deployments?: Array<{
+        name: string;
+        current?: boolean;
+        active?: boolean;
+        strategy: {
+          type: string;
+          attributes: {
+            application: number | string;
+            firewall?: number | string | null;
+            custom_page?: number | null;
+          };
         };
-      };
-    }>;
-  }) {
+      }>;
+    },
+    transformedPayload: AzionConfig,
+  ) {
     if (!Array.isArray(payload?.workload_deployments) || payload.workload_deployments.length === 0) {
       return {};
     }
 
-    const workloadDeployments = payload.workload_deployments.map((deployment) => ({
-      name: deployment.name,
-      current: deployment.current,
-      active: deployment.active,
-      strategy: {
-        type: deployment.strategy.type,
-        attributes: {
-          application: String(deployment.strategy.attributes.application), // CLI should resolve ID to name
-          firewall: deployment.strategy.attributes.firewall ? String(deployment.strategy.attributes.firewall) : null, // CLI should resolve ID to name
-          customPage: deployment.strategy.attributes.custom_page,
-        },
-      },
-    }));
+    transformedPayload.workloads = transformedPayload?.workloads?.map((workload, workloadIndex) => {
+      return {
+        ...workload,
+        deployments: payload?.workload_deployments?.map((deployment, deploymentIndex) => {
+          if (deploymentIndex === workloadIndex) {
+            return {
+              ...deployment,
+              strategy: {
+                ...deployment.strategy,
+                attributes: {
+                  application: String(deployment.strategy.attributes.application), // CLI should resolve ID to name
+                  firewall: deployment.strategy.attributes.firewall
+                    ? String(deployment.strategy.attributes.firewall)
+                    : null, // CLI should resolve ID to name
+                  customPage: deployment.strategy.attributes.custom_page
+                    ? String(deployment.strategy.attributes.custom_page)
+                    : null, // CLI should resolve ID to name
+                },
+              },
+            };
+          }
+          return deployment;
+        }),
+      };
+    });
 
-    return { workloadDeployments };
+    return transformedPayload.workloads;
   }
 }
 
