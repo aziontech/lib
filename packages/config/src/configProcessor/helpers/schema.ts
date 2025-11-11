@@ -877,7 +877,8 @@ const azionConfigSchema = {
             required: ['name'],
             additionalProperties: false,
           },
-          errorMessage: "The 'applications' field must be an array of application objects",
+          minItems: 1,
+          errorMessage: "The 'applications' field must be an array of application objects with at least one item",
         },
         workloads: {
           type: 'array',
@@ -1088,20 +1089,22 @@ const azionConfigSchema = {
                     required: "The 'name' and 'strategy' fields are required in each deployment",
                   },
                 },
-                errorMessage: "The 'deployments' field must be an array of deployment objects",
+                minItems: 1,
+                errorMessage: "The 'deployments' field must be an array of deployment objects with at least one item.",
               },
             },
-            required: ['name'],
+            required: ['name', 'deployments'],
             additionalProperties: false,
             errorMessage: {
               additionalProperties: 'No additional properties are allowed in workload items',
               required: {
                 name: "The 'name' field is required in workloads",
-                domains: "The 'domains' field is required in workloads",
+                deployments: "The 'deployments' field is required in workloads",
               },
             },
           },
-          errorMessage: "The 'workloads' field must be an array of workloads items.",
+          minItems: 1,
+          errorMessage: "The 'workloads' field must be an array of workloads items with at least one item.",
         },
         purge: {
           type: 'array',
@@ -1805,6 +1808,7 @@ const azionConfigSchema = {
         functions: {
           type: 'array',
           items: schemaFunction,
+          errorMessage: "The 'functions' field must be an array of function objects with at least one item",
         },
         customPages: {
           type: 'array',
@@ -1915,6 +1919,7 @@ const azionConfigSchema = {
         },
       },
       additionalProperties: false,
+      required: ['build', 'applications', 'workloads'],
       errorMessage: {
         additionalProperties:
           'Config can only contain the following properties: build, functions, applications, workloads, purge, edgefirewall, networkList, waf, connectors, customPages',
