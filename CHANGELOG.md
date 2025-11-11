@@ -1,3 +1,10 @@
+### [2.2.4-stage.2](https://github.com/aziontech/lib/compare/v2.2.4-stage.1...v2.2.4-stage.2) (2025-11-11)
+
+
+### Bug Fixes
+
+* cmd manifest transform (#312) ([18b516a](https://github.com/aziontech/lib/commit/18b516ac28cb0d818e1b569df58c6e18538b4c4f))
+
 ### [2.2.4-stage.1](https://github.com/aziontech/lib/compare/v2.2.3...v2.2.4-stage.1) (2025-11-10)
 
 
