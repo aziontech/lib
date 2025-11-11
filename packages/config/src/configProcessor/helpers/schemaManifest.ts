@@ -1729,7 +1729,8 @@ const schemaManifest = {
     applications: {
       type: 'array',
       items: schemaApplicationManifest,
-      errorMessage: "The 'applications' field must be an array of  application items.",
+      minItems: 1,
+      errorMessage: "The 'applications' field must be an array of  application items with at least one item.",
     },
     workloads: {
       type: 'array',
@@ -1807,7 +1808,9 @@ const schemaManifest = {
           required: "The 'name' and 'strategy' fields are required in each workload deployment.",
         },
       },
-      errorMessage: "The 'workload_deployments' field must be an array of workload deployment objects.",
+      minItems: 1,
+      errorMessage:
+        "The 'workload_deployments' field must be an array of workload deployment objects with at least one item.",
     },
     connectors: {
       type: 'array',
@@ -1929,6 +1932,11 @@ const schemaManifest = {
       items: schemaStorageManifest,
       errorMessage: "The 'storage' field must be an array of  storage items.",
     },
+  },
+  required: ['build', 'applications', 'workloads', 'workload_deployments'],
+  errorMessage: {
+    required:
+      "The 'build', 'applications', 'workloads', and 'workload_deployments' fields are required in the manifest.",
   },
 };
 
