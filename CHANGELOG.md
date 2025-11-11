@@ -1,3 +1,10 @@
+### [2.2.4-stage.3](https://github.com/aziontech/lib/compare/v2.2.4-stage.2...v2.2.4-stage.3) (2025-11-11)
+
+
+### Bug Fixes
+
+* add required field validation for config schema (#313) ([b223cfd](https://github.com/aziontech/lib/commit/b223cfdf7f2f04187eb9326e603922fa9c9b96f2))
+
 ### [2.2.4-stage.2](https://github.com/aziontech/lib/compare/v2.2.4-stage.1...v2.2.4-stage.2) (2025-11-11)
 
 
