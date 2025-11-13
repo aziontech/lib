@@ -52,7 +52,8 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
         cookie_names: cache?.cacheByCookie?.list || [],
       };
 
-      return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cachePayload: any = {
         name: cache.name,
         browser_cache: {
           behavior: cache?.browser ? 'override' : 'honor',
@@ -71,7 +72,6 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
             },
             tiered_cache: {
               enabled: cache?.tieredCache?.enabled || false,
-              topology: cache?.tieredCache?.topology || 'nearest-region',
             },
           },
           application_accelerator: {
@@ -85,6 +85,12 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
           },
         },
       };
+
+      if (cache?.tieredCache?.enabled === true) {
+        cachePayload.modules.cache.tiered_cache.topology = cache.tieredCache.topology;
+      }
+
+      return cachePayload;
     });
   }
 
@@ -121,9 +127,12 @@ class CacheProcessConfigStrategy extends ProcessConfigStrategy {
         queryStringSort: cache.modules?.application_accelerator?.cache_vary_by_querystring?.sort_enabled || false,
         tieredCache: {
           enabled: cache.modules?.cache?.tiered_cache?.enabled || false,
-          topology: cache.modules?.cache?.tiered_cache?.topology || 'nearest-region',
         },
       };
+
+      if (cacheSetting.tieredCache && cacheSetting.tieredCache.enabled === true) {
+        cacheSetting.tieredCache.topology = cache.modules?.cache?.tiered_cache?.topology;
+      }
 
       // Handle cache by query string
       if (cache.modules?.application_accelerator?.cache_vary_by_querystring) {
