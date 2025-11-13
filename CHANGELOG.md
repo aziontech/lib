@@ -1,3 +1,10 @@
+## [2.3.0-stage.1](https://github.com/aziontech/lib/compare/v2.2.4-stage.3...v2.3.0-stage.1) (2025-11-13)
+
+
+### Features
+
+* improve validation error messages with detailed formatting and fix cache settings (#314) ([f6a53cf](https://github.com/aziontech/lib/commit/f6a53cf768aab395039b679a10a544252593b1b3))
+
 ### [2.2.4-stage.3](https://github.com/aziontech/lib/compare/v2.2.4-stage.2...v2.2.4-stage.3) (2025-11-11)
 
 
