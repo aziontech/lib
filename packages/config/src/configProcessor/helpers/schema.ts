@@ -629,12 +629,22 @@ const azionConfigSchema = {
                           errorMessage: "The 'enabled' field must be a boolean.",
                         },
                         topology: {
-                          type: 'string',
-                          enum: ['nearest-region', 'us-east-1', 'br-east-1'],
+                          type: ['string', 'null'],
+                          enum: ['nearest-region', 'us-east-1', 'br-east-1', null],
                           default: 'nearest-region',
                           errorMessage:
-                            "The 'topology' field must be one of 'nearest-region', 'br-east-1', 'us-east-1'.",
+                            "The 'topology' field must be one of 'nearest-region', 'br-east-1', 'us-east-1' or null.",
                         },
+                      },
+                      required: ['enabled'],
+                      if: {
+                        properties: { enabled: { const: true } }
+                      },
+                      then: {
+                        required: ['enabled', 'topology'],
+                        errorMessage: {
+                          required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object."
+                        }
                       },
                       additionalProperties: false,
                       errorMessage: {

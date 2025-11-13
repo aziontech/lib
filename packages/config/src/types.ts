@@ -230,7 +230,7 @@ export type AzionCache = {
     /** Indicates if tiered cache should be enabled */
     enabled: boolean;
     /** Tiered cache topology */
-    topology: TieredCacheTopology;
+    topology?: TieredCacheTopology;
   };
   /** HTTP methods to be cached */
   methods?: {

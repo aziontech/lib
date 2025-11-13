@@ -630,13 +630,26 @@ const schemaApplicationCacheSettings = {
             tiered_cache: {
               type: ['object', 'null'],
               properties: {
+                enabled: {
+                  type: 'boolean',
+                  errorMessage: "The 'enabled' field must be a boolean.",
+                },
                 topology: {
-                  type: 'string',
-                  enum: TIERED_CACHE_TOPOLOGY,
-                  errorMessage: "The 'topology' must be one of: nearest-region, us-east-1, br-east-1.",
+                  type: ['string', 'null'],
+                  enum: [...TIERED_CACHE_TOPOLOGY, null],
+                  errorMessage: "The 'topology' must be one of: nearest-region, us-east-1, br-east-1 or null.",
                 },
               },
-              required: ['topology'],
+              required: ['enabled'],
+              if: {
+                properties: { enabled: { const: true } }
+              },
+              then: {
+                required: ['enabled', 'topology'],
+                errorMessage: {
+                  required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object."
+                }
+              },
               additionalProperties: false,
             },
           },
