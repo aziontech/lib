@@ -19,6 +19,8 @@
       "import": "./dist/index.js"
     },
     "./preset/nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
+    "./preset/sveltekit/*": "./src/presets/svelte/kit/index.js",
+    "./preset/sveltekit/cache/*": "./src/presets/svelte/kit/cache/index.js",
     "./presets/preset/*": "./dist/presets/*"
   },
   "author": "aziontech",
@@ -28,7 +30,8 @@
     "package.json",
     "README.md",
     "src/presets/next/*",
-    "src/presets/nuxt/nitro/*"
+    "src/presets/nuxt/nitro/*",
+    "src/presets/svelte/kit/*"
   ],
   "dependencies": {
     "cookie": "^1.0.2",
