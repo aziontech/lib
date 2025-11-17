@@ -9,6 +9,8 @@ const app_path = `/${manifest.appPath}`;
 const immutable = `${app_path}/immutable/`;
 const version_file = `${app_path}/version.json`;
 
+const BUILD_ID_DEFINED = 'BUILD_ID';
+
 /**
  * We don't know the origin until we receive a request, but
  * that's guaranteed to happen before we call `read`
@@ -18,13 +20,20 @@ let origin;
 
 /**
  * @param {Request | string} request
+ * @param {boolean} isPrerendered
  * @returns {Promise<Response>}
  */
-const getStorageAsset = async (request) => {
+const getStorageAsset = async (request, isPrerendered) => {
   try {
     const urlString = request instanceof Request ? request.url : request;
     const requestPath = decodeURIComponent(new URL(urlString).pathname);
-    const assetUrl = new URL(requestPath === '/' ? 'index.html' : requestPath, 'file://');
+    if (requestPath === '/') {
+      return fetch(new URL('index.html', 'file://'));
+    }
+    if (isPrerendered && !requestPath.endsWith('.html')) {
+      return fetch(new URL(`${requestPath}.html`, 'file://'));
+    }
+    const assetUrl = new URL(requestPath, 'file://');
     return fetch(assetUrl);
   } catch (e) {
     return new Response(e.message || e.toString(), { status: 404 });
@@ -77,7 +86,7 @@ export default {
 
     // skip cache if "cache-control: no-cache" in request
     let pragma = req.headers.get('cache-control') || '';
-    let res = !pragma.includes('no-cache') && (await lookupCache(req));
+    let res = !pragma.includes('no-cache') && (await lookupCache(req, BUILD_ID_DEFINED));
     if (res) return res;
 
     let { pathname, search } = new URL(req.url);
@@ -103,7 +112,7 @@ export default {
     let location = pathname.at(-1) === '/' ? stripped_pathname : pathname + '/';
 
     if (is_static_asset || prerendered.has(pathname) || pathname === version_file || pathname.startsWith(immutable)) {
-      res = await env.ASSETS.fetch(req);
+      res = await env.ASSETS.fetch(req, prerendered.has(pathname));
     } else if (location && prerendered.has(location)) {
       // trailing slash redirect for prerendered pages
       if (search) location += search;
@@ -130,6 +139,6 @@ export default {
     // write to `Cache` only if response is not an error,
     // let `Cache.save` handle the Cache-Control and Vary headers
     pragma = res.headers.get('cache-control') || '';
-    return pragma && res.status < 400 ? saveCache(req, res, ctx) : res;
+    return pragma && res.status < 400 ? saveCache(req, res, ctx, BUILD_ID_DEFINED) : res;
   },
 };

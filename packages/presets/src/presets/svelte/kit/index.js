@@ -71,6 +71,16 @@ export default function (options = {}) {
           `export const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});\n\n` +
           `export const base_path = ${JSON.stringify(builder.config.kit.paths.base)};\n`,
       );
+
+      // make buildId unique, with builder version and id 10 characters
+      let buildId = generateId(10);
+      try {
+        const { name } = builder.config.kit.version;
+        buildId = `${name}-${generateId(10)}`;
+      } catch {
+        console.log('Error parsing builder version, using random buildId');
+      }
+
       builder.copy(`${files}/worker.js`, workerDest, {
         replace: {
           // the paths returned by the Wrangler config might be Windows paths,
@@ -79,6 +89,7 @@ export default function (options = {}) {
           SERVER: `${posixify(path.relative(workerDestDir, builder.getServerDirectory()))}/index.js`,
           MANIFEST: `${posixify(path.relative(workerDestDir, tmp))}/manifest.js`,
           ASSETS: assetsBinding,
+          BUILD_ID: buildId,
         },
       });
       if (builder.hasServerInstrumentationFile?.()) {
@@ -129,11 +140,6 @@ export default function (options = {}) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       read: ({ route }) => {
         // TODO bump peer dep in next adapter major to simplify this
-        // if (kit_major === '2' && kit_minor < '25') {
-        // 	throw new Error(
-        // 		`${name}: Cannot use \`read\` from \`$app/server\` in route \`${route.id}\` when using SvelteKit < 2.25.0`
-        // 	);
-        // }
 
         return true;
       },
@@ -173,4 +179,13 @@ ${rules}
 /** @param {string} str */
 function posixify(str) {
   return str.replace(/\\/g, '/');
+}
+
+function generateId(length = 10) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 }
