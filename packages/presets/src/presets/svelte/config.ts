@@ -42,6 +42,32 @@ const config: AzionConfig = {
       rules: {
         request: [
           {
+            name: 'Deliver Immutable Assets',
+            description: 'Delivers immutable assets.',
+            active: true,
+            criteria: [
+              [
+                {
+                  variable: '${uri}',
+                  conditional: 'if',
+                  operator: 'starts_with',
+                  argument: '/_app/immutable',
+                },
+              ],
+            ],
+            behaviors: [
+              {
+                type: 'set_connector',
+                attributes: {
+                  value: '$CONNECTOR_NAME',
+                },
+              },
+              {
+                type: 'deliver',
+              },
+            ],
+          },
+          {
             name: 'Redirect to index.html for Subpaths',
             description: 'Handle subpath requests by rewriting to index.html',
             active: true,
@@ -110,7 +136,7 @@ const config: AzionConfig = {
                   conditional: 'if',
                   operator: 'matches',
                   argument:
-                    '.(jpg|jpeg|png|gif|bmp|webp|svg|ico|ttf|otf|woff|woff2|eot|pdf|doc|docx|xls|xlsx|ppt|pptx|mp4|webm|mp3|wav|ogg|css|js|json|xml|html|txt|csv|zip|rar|7z|tar|gz|webmanifest|map|md|yaml|yml)$',
+                    '.(jpg|jpeg|png|gif|bmp|webp|svg|ico|ttf|otf|woff|woff2|eot|pdf|doc|docx|xls|xlsx|ppt|pptx|mp4|webm|mp3|wav|ogg|css|js|xml|html|txt|csv|zip|rar|7z|tar|gz|webmanifest|map|md|yaml|yml)$',
                 },
               ],
             ],
