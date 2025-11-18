@@ -83,6 +83,40 @@ export default defineNuxtConfig({
 
 📖 **[Read the complete Nuxt.js preset documentation](https://github.com/aziontech/lib/tree/main/packages/presets/docs/preset-nuxt.md)**
 
+### Svelte Custom Adapter
+
+Supports both Server-Side Rendering (SSR) and Static Site Generation (SSG) for SvelteKit applications.
+
+**Features:**
+
+- SSR support with edge runtime optimization
+- SSG support with automatic static generation
+- Seamless integration with Azion CLI
+- Optimized for edge computing performance
+
+**Quick Start:**
+
+```bash
+npm install azion
+```
+
+Configure your `svelte.config.js`:
+
+```javascript
+import adapter from 'azion/preset/svelte/ssr';
+
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+  kit: {
+    adapter: adapter(),
+  },
+};
+
+export default config;
+```
+
+📖 **[Read the complete Svelte preset documentation](https://github.com/aziontech/lib/tree/main/packages/presets/docs/preset-svelte.md)**
+
 ## Contributing
 
 We welcome contributions to add support for more frameworks and improve existing presets. Please check the main [Contributing Guidelines](https://github.com/aziontech/lib/tree/main/README.md#contributing) for more information.
