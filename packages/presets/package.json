@@ -18,7 +18,10 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.js"
     },
-    "./presets/preset/*": "./dist/presets/*"
+    "./presets/preset/*": "./dist/presets/*",
+    "./preset/nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
+    "./preset/sveltekit/*": "./src/presets/svelte/kit/index.js",
+    "./preset/sveltekit/cache/*": "./src/presets/svelte/kit/cache/index.js"
   },
   "author": "aziontech",
   "license": "MIT",
@@ -27,7 +30,8 @@
     "package.json",
     "README.md",
     "src/presets/next/*",
-    "src/presets/nuxt/nitro/*"
+    "src/presets/nuxt/nitro/*",
+    "src/presets/svelte/kit/*"
   ],
   "dependencies": {
     "cookie": "^1.0.2",
