@@ -1,3 +1,10 @@
+## [2.3.0-stage.2](https://github.com/aziontech/lib/compare/v2.3.0-stage.1...v2.3.0-stage.2) (2025-11-18)
+
+
+### Features
+
+* add SvelteKit preset with custom adapter (#315) ([b46122b](https://github.com/aziontech/lib/commit/b46122b2a18c5f9f8c83e5c3ed2a4a56074b2d43))
+
 ## [2.3.0-stage.1](https://github.com/aziontech/lib/compare/v2.2.4-stage.3...v2.3.0-stage.1) (2025-11-13)
 
 
