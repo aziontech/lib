@@ -76,7 +76,8 @@
     "packages/unenv-preset/src/polyfills/*",
     "packages/bundler/src/polyfills/*",
     "packages/presets/src/presets/next/*",
-    "packages/presets/src/presets/nuxt/nitro/*"
+    "packages/presets/src/presets/nuxt/nitro/*",
+    "packages/presets/src/presets/svelte/kit/*"
   ],
   "exports": {
     ".": {
@@ -89,6 +90,8 @@
     },
     "./presets/preset/*": "./packages/presets/dist/presets/*",
     "./preset/nuxt/*": "./packages/presets/src/presets/nuxt/nitro/*/index.js",
+    "./preset/sveltekit": "./packages/presets/src/presets/svelte/kit/index.js",
+    "./preset/sveltekit/cache": "./packages/presets/src/presets/svelte/kit/cache/index.js",
     "./bundler": {
       "require": "./packages/bundler/dist/index.cjs",
       "import": "./packages/bundler/dist/index.js"
