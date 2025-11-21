@@ -16,6 +16,7 @@ export default {
     setInterval: `${polyfillsPath}/node/globals/set-interval.js`,
     clearInterval: `${polyfillsPath}/node/globals/clear-interval.js`,
     console: `${polyfillsPath}/node/globals/console.js`,
+    asyncStorage: `${polyfillsPath}/node/globals/async-storage.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',
@@ -29,6 +30,7 @@ export default {
     string_decoder: 'string_decoder/lib/string_decoder.js',
     timers: 'timers-browserify/',
     util: `${polyfillsPath}/node/util.js`,
+    zlib: `${polyfillsPath}/node/zlib.js`,
   },
   external: ['node:async_hooks', 'node:fs/promises', 'node:stream', 'node:crypto'],
   polyfill: [
