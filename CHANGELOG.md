@@ -1,3 +1,10 @@
+## [2.3.0-stage.3](https://github.com/aziontech/lib/compare/v2.3.0-stage.2...v2.3.0-stage.3) (2025-11-21)
+
+
+### Features
+
+* add AsyncLocalStorage snapshot polyfill and zlib inflateSync support (#317) ([e507301](https://github.com/aziontech/lib/commit/e507301be5ee6ba8875d1918bdbdbd710408d32b))
+
 ## [2.3.0-stage.2](https://github.com/aziontech/lib/compare/v2.3.0-stage.1...v2.3.0-stage.2) (2025-11-18)
 
 
