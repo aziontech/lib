@@ -50,7 +50,7 @@
     "url": "^0.11.4",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2",
-    "webpack": "^5.97.1"
+    "webpack": "^5.102.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
