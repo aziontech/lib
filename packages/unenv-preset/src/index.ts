@@ -25,6 +25,7 @@ export default {
     '@fastly/http-compute-js': '@fastly/http-compute-js',
     accepts: 'accepts',
     assert: 'assert-browserify',
+    buffer: `${polyfillsPath}/node/buffer.js`,
     https: `${polyfillsPath}/node/https.js`,
     module: `${polyfillsPath}/node/module.js`,
     string_decoder: 'string_decoder/lib/string_decoder.js',
