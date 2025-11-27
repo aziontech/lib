@@ -17,6 +17,7 @@ export default {
     clearInterval: `${polyfillsPath}/node/globals/clear-interval.js`,
     console: `${polyfillsPath}/node/globals/console.js`,
     asyncStorage: `${polyfillsPath}/node/globals/async-storage.js`,
+    dateToString: `${polyfillsPath}/node/globals/date-to-string.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',
