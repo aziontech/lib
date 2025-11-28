@@ -1,4 +1,3 @@
-/* eslint-disable */
 /** This polyfill is referenced in #build/bundlers/polyfills/polyfills-manager.js
  *
  * CRYPTO_CONTEXT is defined in runtime.env.js for use on the local server
@@ -40,6 +39,10 @@ export var { randomFillSync } = CRYPTO_CONTEXT.cryptoContext;
 export var { getRandomValues } = CRYPTO_CONTEXT.cryptoContext;
 export var { randomUUID } = CRYPTO_CONTEXT.cryptoContext;
 export var { generateKeyPair } = CRYPTO_CONTEXT.cryptoContext;
+export var { CryptoKey } = CRYPTO_CONTEXT.cryptoContext;
+export var { KeyObject } = CRYPTO_CONTEXT.cryptoContext;
+export var { webcrypto } = CRYPTO_CONTEXT.cryptoContext;
+export var { subtle } = CRYPTO_CONTEXT.cryptoContext;
 
 export default {
   Cipher,
@@ -76,4 +79,8 @@ export default {
   getRandomValues,
   randomUUID,
   generateKeyPair,
+  CryptoKey,
+  KeyObject,
+  subtle,
+  webcrypto,
 };
