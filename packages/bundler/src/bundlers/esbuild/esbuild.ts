@@ -8,6 +8,7 @@ import AzionEsbuildConfig from './esbuild.config';
 import AzionPolyfillPlugin from './plugins/azion-polyfills';
 import OptionalChainingAssignmentPlugin from './plugins/babel-custom';
 import NodePolyfillPlugin from './plugins/node-polyfills';
+import SanitizeWorker from './plugins/sanitize-worker';
 
 // eslint-disable-next-line
 interface ESBuildConfig extends esbuild.BuildOptions {}
@@ -23,6 +24,7 @@ interface ESBuildPluginClasses {
   NodePolyfillsPlugin: (isProduction: boolean) => ESBuildPlugin;
   AzionPolyfillsPlugin: (isProduction: boolean) => ESBuildPlugin;
   OptionalChainingAssignmentPlugin: () => ESBuildPlugin;
+  SanitizeWorker: (sanitize: boolean, options?: { outfile?: string }) => ESBuildPlugin;
 }
 
 // Create esbuild-specific plugins
@@ -30,6 +32,7 @@ const bundlerPlugins = createBundlerPlugins<ESBuildPluginClasses, ESBuildConfigu
   NodePolyfillsPlugin: NodePolyfillPlugin,
   AzionPolyfillsPlugin: AzionPolyfillPlugin,
   OptionalChainingAssignmentPlugin: OptionalChainingAssignmentPlugin,
+  SanitizeWorker: SanitizeWorker,
 });
 
 /**
