@@ -39,6 +39,10 @@ export var { randomFillSync } = CRYPTO_CONTEXT.cryptoContext;
 export var { getRandomValues } = CRYPTO_CONTEXT.cryptoContext;
 export var { randomUUID } = CRYPTO_CONTEXT.cryptoContext;
 export var { generateKeyPair } = CRYPTO_CONTEXT.cryptoContext;
+export var { CryptoKey } = CRYPTO_CONTEXT.cryptoContext;
+export var { KeyObject } = CRYPTO_CONTEXT.cryptoContext;
+export var { webcrypto } = CRYPTO_CONTEXT.cryptoContext;
+export var { subtle } = CRYPTO_CONTEXT.cryptoContext;
 
 export default {
   Cipher,
@@ -75,4 +79,8 @@ export default {
   getRandomValues,
   randomUUID,
   generateKeyPair,
+  CryptoKey,
+  KeyObject,
+  subtle,
+  webcrypto,
 };

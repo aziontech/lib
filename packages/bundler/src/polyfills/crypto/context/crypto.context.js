@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 
+export default crypto;
 export var { Cipher } = crypto;
 export var { Decipher } = crypto;
 export var { DiffieHellman } = crypto;
@@ -35,39 +36,8 @@ export var { getRandomValues } = crypto;
 export var { randomUUID } = crypto;
 export var { generateKeyPair } = crypto;
 
-export default {
-  Cipher,
-  Decipher,
-  DiffieHellman,
-  DiffieHellmanGroup,
-  Hash,
-  Hmac,
-  Sign,
-  Verify,
-  constants,
-  createCipheriv,
-  createDecipheriv,
-  createDiffieHellman,
-  createDiffieHellmanGroup,
-  createECDH,
-  createHash,
-  createHmac,
-  createSign,
-  createVerify,
-  getCiphers,
-  getDiffieHellman,
-  getHashes,
-  pbkdf2,
-  pbkdf2Sync,
-  privateDecrypt,
-  privateEncrypt,
-  pseudoRandomBytes,
-  publicDecrypt,
-  publicEncrypt,
-  randomBytes,
-  randomFill,
-  randomFillSync,
-  getRandomValues,
-  randomUUID,
-  generateKeyPair,
-};
+// Export Web Crypto API from globalThis.crypto (edge runtime)
+export var webcrypto = (typeof globalThis !== 'undefined' && globalThis.crypto) || crypto.webcrypto;
+export var subtle = webcrypto?.subtle;
+export var CryptoKey = (typeof globalThis !== 'undefined' && globalThis.CryptoKey) || crypto.CryptoKey;
+export var KeyObject = crypto.KeyObject;
