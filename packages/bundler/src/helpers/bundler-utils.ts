@@ -40,6 +40,23 @@ export const createBundlerPlugins = <
       config.plugins = [
         ...(config.plugins || []),
         pluginsClasses.NodePolyfillsPlugin(buildEnv.production),
+        // Add optional chaining assignment plugin if available (esbuild only)
+        ...('OptionalChainingAssignmentPlugin' in pluginsClasses
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            [(pluginsClasses as any).OptionalChainingAssignmentPlugin()]
+          : []),
+        // Add sanitize worker plugin if available (esbuild only)
+        ...('SanitizeWorker' in pluginsClasses
+          ? [
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (pluginsClasses as any).SanitizeWorker(process.env.AZ_ENABLE_SANITIZE_WORKER ?? false, {
+                options: {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  outfile: (config as any).outfile,
+                },
+              }),
+            ]
+          : []),
       ] as unknown as typeof config.plugins;
       return config;
     };
