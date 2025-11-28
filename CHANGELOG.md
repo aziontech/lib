@@ -1,3 +1,10 @@
+## [2.3.0-stage.4](https://github.com/aziontech/lib/compare/v2.3.0-stage.3...v2.3.0-stage.4) (2025-11-28)
+
+
+### Bug Fixes
+
+* adjust Node.js Polyfills and add Unicode Character Sanitization (#320) ([8bd151e](https://github.com/aziontech/lib/commit/8bd151ead39ff6c0879865aeb99a19512100bf2d))
+
 ## [2.3.0-stage.3](https://github.com/aziontech/lib/compare/v2.3.0-stage.2...v2.3.0-stage.3) (2025-11-21)
 
 
