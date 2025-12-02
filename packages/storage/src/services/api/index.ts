@@ -319,6 +319,7 @@ const getObjects = async (
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to create.
  * @param {ContentObjectStorage} file - Content of the object.
+ * @param {string} [contentType='application/octet-stream'] - Content type of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The created object or an error if creation failed.
@@ -328,6 +329,7 @@ const postObject = async (
   bucketName: string,
   key: string,
   file: ContentObjectStorage,
+  contentType: string = 'application/octet-stream',
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
@@ -341,7 +343,7 @@ const postObject = async (
         method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': contentType,
           Authorization: `Token ${token}`,
         },
         body: fileContent as BodyInit,
@@ -410,6 +412,7 @@ const getObjectByKey = async (
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to update.
  * @param {ContentObjectStorage} file - New content of the object.
+ * @param {string} [contentType='application/octet-stream'] - Content type of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The updated object or an error if update failed.
@@ -419,6 +422,7 @@ const putObject = async (
   bucketName: string,
   key: string,
   file: ContentObjectStorage,
+  contentType: string = 'application/octet-stream',
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
@@ -432,7 +436,7 @@ const putObject = async (
         method: 'PUT',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': contentType,
           Authorization: `Token ${token}`,
         },
         body: fileContent as BodyInit,
