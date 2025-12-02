@@ -104,7 +104,7 @@ class StorageContext {
    * Generates a response object for the retrieved asset.
    * @static
    * @async
-   * @param {ReadableStream|string|ArrayBuffer|Uint8Array} value - The value of the asset.
+   * @param {ArrayBuffer | Uint8Array | ReadableStream} value - The value of the asset.
    * @param {object} metadataStore - Metadata associated with the asset.
    * @returns {Promise<object>} A promise that resolves to an object representing the response asset.
    */
