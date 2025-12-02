@@ -18,6 +18,8 @@ export type AzionStorageResponse<T> = {
   };
 };
 
+export type ContentObjectStorage = ArrayBuffer | ReadableStream | Uint8Array | string;
+
 /**
  * Represents an Azion storage bucket with methods to interact with objects.
  *
@@ -61,7 +63,7 @@ export interface AzionBucket {
    *
    * @param {Object} params - Parameters for creating the object.
    * @param {string} params.key - The key for the new object.
-   * @param {string} params.content - The content of the new object.
+   * @param {ContentObjectStorage} params.content - The content of the new object.
    * @param {Object} [params.options] - Additional options for the object.
    * @param {string} [params.options.content_type] - The content type of the object.
    * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} A promise that resolves to the created bucket object or error message.
@@ -75,7 +77,7 @@ export interface AzionBucket {
    */
   createObject: (params: {
     key: string;
-    content: string;
+    content: ContentObjectStorage;
     options?: { content_type?: string };
   }) => Promise<AzionStorageResponse<AzionBucketObject>>;
 
@@ -84,7 +86,7 @@ export interface AzionBucket {
    *
    * @param {Object} params - Parameters for updating the object.
    * @param {string} params.key - The key of the object to update.
-   * @param {string} params.content - The new content for the object.
+   * @param {ContentObjectStorage} params.content - The new content for the object.
    * @param {Object} [params.options] - Additional options for the object.
    * @param {string} [params.options.content_type] - The new content type for the object.
    * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} A promise that resolves to the updated bucket object or error message.
@@ -98,7 +100,7 @@ export interface AzionBucket {
    */
   updateObject: (params: {
     key: string;
-    content: string;
+    content: ContentObjectStorage;
     options?: { content_type?: string };
   }) => Promise<AzionStorageResponse<AzionBucketObject>>;
 
@@ -121,7 +123,7 @@ export interface AzionBucketObject {
   size?: number;
   last_modified?: string;
   content_type?: string;
-  content?: string;
+  content?: ContentObjectStorage;
 }
 
 export interface AzionBucketObjects {

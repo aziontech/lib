@@ -22,6 +22,7 @@ import {
   AzionObjectCollectionParams,
   AzionStorageClient,
   AzionStorageResponse,
+  ContentObjectStorage,
   CreateAzionStorageClient,
   EdgeAccessType,
 } from './types';
@@ -136,7 +137,7 @@ export const createBucketMethod = async (
           content,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           createObjectMethod(token, name, key, content, resolvedOptions),
         updateObject: ({
@@ -144,7 +145,7 @@ export const createBucketMethod = async (
           content,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           updateObjectMethod(token, name, key, content, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
@@ -213,7 +214,7 @@ export const getBucketsMethod = async (
         content,
       }: {
         key: string;
-        content: string;
+        content: ContentObjectStorage;
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
         createObjectMethod(token, bucket.name, key, content, resolvedOptions),
       updateObject: ({
@@ -221,7 +222,7 @@ export const getBucketsMethod = async (
         content,
       }: {
         key: string;
-        content: string;
+        content: ContentObjectStorage;
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
         updateObjectMethod(token, bucket.name, key, content, resolvedOptions),
       deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
@@ -279,7 +280,7 @@ const getBucketMethod = createInternalOrExternalMethod(
             content,
           }: {
             key: string;
-            content: string;
+            content: ContentObjectStorage;
           }): Promise<AzionStorageResponse<AzionBucketObject>> =>
             createObjectMethod(token, name, key, content, resolvedOptions),
           updateObject: ({
@@ -287,7 +288,7 @@ const getBucketMethod = createInternalOrExternalMethod(
             content,
           }: {
             key: string;
-            content: string;
+            content: ContentObjectStorage;
           }): Promise<AzionStorageResponse<AzionBucketObject>> =>
             updateObjectMethod(token, name, key, content, resolvedOptions),
           deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
@@ -330,7 +331,7 @@ const getBucketMethod = createInternalOrExternalMethod(
           content,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           createObjectMethod(token, name, key, content, resolvedOptions),
         updateObject: ({
@@ -338,7 +339,7 @@ const getBucketMethod = createInternalOrExternalMethod(
           content,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           updateObjectMethod(token, name, key, content, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
@@ -388,7 +389,7 @@ export const updateBucketMethod = async (
           content,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           createObjectMethod(token, name, key, content, resolvedOptions),
         updateObject: ({
@@ -396,7 +397,7 @@ export const updateBucketMethod = async (
           content,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           updateObjectMethod(token, name, key, content, resolvedOptions),
         deleteObject: ({ key }: { key: string }): Promise<AzionStorageResponse<AzionDeletedBucketObject>> =>
@@ -525,7 +526,7 @@ const getObjectByKeyMethod = createInternalOrExternalMethod(
  * @param {string} token - Authentication token for Azion API.
  * @param {string} bucket - Name of the bucket to create the object in.
  * @param {string} key - Key (name) of the object to create.
- * @param {string} content - Content of the content to upload.
+ * @param {ContentObjectStorage} content - Content of the content to upload.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The created object or error message
  */
@@ -534,7 +535,7 @@ const createObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
@@ -556,7 +557,7 @@ const createObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const apiResponse = await postObject(
@@ -588,7 +589,7 @@ const createObjectMethod = createInternalOrExternalMethod(
  * @param {string} token - Authentication token for Azion API.
  * @param {string} bucket - Name of the bucket containing the object.
  * @param {string} key - Key of the object to update.
- * @param {string} content - New content of the content.
+ * @param {ContentObjectStorage} content - New content of the content.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The updated object or error message.
  */
@@ -597,7 +598,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const internalClient = new InternalStorageClient(token, options?.debug);
@@ -616,7 +617,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
     const apiResponse = await putObject(
@@ -883,7 +884,7 @@ const createObjectWrapper = ({
 }: {
   bucket: string;
   key: string;
-  content: string;
+  content: ContentObjectStorage;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
   createObjectMethod(resolveToken(), bucket, key, content, resolveClientOptions(options));
@@ -943,7 +944,7 @@ const updateObjectWrapper = ({
 }: {
   bucket: string;
   key: string;
-  content: string;
+  content: ContentObjectStorage;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
   updateObjectMethod(resolveToken(), bucket, key, content, resolveClientOptions(options));

@@ -27,10 +27,11 @@ export function removeLeadingSlash(key: string): string {
  * @template T The type of the function's return value.
  * @param {() => Promise<T>} fn The function to retry.
  * @param {number} [delay=1000] The initial delay between attempts in milliseconds.
+ * @param {boolean} [debug=false] Whether to enable debug logging.
  * @returns {Promise<T>} The result of the function if it succeeds within the allowed attempts.
  * @throws {Error} If the function fails after the specified number of attempts.
  */
-export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 1000): Promise<T> => {
+export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 1000, debug?: boolean): Promise<T> => {
   let attempt = 0;
   const maxTime = 120000; // 2 minutes in milliseconds
   const startTime = Date.now();
@@ -39,6 +40,7 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 
     try {
       return await fn();
     } catch (error) {
+      if (debug) console.error('Error in retryWithBackoff:', error);
       if (attempt === 0) {
         console.warn('Attempting to synchronize. The content may not be synchronized on the edge yet.');
       }
