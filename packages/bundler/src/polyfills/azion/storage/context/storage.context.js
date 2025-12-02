@@ -43,7 +43,7 @@ class StorageContext {
    * Stores a object in the storage.
    * @async
    * @param {string} key - The key to store the value under.
-   * @param {ReadableStream|string} value - The value to store (can be a ReadableStream or a string).
+   * @param {ArrayBuffer | Uint8Array | ReadableStream} value - The value to store (can be a ReadableStream, ArrayBuffer, or Uint8Array).
    * @param {object} options - Additional options for storing the object.
    * @returns {Promise<object>} A promise that resolves to an object representing the stored data.
    * @throws {Error} Throws an error if the storing process fails.
@@ -57,7 +57,8 @@ class StorageContext {
       const writeStream = fs.createWriteStream(`${this.#pathBucket}/${key}`);
       await pipeline(value, writeStream);
     } else {
-      await fs.promises.writeFile(`${this.#pathBucket}/${key}`, value);
+      const fileContent = value instanceof ArrayBuffer ? Buffer.from(value) : value;
+      await fs.promises.writeFile(`${this.#pathBucket}/${key}`, fileContent);
     }
 
     const responseMetadata = await StorageContext.putMetadata(this.#pathBucket, key, options, this.#metadataPrefix);
@@ -103,7 +104,7 @@ class StorageContext {
    * Generates a response object for the retrieved asset.
    * @static
    * @async
-   * @param {ReadableStream|string} value - The value of the asset.
+   * @param {ReadableStream|string|ArrayBuffer|Uint8Array} value - The value of the asset.
    * @param {object} metadataStore - Metadata associated with the asset.
    * @returns {Promise<object>} A promise that resolves to an object representing the response asset.
    */
