@@ -23,6 +23,7 @@ import {
   AzionObjectCollectionParams,
   AzionStorageClient,
   AzionStorageResponse,
+  ContentObjectStorage,
   CreateAzionStorageClient,
   EdgeAccessType,
 } from './types';
@@ -139,7 +140,7 @@ export const createBucketMethod = async (
           params,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
           params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           createObjectMethod(token, name, key, content, params, resolvedOptions),
@@ -149,7 +150,7 @@ export const createBucketMethod = async (
           params,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
           params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           updateObjectMethod(token, name, key, content, params, resolvedOptions),
@@ -223,7 +224,7 @@ export const getBucketsMethod = async (
         params,
       }: {
         key: string;
-        content: string;
+        content: ContentObjectStorage;
         params?: { content_type?: string };
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
         createObjectMethod(token, bucket.name, key, content, params, resolvedOptions),
@@ -233,7 +234,7 @@ export const getBucketsMethod = async (
         params,
       }: {
         key: string;
-        content: string;
+        content: ContentObjectStorage;
         params?: { content_type?: string };
       }): Promise<AzionStorageResponse<AzionBucketObject>> =>
         updateObjectMethod(token, bucket.name, key, content, params, resolvedOptions),
@@ -297,7 +298,7 @@ const getBucketMethod = async (
           params,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
           params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           createObjectMethod(token, name, key, content, params, resolvedOptions),
@@ -307,7 +308,7 @@ const getBucketMethod = async (
           params,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
           params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           updateObjectMethod(token, name, key, content, params, resolvedOptions),
@@ -369,7 +370,7 @@ export const updateBucketMethod = async (
           params,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
           params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           createObjectMethod(token, name, key, content, params, resolvedOptions),
@@ -379,7 +380,7 @@ export const updateBucketMethod = async (
           params,
         }: {
           key: string;
-          content: string;
+          content: ContentObjectStorage;
           params?: { content_type?: string };
         }): Promise<AzionStorageResponse<AzionBucketObject>> =>
           updateObjectMethod(token, name, key, content, params, resolvedOptions),
@@ -547,7 +548,7 @@ const getObjectByKeyMethod = createInternalOrExternalMethod(
  * @param {string} token - Authentication token for Azion API.
  * @param {string} bucket - Name of the bucket to create the object in.
  * @param {string} key - Key (name) of the object to create.
- * @param {string} content - Content of the content to upload.
+ * @param {ContentObjectStorage} content - Content of the content to upload.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The created object or error message
  */
@@ -556,7 +557,7 @@ const createObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
@@ -579,7 +580,7 @@ const createObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
@@ -596,7 +597,6 @@ const createObjectMethod = createInternalOrExternalMethod(
       return {
         data: {
           key: apiResponse.data.object_key,
-          content,
           content_type: params?.content_type,
           state: apiResponse.state,
         },
@@ -623,7 +623,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
@@ -643,7 +643,7 @@ const updateObjectMethod = createInternalOrExternalMethod(
     token: string,
     bucket: string,
     key: string,
-    content: string,
+    content: ContentObjectStorage,
     params?: { content_type?: string },
     options?: AzionClientOptions,
   ): Promise<AzionStorageResponse<AzionBucketObject>> => {
@@ -955,7 +955,7 @@ const createObjectWrapper = ({
 }: {
   bucket: string;
   key: string;
-  content: string;
+  content: ContentObjectStorage;
   params?: { content_type?: string };
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>
@@ -1025,7 +1025,7 @@ const updateObjectWrapper = ({
 }: {
   bucket: string;
   key: string;
-  content: string;
+  content: ContentObjectStorage;
   params?: { content_type?: string };
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucketObject>> =>

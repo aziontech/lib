@@ -30,7 +30,7 @@ describe('Storage Module - Object operations', () => {
         options: { debug, env },
       });
 
-      expect(result.data).toEqual({ key: 'test-object', content: 'file-content', state: 'success' });
+      expect(result.data).toEqual({ key: 'test-object', state: 'success' });
       expect(services.postObject).toHaveBeenCalledWith(
         mockToken,
         'test-bucket',
