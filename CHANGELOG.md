@@ -1,3 +1,10 @@
+## [2.3.0-stage.5](https://github.com/aziontech/lib/compare/v2.3.0-stage.4...v2.3.0-stage.5) (2025-12-03)
+
+
+### Bug Fixes
+
+* add support for ArrayBuffer and Uint8Array content types in Storage API (#323) ([2623b63](https://github.com/aziontech/lib/commit/2623b63837f2f9bd12672282599ee627645cc3d2))
+
 ## [2.3.0-stage.4](https://github.com/aziontech/lib/compare/v2.3.0-stage.3...v2.3.0-stage.4) (2025-11-28)
 
 
