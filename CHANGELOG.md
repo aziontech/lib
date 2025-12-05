@@ -1,3 +1,11 @@
+### [1.20.14](https://github.com/aziontech/lib/compare/v1.20.13...v1.20.14) (2025-12-05)
+
+
+### Bug Fixes
+
+* add content_type parameter support to Storage API object methods ([01cef01](https://github.com/aziontech/lib/commit/01cef01c502936da96b16c790be455852bdc414b))
+* add support for ArrayBuffer and Uint8Array content types in Storage API ([8b93613](https://github.com/aziontech/lib/commit/8b93613de948e094a5a52937a22b44705f9e0493))
+
 ### [1.20.13](https://github.com/aziontech/lib/compare/v1.20.12...v1.20.13) (2025-12-05)
 
 
