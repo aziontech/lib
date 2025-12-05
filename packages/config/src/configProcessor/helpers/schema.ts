@@ -629,12 +629,22 @@ const azionConfigSchema = {
                           errorMessage: "The 'enabled' field must be a boolean.",
                         },
                         topology: {
-                          type: 'string',
-                          enum: ['nearest-region', 'us-east-1', 'br-east-1'],
+                          type: ['string', 'null'],
+                          enum: ['nearest-region', 'us-east-1', 'br-east-1', null],
                           default: 'nearest-region',
                           errorMessage:
-                            "The 'topology' field must be one of 'nearest-region', 'br-east-1', 'us-east-1'.",
+                            "The 'topology' field must be one of 'nearest-region', 'br-east-1', 'us-east-1' or null.",
                         },
+                      },
+                      required: ['enabled'],
+                      if: {
+                        properties: { enabled: { const: true } }
+                      },
+                      then: {
+                        required: ['enabled', 'topology'],
+                        errorMessage: {
+                          required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object."
+                        }
                       },
                       additionalProperties: false,
                       errorMessage: {
@@ -877,7 +887,8 @@ const azionConfigSchema = {
             required: ['name'],
             additionalProperties: false,
           },
-          errorMessage: "The 'applications' field must be an array of application objects",
+          minItems: 1,
+          errorMessage: "The 'applications' field must be an array of application objects with at least one item",
         },
         workloads: {
           type: 'array',
@@ -915,7 +926,6 @@ const azionConfigSchema = {
                   maxLength: 250,
                   errorMessage: 'Each domain must be a string between 1 and 250 characters',
                 },
-                minItems: 1,
                 errorMessage: "The 'domains' field must be an array of domain strings",
               },
               tls: {
@@ -1002,7 +1012,7 @@ const azionConfigSchema = {
                       certificate: {
                         type: ['integer', 'null'],
                         minimum: 1,
-                     },
+                      },
                       crl: {
                         type: ['array', 'null'],
                         items: { type: 'integer' },
@@ -1089,20 +1099,22 @@ const azionConfigSchema = {
                     required: "The 'name' and 'strategy' fields are required in each deployment",
                   },
                 },
-                errorMessage: "The 'deployments' field must be an array of deployment objects",
+                minItems: 1,
+                errorMessage: "The 'deployments' field must be an array of deployment objects with at least one item.",
               },
             },
-            required: ['name'],
+            required: ['name', 'deployments'],
             additionalProperties: false,
             errorMessage: {
               additionalProperties: 'No additional properties are allowed in workload items',
               required: {
                 name: "The 'name' field is required in workloads",
-                domains: "The 'domains' field is required in workloads",
+                deployments: "The 'deployments' field is required in workloads",
               },
             },
           },
-          errorMessage: "The 'workloads' field must be an array of workloads items.",
+          minItems: 1,
+          errorMessage: "The 'workloads' field must be an array of workloads items with at least one item.",
         },
         purge: {
           type: 'array',
@@ -1806,6 +1818,7 @@ const azionConfigSchema = {
         functions: {
           type: 'array',
           items: schemaFunction,
+          errorMessage: "The 'functions' field must be an array of function objects with at least one item",
         },
         customPages: {
           type: 'array',
@@ -1916,6 +1929,7 @@ const azionConfigSchema = {
         },
       },
       additionalProperties: false,
+      required: ['build', 'applications', 'workloads'],
       errorMessage: {
         additionalProperties:
           'Config can only contain the following properties: build, functions, applications, workloads, purge, edgefirewall, networkList, waf, connectors, customPages',

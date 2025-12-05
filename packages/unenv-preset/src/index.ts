@@ -16,6 +16,8 @@ export default {
     setInterval: `${polyfillsPath}/node/globals/set-interval.js`,
     clearInterval: `${polyfillsPath}/node/globals/clear-interval.js`,
     console: `${polyfillsPath}/node/globals/console.js`,
+    asyncStorage: `${polyfillsPath}/node/globals/async-storage.js`,
+    dateToString: `${polyfillsPath}/node/globals/date-to-string.js`,
   },
   alias: {
     'azion/utils': 'azion/utils',
@@ -24,11 +26,13 @@ export default {
     '@fastly/http-compute-js': '@fastly/http-compute-js',
     accepts: 'accepts',
     assert: 'assert-browserify',
+    buffer: `${polyfillsPath}/node/buffer.js`,
     https: `${polyfillsPath}/node/https.js`,
     module: `${polyfillsPath}/node/module.js`,
     string_decoder: 'string_decoder/lib/string_decoder.js',
     timers: 'timers-browserify/',
     util: `${polyfillsPath}/node/util.js`,
+    zlib: `${polyfillsPath}/node/zlib.js`,
   },
   external: ['node:async_hooks', 'node:fs/promises', 'node:stream', 'node:crypto'],
   polyfill: [

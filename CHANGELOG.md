@@ -1,3 +1,59 @@
+## [2.3.0-stage.5](https://github.com/aziontech/lib/compare/v2.3.0-stage.4...v2.3.0-stage.5) (2025-12-03)
+
+
+### Bug Fixes
+
+* add support for ArrayBuffer and Uint8Array content types in Storage API (#323) ([2623b63](https://github.com/aziontech/lib/commit/2623b63837f2f9bd12672282599ee627645cc3d2))
+
+## [2.3.0-stage.4](https://github.com/aziontech/lib/compare/v2.3.0-stage.3...v2.3.0-stage.4) (2025-11-28)
+
+
+### Bug Fixes
+
+* adjust Node.js Polyfills and add Unicode Character Sanitization (#320) ([8bd151e](https://github.com/aziontech/lib/commit/8bd151ead39ff6c0879865aeb99a19512100bf2d))
+
+## [2.3.0-stage.3](https://github.com/aziontech/lib/compare/v2.3.0-stage.2...v2.3.0-stage.3) (2025-11-21)
+
+
+### Features
+
+* add AsyncLocalStorage snapshot polyfill and zlib inflateSync support (#317) ([e507301](https://github.com/aziontech/lib/commit/e507301be5ee6ba8875d1918bdbdbd710408d32b))
+
+## [2.3.0-stage.2](https://github.com/aziontech/lib/compare/v2.3.0-stage.1...v2.3.0-stage.2) (2025-11-18)
+
+
+### Features
+
+* add SvelteKit preset with custom adapter (#315) ([b46122b](https://github.com/aziontech/lib/commit/b46122b2a18c5f9f8c83e5c3ed2a4a56074b2d43))
+
+## [2.3.0-stage.1](https://github.com/aziontech/lib/compare/v2.2.4-stage.3...v2.3.0-stage.1) (2025-11-13)
+
+
+### Features
+
+* improve validation error messages with detailed formatting and fix cache settings (#314) ([f6a53cf](https://github.com/aziontech/lib/commit/f6a53cf768aab395039b679a10a544252593b1b3))
+
+### [2.2.4-stage.3](https://github.com/aziontech/lib/compare/v2.2.4-stage.2...v2.2.4-stage.3) (2025-11-11)
+
+
+### Bug Fixes
+
+* add required field validation for config schema (#313) ([b223cfd](https://github.com/aziontech/lib/commit/b223cfdf7f2f04187eb9326e603922fa9c9b96f2))
+
+### [2.2.4-stage.2](https://github.com/aziontech/lib/compare/v2.2.4-stage.1...v2.2.4-stage.2) (2025-11-11)
+
+
+### Bug Fixes
+
+* cmd manifest transform (#312) ([18b516a](https://github.com/aziontech/lib/commit/18b516ac28cb0d818e1b569df58c6e18538b4c4f))
+
+### [2.2.4-stage.1](https://github.com/aziontech/lib/compare/v2.2.3...v2.2.4-stage.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* improve performance of pem cleanup in the jws package (#311) ([4e24b26](https://github.com/aziontech/lib/commit/4e24b266882692c37488295f500068dbffc59a0d))
+
 ### [2.2.3](https://github.com/aziontech/lib/compare/v2.2.2...v2.2.3) (2025-11-06)
 
 

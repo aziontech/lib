@@ -257,18 +257,25 @@ describe('WorkloadDeploymentsProcessConfigStrategy', () => {
   describe('transformToConfig', () => {
     it('should return empty object when no workload_deployments are provided', () => {
       const payload = {};
-      const result = strategy.transformToConfig(payload);
+      const transformedPayload: AzionConfig = {};
+      const result = strategy.transformToConfig(payload, transformedPayload);
       expect(result).toEqual({});
     });
 
     it('should return empty object when workload_deployments array is empty', () => {
       const payload = { workload_deployments: [] };
-      const result = strategy.transformToConfig(payload);
+      const transformedPayload: AzionConfig = {};
+      const result = strategy.transformToConfig(payload, transformedPayload);
       expect(result).toEqual({});
     });
 
     it('should transform a basic workload_deployment manifest to config format', () => {
       const payload = {
+        workloads: [
+          {
+            name: 'test-workload',
+          },
+        ],
         workload_deployments: [
           {
             name: 'production',
@@ -286,30 +293,46 @@ describe('WorkloadDeploymentsProcessConfigStrategy', () => {
         ],
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = strategy.transformToConfig(payload) as { workloadDeployments: any[] };
-
-      expect(result).toEqual({
-        workloadDeployments: [
+      const transformedPayload: AzionConfig = {
+        workloads: [
           {
-            name: 'production',
-            current: true,
-            active: true,
-            strategy: {
-              type: 'application',
-              attributes: {
-                application: 'my-edge-app',
-                firewall: null,
-                customPage: null,
-              },
-            },
+            name: 'test-workload',
           },
         ],
-      });
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = strategy.transformToConfig(payload, transformedPayload) as any[];
+
+      expect(result).toEqual([
+        {
+          name: 'test-workload',
+          deployments: [
+            {
+              name: 'production',
+              current: true,
+              active: true,
+              strategy: {
+                type: 'application',
+                attributes: {
+                  application: 'my-edge-app',
+                  firewall: null,
+                  customPage: null,
+                },
+              },
+            },
+          ],
+        },
+      ]);
     });
 
     it('should transform numeric IDs to strings in the config format', () => {
       const payload = {
+        workloads: [
+          {
+            name: 'test-workload',
+          },
+        ],
         workload_deployments: [
           {
             name: 'production',
@@ -325,30 +348,47 @@ describe('WorkloadDeploymentsProcessConfigStrategy', () => {
         ],
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = strategy.transformToConfig(payload) as { workloadDeployments: any[] };
-
-      expect(result).toEqual({
-        workloadDeployments: [
+      const transformedPayload: AzionConfig = {
+        workloads: [
           {
-            name: 'production',
-            current: undefined,
-            active: undefined,
-            strategy: {
-              type: 'application',
-              attributes: {
-                application: '12345',
-                firewall: '67890',
-                customPage: 54321,
-              },
-            },
+            name: 'test-workload',
           },
         ],
-      });
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = strategy.transformToConfig(payload, transformedPayload) as any[];
+
+      expect(result).toEqual([
+        {
+          name: 'test-workload',
+          deployments: [
+            {
+              name: 'production',
+              strategy: {
+                type: 'application',
+                attributes: {
+                  application: '12345',
+                  firewall: '67890',
+                  customPage: '54321',
+                },
+              },
+            },
+          ],
+        },
+      ]);
     });
 
     it('should transform multiple workload_deployments to config format', () => {
       const payload = {
+        workloads: [
+          {
+            name: 'test-workload',
+          },
+          {
+            name: 'test-workload-2',
+          },
+        ],
         workload_deployments: [
           {
             name: 'deployment-1',
@@ -379,15 +419,25 @@ describe('WorkloadDeploymentsProcessConfigStrategy', () => {
         ],
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = strategy.transformToConfig(payload) as { workloadDeployments: any[] };
+      const transformedPayload: AzionConfig = {
+        workloads: [
+          {
+            name: 'test-workload',
+          },
+          {
+            name: 'test-workload-2',
+          },
+        ],
+      };
 
-      expect(result.workloadDeployments).toHaveLength(2);
-      expect(result.workloadDeployments[0].name).toBe('deployment-1');
-      expect(result.workloadDeployments[1].name).toBe('deployment-2');
-      expect(result.workloadDeployments[0].strategy.attributes.application).toBe('app-1');
-      expect(result.workloadDeployments[1].strategy.attributes.application).toBe('app-2');
-      expect(result.workloadDeployments[1].strategy.attributes.firewall).toBe('firewall-1');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = strategy.transformToConfig(payload, transformedPayload) as any[];
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('test-workload');
+      expect(result[1].name).toBe('test-workload-2');
+      expect(result[0].deployments[0].strategy.attributes.application).toBe('app-1');
+      expect(result[0].deployments[1].strategy.attributes.application).toBe('app-2');
+      expect(result[1].deployments[1].strategy.attributes.firewall).toBe('firewall-1');
     });
   });
 });

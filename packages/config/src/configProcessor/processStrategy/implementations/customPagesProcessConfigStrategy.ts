@@ -54,7 +54,7 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy {
           page: {
             type: pageEntry.page.type || 'page_connector',
             attributes: {
-              connector: Number(pageEntry.page.attributes.connector), // Convert to number for API
+              connector: String(pageEntry.page.attributes.connector),
               ttl: pageEntry.page.attributes.ttl ?? 0,
               uri: pageEntry.page.attributes.uri || null,
               custom_status_code: pageEntry.page.attributes.customStatusCode || null,

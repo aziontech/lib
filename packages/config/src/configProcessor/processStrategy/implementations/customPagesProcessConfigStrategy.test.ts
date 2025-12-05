@@ -138,8 +138,7 @@ describe('CustomPagesProcessConfigStrategy', () => {
       expect(result[0].pages[0].page.attributes.ttl).toBe(0);
       expect(result[0].pages[0].page.attributes.uri).toBeNull();
       expect(result[0].pages[0].page.attributes.custom_status_code).toBeNull();
-      // Number('test-connector') results in NaN, so we check if it's NaN
-      expect(isNaN(result[0].pages[0].page.attributes.connector as number)).toBe(true);
+      expect(result[0].pages[0].page.attributes.connector as string).toBe('test-connector');
     });
 
     it('should transform custom pages to manifest format with explicit values', () => {
@@ -189,7 +188,7 @@ describe('CustomPagesProcessConfigStrategy', () => {
       expect(result[0].pages[0].page.attributes.uri).toBe('/not-found');
       expect(result[0].pages[0].page.attributes.custom_status_code).toBe(404);
       // Number('test-connector') results in NaN, so we check if it's NaN
-      expect(isNaN(result[0].pages[0].page.attributes.connector as number)).toBe(true);
+      expect(result[0].pages[0].page.attributes.connector as string).toBe('test-connector');
     });
 
     it('should transform custom pages with numeric connector ID', () => {
@@ -224,7 +223,7 @@ describe('CustomPagesProcessConfigStrategy', () => {
               page: {
                 type: 'page_connector',
                 attributes: {
-                  connector: 123,
+                  connector: '123',
                   ttl: 0,
                   uri: null,
                   custom_status_code: null,
@@ -301,7 +300,7 @@ describe('CustomPagesProcessConfigStrategy', () => {
       expect(result[1].name).toBe('second-custom-page');
       expect(result[1].pages).toHaveLength(1);
       expect(result[1].pages[0].code).toBe('default');
-      expect(result[1].pages[0].page.attributes.connector).toBe(456);
+      expect(result[1].pages[0].page.attributes.connector).toBe('456');
     });
 
     it('should throw error when connector reference is invalid', () => {

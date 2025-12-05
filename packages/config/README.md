@@ -78,7 +78,6 @@ const config = defineConfig({
       functionsEnabled: false,
       applicationAcceleratorEnabled: false,
       imageProcessorEnabled: false,
-      tieredCacheEnabled: false,
       cache: [
         {
           name: 'mycache',
@@ -101,6 +100,10 @@ const config = defineConfig({
           cacheByCookie: {
             option: 'allowlist',
             list: ['session', 'user'],
+          },
+          tieredCache: {
+            enabled: true,
+            topology: 'nearest-region',
           },
         },
       ],
@@ -624,7 +627,6 @@ Type definition for application configuration.
 - `functionsEnabled?: boolean` - Whether functions are enabled (default: false).
 - `applicationAcceleratorEnabled?: boolean` - Whether application accelerator is enabled (default: false).
 - `imageProcessorEnabled?: boolean` - Whether image processor is enabled (default: false).
-- `tieredCacheEnabled?: boolean` - Whether tiered cache is enabled (default: false).
 - `cache?: AzionCache[]` - List of cache configurations.
 - `rules?: AzionRules` - Request and response rules.
 - `deviceGroups?: DeviceGroup[]` - List of device groups for mobile detection.
@@ -722,6 +724,9 @@ Type definition for the cache configuration.
 - `cacheByQueryString?: CacheByQueryStringConfig` - Cache by query string settings.
   - `option: 'ignore' | 'all' | 'allowlist' | 'denylist'` - Cache by query string option.
   - `list?: string[]` - List of query string parameters (required when option is 'allowlist' or 'denylist').
+- `tieredCache?: TieredCacheConfig` - Tiered cache settings.
+  - `enabled: boolean` - Whether tiered cache is enabled.
+  - `topology: 'nearest-region' | 'br-east-1' | 'us-east-1'` - Tiered cache topology.
 
 ### `AzionRules`
 

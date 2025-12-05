@@ -41,7 +41,13 @@ export async function verifying(
 }
 
 export function pemToBinary(pem: string): Uint8Array {
-  return decodeBase64(pem.replace(/-+(BEGIN|END).*/g, '').replace(/\s/g, ''));
+  return decodeBase64(
+    pem
+      .split('\n')
+      .filter((line) => !line.includes('BEGIN') && !line.includes('END'))
+      .join('')
+      .replace(/\s/g, ''),
+  );
 }
 
 export async function importPrivateKey(key: SignatureKey, alg: KeyImporterAlgorithm): Promise<CryptoKey> {

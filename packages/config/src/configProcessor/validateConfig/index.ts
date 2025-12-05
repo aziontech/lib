@@ -24,10 +24,39 @@ function validateConfig(
   const validate = ajv.compile(schema);
   const valid = validate(config);
 
+  const handleMessageError = (errors: unknown[]) => {
+    const messages = errors
+      ?.slice(0, 3)
+      ?.map((error: unknown, index: number) => {
+        const errorObject = error as {
+          message: string;
+          instancePath: string;
+          params: { missingProperty?: string | undefined };
+        };
+
+        const errorDetails = [
+          `📍 Error #${index + 1}:`,
+          `   Message: ${errorObject.message}`,
+          errorObject.instancePath ? `   Path: ${errorObject.instancePath}` : null,
+          errorObject.params?.missingProperty ? `   Missing Property: ${errorObject.params.missingProperty}` : null,
+        ]
+          .filter(Boolean)
+          .join('\n');
+
+        return errorDetails;
+      })
+      .join('\n\n');
+
+    const totalErrors = errors?.length || 0;
+    const moreErrorsNote = totalErrors > 3 ? `\n\n... and ${totalErrors - 3} more error(s)` : '';
+
+    return `⛔️ Azion Configuration Validation Failed\n${'-'.repeat(50)}\n${messages}${moreErrorsNote}\n${'-'.repeat(50)}`;
+  };
+
   if (!valid) {
     if (validate.errors && validate.errors.length > 0) {
-      const firstError = validate.errors[0];
-      throw new Error('Azion validation: ' + firstError.message);
+      const messages = handleMessageError(validate.errors);
+      throw new Error(messages);
     } else {
       throw new Error('Azion validation failed.');
     }

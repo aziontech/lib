@@ -244,12 +244,16 @@ const schemaStorageManifest = {
       enum: ['read_only', 'read_write', 'restricted'],
       errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
     },
+    prefix: {
+      type: 'string',
+      errorMessage: "The 'prefix' field must be a string.",
+    },
   },
-  required: ['name', 'dir'],
+  required: ['name', 'dir', 'prefix'],
   additionalProperties: false,
   errorMessage: {
     additionalProperties: 'No additional properties are allowed in  storage items.',
-    required: "The 'name' and 'dir' fields are required.",
+    required: "The 'name', 'dir' and 'prefix' fields are required.",
   },
 };
 
@@ -626,13 +630,26 @@ const schemaApplicationCacheSettings = {
             tiered_cache: {
               type: ['object', 'null'],
               properties: {
+                enabled: {
+                  type: 'boolean',
+                  errorMessage: "The 'enabled' field must be a boolean.",
+                },
                 topology: {
-                  type: 'string',
-                  enum: TIERED_CACHE_TOPOLOGY,
-                  errorMessage: "The 'topology' must be one of: nearest-region, us-east-1, br-east-1.",
+                  type: ['string', 'null'],
+                  enum: [...TIERED_CACHE_TOPOLOGY, null],
+                  errorMessage: "The 'topology' must be one of: nearest-region, us-east-1, br-east-1 or null.",
                 },
               },
-              required: ['topology'],
+              required: ['enabled'],
+              if: {
+                properties: { enabled: { const: true } }
+              },
+              then: {
+                required: ['enabled', 'topology'],
+                errorMessage: {
+                  required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object."
+                }
+              },
               additionalProperties: false,
             },
           },
@@ -1237,7 +1254,6 @@ const schemaWorkloadManifest = {
         maxLength: 250,
         errorMessage: 'Each domain must be a string between 1 and 250 characters',
       },
-      minItems: 1,
       errorMessage: "The 'domains' field must be an array of domain strings",
     },
     tls: {
@@ -1726,7 +1742,8 @@ const schemaManifest = {
     applications: {
       type: 'array',
       items: schemaApplicationManifest,
-      errorMessage: "The 'applications' field must be an array of  application items.",
+      minItems: 1,
+      errorMessage: "The 'applications' field must be an array of  application items with at least one item.",
     },
     workloads: {
       type: 'array',
@@ -1769,19 +1786,16 @@ const schemaManifest = {
                 type: 'object',
                 properties: {
                   application: {
-                    type: 'integer',
-                    minimum: 1,
-                    errorMessage: "The 'application' field must be an integer >= 1.",
+                    type: 'string',
+                    errorMessage: "The 'application' field must be a string.",
                   },
                   firewall: {
-                    type: ['integer', 'null'],
-                    minimum: 1,
-                    errorMessage: "The 'firewall' field must be an integer >= 1 or null.",
+                    type: ['string', 'null'],
+                    errorMessage: "The 'firewall' field must be a string or null.",
                   },
                   custom_page: {
-                    type: ['integer', 'null'],
-                    minimum: 1,
-                    errorMessage: "The 'custom_page' field must be an integer >= 1 or null.",
+                    type: ['string', 'null'],
+                    errorMessage: "The 'custom_page' field must be a string or null.",
                   },
                 },
                 required: ['application'],
@@ -1807,7 +1821,9 @@ const schemaManifest = {
           required: "The 'name' and 'strategy' fields are required in each workload deployment.",
         },
       },
-      errorMessage: "The 'workload_deployments' field must be an array of workload deployment objects.",
+      minItems: 1,
+      errorMessage:
+        "The 'workload_deployments' field must be an array of workload deployment objects with at least one item.",
     },
     connectors: {
       type: 'array',
@@ -1859,9 +1875,8 @@ const schemaManifest = {
                       type: 'object',
                       properties: {
                         connector: {
-                          type: 'integer',
-                          minimum: 1,
-                          errorMessage: "The 'connector' field must be an integer >= 1.",
+                          type: 'string',
+                          errorMessage: "The 'connector' field must be a string.",
                         },
                         ttl: {
                           type: 'integer',
@@ -1930,6 +1945,11 @@ const schemaManifest = {
       items: schemaStorageManifest,
       errorMessage: "The 'storage' field must be an array of  storage items.",
     },
+  },
+  required: ['build', 'applications', 'workloads', 'workload_deployments'],
+  errorMessage: {
+    required:
+      "The 'build', 'applications', 'workloads', and 'workload_deployments' fields are required in the manifest.",
   },
 };
 
