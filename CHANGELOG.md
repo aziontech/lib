@@ -1,3 +1,10 @@
+### [1.20.12](https://github.com/aziontech/lib/compare/v1.20.11...v1.20.12) (2025-12-05)
+
+
+### Bug Fixes
+
+* add SvelteKit preset with SSR and SSG support ([df34efb](https://github.com/aziontech/lib/commit/df34efbf4826f983e93201dce0b02bd29119f692))
+
 ### [1.20.11](https://github.com/aziontech/lib/compare/v1.20.10...v1.20.11) (2025-11-06)
 
 
