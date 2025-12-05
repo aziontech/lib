@@ -2,11 +2,12 @@
 export namespace Azion {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   export declare namespace Storage {
+    export type ContentObjectStorage = ArrayBuffer | ReadableStream | string | Uint8Array;
     export interface StorageInstance {
       list(): Promise<{ entries: { key: string; content_length?: number }[] }>;
       put(
         key: string,
-        value: ArrayBuffer,
+        value: ContentObjectStorage,
         options?: { 'content-length'?: string; 'content-type'?: string },
       ): Promise<void>;
       delete(key: string): Promise<void>;

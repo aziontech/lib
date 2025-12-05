@@ -13,7 +13,7 @@ import {
   ApiListObjectsResponse,
 } from './types';
 
-import { AzionEnvironment, EdgeAccessType } from '../../types';
+import { AzionEnvironment, ContentObjectStorage, EdgeAccessType } from '../../types';
 
 /**
  * Gets base URL based on environment
@@ -318,7 +318,8 @@ const getObjects = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to create.
- * @param {string} file - Content of the object.
+ * @param {ContentObjectStorage} file - Content of the object.
+ * @param {string} [contentType='application/octet-stream'] - Content type of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The created object or an error if creation failed.
@@ -327,22 +328,25 @@ const postObject = async (
   token: string,
   bucketName: string,
   key: string,
-  file: string,
+  file: ContentObjectStorage,
+  contentType: string = 'application/octet-stream',
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
   try {
     const baseUrl = getBaseUrl(env);
+    // convert file to Uint8Array if file is string, otherwise use as-is (ArrayBuffer or ReadableStream)
+    const fileContent = typeof file === 'string' ? new TextEncoder().encode(file) : file;
     const data = await fetchWithErrorHandling(
       `${baseUrl}/${bucketName}/objects/${key}`,
       {
         method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': contentType,
           Authorization: `Token ${token}`,
         },
-        body: file,
+        body: fileContent as BodyInit,
       },
       debug,
     );
@@ -370,7 +374,7 @@ const postObject = async (
  * @param {string} key - Key of the object to retrieve.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
- * @returns {Promise<{ data?: string; error?: ApiError }>} The retrieved object or an error if retrieval failed.
+ * @returns {Promise<{ data?: ContentObjectStorage; error?: ApiError }>} The retrieved object or an error if retrieval failed.
  */
 const getObjectByKey = async (
   token: string,
@@ -378,7 +382,7 @@ const getObjectByKey = async (
   key: string,
   debug?: boolean,
   env: AzionEnvironment = 'production',
-): Promise<{ data?: string; error?: ApiError }> => {
+): Promise<{ data?: ContentObjectStorage; error?: ApiError }> => {
   try {
     const baseUrl = getBaseUrl(env);
     const headers = buildHeaders(token);
@@ -407,7 +411,8 @@ const getObjectByKey = async (
  * @param {string} token - Authentication token for Azion API.
  * @param {string} bucketName - Name of the bucket.
  * @param {string} key - Key of the object to update.
- * @param {string} file - New content of the object.
+ * @param {ContentObjectStorage} file - New content of the object.
+ * @param {string} [contentType='application/octet-stream'] - Content type of the object.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateObjectResponse>} The updated object or an error if update failed.
@@ -416,22 +421,25 @@ const putObject = async (
   token: string,
   bucketName: string,
   key: string,
-  file: string,
+  file: ContentObjectStorage,
+  contentType: string = 'application/octet-stream',
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateObjectResponse> => {
   try {
     const baseUrl = getBaseUrl(env);
+    // convert file to Uint8Array if file is string, otherwise use as-is (ArrayBuffer or ReadableStream)
+    const fileContent = typeof file === 'string' ? new TextEncoder().encode(file) : file;
     const data = await fetchWithErrorHandling(
       `${baseUrl}/${bucketName}/objects/${key}`,
       {
         method: 'PUT',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': contentType,
           Authorization: `Token ${token}`,
         },
-        body: file,
+        body: fileContent as BodyInit,
       },
       debug,
     );

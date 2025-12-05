@@ -6,12 +6,13 @@ import {
   AzionDeletedBucketObject,
   AzionObjectCollectionParams,
   AzionStorageResponse,
+  ContentObjectStorage,
 } from '../../types';
 import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 
 export const isInternalStorageAvailable = (): boolean => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (globalThis as any).Azion?.Sql || null;
+  return (globalThis as any).Azion?.Storage || null;
 };
 
 /**
@@ -38,10 +39,12 @@ export class InternalStorageClient implements AzionBucket {
     if (!this.storage) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.storage = new (globalThis as any).Azion.Storage(bucketName);
+      this.name = bucketName;
     }
   }
 
   name: string = '';
+  // @ts-expect-error - edge_access is not defined in the AzionBucket interface
   edge_access: string = 'unknown';
 
   /**
@@ -57,6 +60,7 @@ export class InternalStorageClient implements AzionBucket {
       this.name = name;
       return {
         name,
+        // @ts-expect-error - edge_access is not defined in the AzionBucket interface
         edge_access: 'unknown',
         state: 'executed-runtime',
         getObjects: this.getObjects.bind(this),
@@ -127,14 +131,12 @@ export class InternalStorageClient implements AzionBucket {
     try {
       const storageObject = await retryWithBackoff(() => this.storage!.get(key));
       const arrayBuffer = await storageObject.arrayBuffer();
-      const decoder = new TextDecoder();
-      const content = decoder.decode(arrayBuffer);
       return {
         data: {
           state: 'executed-runtime',
           key: removeLeadingSlash(key),
           size: storageObject.contentLength,
-          content: content,
+          content: arrayBuffer,
           content_type: storageObject.metadata.get('content-type'),
         },
       };
@@ -156,7 +158,7 @@ export class InternalStorageClient implements AzionBucket {
    *
    * @param {Object} params - Parameters for creating an object.
    * @param {string} params.key - The key of the object to create.
-   * @param {string} params.content - The content of the object.
+   * @param {ContentObjectStorage} params.content - The content of the object.
    * @param {{ content_type?: string }} [params.options] - Optional metadata for the object.
    * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The created object or error message.
    */
@@ -166,24 +168,28 @@ export class InternalStorageClient implements AzionBucket {
     options,
   }: {
     key: string;
-    content: string;
+    content: ContentObjectStorage;
     options?: { content_type?: string };
   }): Promise<AzionStorageResponse<AzionBucketObject>> {
     this.initializeStorage(this.name);
     try {
-      const contentBuffer = new TextEncoder().encode(content);
-      await retryWithBackoff(() =>
-        this.storage!.put(key, contentBuffer, {
-          'content-type': options?.content_type,
-        }),
+      const fileContent = typeof content === 'string' ? new TextEncoder().encode(content as string) : content;
+      await retryWithBackoff(
+        () =>
+          this.storage!.put(key, fileContent, {
+            'content-type': options?.content_type,
+          }),
+        1000,
+        this.debug,
       );
+
+      const size = content instanceof ArrayBuffer ? content.byteLength : content.toString().length;
       return {
         data: {
           state: 'executed-runtime',
           key: removeLeadingSlash(key),
-          size: contentBuffer.byteLength,
+          size: size,
           content_type: options?.content_type,
-          content: content,
         },
       };
     } catch (error) {
@@ -204,7 +210,7 @@ export class InternalStorageClient implements AzionBucket {
    *
    * @param {Object} params - Parameters for updating an object.
    * @param {string} params.key - The key of the object to update.
-   * @param {string} params.content - The new content of the object.
+   * @param {ContentObjectStorage} params.content - The new content of the object.
    * @param {{ content_type?: string }} [params.options] - Optional metadata for the object.
    * @returns {Promise<AzionStorageResponse<AzionBucketObject>>} The updated object or error message.
    */
@@ -214,7 +220,7 @@ export class InternalStorageClient implements AzionBucket {
     options,
   }: {
     key: string;
-    content: string;
+    content: ContentObjectStorage;
     options?: { content_type?: string };
   }): Promise<AzionStorageResponse<AzionBucketObject>> {
     return this.createObject({ key, content, options });
