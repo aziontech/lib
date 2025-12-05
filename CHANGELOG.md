@@ -1,3 +1,14 @@
+### [1.20.13](https://github.com/aziontech/lib/compare/v1.20.12...v1.20.13) (2025-12-05)
+
+
+### Bug Fixes
+
+* add AsyncLocalStorage snapshot polyfill and zlib inflateSync support ([fa8cbde](https://github.com/aziontech/lib/commit/fa8cbde4753b224076d19b7e9c804dc3082d1dc1))
+* add Babel custom loader and sanitize worker plugins for esbuild ([6b0ff30](https://github.com/aziontech/lib/commit/6b0ff303197d459e6ffa01f74a23d727ebd9d63b))
+* add Buffer polyfill with latin1Slice and utf8Slice methods ([158b0e0](https://github.com/aziontech/lib/commit/158b0e01676eec1b064329e0226466cba2fafb68))
+* adjusting buffer, crypto, utils and date string polyfills ([7845c6a](https://github.com/aziontech/lib/commit/7845c6a015be2a57f2e8ea04f7d137a3765b9213))
+* export all zlib functions from unenv polyfill ([7a36391](https://github.com/aziontech/lib/commit/7a36391bf9a26782441dea6418b7823ae470776a))
+
 ### [1.20.12](https://github.com/aziontech/lib/compare/v1.20.11...v1.20.12) (2025-12-05)
 
 
