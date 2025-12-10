@@ -32,6 +32,10 @@ export default defineConfig({
           },
         ],
         behavior: {
+          setOrigin: {
+            name: 'origin-storage-default',
+            type: 'object_storage',
+          },
           deliver: true,
         },
       },
