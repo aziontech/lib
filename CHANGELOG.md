@@ -1,3 +1,10 @@
+### [1.20.15](https://github.com/aziontech/lib/compare/v1.20.14...v1.20.15) (2025-12-11)
+
+
+### Bug Fixes
+
+* add default object storage origin configuration to Svelte preset (#326) ([ee75f27](https://github.com/aziontech/lib/commit/ee75f2757e7f0b35976fbaa3434040e2c9fe928b))
+
 ### [1.20.14](https://github.com/aziontech/lib/compare/v1.20.13...v1.20.14) (2025-12-05)
 
 
