@@ -25,14 +25,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Configure npm for OIDC
-        run: |
-          npm config set //registry.npmjs.org/:_authToken ""
-          npm config set provenance true
 
       - name: Install
         run: npm install
