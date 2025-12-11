@@ -1,3 +1,9 @@
+## <small>2.3.1-stage.1 (2025-12-11)</small>
+
+* fix: configure npm registry URL and OIDC authentication in release workflow (#329) ([416dcd5](https://github.com/aziontech/lib/commit/416dcd5)), closes [#329](https://github.com/aziontech/lib/issues/329)
+* fix: migrate npm authentication from token to OIDC (#327) ([d0aebce](https://github.com/aziontech/lib/commit/d0aebce)), closes [#327](https://github.com/aziontech/lib/issues/327)
+* fix: upgrade Node.js to v22 and update semantic-release dependencies (#330) ([e94b9a9](https://github.com/aziontech/lib/commit/e94b9a9)), closes [#330](https://github.com/aziontech/lib/issues/330)
+
 ## [2.3.0](https://github.com/aziontech/lib/compare/v2.2.3...v2.3.0) (2025-12-05)
 
 
