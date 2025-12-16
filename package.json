@@ -1,6 +1,6 @@
 {
   "name": "azion",
-  "version": "2.3.0",
+  "version": "2.3.1-stage.3",
   "description": "Azion Packages for Edge Computing.",
   "scripts": {
     "prepare": "husky",
@@ -22,6 +22,10 @@
   ],
   "author": "aziontech",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aziontech/lib.git"
+  },
   "contributors": [
     {
       "name": "José Filho",
@@ -50,8 +54,7 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^9.2.6",
-    "@semantic-release/release-notes-generator": "^11.0.4",
+    "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/eslint__js": "^8.42.3",
     "@types/lodash": "^4.17.20",
     "@types/lodash-es": "^4.17.12",
@@ -61,7 +64,7 @@
     "globals": "^16.4.0",
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
-    "semantic-release": "^22.0.12",
+    "semantic-release": "^25.0.2",
     "tsup": "^8.5.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.44.1"

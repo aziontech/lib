@@ -111,7 +111,6 @@ export type FirewallBehaviorName =
   | 'set_rate_limit'
   | 'set_waf_ruleset'
   | 'run_function'
-  | 'tag_event'
   | 'set_custom_response';
 export type FirewallRateLimitType = 'second' | 'minute';
 export type FirewallRateLimitBy = 'clientIp' | 'global';

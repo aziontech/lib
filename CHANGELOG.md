@@ -1,3 +1,18 @@
+## <small>2.3.1-stage.3 (2025-12-16)</small>
+
+* fix: replace Date toString override with Proxy implementation (#334) ([bd80246](https://github.com/aziontech/lib/commit/bd80246)), closes [#334](https://github.com/aziontech/lib/issues/334)
+* chore: remove behavior tag event (#332) ([eb8f07c](https://github.com/aziontech/lib/commit/eb8f07c)), closes [#332](https://github.com/aziontech/lib/issues/332)
+
+## <small>2.3.1-stage.2 (2025-12-11)</small>
+
+* fix: add repository field to package.json (#331) ([e01a7d0](https://github.com/aziontech/lib/commit/e01a7d0)), closes [#331](https://github.com/aziontech/lib/issues/331)
+
+## <small>2.3.1-stage.1 (2025-12-11)</small>
+
+* fix: configure npm registry URL and OIDC authentication in release workflow (#329) ([416dcd5](https://github.com/aziontech/lib/commit/416dcd5)), closes [#329](https://github.com/aziontech/lib/issues/329)
+* fix: migrate npm authentication from token to OIDC (#327) ([d0aebce](https://github.com/aziontech/lib/commit/d0aebce)), closes [#327](https://github.com/aziontech/lib/issues/327)
+* fix: upgrade Node.js to v22 and update semantic-release dependencies (#330) ([e94b9a9](https://github.com/aziontech/lib/commit/e94b9a9)), closes [#330](https://github.com/aziontech/lib/issues/330)
+
 ## [2.3.0](https://github.com/aziontech/lib/compare/v2.2.3...v2.3.0) (2025-12-05)
 
 
