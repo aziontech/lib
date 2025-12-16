@@ -1,3 +1,7 @@
+## <small>1.20.17 (2025-12-16)</small>
+
+* fix: add repository field to package.json (#336) ([8e21dfb](https://github.com/aziontech/lib/commit/8e21dfb)), closes [#336](https://github.com/aziontech/lib/issues/336)
+
 ## <small>1.20.16 (2025-12-16)</small>
 
 * fix: refactor Date toString polyfill to use Proxy pattern (#335) ([863ad22](https://github.com/aziontech/lib/commit/863ad22)), closes [#335](https://github.com/aziontech/lib/issues/335)
