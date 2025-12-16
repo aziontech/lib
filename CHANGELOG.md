@@ -1,3 +1,8 @@
+## <small>1.20.16 (2025-12-16)</small>
+
+* fix: refactor Date toString polyfill to use Proxy pattern (#335) ([863ad22](https://github.com/aziontech/lib/commit/863ad22)), closes [#335](https://github.com/aziontech/lib/issues/335)
+* chore: migrate npm authentication from token to OIDC (#333) ([b126603](https://github.com/aziontech/lib/commit/b126603)), closes [#333](https://github.com/aziontech/lib/issues/333)
+
 ### [1.20.15](https://github.com/aziontech/lib/compare/v1.20.14...v1.20.15) (2025-12-11)
 
 
