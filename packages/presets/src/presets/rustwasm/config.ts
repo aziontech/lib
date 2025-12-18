@@ -1,42 +1,39 @@
-import type { AzionBuild, AzionConfig } from 'azion/config';
-import webpack, { Configuration } from 'webpack';
+import type { AzionConfig } from 'azion/config';
 
 const config: AzionConfig = {
   build: {
     entry: 'handler.js',
     polyfills: false,
-    bundler: 'webpack',
-    extend: (context: Configuration) => {
-      context = {
-        ...context,
-        optimization: {
-          minimize: false,
-        },
-        performance: {
-          maxEntrypointSize: 2097152,
-          maxAssetSize: 2097152,
-        },
-        module: {
-          rules: [
-            {
-              test: /\.wasm$/,
-              type: 'asset/inline',
-            },
-          ],
-        },
-        plugins: [
-          new webpack.optimize.LimitChunkCountPlugin({
-            maxChunks: 1,
-          }),
-        ],
-      };
-      return context;
+  },
+  storage: [
+    {
+      name: '$BUCKET_NAME',
+      prefix: '$BUCKET_PREFIX',
+      dir: '.wasm-bindgen',
+      edgeAccess: 'read_only',
     },
-  } as AzionBuild,
+  ],
+  connectors: [
+    {
+      name: '$CONNECTOR_NAME',
+      active: true,
+      type: 'storage',
+      attributes: {
+        bucket: '$BUCKET_NAME',
+        prefix: '$BUCKET_PREFIX',
+      },
+    },
+  ],
   functions: [
     {
       name: '$FUNCTION_NAME',
       path: './functions/handler.js',
+      bindings: {
+        storage: {
+          bucket: '$BUCKET_NAME',
+          prefix: '$BUCKET_PREFIX',
+        },
+      },
     },
   ],
   applications: [
