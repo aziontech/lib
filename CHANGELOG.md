@@ -1,3 +1,9 @@
+## <small>2.3.2 (2025-12-18)</small>
+
+* Merge pull request #339 from aziontech/stage ([ea7606f](https://github.com/aziontech/lib/commit/ea7606f)), closes [#339](https://github.com/aziontech/lib/issues/339)
+* chore(release): 2.3.2-stage.1 ([33e5d40](https://github.com/aziontech/lib/commit/33e5d40))
+* fix: rustwasm preset build (#338) ([7ca086c](https://github.com/aziontech/lib/commit/7ca086c)), closes [#338](https://github.com/aziontech/lib/issues/338)
+
 ## <small>2.3.2-stage.1 (2025-12-18)</small>
 
 * fix: rustwasm preset build (#338) ([7ca086c](https://github.com/aziontech/lib/commit/7ca086c)), closes [#338](https://github.com/aziontech/lib/issues/338)
