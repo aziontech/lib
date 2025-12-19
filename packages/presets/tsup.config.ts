@@ -34,7 +34,7 @@ export default defineConfig({
   minifyWhitespace: true,
   external: [
     './build/module',
-    './.wasm-bindgen/azion_rust_edge_function',
+    './.wasm-bindgen/azion_rust_edge_function.js',
     './.wasm-bindgen/azion_rust_edge_function_bg.wasm',
     'signale',
     'fast-glob',

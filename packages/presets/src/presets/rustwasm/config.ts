@@ -16,14 +16,6 @@ export default defineConfig({
           maxEntrypointSize: 2097152,
           maxAssetSize: 2097152,
         },
-        module: {
-          rules: [
-            {
-              test: /\.wasm$/,
-              type: 'asset/inline',
-            },
-          ],
-        },
         plugins: [
           new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1,
@@ -33,6 +25,12 @@ export default defineConfig({
       return context;
     },
   } as AzionBuild,
+  origin: [
+    {
+      name: 'origin-storage-default',
+      type: 'object_storage',
+    },
+  ],
   functions: [
     {
       name: 'my-rustwasm-function',
