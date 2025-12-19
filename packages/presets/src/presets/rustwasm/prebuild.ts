@@ -1,4 +1,4 @@
-import { exec } from 'azion/utils/node';
+import { copyDirectory, exec } from 'azion/utils/node';
 import { rm } from 'fs/promises';
 
 /**
@@ -19,6 +19,9 @@ async function prebuild(): Promise<void> {
     scope: 'RustWasm',
     verbose: true,
   });
+
+  const destPath = '.edge/storage';
+  copyDirectory(pkg, destPath);
 }
 
 export default prebuild;
