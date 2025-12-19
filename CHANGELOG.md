@@ -1,3 +1,7 @@
+## <small>1.20.18 (2025-12-19)</small>
+
+* fix: rustwasm preset build (#340) ([be2c046](https://github.com/aziontech/lib/commit/be2c046)), closes [#340](https://github.com/aziontech/lib/issues/340)
+
 ## <small>1.20.17 (2025-12-16)</small>
 
 * fix: add repository field to package.json (#336) ([8e21dfb](https://github.com/aziontech/lib/commit/8e21dfb)), closes [#336](https://github.com/aziontech/lib/issues/336)
