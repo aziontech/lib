@@ -1,3 +1,7 @@
+## <small>2.3.3-stage.2 (2026-01-05)</small>
+
+* fix: update qs to 6.14.1 to url dependency (#342) ([a125cb5](https://github.com/aziontech/lib/commit/a125cb5)), closes [#342](https://github.com/aziontech/lib/issues/342)
+
 ## <small>2.3.3-stage.1 (2026-01-05)</small>
 
 * fix: update metadata object for firewall requests (#341) ([88b5601](https://github.com/aziontech/lib/commit/88b5601)), closes [#341](https://github.com/aziontech/lib/issues/341)
