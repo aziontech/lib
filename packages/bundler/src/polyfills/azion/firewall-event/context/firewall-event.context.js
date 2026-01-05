@@ -60,6 +60,13 @@ class FirewallEventContext extends primitives.FetchEvent {
 
   #metadata() {
     return {
+      client_fingerprint: 'client',
+      client_id: '0123a',
+      configuration_id: '123',
+      edge_connector_id: '-',
+      function_id: '456',
+      geoip_asn: '14061',
+      geoip_city: 'Clifton',
       geoip_city_continent_code: 'NA',
       geoip_city_country_code: 'US',
       geoip_city_country_name: 'United States',
@@ -68,14 +75,18 @@ class FirewallEventContext extends primitives.FetchEvent {
       geoip_country_name: 'United States',
       geoip_region: 'NJ',
       geoip_region_name: 'New Jersey',
+      http_ssl_ja4: 'ja4',
       remote_addr: '127.0.0.1',
       remote_port: '33440',
       remote_user: null,
+      request_id: '0123456789abc',
+      server_fingerprint: 'ja4',
+      server_fingerprint_ja4h: 'ja4h',
       server_protocol: 'HTTP/1.1',
+      solution_id: '123',
       ssl_cipher: null,
       ssl_protocol: null,
-      geoip_asn: '14061',
-      geoip_city: 'Clifton',
+      virtualhost_id: '789',
     };
   }
 
