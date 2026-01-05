@@ -7,6 +7,11 @@ describe('parseRequest', () => {
 
   beforeEach(() => {
     mockMetadata = {
+      client_fingerprint: 'client',
+      client_id: '0123a',
+      configuration_id: '123',
+      edge_connector_id: '-',
+      function_id: '456',
       geoip_asn: '12345',
       geoip_city: 'Sao Paulo',
       geoip_city_continent_code: 'SA',
@@ -17,12 +22,18 @@ describe('parseRequest', () => {
       geoip_country_name: 'Brazil',
       geoip_region: 'SP',
       geoip_region_name: 'Sao Paulo',
+      http_ssl_ja4: 'ja4',
       remote_addr: '192.168.1.1',
       remote_port: '12345',
       remote_user: '',
+      request_id: '0123456789abc',
+      server_fingerprint: 'ja4',
+      server_fingerprint_ja4h: 'ja4h',
       server_protocol: 'HTTP/1.1',
+      solution_id: '123',
       ssl_cipher: 'TLS_AES_256_GCM_SHA384',
       ssl_protocol: 'TLSv1.3',
+      virtualhost_id: '789',
     };
 
     mockRequest = Object.assign(
@@ -162,5 +173,13 @@ describe('parseRequest', () => {
 
     expect(result.metadata.ssl_cipher).toBe('TLS_AES_256_GCM_SHA384');
     expect(result.metadata.ssl_protocol).toBe('TLSv1.3');
+  });
+
+  it('should correctly parse fingerprint information from metadata', async () => {
+    const result = await parseRequest(mockRequest);
+
+    expect(result.metadata.client_fingerprint).toBe('client');
+    expect(result.metadata.server_fingerprint).toBe('ja4');
+    expect(result.metadata.server_fingerprint_ja4h).toBe('ja4h');
   });
 });

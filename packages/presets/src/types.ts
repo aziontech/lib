@@ -42,10 +42,22 @@ export interface AzionRequestMetadata {
 
   // Server
   server_protocol: string;
+  server_fingerprint: string;
+  server_fingerprint_ja4h: string;
 
   // TLS
   ssl_cipher: string;
   ssl_protocol: string;
+
+  // Other
+  client_fingerprint: string;
+  client_id: string;
+  configuration_id: string;
+  edge_connector_id: string;
+  function_id: string;
+  http_ssl_ja4: string;
+  request_id: string;
+  solution_id: string;
 
   // Allows additional unspecified fields
   [key: string]: string;
