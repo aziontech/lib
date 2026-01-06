@@ -158,7 +158,7 @@ class StorageContext {
         contentLength: data?.contentLength,
         metadata: data?.metadata,
       };
-    } catch (error) {
+    } catch {
       return {};
     }
   }

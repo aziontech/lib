@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import unenvPresetAzion from 'azion/unenv-preset';
 import { PluginBuild } from 'esbuild';
 import fs from 'fs';
@@ -177,7 +176,6 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
   const UNENV_GLOBALS_RE = /_global_polyfill-([^.]+)\.js$/;
   const prefix = path.resolve(getAbsolutePath('../'), '_global_polyfill-');
 
-  // eslint-disable-next-line no-param-reassign
   build.initialOptions.inject = [
     ...(build.initialOptions.inject ?? []),
     ...Object.keys(inject).map((globalName) => `${prefix}${globalName}.js`),
@@ -263,7 +261,6 @@ function handleInternalPolyfillEnvProd(build: PluginBuild, namespace: string, pr
 function defineNextJsRuntime(options: BuildOptions) {
   if (fs.existsSync(path.join(process.cwd(), '.next'))) {
     const buildId = fs.readFileSync(path.join(process.cwd(), '.next/BUILD_ID'), 'utf-8');
-    // eslint-disable-next-line no-param-reassign
     options.define = {
       ...options.define,
       'process.env.NEXT_RUNTIME': options.define?.['process.env.NEXT_RUNTIME'] || '"edge"',

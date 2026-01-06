@@ -16,7 +16,7 @@ async function viteConfigExists() {
     try {
       await lstat(file);
       return true;
-    } catch (err) {
+    } catch {
       return false;
     }
   });
@@ -52,7 +52,7 @@ async function readViteBuildOutput() {
     const buildConfigObject = JSON.parse(buildConfig[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
 
     return Promise.resolve({ build: buildConfigObject });
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -69,7 +69,7 @@ async function prebuild() {
   const isViteProject = await viteConfigExists();
 
   if (isViteProject) {
-    await exec(`${packageManager} run build ${npmArgsForward}`, 'Preact', true);
+    await exec(`${packageManager} run build ${npmArgsForward}`);
 
     const config = await readViteBuildOutput();
 
@@ -80,7 +80,7 @@ async function prebuild() {
     copyDirectory(outDir, destPath);
     rm(outDir, { recursive: true, force: true });
   } else {
-    await exec(`BUILD_PATH="./.edge/storage" ${packageManager} run build`, 'Preact', true);
+    await exec(`BUILD_PATH="./.edge/storage" ${packageManager} run build`);
   }
 }
 

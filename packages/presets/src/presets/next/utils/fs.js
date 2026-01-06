@@ -1,5 +1,5 @@
-import { readdir, readFile, stat, mkdir, copyFile } from 'fs/promises';
-import { resolve, dirname } from 'path';
+import { copyFile, mkdir, readdir, readFile, stat } from 'fs/promises';
+import { dirname, resolve } from 'path';
 
 /**
  * Convert paths with backslashes to normalized paths with forward slashes.
@@ -33,7 +33,7 @@ export async function readJsonFile(path) {
   try {
     const contents = await readFile(path, 'utf8');
     parsed = JSON.parse(contents);
-  } catch (e) {
+  } catch {
     parsed = null;
   }
 
@@ -51,7 +51,7 @@ async function validatePathType(path, type) {
     const stats = await stat(path);
     if (type === 'file' && stats.isFile()) return true;
     if (type === 'directory' && stats.isDirectory()) return true;
-  } catch (e) {
+  } catch {
     /* empty */
   }
 
@@ -88,10 +88,7 @@ export async function readPathsRecursively(dir) {
       files.map(async (file) => {
         const path = resolve(dir, file);
 
-        return (await validateDir(path))
-          ? // eslint-disable-next-line no-return-await
-            await readPathsRecursively(path)
-          : [path];
+        return (await validateDir(path)) ? await readPathsRecursively(path) : [path];
       }),
     );
 
