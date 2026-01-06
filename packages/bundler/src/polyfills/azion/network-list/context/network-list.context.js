@@ -1,5 +1,5 @@
-import ipLib from 'ip';
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import ipCidrLib from 'ip-cidr';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import nodePath from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,7 +21,11 @@ class NetworkListContext {
 
   #workDir = '.edge';
 
-  #configFile = 'azion.config.js';
+  #configFile = 'azion.config';
+
+  #configFileTypes = ['.cjs', '.js', '.ts', '.mjs'];
+
+  #configFileExtension = '.js';
 
   /**
    * Creates an instance of NetworkListContext.
@@ -40,9 +44,11 @@ class NetworkListContext {
    * @memberof NetworkListContext
    */
   contains(networkListId, value) {
-    const network = this.#networkList.find(
-      (networkItem) => parseInt(networkItem.id, 10) === parseInt(networkListId, 10),
-    );
+    const network = this.#networkList.find((networkItem) => {
+      // At runtime, networkListId is the id of the network list, but in this local context,
+      // it is not the name of the object in the networkList[] array. Instead, it is the id property of the object.
+      return networkItem.name === networkListId;
+    });
     return this.#containsType(network, value);
   }
 
@@ -65,7 +71,12 @@ class NetworkListContext {
     if (!listContent || listContent.length === 0) return false;
     return listContent.some((currentIp) => {
       if (currentIp.includes('/')) {
-        return ipLib.cidrSubnet(currentIp).contains(ipAddress);
+        try {
+          const cidr = new ipCidrLib(currentIp);
+          return cidr.contains(ipAddress);
+        } catch {
+          return false; // Invalid CIDR format
+        }
       }
       return currentIp === ipAddress;
     });
@@ -122,8 +133,11 @@ class NetworkListContext {
     const rootPath = isWindows
       ? fileURLToPath(new URL(`file:///${nodePath.resolve(projectRoot, '.')}`))
       : nodePath.resolve(projectRoot, '.');
+    const configFiles = this.#configFileTypes.map((type) => nodePath.resolve(rootPath, `${this.#configFile}${type}`));
+    const configFilePath = configFiles.find((filePath) => existsSync(filePath));
+    this.#configFileExtension = configFilePath?.split('.').pop();
     return {
-      configFilePath: nodePath.resolve(rootPath, this.#configFile),
+      configFilePath: configFilePath || '',
       rootPath,
     };
   }
@@ -180,7 +194,7 @@ class NetworkListContext {
     if (file.match(regex)) {
       changed = true;
       fileUpdated = file.replace(regex, `import $1 from "..$2?u=${Date.now()}"`);
-      const tmpFile = this.#configFile.replace('.js', '.temp.js');
+      const tmpFile = this.#configFile.replace(this.#configFileExtension, '.temp.js');
       const tmpConfigPath = nodePath.join(process.cwd(), this.#workDir, tmpFile);
       writeFileSync(tmpConfigPath, fileUpdated, 'utf8');
       return { changed, currentConfigPath: tmpConfigPath };
