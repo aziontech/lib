@@ -83,7 +83,6 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
       const buildId = fs.readFileSync(path.join(process.cwd(), '.next/BUILD_ID'), 'utf-8');
       envsNext.NEXT_RUNTIME = 'edge';
       envsNext.NEXT_COMPUTE_JS = true;
-      // eslint-disable-next-line no-underscore-dangle
       envsNext.__NEXT_BUILD_ID = buildId;
     }
 

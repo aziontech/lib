@@ -10,6 +10,7 @@ import OptionalChainingAssignmentPlugin from './plugins/babel-custom';
 import NodePolyfillPlugin from './plugins/node-polyfills';
 import SanitizeWorker from './plugins/sanitize-worker';
 
+// eslint-disable-next-line
 interface ESBuildConfig extends esbuild.BuildOptions {}
 
 interface ESBuildBundler {

@@ -35,7 +35,6 @@ export default defineConfig({
         name: 'Redirect to index.html for Subpaths',
         match: '^(?!.*/$)(?![sS]*.[a-zA-Z0-9]+$).*',
         behavior: {
-          // eslint-disable-next-line no-template-curly-in-string
           rewrite: '${uri}/index.html',
         },
       },
@@ -43,7 +42,6 @@ export default defineConfig({
         name: 'Redirect to index.html',
         match: '.*/$',
         behavior: {
-          // eslint-disable-next-line no-template-curly-in-string
           rewrite: '${uri}index.html',
         },
       },

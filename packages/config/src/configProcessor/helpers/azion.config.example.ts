@@ -329,7 +329,6 @@ export default {
         name: 'userProfileRedirectRuleExample',
         description: 'Redirects user profile requests based on cookie value.',
         active: true,
-        // eslint-disable-next-line no-template-curly-in-string
         variable: 'cookie_name', // Example using cookie value
         match: '^user-profile$', // Matches based on the cookie value
         behavior: {
@@ -340,7 +339,6 @@ export default {
         name: 'temporaryPageRedirectRuleExample',
         description: 'Temporarily redirects an old page based on query parameters.',
         active: true,
-        // eslint-disable-next-line no-template-curly-in-string
         variable: 'args', // All query parameters
         match: '^old-page$', // Matches based on the presence of specific query parameters
         behavior: {

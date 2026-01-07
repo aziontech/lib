@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright Azion
  * Licensed under the MIT license. See LICENSE file for details.
@@ -16,4 +15,3 @@ export class ComputeJsNextRequest extends NodeNextRequest {
   }
 }
 export class ComputeJsNextResponse extends NodeNextResponse {}
-/* eslint-enable */

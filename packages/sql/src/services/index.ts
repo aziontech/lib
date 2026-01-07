@@ -92,11 +92,9 @@ export const apiQuery = async (
 
 // Runtime Query Internal Method to execute a query on a database
 export const runtimeQuery = async (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   token: string,
   name: string,
   statements: string[],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options?: AzionClientOptions,
 ): Promise<AzionDatabaseResponse<AzionDatabaseQueryResponse>> => {
   try {
