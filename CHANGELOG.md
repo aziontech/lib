@@ -1,3 +1,7 @@
+## <small>1.20.19 (2026-01-07)</small>
+
+* fix: update dependencies in 1.20.x (#343) ([b11fdcd](https://github.com/aziontech/lib/commit/b11fdcd)), closes [#343](https://github.com/aziontech/lib/issues/343)
+
 ## <small>1.20.18 (2025-12-19)</small>
 
 * fix: rustwasm preset build (#340) ([be2c046](https://github.com/aziontech/lib/commit/be2c046)), closes [#340](https://github.com/aziontech/lib/issues/340)
