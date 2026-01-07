@@ -1,3 +1,11 @@
+## <small>2.3.3 (2026-01-07)</small>
+
+* Merge pull request #344 from aziontech/stage ([2556f52](https://github.com/aziontech/lib/commit/2556f52)), closes [#344](https://github.com/aziontech/lib/issues/344)
+* chore(release): 2.3.3-stage.1 ([34c02fd](https://github.com/aziontech/lib/commit/34c02fd))
+* chore(release): 2.3.3-stage.2 ([6b8a34e](https://github.com/aziontech/lib/commit/6b8a34e))
+* fix: update metadata object for firewall requests (#341) ([88b5601](https://github.com/aziontech/lib/commit/88b5601)), closes [#341](https://github.com/aziontech/lib/issues/341)
+* fix: update qs to 6.14.1 to url dependency (#342) ([a125cb5](https://github.com/aziontech/lib/commit/a125cb5)), closes [#342](https://github.com/aziontech/lib/issues/342)
+
 ## <small>2.3.3-stage.2 (2026-01-05)</small>
 
 * fix: update qs to 6.14.1 to url dependency (#342) ([a125cb5](https://github.com/aziontech/lib/commit/a125cb5)), closes [#342](https://github.com/aziontech/lib/issues/342)
