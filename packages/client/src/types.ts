@@ -25,7 +25,7 @@ export interface AzionClient {
    *
    * @example
    * // Create a new bucket
-   * const newBucket = await client.storage.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
+   * const newBucket = await client.storage.createBucket({ name: 'my-new-bucket', workloads_access: 'read_only' });
    *
    * @example
    * // Get all buckets

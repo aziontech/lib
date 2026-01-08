@@ -27,7 +27,7 @@ describe('StorageProcessConfigStrategy', () => {
           {
             name: 'my-storage',
             dir: './public',
-            edgeAccess: 'read_only',
+            workloadsAccess: 'read_only',
             prefix: 'assets',
           },
         ],
@@ -38,14 +38,14 @@ describe('StorageProcessConfigStrategy', () => {
       expect(result).toEqual([
         {
           name: 'my-storage',
-          edge_access: 'read_only',
+          workloads_access: 'read_only',
           dir: './public',
           prefix: 'assets',
         },
       ]);
     });
 
-    it('should use default edge_access when not provided', () => {
+    it('should use default workloads_access when not provided', () => {
       const config: AzionConfig = {
         storage: [
           {
@@ -61,7 +61,7 @@ describe('StorageProcessConfigStrategy', () => {
       expect(result).toEqual([
         {
           name: 'my-storage',
-          edge_access: 'read_only',
+          workloads_access: 'read_only',
           dir: './public',
           prefix: 'assets',
         },
@@ -74,13 +74,13 @@ describe('StorageProcessConfigStrategy', () => {
           {
             name: 'storage-1',
             dir: './public',
-            edgeAccess: 'read_only',
+            workloadsAccess: 'read_only',
             prefix: 'assets',
           },
           {
             name: 'storage-2',
             dir: './static',
-            edgeAccess: 'read_write',
+            workloadsAccess: 'read_write',
             prefix: 'images',
           },
         ],
@@ -91,8 +91,8 @@ describe('StorageProcessConfigStrategy', () => {
       expect(result).toHaveLength(2);
       expect(result![0].name).toBe('storage-1');
       expect(result![1].name).toBe('storage-2');
-      expect(result![0].edge_access).toBe('read_only');
-      expect(result![1].edge_access).toBe('read_write');
+      expect(result![0].workloads_access).toBe('read_only');
+      expect(result![1].workloads_access).toBe('read_write');
     });
   });
 
@@ -116,7 +116,7 @@ describe('StorageProcessConfigStrategy', () => {
         storage: [
           {
             name: 'my-storage',
-            edge_access: 'read_only',
+            workloads_access: 'read_only',
             dir: './public',
             prefix: 'assets',
           },
@@ -129,7 +129,7 @@ describe('StorageProcessConfigStrategy', () => {
       expect(result).toEqual([
         {
           name: 'my-storage',
-          edgeAccess: 'read_only',
+          workloadsAccess: 'read_only',
           dir: './public',
           prefix: 'assets',
         },
@@ -137,14 +137,14 @@ describe('StorageProcessConfigStrategy', () => {
       expect(transformedPayload.storage).toEqual([
         {
           name: 'my-storage',
-          edgeAccess: 'read_only',
+          workloadsAccess: 'read_only',
           dir: './public',
           prefix: 'assets',
         },
       ]);
     });
 
-    it('should use default edgeAccess when not provided', () => {
+    it('should use default workloadsAccess when not provided', () => {
       const payload = {
         storage: [
           {
@@ -158,7 +158,7 @@ describe('StorageProcessConfigStrategy', () => {
 
       const result = strategy.transformToConfig(payload, transformedPayload);
 
-      expect(result![0].edgeAccess).toBe('read_only');
+      expect(result![0].workloadsAccess).toBe('read_only');
     });
 
     it('should transform multiple storage manifests to config format', () => {
@@ -166,13 +166,13 @@ describe('StorageProcessConfigStrategy', () => {
         storage: [
           {
             name: 'storage-1',
-            edge_access: 'read_only',
+            workloads_access: 'read_only',
             dir: './public',
             prefix: 'assets',
           },
           {
             name: 'storage-2',
-            edge_access: 'read_write',
+            workloads_access: 'read_write',
             dir: './static',
             prefix: 'images',
           },
@@ -185,8 +185,8 @@ describe('StorageProcessConfigStrategy', () => {
       expect(result).toHaveLength(2);
       expect(result![0].name).toBe('storage-1');
       expect(result![1].name).toBe('storage-2');
-      expect(result![0].edgeAccess).toBe('read_only');
-      expect(result![1].edgeAccess).toBe('read_write');
+      expect(result![0].workloadsAccess).toBe('read_only');
+      expect(result![1].workloadsAccess).toBe('read_write');
       expect(transformedPayload.storage).toEqual(result);
     });
 
@@ -195,7 +195,7 @@ describe('StorageProcessConfigStrategy', () => {
         storage: [
           {
             name: 'new-storage',
-            edge_access: 'read_only',
+            workloads_access: 'read_only',
             dir: './public',
             prefix: 'assets',
           },
@@ -205,7 +205,7 @@ describe('StorageProcessConfigStrategy', () => {
         storage: [
           {
             name: 'existing-storage',
-            edgeAccess: 'read_write',
+            workloadsAccess: 'read_write',
             dir: './existing',
             prefix: 'existing',
           },

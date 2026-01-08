@@ -79,7 +79,7 @@ const client: StorageClient = createClient({ token: 'your-api-token', debug: tru
 
 const { data, error }: AzionStorageResponse<AzionBucket> = await client.createBucket({
   name: 'my-new-bucket',
-  edge_access: 'public',
+  workloads_access: 'read_only',
 });
 
 if (data) {
@@ -120,7 +120,7 @@ import { createClient } from 'azion';
 const client = createClient({ token: 'your-api-token', debug: true });
 
 // Storage
-const { data: newBucket, error } = await client.storage.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
+const { data: newBucket, error } = await client.storage.createBucket({ name: 'my-new-bucket', workloads_access: 'read_only' });
 console.log(`Bucket created with name: ${newBucket.name}`);
 
 const { data: allBuckets, error } = await client.storage.getBuckets();
@@ -152,7 +152,7 @@ const client: AzionClient = createClient({ token: 'your-api-token', debug: true 
 // Storage
 const { data: newBucket, error }: AzionStorageResponse<AzionBucket> = await client.createBucket({
   name: 'my-new-bucket',
-  edge_access: 'public',
+  workloads_access: 'read_only',
 });
 console.log(`Bucket created with name: ${newBucket.name}`);
 

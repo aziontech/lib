@@ -10,7 +10,7 @@ const config: AzionConfig = {
       name: '$BUCKET_NAME',
       prefix: '$BUCKET_PREFIX',
       dir: './.edge/assets',
-      edgeAccess: 'read_only',
+      workloadsAccess: 'read_only',
     },
   ],
   connectors: [

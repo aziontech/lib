@@ -236,7 +236,7 @@ const config = defineConfig({
   storage: [
     {
       name: 'my-storage',
-      edgeAccess: 'read_write',
+      workloadsAccess: 'read_write',
       dir: './storage',
       prefix: '1236677364374',
     },
@@ -699,7 +699,7 @@ Type definition for storage configuration.
 
 - `name: string` - Name of the storage (6-63 characters).
 - `dir: string` - Local directory path.
-- `edgeAccess?: 'read_only' | 'read_write' | 'restricted'` - access permissions.
+- `workloadsAccess?: 'read_only' | 'read_write' | 'restricted'` - access permissions.
 - `prefix: string` - Storage prefix.
 
 ### `AzionCache`
