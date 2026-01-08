@@ -1,31 +1,31 @@
 import {
-  deleteBucket,
-  deleteObject,
-  getBucketByName,
-  getBuckets,
-  getObjectByKey,
-  getObjects,
-  patchBucket,
-  postBucket,
-  postObject,
-  putObject,
+    deleteBucket,
+    deleteObject,
+    getBucketByName,
+    getBuckets,
+    getObjectByKey,
+    getObjects,
+    patchBucket,
+    postBucket,
+    postObject,
+    putObject,
 } from './services/api/index';
 import {
-  AzionBucket,
-  AzionBucketCollection,
-  AzionBucketCollectionParams,
-  AzionBucketObject,
-  AzionBucketObjects,
-  AzionClientOptions,
-  AzionDeletedBucket,
-  AzionDeletedBucketObject,
-  AzionEnvironment,
-  AzionObjectCollectionParams,
-  AzionStorageClient,
-  AzionStorageResponse,
-  ContentObjectStorage,
-  CreateAzionStorageClient,
-  EdgeAccessType,
+    AzionBucket,
+    AzionBucketCollection,
+    AzionBucketCollectionParams,
+    AzionBucketObject,
+    AzionBucketObjects,
+    AzionClientOptions,
+    AzionDeletedBucket,
+    AzionDeletedBucketObject,
+    AzionEnvironment,
+    AzionObjectCollectionParams,
+    AzionStorageClient,
+    AzionStorageResponse,
+    ContentObjectStorage,
+    CreateAzionStorageClient,
+    EdgeAccessType,
 } from './types';
 
 import { InternalStorageClient, isInternalStorageAvailable } from './services/runtime/index';
@@ -101,21 +101,21 @@ const createInternalOrExternalMethod = <T extends (...args: any[]) => any>(inter
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to create.
- * @param {string} edge_access - Edge access configuration for the bucket.
+ * @param {string} workloads_access - Workloads access configuration for the bucket.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse>} The created bucket object or error message.
  */
 export const createBucketMethod = async (
   token: string,
   name: string,
-  edge_access: EdgeAccessType,
+  workloads_access: EdgeAccessType,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
   const resolvedOptions = resolveClientOptions(options);
   const apiResponse = await postBucket(
     resolveToken(token),
     name,
-    edge_access,
+    workloads_access,
     resolvedOptions.debug,
     resolvedOptions.env,
   );
@@ -123,7 +123,7 @@ export const createBucketMethod = async (
     return {
       data: {
         ...apiResponse.data,
-        edge_access: apiResponse.data.edge_access as EdgeAccessType,
+        workloads_access: apiResponse.data.workloads_access as EdgeAccessType,
         last_editor: apiResponse.data.last_editor,
         last_modified: apiResponse.data.last_modified,
         product_version: apiResponse.data.product_version,
@@ -206,7 +206,7 @@ export const getBucketsMethod = async (
   if (apiResponse?.results) {
     const buckets = apiResponse.results?.map((bucket) => ({
       ...bucket,
-      edge_access: bucket.edge_access as EdgeAccessType,
+      workloads_access: bucket.workloads_access as EdgeAccessType,
       last_editor: bucket.last_editor,
       last_modified: bucket.last_modified,
       product_version: bucket.product_version,
@@ -281,7 +281,7 @@ const getBucketMethod = async (
     return {
       data: {
         name: bucket.name,
-        edge_access: bucket.edge_access as EdgeAccessType,
+        workloads_access: bucket.workloads_access as EdgeAccessType,
         last_editor: bucket.last_editor,
         last_modified: bucket.last_modified,
         product_version: bucket.product_version,
@@ -331,21 +331,21 @@ const getBucketMethod = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to update.
- * @param {string} edge_access - New edge access configuration for the bucket.
+ * @param {string} workloads_access - New Workloads access configuration for the bucket.
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucket>>} The updated bucket or error message.
  */
 export const updateBucketMethod = async (
   token: string,
   name: string,
-  edge_access: EdgeAccessType,
+  workloads_access: EdgeAccessType,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
   const resolvedOptions = resolveClientOptions(options);
   const apiResponse = await patchBucket(
     resolveToken(token),
     name,
-    edge_access,
+    workloads_access,
     resolvedOptions.debug,
     resolvedOptions.env,
   );
@@ -353,7 +353,7 @@ export const updateBucketMethod = async (
     return {
       data: {
         ...apiResponse.data,
-        edge_access: apiResponse.data.edge_access as EdgeAccessType,
+        workloads_access: apiResponse.data.workloads_access as EdgeAccessType,
         last_editor: apiResponse.data.last_editor,
         last_modified: apiResponse.data.last_modified,
         product_version: apiResponse.data.product_version,
@@ -400,14 +400,14 @@ export const updateBucketMethod = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to setup.
- * @param {EdgeAccessType} edge_access - Edge access configuration for the bucket (used only if creating).
+ * @param {EdgeAccessType} workloads_access - Workloads access configuration for the bucket (used only if creating).
  * @param {AzionClientOptions} [options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
  */
 export const setupStorageMethod = async (
   token: string,
   name: string,
-  edge_access: EdgeAccessType,
+  workloads_access: EdgeAccessType,
   options?: AzionClientOptions,
 ): Promise<AzionStorageResponse<AzionBucket>> => {
   const resolvedOptions = resolveClientOptions(options);
@@ -418,7 +418,7 @@ export const setupStorageMethod = async (
     return getResult;
   }
   if (resolvedOptions.debug) console.log(`Bucket '${name}' not found, creating...`);
-  const createResult = await createBucketMethod(token, name, edge_access, resolvedOptions);
+  const createResult = await createBucketMethod(token, name, workloads_access, resolvedOptions);
 
   if (createResult.data) {
     if (resolvedOptions.debug) console.log(`Bucket '${name}' created successfully`);
@@ -732,12 +732,12 @@ const deleteObjectMethod = createInternalOrExternalMethod(
  *
  * @param {Object} params - Parameters for creating a bucket.
  * @param {string} params.name - Name of the new bucket.
- * @param {string} params.edge_access - Edge access configuration for the bucket.
+ * @param {string} params.workloads_access - Workloads access configuration for the bucket.
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse>} The created bucket or error message.
  *
  * @example
- * const { data, error } = await createBucket({ name: 'my-new-bucket', edge_access: 'public', options: { debug: true } });
+ * const { data, error } = await createBucket({ name: 'my-new-bucket', workloads_access: 'read_only', options: { debug: true } });
  * if (data) {
  *   console.log(`Bucket created with name: ${data.name}`);
  * } else {
@@ -746,14 +746,14 @@ const deleteObjectMethod = createInternalOrExternalMethod(
  */
 const createBucketWrapper = ({
   name,
-  edge_access,
+  workloads_access,
   options,
 }: {
   name: string;
-  edge_access: EdgeAccessType;
+  workloads_access: EdgeAccessType;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
-  createBucketMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
+  createBucketMethod(resolveToken(), name, workloads_access, resolveClientOptions(options));
 
 /**
  * Deletes a bucket by its name.
@@ -834,12 +834,12 @@ const getBucketWrapper = ({
  *
  * @param {Object} params - Parameters for updating a bucket.
  * @param {string} params.name - Name of the bucket to update.
- * @param {string} params.edge_access - New edge access configuration for the bucket.
+ * @param {string} params.workloads_access - New Workloads access configuration for the bucket.
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucket>>} The updated bucket or error message.
  *
  * @example
- * const { data: updatedBucket, error } = await updateBucket({ name: 'my-bucket', edge_access: 'private', options: { debug: true } });
+ * const { data: updatedBucket, error } = await updateBucket({ name: 'my-bucket', workloads_access: 'private', options: { debug: true } });
  * if (updatedBucket) {
  *   console.log(`Bucket updated: ${updatedBucket.name}`);
  * } else {
@@ -848,14 +848,14 @@ const getBucketWrapper = ({
  */
 const updateBucketWrapper = ({
   name,
-  edge_access,
+  workloads_access,
   options,
 }: {
   name: string;
-  edge_access: EdgeAccessType;
+  workloads_access: EdgeAccessType;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
-  updateBucketMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
+  updateBucketMethod(resolveToken(), name, workloads_access, resolveClientOptions(options));
 
 /**
  * Sets up storage by getting an existing bucket or creating it if it doesn't exist.
@@ -863,14 +863,14 @@ const updateBucketWrapper = ({
  *
  * @param {Object} params - Parameters for setting up storage.
  * @param {string} params.name - Name of the bucket to setup.
- * @param {EdgeAccessType} params.edge_access - Edge access configuration for the bucket (used only if creating).
+ * @param {EdgeAccessType} params.workloads_access - Workloads access configuration for the bucket (used only if creating).
  * @param {AzionClientOptions} [params.options] - Client options including debug mode.
  * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
  *
  * @example
  * const { data: bucket, error } = await setupStorage({
  *   name: 'my-bucket',
- *   edge_access: 'read_write',
+ *   workloads_access: 'read_write',
  *   options: { debug: true }
  * });
  * if (bucket) {
@@ -881,14 +881,14 @@ const updateBucketWrapper = ({
  */
 const setupStorageWrapper = ({
   name,
-  edge_access,
+  workloads_access,
   options,
 }: {
   name: string;
-  edge_access: EdgeAccessType;
+  workloads_access: EdgeAccessType;
   options?: AzionClientOptions;
 }): Promise<AzionStorageResponse<AzionBucket>> =>
-  setupStorageMethod(resolveToken(), name, edge_access, resolveClientOptions(options));
+  setupStorageMethod(resolveToken(), name, workloads_access, resolveClientOptions(options));
 
 /**
  * Retrieves a list of objects in a specific bucket.
@@ -1069,7 +1069,7 @@ const deleteObjectWrapper = ({
  * const storageClient = createClient({ token: 'your-api-token', options: { debug: true } });
  *
  * // Create a new bucket
- * const { data, error } = await storageClient.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
+ * const { data, error } = await storageClient.createBucket({ name: 'my-new-bucket', workloads_access: 'read_only' });
  *
  * // Get all buckets
  * const { data: allBuckets } = await storageClient.getBuckets({ params: { page: 1, page_size: 10 } });
@@ -1090,50 +1090,50 @@ const client: CreateAzionStorageClient = (
       getBucketsMethod(tokenValue, params?.params, resolvedOptions),
     createBucket: ({
       name,
-      edge_access,
+      workloads_access,
     }: {
       name: string;
-      edge_access: EdgeAccessType;
+      workloads_access: EdgeAccessType;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
-      createBucketMethod(tokenValue, name, edge_access, resolvedOptions),
+      createBucketMethod(tokenValue, name, workloads_access, resolvedOptions),
     updateBucket: ({
       name,
-      edge_access,
+      workloads_access,
     }: {
       name: string;
-      edge_access: EdgeAccessType;
+      workloads_access: EdgeAccessType;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
-      updateBucketMethod(tokenValue, name, edge_access, resolvedOptions),
+      updateBucketMethod(tokenValue, name, workloads_access, resolvedOptions),
     deleteBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionDeletedBucket>> =>
       deleteBucketMethod(tokenValue, name, resolvedOptions),
     getBucket: ({ name }: { name: string }): Promise<AzionStorageResponse<AzionBucket>> =>
       getBucketMethod(tokenValue, name, resolvedOptions),
     setupStorage: ({
       name,
-      edge_access,
+      workloads_access,
     }: {
       name: string;
-      edge_access: EdgeAccessType;
+      workloads_access: EdgeAccessType;
     }): Promise<AzionStorageResponse<AzionBucket>> =>
-      setupStorageMethod(tokenValue, name, edge_access, resolvedOptions),
+      setupStorageMethod(tokenValue, name, workloads_access, resolvedOptions),
   } as const;
 
   return client;
 };
 
 export {
-  createBucketWrapper as createBucket,
-  client as createClient,
-  createObjectWrapper as createObject,
-  deleteBucketWrapper as deleteBucket,
-  deleteObjectWrapper as deleteObject,
-  getBucketWrapper as getBucket,
-  getBucketsWrapper as getBuckets,
-  getObjectByKeyWrapper as getObjectByKey,
-  getObjectsWrapper as getObjects,
-  setupStorageWrapper as setupStorage,
-  updateBucketWrapper as updateBucket,
-  updateObjectWrapper as updateObject,
+    createBucketWrapper as createBucket,
+    client as createClient,
+    createObjectWrapper as createObject,
+    deleteBucketWrapper as deleteBucket,
+    deleteObjectWrapper as deleteObject,
+    getBucketWrapper as getBucket,
+    getBucketsWrapper as getBuckets,
+    getObjectByKeyWrapper as getObjectByKey,
+    getObjectsWrapper as getObjects,
+    setupStorageWrapper as setupStorage,
+    updateBucketWrapper as updateBucket,
+    updateObjectWrapper as updateObject
 };
 
 export default client;

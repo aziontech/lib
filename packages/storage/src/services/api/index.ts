@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fetchWithErrorHandling } from '../../utils/index';
 import {
-  ApiCreateBucketResponse,
-  ApiCreateObjectResponse,
-  ApiDeleteBucketResponse,
-  ApiDeleteObjectResponse,
-  ApiEditBucketResponse,
-  ApiError,
-  ApiGetBucketResponse,
-  ApiListBucketsParams,
-  ApiListBucketsResponse,
-  ApiListObjectsParams,
-  ApiListObjectsResponse,
+    ApiCreateBucketResponse,
+    ApiCreateObjectResponse,
+    ApiDeleteBucketResponse,
+    ApiDeleteObjectResponse,
+    ApiEditBucketResponse,
+    ApiError,
+    ApiGetBucketResponse,
+    ApiListBucketsParams,
+    ApiListBucketsResponse,
+    ApiListObjectsParams,
+    ApiListObjectsResponse,
 } from './types';
 
 import { AzionEnvironment, ContentObjectStorage, EdgeAccessType } from '../../types';
@@ -193,7 +193,7 @@ const getBucketByName = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to create.
- * @param {string} edge_access - Edge access configuration for the bucket.
+ * @param {string} workloads_access - Workloads access configuration for the bucket.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiCreateBucketResponse>} The created bucket or an error if creation failed.
@@ -201,7 +201,7 @@ const getBucketByName = async (
 const postBucket = async (
   token: string,
   name: string,
-  edge_access: EdgeAccessType,
+  workloads_access: EdgeAccessType,
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiCreateBucketResponse> => {
@@ -212,12 +212,12 @@ const postBucket = async (
       {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
-        body: JSON.stringify({ name, edge_access }),
+        body: JSON.stringify({ name, workloads_access }),
       },
       debug,
     );
     if (!data?.state) {
-      data.error = handleApiError(['name', 'edge_access', 'detail'], data, 'create bucket');
+      data.error = handleApiError(['name', 'workloads_access', 'detail'], data, 'create bucket');
       return {
         error: data.error ?? JSON.stringify(data),
       };
@@ -237,7 +237,7 @@ const postBucket = async (
  *
  * @param {string} token - Authentication token for Azion API.
  * @param {string} name - Name of the bucket to update.
- * @param {string} edge_access - New edge access configuration for the bucket.
+ * @param {string} workloads_access - New Workloads access configuration for the bucket.
  * @param {boolean} [debug] - Enable debug mode for detailed logging.
  * @param {AzionEnvironment} [env='production'] - Environment to use for the API call.
  * @returns {Promise<ApiEditBucketResponse>} The updated bucket or an error if update failed.
@@ -245,7 +245,7 @@ const postBucket = async (
 const patchBucket = async (
   token: string,
   name: string,
-  edge_access: EdgeAccessType,
+  workloads_access: EdgeAccessType,
   debug?: boolean,
   env: AzionEnvironment = 'production',
 ): Promise<ApiEditBucketResponse> => {
@@ -256,12 +256,12 @@ const patchBucket = async (
       {
         method: 'PATCH',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Token ${token}` },
-        body: JSON.stringify({ edge_access }),
+        body: JSON.stringify({ workloads_access }),
       },
       debug,
     );
     if (!data?.state) {
-      data.error = handleApiError(['name', 'edge_access', 'detail'], data, 'update bucket');
+      data.error = handleApiError(['name', 'workloads_access', 'detail'], data, 'update bucket');
       return {
         error: data.error ?? JSON.stringify(data),
       };
@@ -554,14 +554,15 @@ const deleteObject = async (
 };
 
 export {
-  deleteBucket,
-  deleteObject,
-  getBucketByName,
-  getBuckets,
-  getObjectByKey,
-  getObjects,
-  patchBucket,
-  postBucket,
-  postObject,
-  putObject,
+    deleteBucket,
+    deleteObject,
+    getBucketByName,
+    getBuckets,
+    getObjectByKey,
+    getObjects,
+    patchBucket,
+    postBucket,
+    postObject,
+    putObject
 };
+

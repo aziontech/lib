@@ -20,12 +20,12 @@ describe('Storage Module - Bucket operations', () => {
 
   describe('createBucket', () => {
     it('should successfully create a bucket', async () => {
-      const mockResponse = { state: 'executed', data: { name: 'test-bucket', edge_access: 'read_write' } };
+      const mockResponse = { state: 'executed', data: { name: 'test-bucket', workloads_access: 'read_write' } };
       (services.postBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await createBucket({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      const result = await createBucket({ name: 'test-bucket', workloads_access: 'read_write', options: { debug, env } });
 
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', workloads_access: 'read_write' }));
       expect(services.postBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'read_write', debug, env);
     });
 
@@ -34,7 +34,7 @@ describe('Storage Module - Bucket operations', () => {
         error: { message: 'token invalid', operation: 'create bucket' },
       });
 
-      const result = await createBucket({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      const result = await createBucket({ name: 'test-bucket', workloads_access: 'read_write', options: { debug, env } });
 
       expect(result).toEqual({ error: { message: 'token invalid', operation: 'create bucket' } });
     });
@@ -87,12 +87,12 @@ describe('Storage Module - Bucket operations', () => {
 
   describe('getBucket', () => {
     it('should successfully get a bucket by name', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      const mockResponse = { data: { name: 'test-bucket', workloads_access: 'read_write' } };
       (services.getBucketByName as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await getBucket({ name: 'test-bucket', options: { debug, env } });
 
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', workloads_access: 'read_write' }));
       expect(services.getBucketByName).toHaveBeenCalledWith(mockToken, 'test-bucket', undefined, debug, env);
     });
 
@@ -108,12 +108,12 @@ describe('Storage Module - Bucket operations', () => {
 
   describe('updateBucket', () => {
     it('should successfully update a bucket', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'restricted' } };
+      const mockResponse = { data: { name: 'test-bucket', workloads_access: 'restricted' } };
       (services.patchBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await updateBucket({ name: 'test-bucket', edge_access: 'restricted', options: { debug, env } });
+      const result = await updateBucket({ name: 'test-bucket', workloads_access: 'restricted', options: { debug, env } });
 
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'restricted' }));
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', workloads_access: 'restricted' }));
       expect(services.patchBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'restricted', debug, env);
     });
 
@@ -122,7 +122,7 @@ describe('Storage Module - Bucket operations', () => {
         error: { message: 'token invalid', operation: 'update bucket' },
       });
 
-      const result = await updateBucket({ name: 'test-bucket', edge_access: 'restricted', options: { debug, env } });
+      const result = await updateBucket({ name: 'test-bucket', workloads_access: 'restricted', options: { debug, env } });
 
       expect(result.error).toEqual({ message: 'token invalid', operation: 'update bucket' });
     });
@@ -130,22 +130,22 @@ describe('Storage Module - Bucket operations', () => {
 
   describe('setupStorage', () => {
     it('should return existing bucket if it already exists', async () => {
-      const mockBucketResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      const mockBucketResponse = { data: { name: 'test-bucket', workloads_access: 'read_write' } };
       (services.getBucketByName as jest.Mock).mockResolvedValue(mockBucketResponse);
 
-      const result = await setupStorage({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      const result = await setupStorage({ name: 'test-bucket', workloads_access: 'read_write', options: { debug, env } });
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', workloads_access: 'read_write' }));
       expect(services.getBucketByName).toHaveBeenCalledWith(mockToken, 'test-bucket', undefined, debug, env);
       expect(services.postBucket).not.toHaveBeenCalled();
     });
 
     it('should create bucket if it does not exist', async () => {
       (services.getBucketByName as jest.Mock).mockResolvedValue({ error: { message: 'Bucket not found' } });
-      const mockCreateResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      const mockCreateResponse = { data: { name: 'test-bucket', workloads_access: 'read_write' } };
       (services.postBucket as jest.Mock).mockResolvedValue(mockCreateResponse);
 
-      const result = await setupStorage({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
-      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', edge_access: 'read_write' }));
+      const result = await setupStorage({ name: 'test-bucket', workloads_access: 'read_write', options: { debug, env } });
+      expect(result.data).toEqual(expect.objectContaining({ name: 'test-bucket', workloads_access: 'read_write' }));
       expect(services.getBucketByName).toHaveBeenCalledWith(mockToken, 'test-bucket', undefined, debug, env);
       expect(services.postBucket).toHaveBeenCalledWith(mockToken, 'test-bucket', 'read_write', debug, env);
     });
@@ -154,7 +154,7 @@ describe('Storage Module - Bucket operations', () => {
       (services.getBucketByName as jest.Mock).mockResolvedValue({ error: { message: 'Bucket not found' } });
       (services.postBucket as jest.Mock).mockResolvedValue({ error: { message: 'Creation failed' } });
 
-      const result = await setupStorage({ name: 'test-bucket', edge_access: 'read_write', options: { debug, env } });
+      const result = await setupStorage({ name: 'test-bucket', workloads_access: 'read_write', options: { debug, env } });
       expect(result.error).toEqual({ message: 'Creation failed', operation: 'setup storage' });
     });
   });

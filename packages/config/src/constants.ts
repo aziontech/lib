@@ -192,7 +192,7 @@ export const CACHE_L2_REGION = [null, 'sa-brazil', 'na-united-states'] as const;
 export const BUILD_BUNDLERS = ['webpack', 'esbuild'] as const;
 
 // Constantes para Storage
-export const EDGE_ACCESS_TYPES = ['read_only', 'read_write', 'restricted'] as const;
+export const WORKLOADS_ACCESS_TYPES = ['read_only', 'read_write', 'restricted'] as const;
 
 // Constantes para Origins
 export const ORIGIN_TYPES = ['single_origin', 'load_balancer', 'live_ingest', 'object_storage'] as const;

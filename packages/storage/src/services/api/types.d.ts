@@ -6,7 +6,7 @@ export type ApiBucketObject = {
 
 export interface ApiBucket {
   name: string;
-  edge_access: string;
+  workloads_access: string;
   last_editor?: string;
   last_modified?: string;
   product_version?: string;

@@ -70,7 +70,7 @@ import { createClient } from 'azion';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const { data: newBucket } = await client.storage.createBucket('my-new-bucket', 'public');
+const { data: newBucket } = await client.storage.createBucket('my-new-bucket', 'read_only');
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);
 }
@@ -102,7 +102,7 @@ const client: AzionClient = createClient({ token: 'your-api-token', debug: true 
 
 const { data: newBucket }: AzionStorageResponse<AzionBucket> = await client.storage.createBucket(
   'my-new-bucket',
-  'public',
+  'read_only',
 );
 if (newBucket) {
   console.log(`Bucket created with name: ${newBucket.name}`);

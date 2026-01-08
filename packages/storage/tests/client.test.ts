@@ -60,19 +60,19 @@ describe('Storage Package - Client', () => {
     });
 
     it('should call createBucket method', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      const mockResponse = { data: { name: 'test-bucket', workloads_access: 'read_write' } };
       (services.postBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      await client.createBucket({ name: 'test-bucket', edge_access: 'read_write' });
+      await client.createBucket({ name: 'test-bucket', workloads_access: 'read_write' });
 
       expect(services.postBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', 'read_write', debug, env);
     });
 
     it('should call updateBucket method', async () => {
-      const mockResponse = { data: { name: 'test-bucket', edge_access: 'restricted' } };
+      const mockResponse = { data: { name: 'test-bucket', workloads_access: 'restricted' } };
       (services.patchBucket as jest.Mock).mockResolvedValue(mockResponse);
 
-      await client.updateBucket({ name: 'test-bucket', edge_access: 'restricted' });
+      await client.updateBucket({ name: 'test-bucket', workloads_access: 'restricted' });
 
       expect(services.patchBucket).toHaveBeenCalledWith('custom-token', 'test-bucket', 'restricted', debug, env);
     });
@@ -87,7 +87,7 @@ describe('Storage Package - Client', () => {
     });
 
     it('should call getBucket method', async () => {
-      const mockResponse = { results: [{ name: 'test-bucket', edge_access: 'read_write' }] };
+      const mockResponse = { results: [{ name: 'test-bucket', workloads_access: 'read_write' }] };
       (services.getBucketByName as jest.Mock).mockResolvedValue(mockResponse);
 
       await client.getBucket({ name: 'test-bucket' });
@@ -96,10 +96,10 @@ describe('Storage Package - Client', () => {
     });
 
     it('should call setupStorage method', async () => {
-      const mockBucketResponse = { data: { name: 'test-bucket', edge_access: 'read_write' } };
+      const mockBucketResponse = { data: { name: 'test-bucket', workloads_access: 'read_write' } };
       (services.getBucketByName as jest.Mock).mockResolvedValue(mockBucketResponse);
 
-      await client.setupStorage({ name: 'test-bucket', edge_access: 'read_write' });
+      await client.setupStorage({ name: 'test-bucket', workloads_access: 'read_write' });
 
       expect(services.getBucketByName).toHaveBeenCalledWith('custom-token', 'test-bucket', undefined, debug, env);
     });
