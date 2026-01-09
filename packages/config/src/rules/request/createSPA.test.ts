@@ -17,8 +17,8 @@ describe('createSPARules', () => {
     // Check static assets rule
     const staticAssetsRule = rules.request?.[0];
     expect(staticAssetsRule).toEqual({
-      name: 'Deliver Static Assets',
-      description: 'Deliver static assets directly from storage',
+      name: 'Deliver Static Assets and Set Cache Policy',
+      description: 'Deliver static assets directly from storage and set cache policy',
       active: true,
       criteria: [
         [
@@ -35,6 +35,12 @@ describe('createSPARules', () => {
           type: 'set_connector',
           attributes: {
             value: 'name-connector',
+          },
+        },
+        {
+          type: 'set_cache_policy',
+          attributes: {
+            value: 'name-application',
           },
         },
         {

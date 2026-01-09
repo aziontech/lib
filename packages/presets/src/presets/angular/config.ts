@@ -27,8 +27,20 @@ const config: AzionConfig = {
   applications: [
     {
       name: '$APPLICATION_NAME',
+      cache: [
+        {
+          name: '$APPLICATION_NAME',
+          browser: {
+            maxAgeSeconds: 7200,
+          },
+          edge: {
+            maxAgeSeconds: 7200,
+          },
+        },
+      ],
       rules: createSPARules({
         connector: '$CONNECTOR_NAME',
+        application: '$APPLICATION_NAME',
       }),
     },
   ],
