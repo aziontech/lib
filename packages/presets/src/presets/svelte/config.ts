@@ -39,11 +39,22 @@ const config: AzionConfig = {
   applications: [
     {
       name: '$APPLICATION_NAME',
+      cache: [
+        {
+          name: '$APPLICATION_NAME',
+          browser: {
+            maxAgeSeconds: 7200,
+          },
+          edge: {
+            maxAgeSeconds: 7200,
+          },
+        },
+      ],
       rules: {
         request: [
           {
-            name: 'Deliver Immutable Assets',
-            description: 'Delivers immutable assets.',
+            name: 'Deliver Immutable Assets and Set Cache Policy',
+            description: 'Delivers immutable assets and set cache policy.',
             active: true,
             criteria: [
               [
@@ -60,6 +71,12 @@ const config: AzionConfig = {
                 type: 'set_connector',
                 attributes: {
                   value: '$CONNECTOR_NAME',
+                },
+              },
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: '$APPLICATION_NAME',
                 },
               },
               {
@@ -126,8 +143,8 @@ const config: AzionConfig = {
             ],
           },
           {
-            name: 'Deliver Static Assets',
-            description: 'Deliver static assets directly from storage',
+            name: 'Deliver Static Assets and Set Cache Policy',
+            description: 'Deliver static assets directly from storage and set cache policy',
             active: true,
             criteria: [
               [
@@ -145,6 +162,12 @@ const config: AzionConfig = {
                 type: 'set_connector',
                 attributes: {
                   value: '$CONNECTOR_NAME',
+                },
+              },
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: '$APPLICATION_NAME',
                 },
               },
               {

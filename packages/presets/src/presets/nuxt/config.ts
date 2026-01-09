@@ -39,11 +39,22 @@ const config: AzionConfig = {
   applications: [
     {
       name: '$APPLICATION_NAME',
+      cache: [
+        {
+          name: '$APPLICATION_NAME',
+          browser: {
+            maxAgeSeconds: 7200,
+          },
+          edge: {
+            maxAgeSeconds: 7200,
+          },
+        },
+      ],
       rules: {
         request: [
           {
-            name: 'Nuxt Static Assets',
-            description: 'Serve Nuxt static assets through edge connector',
+            name: 'Nuxt Static Assets and set cache policy',
+            description: 'Serve Nuxt static assets through edge connector and set cache policy',
             active: true,
             criteria: [
               [
@@ -60,6 +71,12 @@ const config: AzionConfig = {
                 type: 'set_connector',
                 attributes: {
                   value: '$CONNECTOR_NAME',
+                },
+              },
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: '$APPLICATION_NAME',
                 },
               },
               {
@@ -156,8 +173,8 @@ const config: AzionConfig = {
             ],
           },
           {
-            name: 'Deliver Static Assets',
-            description: 'Deliver static assets directly from storage',
+            name: 'Deliver Static Assets and set cache policy',
+            description: 'Deliver static assets directly from storage and set cache policy',
             active: true,
             criteria: [
               [
@@ -175,6 +192,12 @@ const config: AzionConfig = {
                 type: 'set_connector',
                 attributes: {
                   value: '$CONNECTOR_NAME',
+                },
+              },
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: '$APPLICATION_NAME',
                 },
               },
               {
