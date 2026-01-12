@@ -1,3 +1,16 @@
+## 3.0.0-stage.2 (2026-01-09)
+
+* feat: improve cache policy in presets and config (#346) ([79d3541](https://github.com/aziontech/lib/commit/79d3541)), closes [#346](https://github.com/aziontech/lib/issues/346)
+
+## 3.0.0-stage.1 (2026-01-08)
+
+* fix: rename edge_access to workloads_access (#345) ([f9f5bd9](https://github.com/aziontech/lib/commit/f9f5bd9)), closes [#345](https://github.com/aziontech/lib/issues/345)
+
+
+### BREAKING CHANGE
+
+* rename edge_access to workloads_access in the storage package.
+
 ## <small>2.3.3 (2026-01-07)</small>
 
 * Merge pull request #344 from aziontech/stage ([2556f52](https://github.com/aziontech/lib/commit/2556f52)), closes [#344](https://github.com/aziontech/lib/issues/344)

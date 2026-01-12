@@ -5,7 +5,6 @@ import {
   COOKIE_BEHAVIORS,
   CUSTOM_PAGE_ERROR_CODES,
   CUSTOM_PAGE_TYPES,
-  EDGE_ACCESS_TYPES,
   EDGE_CONNECTOR_DNS_RESOLUTION,
   EDGE_CONNECTOR_HMAC_TYPE,
   EDGE_CONNECTOR_HTTP_VERSION_POLICY,
@@ -28,6 +27,7 @@ import {
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_MTLS_VERIFICATION,
   WORKLOAD_TLS_VERSIONS,
+  WORKLOADS_ACCESS_TYPES,
 } from '../../constants';
 
 const createCriteriaBaseSchema = (isRequestPhase = false) => ({
@@ -447,10 +447,10 @@ const schemaStorage = {
       type: 'string',
       errorMessage: "The 'dir' field must be a string.",
     },
-    edgeAccess: {
+    workloadsAccess: {
       type: 'string',
-      enum: EDGE_ACCESS_TYPES,
-      errorMessage: "The 'edge_access' field must be one of: read_only, read_write, restricted.",
+      enum: WORKLOADS_ACCESS_TYPES,
+      errorMessage: "The 'workloads_access' field must be one of: read_only, read_write, restricted.",
     },
     prefix: {
       type: 'string',
@@ -609,8 +609,7 @@ const azionConfigSchema = {
                       type: 'string',
                       minLength: 1,
                       maxLength: 250,
-                      pattern: "^[a-zA-Z0-9 \\-.',|]+$",
-                      errorMessage: "The 'name' field must be a string between 1-250 characters with valid pattern.",
+                      errorMessage: "The 'name' field must be a string with 1 to 250 characters",
                     },
                     stale: {
                       type: 'boolean',
@@ -638,13 +637,13 @@ const azionConfigSchema = {
                       },
                       required: ['enabled'],
                       if: {
-                        properties: { enabled: { const: true } }
+                        properties: { enabled: { const: true } },
                       },
                       then: {
                         required: ['enabled', 'topology'],
                         errorMessage: {
-                          required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object."
-                        }
+                          required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object.",
+                        },
                       },
                       additionalProperties: false,
                       errorMessage: {

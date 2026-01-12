@@ -8,7 +8,7 @@ const config: AzionConfig = {
     {
       name: '$BUCKET_NAME',
       dir: '.edge/next-build-assets',
-      edgeAccess: 'read_only',
+      workloadsAccess: 'read_only',
       prefix: '$BUCKET_PREFIX',
     },
   ],
@@ -38,11 +38,22 @@ const config: AzionConfig = {
   applications: [
     {
       name: '$APPLICATION_NAME',
+      cache: [
+        {
+          name: '$APPLICATION_NAME',
+          browser: {
+            maxAgeSeconds: 7200,
+          },
+          edge: {
+            maxAgeSeconds: 7200,
+          },
+        },
+      ],
       rules: {
         request: [
           {
-            name: 'Next.js Static Assets',
-            description: 'Serve Next.js static assets through edge connector',
+            name: 'Next.js Static Assets and set cache policy',
+            description: 'Serve Next.js static assets through edge connector and set cache policy',
             active: true,
             criteria: [
               [
@@ -62,13 +73,19 @@ const config: AzionConfig = {
                 },
               },
               {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: '$APPLICATION_NAME',
+                },
+              },
+              {
                 type: 'deliver',
               },
             ],
           },
           {
-            name: 'Deliver Static Assets',
-            description: 'Serve static assets through edge connector',
+            name: 'Deliver Static Assets and set cache policy',
+            description: 'Serve static assets through edge connector and set cache policy',
             active: true,
             criteria: [
               [
@@ -85,6 +102,12 @@ const config: AzionConfig = {
                 type: 'set_connector',
                 attributes: {
                   value: '$CONNECTOR_NAME',
+                },
+              },
+              {
+                type: 'set_cache_policy',
+                attributes: {
+                  value: '$APPLICATION_NAME',
                 },
               },
               {

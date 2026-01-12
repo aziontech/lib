@@ -14,7 +14,7 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
 
     return config.storage.map((item) => ({
       name: item.name,
-      edge_access: item.edgeAccess || 'read_only',
+      workloads_access: item.workloadsAccess || 'read_only',
       dir: item.dir,
       prefix: item.prefix,
     }));
@@ -29,7 +29,7 @@ class StorageProcessConfigStrategy extends ProcessConfigStrategy {
 
     transformedPayload.storage = storageConfig.map((item) => ({
       name: item.name,
-      edgeAccess: item.edge_access || 'read_only',
+      workloadsAccess: item.workloads_access || 'read_only',
       dir: item.dir,
       prefix: item.prefix,
     }));

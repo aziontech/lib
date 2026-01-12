@@ -290,7 +290,7 @@ describe('convertJsonConfigToObject', () => {
 //           {
 //             name: 'my-storage',
 //             dir: './public',
-//             edgeAccess: 'read_only',
+//             workloadsAccess: 'read_only',
 //           },
 //         ],
 //       };
@@ -301,7 +301,7 @@ describe('convertJsonConfigToObject', () => {
 //           expect.objectContaining({
 //             name: 'my-storage',
 //             dir: './public',
-//             edgeAccess: 'read_only',
+//             workloadsAccess: 'read_only',
 //           }),
 //         ]),
 //       );

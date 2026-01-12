@@ -10,7 +10,7 @@ const config: AzionConfig = {
       name: '$BUCKET_NAME',
       prefix: '$BUCKET_PREFIX',
       dir: './_site',
-      edgeAccess: 'read_only',
+      workloadsAccess: 'read_only',
     },
   ],
   connectors: [
@@ -27,8 +27,20 @@ const config: AzionConfig = {
   applications: [
     {
       name: '$APPLICATION_NAME',
+      cache: [
+        {
+          name: '$APPLICATION_NAME',
+          browser: {
+            maxAgeSeconds: 7200,
+          },
+          edge: {
+            maxAgeSeconds: 7200,
+          },
+        },
+      ],
       rules: createMPARules({
         connector: '$CONNECTOR_NAME',
+        application: '$APPLICATION_NAME',
       }),
     },
   ],

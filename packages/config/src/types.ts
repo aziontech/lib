@@ -162,7 +162,7 @@ export type TieredCacheTopology = 'nearest-region' | 'br-east-1' | 'us-east-1';
 
 // Build types
 export type BuildBundler = 'webpack' | 'esbuild';
-export type EdgeAccessType = 'read_only' | 'read_write' | 'restricted';
+export type workloadsAccessType = 'read_only' | 'read_write' | 'restricted';
 
 // Functions types
 export type FunctionRuntime = 'azion_js';
@@ -527,7 +527,7 @@ export type AzionBucket = {
   /** Storage name */
   name: string;
   /** access type */
-  edgeAccess?: 'read_only' | 'read_write' | 'restricted';
+  workloadsAccess?: 'read_only' | 'read_write' | 'restricted';
   /** Storage path */
   dir: string;
   /** Storage prefix */
