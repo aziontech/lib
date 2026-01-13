@@ -14,5 +14,6 @@ export default {
     ['Azion.env', `${externalPolyfillsPath}/env-vars/env-vars.polyfills.js`],
     ['Azion.networkList', `${externalPolyfillsPath}/network-list/network-list.polyfills.js`],
     ['Azion.Storage', `${externalPolyfillsPath}/storage/storage.polyfills.js`],
+    ['Azion.KV', `${externalPolyfillsPath}/kv/kv.polyfills.js`],
   ]),
 };
