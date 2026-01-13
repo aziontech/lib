@@ -99,7 +99,7 @@ You can create a client instance with specific configurations.
 ```javascript
 import { createBucket } from 'azion/storage';
 
-const { data, error } = await createBucket({ name: 'my-new-bucket', edge_access: 'public' });
+const { data, error } = await createBucket({ name: 'my-new-bucket', workloads_access: 'read_write' });
 if (data) {
   console.log(`Bucket created with name: ${data.name}`);
 } else {
@@ -114,7 +114,7 @@ import { createBucket } from 'azion/storage';
 import type { AzionStorageResponse, AzionBucket } from 'azion/storage';
 const { data, error }: AzionStorageResponse<AzionBucket> = await createBucket({
   name: 'my-new-bucket',
-  edge_access: 'public',
+  workloads_access: 'read_write',
 });
 if (data) {
   console.log(`Bucket created with name: ${data.name}`);
@@ -216,7 +216,7 @@ if (bucket) {
 ```javascript
 import { updateBucket } from 'azion/storage';
 
-const { data: updatedBucket, error } = await updateBucket({ name: 'my-bucket', edge_access: 'read_only' });
+const { data: updatedBucket, error } = await updateBucket({ name: 'my-bucket', workloads_access: 'read_only' });
 if (updatedBucket) {
   console.log(`Bucket updated: ${updatedBucket.name}`);
 } else {
@@ -231,7 +231,7 @@ import { updateBucket, AzionBucket, AzionStorageResponse } from 'azion/storage';
 
 const { data: updatedBucket, error }: AzionStorageResponse<AzionBucket> | null = await updateBucket({
   name: 'my-bucket',
-  edge_access: 'read_only',
+  workloads_access: 'read_only',
 });
 if (updatedBucket) {
   console.log(`Bucket updated: ${updatedBucket.name}`);
@@ -413,7 +413,7 @@ import { createClient } from 'azion/storage';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
-const { data, error } = await client.createBucket({ name: 'my-new-bucket', edge_access: 'public' });
+const { data, error } = await client.createBucket({ name: 'my-new-bucket', workloads_access: 'read_write' });
 if (data) {
   console.log(`Bucket created with name: ${data.name}`);
 }
@@ -454,7 +454,7 @@ const client: StorageClient = createClient({ token: 'your-api-token', debug: tru
 
 const { data, error }: AzionStorageResponse<AzionBucket> = await client.createBucket({
   name: 'my-new-bucket',
-  edge_access: 'public',
+  workloads_access: 'read_write',
 });
 if (data) {
   console.log(`Bucket created with name: ${data.name}`);
@@ -493,7 +493,7 @@ Creates a new bucket.
 **Parameters:**
 
 - `name: string` - Name of the new bucket.
-- `edge_access: string` - Edge access configuration for the bucket.
+- `workloads_access: string` - Workloads Access configuration for the bucket.
 - `options?: AzionClientOptions` - Optional parameters for the request.
 
 **Returns:**
@@ -548,7 +548,7 @@ Updates an existing bucket.
 **Parameters:**
 
 - `name: string` - Name of the bucket to update.
-- `edge_access: string` - New edge access configuration for the bucket.
+- `workloads_access: string` - New Workloads Access configuration for the bucket.
 - `debug?: boolean` - Enable debug mode for detailed logging.
 
 **Returns:**
@@ -654,8 +654,8 @@ Configuration options for the Storage client.
 An object with methods to interact with Storage.
 
 - `getBuckets: (options?: BucketCollectionOptions) => Promise<AzionStorageResponse<AzionBucketCollection>>`
-- `createBucket: (name: string, edge_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
-- `updateBucket: (name: string, edge_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
+- `createBucket: (name: string, workloads_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
+- `updateBucket: (name: string, workloads_access: string) => Promise<AzionStorageResponse<AzionBucket>>`
 - `deleteBucket: (name: string) => Promise<AzionStorageResponse<AzionDeletedBucket>>`
 - `getBucket: (name: string) => Promise<AzionStorageResponse<AzionBucket>>`
 
@@ -671,7 +671,7 @@ The response object from a bucket operation.
 The bucket object.
 
 - `name: string`
-- `edge_access?: string`
+- `workloads_access?: string`
 - `state?: 'executed' | 'pending'`
 - `getObjects?: () => Promise<AzionStorageResponse<AzionBucketObjects>>`
 - `getObjectByKey?: (key: string) => Promise<AzionStorageResponse<AzionBucketObject>>`
