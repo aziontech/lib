@@ -1,12 +1,12 @@
 import { Azion } from 'azion/types';
 import {
-  AzionBucket,
-  AzionBucketObject,
-  AzionBucketObjects,
-  AzionDeletedBucketObject,
-  AzionObjectCollectionParams,
-  AzionStorageResponse,
-  ContentObjectStorage,
+    AzionBucket,
+    AzionBucketObject,
+    AzionBucketObjects,
+    AzionDeletedBucketObject,
+    AzionObjectCollectionParams,
+    AzionStorageResponse,
+    ContentObjectStorage,
 } from '../../types';
 import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 
@@ -44,8 +44,8 @@ export class InternalStorageClient implements AzionBucket {
   }
 
   name: string = '';
-  // @ts-expect-error - edge_access is not defined in the AzionBucket interface
-  edge_access: string = 'unknown';
+  // @ts-expect-error - workloads_access is not defined in the AzionBucket interface
+  workloads_access: string = 'unknown';
 
   /**
    * Retrieves a bucket by name.
@@ -60,8 +60,8 @@ export class InternalStorageClient implements AzionBucket {
       this.name = name;
       return {
         name,
-        // @ts-expect-error - edge_access is not defined in the AzionBucket interface
-        edge_access: 'unknown',
+        // @ts-expect-error - workloads_access is not defined in the AzionBucket interface
+        workloads_access: 'unknown',
         state: 'executed-runtime',
         getObjects: this.getObjects.bind(this),
         getObjectByKey: this.getObjectByKey.bind(this),

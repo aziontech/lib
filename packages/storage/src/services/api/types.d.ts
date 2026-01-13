@@ -6,7 +6,7 @@ export type ApiBucketObject = {
 
 export interface ApiBucket {
   name: string;
-  edge_access: string;
+  workloads_access: string;
 }
 
 export type ApiError = {
@@ -17,7 +17,7 @@ export type ApiError = {
 export interface ApiGetBucket {
   data?: {
     name: string;
-    edge_access: string;
+    workloads_access: string;
   };
   error?: ApiError;
 }
