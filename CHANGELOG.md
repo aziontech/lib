@@ -1,3 +1,7 @@
+## <small>1.20.20 (2026-01-13)</small>
+
+* fix: rename storage attribute in 1.20.x (#348) ([a9c8ee5](https://github.com/aziontech/lib/commit/a9c8ee5)), closes [#348](https://github.com/aziontech/lib/issues/348)
+
 ## <small>1.20.19 (2026-01-07)</small>
 
 * fix: update dependencies in 1.20.x (#343) ([b11fdcd](https://github.com/aziontech/lib/commit/b11fdcd)), closes [#343](https://github.com/aziontech/lib/issues/343)
