@@ -1,3 +1,7 @@
+## 3.1.0-stage.1 (2026-01-13)
+
+* feat: add KV storage polyfill for local development (#349) ([6d4d6f9](https://github.com/aziontech/lib/commit/6d4d6f9)), closes [#349](https://github.com/aziontech/lib/issues/349)
+
 ## 3.0.0 (2026-01-12)
 
 * Merge pull request #347 from aziontech/stage ([7302c73](https://github.com/aziontech/lib/commit/7302c73)), closes [#347](https://github.com/aziontech/lib/issues/347)
