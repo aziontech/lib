@@ -465,6 +465,25 @@ const schemaStorage = {
   },
 };
 
+const schemaKV = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 6,
+      maxLength: 63,
+      pattern: '^.{6,63}$',
+      errorMessage: "The 'name' field must be a string between 6 and 63 characters.",
+    },
+  },
+  required: ['name'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in kv items.',
+    required: "The 'name' field is required.",
+  },
+};
+
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
@@ -1924,7 +1943,12 @@ const azionConfigSchema = {
         storage: {
           type: 'array',
           items: schemaStorage,
-          errorMessage: "The 'storage' field must be an array of  storage items.",
+          errorMessage: "The 'storage' field must be an array of storage items.",
+        },
+        kv: {
+          type: 'array',
+          items: schemaKV,
+          errorMessage: "The 'kv' field must be an array of kv items.",
         },
       },
       additionalProperties: false,
