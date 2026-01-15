@@ -1,3 +1,7 @@
+## 3.1.0-stage.2 (2026-01-15)
+
+* feat: add KV configuration support (#350) ([1a344ca](https://github.com/aziontech/lib/commit/1a344ca)), closes [#350](https://github.com/aziontech/lib/issues/350)
+
 ## 3.1.0-stage.1 (2026-01-13)
 
 * feat: add KV storage polyfill for local development (#349) ([6d4d6f9](https://github.com/aziontech/lib/commit/6d4d6f9)), closes [#349](https://github.com/aziontech/lib/issues/349)
