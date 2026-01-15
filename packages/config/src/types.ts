@@ -1044,6 +1044,8 @@ export type AzionConfig = {
   workloads?: AzionWorkload[];
   /** Custom pages configuration */
   customPages?: AzionCustomPage[];
+  /** KV configuration */
+  kv?: AzionKV[];
 };
 
 // Rule Types - Separados corretamente baseado no behaviors.yml
@@ -1224,4 +1226,12 @@ export type AzionManifestRule = {
   phase: AzionRulePhase;
   /** Rule data */
   rule: AzionRule;
+};
+
+/**
+ * KV
+ */
+export type AzionKV = {
+  /** KV name */
+  name: string;
 };

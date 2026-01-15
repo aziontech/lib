@@ -3,6 +3,7 @@ import BuildProcessConfigStrategy from './implementations/buildProcessConfigStra
 import ConnectorProcessConfigStrategy from './implementations/connectorProcessConfigStrategy';
 import CustomPagesProcessConfigStrategy from './implementations/customPagesProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
+import KvProcessConfigStrategy from './implementations/kvProcessConfigStrategy';
 import PurgeProcessConfigStrategy from './implementations/purgeProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
 import NetworkListProcessConfigStrategy from './implementations/secure/networkListProcessConfigStrategy';
@@ -26,6 +27,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
   processConfigContext.setStrategy('workload_deployments', new WorkloadDeploymentsProcessConfigStrategy());
   processConfigContext.setStrategy('custom_pages', new CustomPagesProcessConfigStrategy());
+  processConfigContext.setStrategy('kv', new KvProcessConfigStrategy());
   return processConfigContext;
 }
 
