@@ -1,0 +1,29 @@
+{
+  "name": "@lib/kv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "compile": "tsup --config ../../tsup.config.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prettier": "prettier --write .",
+    "test": "jest --clearCache && jest -c jest.config.ts .",
+    "test:watch": "jest -c jest.config.js . --watch",
+    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "author": "aziontech",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ]
+}

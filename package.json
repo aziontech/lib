@@ -171,6 +171,10 @@
     "./domains": {
       "require": "./packages/domains/dist/index.js",
       "import": "./packages/domains/dist/index.mjs"
+    },
+    "./kv": {
+      "require": "./packages/kv/dist/index.js",
+      "import": "./packages/kv/dist/index.mjs"
     }
   },
   "typesVersions": {
@@ -237,6 +241,9 @@
       ],
       "utils/node": [
         "./packages/utils/dist/node/index.d.ts"
+      ],
+      "kv": [
+        "./packages/kv/dist/index.d.ts"
       ]
     }
   },
