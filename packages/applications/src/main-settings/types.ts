@@ -1,4 +1,4 @@
-import {
+import type {
   ApiApplication,
   ApiBaseApplicationPayload,
   ApiListApplicationsParams,
@@ -12,7 +12,7 @@ import {
 
 export type AzionApplicationSettings = ApiApplication;
 
-export {
+export type {
   ApiBaseApplicationPayload,
   ApiListApplicationsParams,
   ApiUpdateApplicationPayload,

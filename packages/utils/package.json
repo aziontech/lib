@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "compile": "tsup --config ./tsup.config.ts",
+    "compile": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "jest --clearCache && jest --maxWorkers=1 -c jest.config.js .",
@@ -23,14 +23,14 @@
       "import": "./dist/index.js"
     },
     "./edge": {
-      "types": "./dist/edge/index.d.ts",
-      "require": "./dist/edge/index.cjs",
-      "import": "./dist/edge/index.js"
+      "types": "./dist/edge.d.ts",
+      "require": "./dist/edge.cjs",
+      "import": "./dist/edge.js"
     },
     "./node": {
-      "types": "./dist/node/index.d.ts",
-      "require": "./dist/node/index.cjs",
-      "import": "./dist/node/index.js"
+      "types": "./dist/node.d.ts",
+      "require": "./dist/node.cjs",
+      "import": "./dist/node.js"
     }
   },
   "author": "aziontech",

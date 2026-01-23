@@ -1,5 +1,6 @@
 import { getCookie } from './getCookie';
-import { CookieOptions, setCookie } from './setCookie';
+import type { CookieOptions } from './setCookie';
+import { setCookie } from './setCookie';
 
 const cookies = {
   getCookie,

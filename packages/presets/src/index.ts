@@ -22,3 +22,5 @@ export * from './presets/typescript';
 export * from './presets/vitepress';
 export * from './presets/vue';
 export * from './presets/vuepress';
+
+export * from './types';

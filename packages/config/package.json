@@ -6,7 +6,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "compile": "tsup --config ./tsup.config.ts",
+    "compile": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
@@ -21,9 +21,9 @@
       "import": "./dist/index.js"
     },
     "./rules": {
-      "types": "./dist/rules/index.d.ts",
-      "require": "./dist/rules/index.cjs",
-      "import": "./dist/rules/index.js"
+      "types": "./dist/rules.d.ts",
+      "require": "./dist/rules.cjs",
+      "import": "./dist/rules.js"
     }
   },
   "author": "aziontech",

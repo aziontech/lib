@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",

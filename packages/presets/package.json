@@ -6,7 +6,7 @@
   "module": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "compile": "tsup --config ./tsup.config.json && tsup --config ./tsup.config.ts",
+    "compile": "vite build --config vite.config.js && vite build --config vite.config.presets.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",

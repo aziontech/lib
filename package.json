@@ -65,9 +65,10 @@
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
     "semantic-release": "^25.0.2",
-    "tsup": "^8.5.0",
     "typescript": "^5.5.3",
-    "typescript-eslint": "^8.44.1"
+    "typescript-eslint": "^8.44.1",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
   },
   "workspaces": [
     "packages/*"
@@ -125,8 +126,8 @@
       "import": "./packages/config/dist/index.mjs"
     },
     "./config/rules": {
-      "require": "./packages/config/dist/rules/index.js",
-      "import": "./packages/config/dist/rules/index.mjs"
+      "require": "./packages/config/dist/rules.js",
+      "import": "./packages/config/dist/rules.mjs"
     },
     "./sql": {
       "require": "./packages/sql/dist/index.js",
@@ -161,12 +162,12 @@
       "import": "./packages/utils/dist/index.js"
     },
     "./utils/edge": {
-      "require": "./packages/utils/dist/edge/index.cjs",
-      "import": "./packages/utils/dist/edge/index.js"
+      "require": "./packages/utils/dist/edge.cjs",
+      "import": "./packages/utils/dist/edge.js"
     },
     "./utils/node": {
-      "require": "./packages/utils/dist/node/index.cjs",
-      "import": "./packages/utils/dist/node/index.js"
+      "require": "./packages/utils/dist/node.cjs",
+      "import": "./packages/utils/dist/node.js"
     },
     "./domains": {
       "require": "./packages/domains/dist/index.js",
@@ -182,7 +183,7 @@
         "./packages/config/dist/index.d.ts"
       ],
       "config/rules": [
-        "./packages/config/dist/rules/index.d.ts"
+        "./packages/config/dist/rules.d.ts"
       ],
       "presets": [
         "./packages/presets/dist/index.d.ts"
@@ -233,10 +234,10 @@
         "./packages/domains/dist/index.d.ts"
       ],
       "utils/edge": [
-        "./packages/utils/dist/edge/index.d.ts"
+        "./packages/utils/dist/edge.d.ts"
       ],
       "utils/node": [
-        "./packages/utils/dist/node/index.d.ts"
+        "./packages/utils/dist/node.d.ts"
       ]
     }
   },

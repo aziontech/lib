@@ -3,7 +3,6 @@ import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
 import { lstat, mkdir, readFile, rm } from 'fs/promises';
 import { join } from 'path';
 
-const packageManager = await getPackageManager();
 const edgeStorageDir = '.edge/assets';
 const defaultViteOutDir = 'dist';
 
@@ -62,6 +61,7 @@ async function readViteBuildOutput() {
  * Runs custom prebuild actions
  */
 async function prebuild(_: BuildConfiguration, ctx: BuildContext) {
+  const packageManager = await getPackageManager();
   const npmArgsForward = packageManager === 'npm' ? '--' : '';
 
   // if skipFrameworkBuild is true, we need to create the dist folder
