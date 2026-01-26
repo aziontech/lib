@@ -1,0 +1,25 @@
+{
+  "name": "@lib/vite-config",
+  "version": "1.0.0",
+  "description": "Shared Vite configuration for Azion packages",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "compile": "echo 'No compilation needed for @lib/vite-config'"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}

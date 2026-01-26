@@ -6,7 +6,7 @@
   "module": "./dist/index.mjs",
   "type": "module",
   "scripts": {
-    "compile": "vite build --config vite.config.js && vite build --config vite.config.presets.js",
+    "compile": "vite build --config vite.config.mjs && vite build --config vite.config.presets.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
