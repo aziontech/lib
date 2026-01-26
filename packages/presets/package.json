@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "type": "module",
   "scripts": {
     "compile": "vite build --config vite.config.js && vite build --config vite.config.presets.js",
@@ -15,8 +15,9 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
     "./preset/nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
     "./preset/sveltekit/*": "./src/presets/svelte/kit/index.js",

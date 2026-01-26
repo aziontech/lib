@@ -17,17 +17,20 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         rules: resolve(__dirname, 'src/rules/index.ts'),
       },
-      formats: ['es', 'cjs'],
-      fileName: (format, entryName) => {
-        const ext = format === 'es' ? 'mjs' : 'cjs';
-        return `${entryName}.${ext}`;
-      },
     },
     rollupOptions: {
       external: ['ajv', 'ajv-errors', 'ajv-keywords', 'mathjs'],
-      output: {
-        exports: 'named',
-      },
+      output: [
+        {
+          format: 'es',
+          entryFileNames: '[name].mjs',
+        },
+        {
+          format: 'cjs',
+          entryFileNames: '[name].cjs',
+          exports: 'named',
+        },
+      ],
     },
     minify: true,
   },

@@ -2,7 +2,8 @@
   "name": "@lib/bundler",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
@@ -15,10 +16,14 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
-    "./polyfills": "./src/polyfills/index.js"
+    "./polyfills": {
+      "types": "./src/polyfills/index.d.ts",
+      "import": "./src/polyfills/index.js"
+    }
   },
   "author": "aziontech",
   "license": "MIT",

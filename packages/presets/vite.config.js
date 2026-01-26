@@ -22,11 +22,6 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
       },
-      formats: ['es', 'cjs'],
-      fileName: (format, entryName) => {
-        if (format === 'cjs') return `${entryName}.cjs`;
-        return `${entryName}.js`;
-      },
     },
     rollupOptions: {
       external: (id) => {
@@ -47,9 +42,17 @@ export default defineConfig({
 
         return deps.some((dep) => id === dep || id.startsWith(`${dep}/`));
       },
-      output: {
-        exports: 'named',
-      },
+      output: [
+        {
+          format: 'es',
+          entryFileNames: '[name].mjs',
+        },
+        {
+          format: 'cjs',
+          entryFileNames: '[name].cjs',
+          exports: 'named',
+        },
+      ],
     },
     minify: true,
     sourcemap: false,

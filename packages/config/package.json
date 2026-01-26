@@ -2,7 +2,7 @@
   "name": "@lib/config",
   "version": "1.0.0",
   "description": "Azion configuration.",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -18,12 +18,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
     "./rules": {
       "types": "./dist/rules.d.ts",
       "require": "./dist/rules.cjs",
-      "import": "./dist/rules.js"
+      "import": "./dist/rules.mjs"
     }
   },
   "author": "aziontech",

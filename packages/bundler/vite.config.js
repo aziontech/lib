@@ -15,11 +15,6 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
       },
-      formats: ['es', 'cjs'],
-      fileName: (format, entryName) => {
-        const ext = format === 'es' ? 'js' : 'cjs';
-        return `${entryName}.${ext}`;
-      },
     },
     rollupOptions: {
       external: [
@@ -47,9 +42,17 @@ export default defineConfig({
         'vm-browserify',
         'webpack',
       ],
-      output: {
-        exports: 'named',
-      },
+      output: [
+        {
+          format: 'es',
+          entryFileNames: '[name].mjs',
+        },
+        {
+          format: 'cjs',
+          entryFileNames: '[name].cjs',
+          exports: 'named',
+        },
+      ],
     },
     minify: true,
   },

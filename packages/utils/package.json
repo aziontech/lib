@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
@@ -20,17 +20,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
     "./edge": {
       "types": "./dist/edge.d.ts",
       "require": "./dist/edge.cjs",
-      "import": "./dist/edge.js"
+      "import": "./dist/edge.mjs"
     },
     "./node": {
       "types": "./dist/node.d.ts",
       "require": "./dist/node.cjs",
-      "import": "./dist/node.js"
+      "import": "./dist/node.mjs"
     }
   },
   "author": "aziontech",

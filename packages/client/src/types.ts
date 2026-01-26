@@ -1,9 +1,9 @@
+import { AzionAIClient } from 'azion/ai';
+import { AzionApplicationsClient } from 'azion/applications';
 import { AzionDomainsClient } from 'azion/domains';
-import { AzionAIClient } from '../../ai/src/types';
-import { AzionApplicationsClient } from '../../applications/src/types';
-import { AzionPurgeClient } from '../../purge/src/types';
-import { AzionClientOptions, AzionSQLClient } from '../../sql/src/types';
-import { AzionStorageClient } from '../../storage/src/types';
+import { AzionPurgeClient } from 'azion/purge';
+import { AzionClientOptions, AzionSQLClient } from 'azion/sql';
+import { AzionStorageClient } from 'azion/storage';
 
 /**
  * Azion Client interface containing all available service clients.

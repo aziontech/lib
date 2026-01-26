@@ -11,17 +11,20 @@ export default defineConfig({
         edge: resolve(__dirname, 'src/edge/index.ts'),
         node: resolve(__dirname, 'src/node/index.ts'),
       },
-      formats: ['es', 'cjs'],
-      fileName: (format, entryName) => {
-        const ext = format === 'es' ? 'js' : 'cjs';
-        return `${entryName}.${ext}`;
-      },
     },
     rollupOptions: {
       external: ['signale'],
-      output: {
-        exports: 'named',
-      },
+      output: [
+        {
+          format: 'es',
+          entryFileNames: '[name].mjs',
+        },
+        {
+          format: 'cjs',
+          entryFileNames: '[name].cjs',
+          exports: 'named',
+        },
+      ],
     },
     minify: true,
   },
