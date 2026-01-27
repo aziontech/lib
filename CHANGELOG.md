@@ -1,3 +1,7 @@
+## 3.1.0-stage.4 (2026-01-27)
+
+* fix: change ES module output extension from .mjs to .js in presets (#365) ([e138dd5](https://github.com/aziontech/lib/commit/e138dd5)), closes [#365](https://github.com/aziontech/lib/issues/365)
+
 ## 3.1.0-stage.3 (2026-01-27)
 
 * feat: migrate build system from tsup to vite (#354) ([d4130a8](https://github.com/aziontech/lib/commit/d4130a8)), closes [#354](https://github.com/aziontech/lib/issues/354)
