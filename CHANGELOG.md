@@ -1,3 +1,7 @@
+## 3.1.0-stage.3 (2026-01-27)
+
+* feat: migrate build system from tsup to vite (#354) ([d4130a8](https://github.com/aziontech/lib/commit/d4130a8)), closes [#354](https://github.com/aziontech/lib/issues/354)
+
 ## 3.1.0-stage.2 (2026-01-15)
 
 * feat: add KV configuration support (#350) ([1a344ca](https://github.com/aziontech/lib/commit/1a344ca)), closes [#350](https://github.com/aziontech/lib/issues/350)
