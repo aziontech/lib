@@ -2,14 +2,22 @@
   "name": "@lib/unenv-preset",
   "version": "1.0.0",
   "description": "Azion Unenv preset.",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write ."
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    },
+    "./polyfills/*": "./src/polyfills/*"
   },
   "author": "aziontech",
   "license": "MIT",

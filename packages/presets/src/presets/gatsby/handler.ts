@@ -1,4 +1,4 @@
-import { AzionFetchModule, AzionRuntimeRequest } from 'azion/types';
+import { AzionRuntimeModule, AzionRuntimeRequest } from 'azion/types';
 import { mountMPA } from 'azion/utils/edge';
 import metadata from './metadata';
 /**
@@ -7,7 +7,7 @@ import metadata from './metadata';
  * @param {Object} ctx - The execution context.
  * @returns {Promise<Response>} The response for the request.
  */
-const handler: AzionFetchModule = {
+const handler: AzionRuntimeModule = {
   fetch: async (request: AzionRuntimeRequest): Promise<Response> => {
     try {
       const myApp: Response = await mountMPA(request.url);

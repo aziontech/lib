@@ -2,17 +2,18 @@
   "name": "@azion/ai",
   "version": "1.0.0",
   "description": "Azion AI client for interacting with Copilot API",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     }
   },
   "scripts": {
-    "compile": "tsup --config ../../tsup.config.json",
+    "compile": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
