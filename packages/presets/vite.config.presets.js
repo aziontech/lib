@@ -61,7 +61,7 @@ export default defineConfig({
       output: [
         {
           format: 'es',
-          entryFileNames: '[name].mjs',
+          entryFileNames: '[name].js',
         },
         {
           format: 'cjs',
