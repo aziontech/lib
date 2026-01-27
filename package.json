@@ -264,7 +264,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-optional-chaining-assign": "^7.27.1",
-    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-env": "^7.28.6",
     "@babel/preset-typescript": "^7.27.1",
     "@edge-runtime/primitives": "^3.1.1",
     "@fastly/http-compute-js": "^1.1.5",
