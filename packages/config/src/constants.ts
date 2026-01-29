@@ -122,6 +122,8 @@ export const FIREWALL_VARIABLES = [
   'ssl_verification_status',
 ] as const;
 
+export const FIREWALL_RULE_CONDITIONAL = ['if', 'and', 'or'] as const;
+
 export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
 
 export const WAF_MODE = ['learning', 'blocking', 'counting'] as const;

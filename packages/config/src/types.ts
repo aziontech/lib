@@ -563,43 +563,28 @@ export type AzionApplication = {
 };
 
 /**
- * Firewall behavior configuration for Azion.
+ * Individual firewall behavior types
  */
-export type AzionFirewallBehavior = {
-  /** Run a serverless function */
-  runFunction?: string | number;
-  /** Set WAF ruleset */
-  setWafRuleset?: {
-    /** WAF mode */
-    wafMode: FirewallWafMode;
-    /** WAF ID */
-    wafId: string | number;
-  };
-  /** Set rate limit */
-  setRateLimit?: {
-    /** Rate limit type */
-    type: FirewallRateLimitType;
-    /** Rate limit by */
-    limitBy: FirewallRateLimitBy;
-    /** Average rate limit */
-    averageRateLimit: string;
-    /** Maximum burst size */
-    maximumBurstSize: string;
-  };
-  /** Deny the request */
-  deny?: boolean;
-  /** Drop the request */
-  drop?: boolean;
-  /** Set custom response */
-  setCustomResponse?: {
-    /** HTTP status code (200-499) */
-    statusCode: number | string;
-    /** Response content type */
-    contentType: string;
-    /** Response content body */
-    contentBody: string;
-  };
-};
+export type AzionFirewallBehaviorItem =
+  | { runFunction: string | number }
+  | { setWafRuleset: { wafMode: FirewallWafMode; wafId: string | number } }
+  | {
+      setRateLimit: {
+        type: FirewallRateLimitType;
+        limitBy: FirewallRateLimitBy;
+        averageRateLimit: string;
+        maximumBurstSize: string;
+      };
+    }
+  | { deny: true }
+  | { drop: true }
+  | { setCustomResponse: { statusCode: number | string; contentType: string; contentBody: string } };
+
+/**
+ * Firewall behavior configuration for Azion.
+ * Array of behavior items to be applied when the rule matches.
+ */
+export type AzionFirewallBehavior = AzionFirewallBehaviorItem[];
 
 export type AzionFirewallCriteriaBase = {
   /** Variable to be evaluated */
@@ -639,7 +624,7 @@ export type AzionFirewallRule = {
   /** Array of criteria for complex conditions */
   criteria?: AzionFirewallCriteria[];
   /** Behavior to be applied when the rule matches */
-  behavior: AzionFirewallBehavior;
+  behaviors: AzionFirewallBehavior;
 };
 
 /**
@@ -656,8 +641,6 @@ export type AzionFirewall = {
   networkProtection?: boolean;
   /** Indicates if WAF is enabled */
   waf?: boolean;
-  /** Variable to be used in the match */
-  variable?: RuleVariable;
   /** List of firewall rules */
   rules?: AzionFirewallRule[];
   /** Debug mode */
