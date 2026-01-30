@@ -13,6 +13,8 @@ import {
   EDGE_CONNECTOR_TYPES,
   FIREWALL_RATE_LIMIT_BY,
   FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_RULE_CONDITIONAL,
+  FIREWALL_RULE_OPERATORS,
   FIREWALL_VARIABLES,
   FIREWALL_WAF_MODES,
   HEADER_BEHAVIORS,
@@ -1199,11 +1201,6 @@ const azionConfigSchema = {
                 type: 'boolean',
                 errorMessage: "The firewall's 'waf' field must be a boolean",
               },
-              variable: {
-                type: 'string',
-                enum: FIREWALL_VARIABLES,
-                errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
-              },
               rules: {
                 type: 'array',
                 items: {
@@ -1225,121 +1222,221 @@ const azionConfigSchema = {
                       type: 'string',
                       errorMessage: "The rule's 'match' field must be a string containing a valid regex pattern",
                     },
-                    behavior: {
-                      type: 'object',
-                      properties: {
-                        runFunction: {
-                          type: ['string', 'number'],
-                          errorMessage: "The 'runFunction' behavior must be a string or number",
+                    variable: {
+                      type: 'string',
+                      enum: FIREWALL_VARIABLES,
+                      errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
+                    },
+                    behaviors: {
+                      type: 'array',
+                      minItems: 1,
+                      anyOf: [
+                        {
+                          maxItems: 1,
                         },
-                        setWafRuleset: {
-                          type: 'object',
-                          properties: {
-                            wafMode: {
-                              type: 'string',
-                              enum: FIREWALL_WAF_MODES,
-                              errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
-                            },
-                            wafId: {
-                              type: ['string', 'number'],
-                              errorMessage: 'The wafId must be a string or number',
-                            },
+                        {
+                          minItems: 2,
+                          contains: {
+                            type: 'object',
+                            required: ['runFunction'],
                           },
-                          required: ['wafMode', 'wafId'],
-                          additionalProperties: false,
-                          errorMessage: {
-                            additionalProperties: 'No additional properties are allowed in the setWafRuleset object',
-                            required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
-                          },
+                          items: [
+                            {
+                              type: 'object',
+                              required: ['runFunction'],
+                              properties: {
+                                runFunction: {
+                                  type: ['string', 'number'],
+                                },
+                              },
+                              additionalProperties: false,
+                            },
+                          ],
                         },
-                        setRateLimit: {
-                          type: 'object',
-                          properties: {
-                            type: {
-                              type: 'string',
-                              enum: FIREWALL_RATE_LIMIT_TYPES,
-                              errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
+                      ],
+                      items: {
+                        type: 'object',
+                        oneOf: [
+                          {
+                            properties: {
+                              runFunction: {
+                                type: ['string', 'number'],
+                                errorMessage: "The 'runFunction' behavior must be a string or number",
+                              },
                             },
-                            limitBy: {
-                              type: 'string',
-                              enum: FIREWALL_RATE_LIMIT_BY,
-                              errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
-                            },
-                            averageRateLimit: {
-                              type: 'string',
-                              errorMessage: 'The averageRateLimit must be a string',
-                            },
-                            maximumBurstSize: {
-                              type: 'string',
-                              errorMessage: 'The maximumBurstSize must be a string',
-                            },
+                            required: ['runFunction'],
+                            additionalProperties: false,
                           },
-                          required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
-                          additionalProperties: false,
-                          errorMessage: {
-                            additionalProperties: 'No additional properties are allowed in the setRateLimit object',
-                            required:
-                              "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
-                          },
-                        },
-                        deny: {
-                          type: 'boolean',
-                          errorMessage: 'The deny behavior must be a boolean',
-                        },
-                        drop: {
-                          type: 'boolean',
-                          errorMessage: 'The drop behavior must be a boolean',
-                        },
-                        setCustomResponse: {
-                          type: 'object',
-                          properties: {
-                            statusCode: {
-                              type: ['integer', 'string'],
-                              minimum: 200,
-                              maximum: 499,
-                              errorMessage: 'The statusCode must be a number or string between 200 and 499',
+                          {
+                            properties: {
+                              setWafRuleset: {
+                                type: 'object',
+                                properties: {
+                                  wafMode: {
+                                    type: 'string',
+                                    enum: FIREWALL_WAF_MODES,
+                                    errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
+                                  },
+                                  wafId: {
+                                    type: ['string', 'number'],
+                                    errorMessage: 'The wafId must be a string or number',
+                                  },
+                                },
+                                required: ['wafMode', 'wafId'],
+                                additionalProperties: false,
+                                errorMessage: {
+                                  additionalProperties:
+                                    'No additional properties are allowed in the setWafRuleset object',
+                                  required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
+                                },
+                              },
                             },
-                            contentType: {
-                              type: 'string',
-                              errorMessage: 'The contentType must be a string',
-                            },
-                            contentBody: {
-                              type: 'string',
-                              errorMessage: 'The contentBody must be a string',
-                            },
+                            required: ['setWafRuleset'],
+                            additionalProperties: false,
                           },
-                          required: ['statusCode', 'contentType', 'contentBody'],
-                          additionalProperties: false,
-                          errorMessage: {
-                            additionalProperties:
-                              'No additional properties are allowed in the setCustomResponse object',
-                            required:
-                              "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
+                          {
+                            properties: {
+                              setRateLimit: {
+                                type: 'object',
+                                properties: {
+                                  type: {
+                                    type: 'string',
+                                    enum: FIREWALL_RATE_LIMIT_TYPES,
+                                    errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
+                                  },
+                                  limitBy: {
+                                    type: 'string',
+                                    enum: FIREWALL_RATE_LIMIT_BY,
+                                    errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
+                                  },
+                                  averageRateLimit: {
+                                    type: 'string',
+                                    errorMessage: 'The averageRateLimit must be a string',
+                                  },
+                                  maximumBurstSize: {
+                                    type: 'string',
+                                    errorMessage: 'The maximumBurstSize must be a string',
+                                  },
+                                },
+                                required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+                                additionalProperties: false,
+                                errorMessage: {
+                                  additionalProperties:
+                                    'No additional properties are allowed in the setRateLimit object',
+                                  required:
+                                    "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
+                                },
+                              },
+                            },
+                            required: ['setRateLimit'],
+                            additionalProperties: false,
                           },
-                        },
-                      },
-                      not: {
-                        anyOf: [
-                          { required: ['deny', 'drop'] },
-                          { required: ['deny', 'setCustomResponse'] },
-                          { required: ['deny', 'setRateLimit'] },
-                          { required: ['drop', 'setCustomResponse'] },
-                          { required: ['drop', 'setRateLimit'] },
-                          { required: ['setCustomResponse', 'setRateLimit'] },
+                          {
+                            properties: {
+                              deny: {
+                                type: 'boolean',
+                                const: true,
+                                errorMessage: 'The deny behavior must be true',
+                              },
+                            },
+                            required: ['deny'],
+                            additionalProperties: false,
+                          },
+                          {
+                            properties: {
+                              drop: {
+                                type: 'boolean',
+                                const: true,
+                                errorMessage: 'The drop behavior must be true',
+                              },
+                            },
+                            required: ['drop'],
+                            additionalProperties: false,
+                          },
+                          {
+                            properties: {
+                              setCustomResponse: {
+                                type: 'object',
+                                properties: {
+                                  statusCode: {
+                                    type: ['integer', 'string'],
+                                    minimum: 200,
+                                    maximum: 499,
+                                    errorMessage: 'The statusCode must be a number or string between 200 and 499',
+                                  },
+                                  contentType: {
+                                    type: 'string',
+                                    errorMessage: 'The contentType must be a string',
+                                  },
+                                  contentBody: {
+                                    type: 'string',
+                                    errorMessage: 'The contentBody must be a string',
+                                  },
+                                },
+                                required: ['statusCode', 'contentType', 'contentBody'],
+                                additionalProperties: false,
+                                errorMessage: {
+                                  additionalProperties:
+                                    'No additional properties are allowed in the setCustomResponse object',
+                                  required:
+                                    "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
+                                },
+                              },
+                            },
+                            required: ['setCustomResponse'],
+                            additionalProperties: false,
+                          },
                         ],
+                        errorMessage: 'Each behavior item must contain exactly one behavior type',
                       },
-                      errorMessage: {
-                        not: 'Cannot use multiple final behaviors (deny, drop, setRateLimit, setCustomResponse) together. You can combine non-final behaviors (runFunction, setWafRuleset) with only one final behavior.',
+                      errorMessage:
+                        'Multiple behaviors are only allowed when the first behavior is runFunction. Otherwise, only one behavior is permitted.',
+                    },
+                    criteria: {
+                      type: 'array',
+                      minItems: 1,
+                      maxItems: 5,
+                      items: {
+                        type: 'object',
+                        properties: {
+                          conditional: {
+                            type: 'string',
+                            enum: FIREWALL_RULE_CONDITIONAL,
+                            errorMessage: `The 'conditional' field must be one of: ${FIREWALL_RULE_CONDITIONAL.join(', ')}`,
+                          },
+                          variable: {
+                            type: 'string',
+                            enum: FIREWALL_VARIABLES,
+                            errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
+                          },
+                          operator: {
+                            type: 'string',
+                            enum: FIREWALL_RULE_OPERATORS,
+                            errorMessage: `The 'operator' field must be one of: ${FIREWALL_RULE_OPERATORS.join(', ')}`,
+                          },
+                          argument: {
+                            type: 'string',
+                            errorMessage: 'The argument must be a string',
+                          },
+                        },
                       },
+                      required: ['conditional', 'variable', 'operator', 'argument'],
                       additionalProperties: false,
+                      errorMessage: {
+                        type: 'The criteria field must be an array with at least one criteria item',
+                        additionalProperties: 'No additional properties are allowed in the criteria object',
+                        required:
+                          "The 'variable', 'operator', 'argument' and 'conditional' fields are required in each criteria object",
+                      },
                     },
                   },
-                  required: ['name', 'behavior'],
+                  required: ['name', 'behaviors'],
                   oneOf: [
                     {
-                      anyOf: [{ required: ['match'] }, { required: ['variable'] }],
+                      required: ['match', 'variable'],
                       not: { required: ['criteria'] },
-                      errorMessage: "Cannot use 'match' or 'variable' together with 'criteria'.",
+                      errorMessage:
+                        "When using 'match' or 'variable', both fields are required and cannot be used with 'criteria'.",
                     },
                     {
                       required: ['criteria'],
@@ -1350,7 +1447,8 @@ const azionConfigSchema = {
                     },
                   ],
                   errorMessage: {
-                    oneOf: "You must use either 'match/variable' OR 'criteria', but not both at the same time",
+                    oneOf:
+                      "You must use either 'match' AND 'variable' together OR 'criteria', but not both at the same time",
                   },
                 },
               },

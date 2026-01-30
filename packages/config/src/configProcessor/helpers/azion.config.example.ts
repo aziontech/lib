@@ -487,26 +487,38 @@ const config: AzionConfig = {
           name: 'rateLimit_Then_Drop',
           active: true,
           match: '^/api/sensitive/',
-          behavior: {
-            setRateLimit: {
-              type: 'second',
-              limitBy: 'clientIp',
-              averageRateLimit: '10',
-              maximumBurstSize: '20',
+          variable: 'request_uri',
+          behaviors: [
+            {
+              setRateLimit: {
+                type: 'second',
+                limitBy: 'clientIp',
+                averageRateLimit: '10',
+                maximumBurstSize: '20',
+              },
             },
-          },
+          ],
         },
         {
           name: 'customResponse_Only',
           active: true,
-          match: '^/custom-error/',
-          behavior: {
-            setCustomResponse: {
-              statusCode: 403,
-              contentType: 'application/json',
-              contentBody: '{"error": "Custom error response"}',
+          criteria: [
+            {
+              variable: 'request_uri',
+              operator: 'matches',
+              conditional: 'if',
+              argument: '^/custom-error/',
             },
-          },
+          ],
+          behaviors: [
+            {
+              setCustomResponse: {
+                statusCode: 403,
+                contentType: 'application/json',
+                contentBody: '{"error": "Custom error response"}',
+              },
+            },
+          ],
         },
       ],
     },
