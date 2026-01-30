@@ -1,3 +1,7 @@
+## 3.1.0-stage.5 (2026-01-30)
+
+* fix: restructure firewall rules schema to support multiple behaviors and criteria (#366) ([429722d](https://github.com/aziontech/lib/commit/429722d)), closes [#366](https://github.com/aziontech/lib/issues/366)
+
 ## 3.1.0-stage.4 (2026-01-27)
 
 * fix: change ES module output extension from .mjs to .js in presets (#365) ([e138dd5](https://github.com/aziontech/lib/commit/e138dd5)), closes [#365](https://github.com/aziontech/lib/issues/365)
