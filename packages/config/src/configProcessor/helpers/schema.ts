@@ -486,6 +486,161 @@ const schemaKV = {
   },
 };
 
+const firewallRulesBehaviorsSchema = {
+  type: 'array',
+  minItems: 1,
+  anyOf: [
+    {
+      maxItems: 1,
+    },
+    {
+      // When there are 2+ behaviors, at least one must be runFunction
+      // Note: JSON Schema strict mode doesn't support tuple validation to enforce
+      // that runFunction must be the FIRST item. This validation should be added
+      // in runtime validation after AJV schema validation passes.
+      minItems: 2,
+      maxItems: 10,
+      contains: {
+        type: 'object',
+        required: ['runFunction'],
+      },
+    },
+  ],
+  items: {
+    type: 'object',
+    oneOf: [
+      {
+        properties: {
+          runFunction: {
+            type: ['string', 'number'],
+            errorMessage: "The 'runFunction' behavior must be a string or number",
+          },
+        },
+        required: ['runFunction'],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          setWafRuleset: {
+            type: 'object',
+            properties: {
+              wafMode: {
+                type: 'string',
+                enum: FIREWALL_WAF_MODES,
+                errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
+              },
+              wafId: {
+                type: ['string', 'number'],
+                errorMessage: 'The wafId must be a string or number',
+              },
+            },
+            required: ['wafMode', 'wafId'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the setWafRuleset object',
+              required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
+            },
+          },
+        },
+        required: ['setWafRuleset'],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          setRateLimit: {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                enum: FIREWALL_RATE_LIMIT_TYPES,
+                errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
+              },
+              limitBy: {
+                type: 'string',
+                enum: FIREWALL_RATE_LIMIT_BY,
+                errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
+              },
+              averageRateLimit: {
+                type: 'string',
+                errorMessage: 'The averageRateLimit must be a string',
+              },
+              maximumBurstSize: {
+                type: 'string',
+                errorMessage: 'The maximumBurstSize must be a string',
+              },
+            },
+            required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the setRateLimit object',
+              required:
+                "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
+            },
+          },
+        },
+        required: ['setRateLimit'],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          deny: {
+            type: 'boolean',
+            const: true,
+            errorMessage: 'The deny behavior must be true',
+          },
+        },
+        required: ['deny'],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          drop: {
+            type: 'boolean',
+            const: true,
+            errorMessage: 'The drop behavior must be true',
+          },
+        },
+        required: ['drop'],
+        additionalProperties: false,
+      },
+      {
+        properties: {
+          setCustomResponse: {
+            type: 'object',
+            properties: {
+              statusCode: {
+                type: ['integer', 'string'],
+                minimum: 200,
+                maximum: 499,
+                errorMessage: 'The statusCode must be a number or string between 200 and 499',
+              },
+              contentType: {
+                type: 'string',
+                errorMessage: 'The contentType must be a string',
+              },
+              contentBody: {
+                type: 'string',
+                errorMessage: 'The contentBody must be a string',
+              },
+            },
+            required: ['statusCode', 'contentType', 'contentBody'],
+            additionalProperties: false,
+            errorMessage: {
+              additionalProperties: 'No additional properties are allowed in the setCustomResponse object',
+              required: "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
+            },
+          },
+        },
+        required: ['setCustomResponse'],
+        additionalProperties: false,
+      },
+    ],
+    errorMessage: 'Each behavior item must contain exactly one behavior type',
+  },
+  errorMessage:
+    'Multiple behaviors are only allowed when the first behavior is runFunction. Otherwise, only one behavior is permitted.',
+};
+
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
@@ -1227,171 +1382,7 @@ const azionConfigSchema = {
                       enum: FIREWALL_VARIABLES,
                       errorMessage: `The 'variable' field must be one of: ${FIREWALL_VARIABLES.join(', ')}`,
                     },
-                    behaviors: {
-                      type: 'array',
-                      minItems: 1,
-                      anyOf: [
-                        {
-                          maxItems: 1,
-                        },
-                        {
-                          minItems: 2,
-                          contains: {
-                            type: 'object',
-                            required: ['runFunction'],
-                          },
-                          items: [
-                            {
-                              type: 'object',
-                              required: ['runFunction'],
-                              properties: {
-                                runFunction: {
-                                  type: ['string', 'number'],
-                                },
-                              },
-                              additionalProperties: false,
-                            },
-                          ],
-                        },
-                      ],
-                      items: {
-                        type: 'object',
-                        oneOf: [
-                          {
-                            properties: {
-                              runFunction: {
-                                type: ['string', 'number'],
-                                errorMessage: "The 'runFunction' behavior must be a string or number",
-                              },
-                            },
-                            required: ['runFunction'],
-                            additionalProperties: false,
-                          },
-                          {
-                            properties: {
-                              setWafRuleset: {
-                                type: 'object',
-                                properties: {
-                                  wafMode: {
-                                    type: 'string',
-                                    enum: FIREWALL_WAF_MODES,
-                                    errorMessage: `The wafMode must be one of: ${FIREWALL_WAF_MODES.join(', ')}`,
-                                  },
-                                  wafId: {
-                                    type: ['string', 'number'],
-                                    errorMessage: 'The wafId must be a string or number',
-                                  },
-                                },
-                                required: ['wafMode', 'wafId'],
-                                additionalProperties: false,
-                                errorMessage: {
-                                  additionalProperties:
-                                    'No additional properties are allowed in the setWafRuleset object',
-                                  required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleset",
-                                },
-                              },
-                            },
-                            required: ['setWafRuleset'],
-                            additionalProperties: false,
-                          },
-                          {
-                            properties: {
-                              setRateLimit: {
-                                type: 'object',
-                                properties: {
-                                  type: {
-                                    type: 'string',
-                                    enum: FIREWALL_RATE_LIMIT_TYPES,
-                                    errorMessage: `The rate limit type must be one of: ${FIREWALL_RATE_LIMIT_TYPES.join(', ')}`,
-                                  },
-                                  limitBy: {
-                                    type: 'string',
-                                    enum: FIREWALL_RATE_LIMIT_BY,
-                                    errorMessage: `The rate limit must be applied by one of: ${FIREWALL_RATE_LIMIT_BY.join(', ')}`,
-                                  },
-                                  averageRateLimit: {
-                                    type: 'string',
-                                    errorMessage: 'The averageRateLimit must be a string',
-                                  },
-                                  maximumBurstSize: {
-                                    type: 'string',
-                                    errorMessage: 'The maximumBurstSize must be a string',
-                                  },
-                                },
-                                required: ['type', 'limitBy', 'averageRateLimit', 'maximumBurstSize'],
-                                additionalProperties: false,
-                                errorMessage: {
-                                  additionalProperties:
-                                    'No additional properties are allowed in the setRateLimit object',
-                                  required:
-                                    "All fields ('type', 'limitBy', 'averageRateLimit', 'maximumBurstSize') are required in setRateLimit",
-                                },
-                              },
-                            },
-                            required: ['setRateLimit'],
-                            additionalProperties: false,
-                          },
-                          {
-                            properties: {
-                              deny: {
-                                type: 'boolean',
-                                const: true,
-                                errorMessage: 'The deny behavior must be true',
-                              },
-                            },
-                            required: ['deny'],
-                            additionalProperties: false,
-                          },
-                          {
-                            properties: {
-                              drop: {
-                                type: 'boolean',
-                                const: true,
-                                errorMessage: 'The drop behavior must be true',
-                              },
-                            },
-                            required: ['drop'],
-                            additionalProperties: false,
-                          },
-                          {
-                            properties: {
-                              setCustomResponse: {
-                                type: 'object',
-                                properties: {
-                                  statusCode: {
-                                    type: ['integer', 'string'],
-                                    minimum: 200,
-                                    maximum: 499,
-                                    errorMessage: 'The statusCode must be a number or string between 200 and 499',
-                                  },
-                                  contentType: {
-                                    type: 'string',
-                                    errorMessage: 'The contentType must be a string',
-                                  },
-                                  contentBody: {
-                                    type: 'string',
-                                    errorMessage: 'The contentBody must be a string',
-                                  },
-                                },
-                                required: ['statusCode', 'contentType', 'contentBody'],
-                                additionalProperties: false,
-                                errorMessage: {
-                                  additionalProperties:
-                                    'No additional properties are allowed in the setCustomResponse object',
-                                  required:
-                                    "All fields ('statusCode', 'contentType', 'contentBody') are required in setCustomResponse",
-                                },
-                              },
-                            },
-                            required: ['setCustomResponse'],
-                            additionalProperties: false,
-                          },
-                        ],
-                        errorMessage: 'Each behavior item must contain exactly one behavior type',
-                      },
-                      errorMessage:
-                        'Multiple behaviors are only allowed when the first behavior is runFunction. Otherwise, only one behavior is permitted.',
-                    },
+                    behaviors: firewallRulesBehaviorsSchema,
                     criteria: {
                       type: 'array',
                       minItems: 1,
@@ -1419,14 +1410,16 @@ const azionConfigSchema = {
                             errorMessage: 'The argument must be a string',
                           },
                         },
+                        required: ['conditional', 'variable', 'operator', 'argument'],
+                        additionalProperties: false,
+                        errorMessage: {
+                          additionalProperties: 'No additional properties are allowed in the criteria object',
+                          required:
+                            "The 'variable', 'operator', 'argument' and 'conditional' fields are required in each criteria object",
+                        },
                       },
-                      required: ['conditional', 'variable', 'operator', 'argument'],
-                      additionalProperties: false,
                       errorMessage: {
                         type: 'The criteria field must be an array with at least one criteria item',
-                        additionalProperties: 'No additional properties are allowed in the criteria object',
-                        required:
-                          "The 'variable', 'operator', 'argument' and 'conditional' fields are required in each criteria object",
                       },
                     },
                   },

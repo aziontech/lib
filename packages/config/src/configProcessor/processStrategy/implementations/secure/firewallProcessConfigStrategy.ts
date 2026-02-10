@@ -68,6 +68,15 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private transformBehaviorsToManifest(behaviorArray: any[]) {
+    // Runtime validation: when there are 2+ behaviors, the first must be runFunction
+    if (behaviorArray.length >= 2 && !behaviorArray[0].runFunction) {
+      throw new Error(
+        'When using multiple behaviors in firewall rules, the first behavior must be runFunction. ' +
+          'Other behaviors (setWafRuleset, setRateLimit, deny, drop, setCustomResponse) can only be used ' +
+          'after runFunction in the behaviors array.',
+      );
+    }
+
     const behaviors = [];
 
     for (const behaviorItem of behaviorArray) {
