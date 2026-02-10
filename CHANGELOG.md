@@ -1,3 +1,9 @@
+## 3.1.0-stage.6 (2026-02-10)
+
+* fix: extract firewall behaviors schema and add runtime validation (#384) ([bd4b04e](https://github.com/aziontech/lib/commit/bd4b04e)), closes [#384](https://github.com/aziontech/lib/issues/384)
+* chore: remove dependabot workflow (#373) ([6570a19](https://github.com/aziontech/lib/commit/6570a19)), closes [#373](https://github.com/aziontech/lib/issues/373)
+* chore: update deps (#371) ([2faebc8](https://github.com/aziontech/lib/commit/2faebc8)), closes [#371](https://github.com/aziontech/lib/issues/371)
+
 ## 3.1.0-stage.5 (2026-01-30)
 
 * fix: restructure firewall rules schema to support multiple behaviors and criteria (#366) ([429722d](https://github.com/aziontech/lib/commit/429722d)), closes [#366](https://github.com/aziontech/lib/issues/366)
