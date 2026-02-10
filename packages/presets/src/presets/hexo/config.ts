@@ -49,14 +49,6 @@ const config: AzionConfig = {
       name: '$WORKLOAD_NAME',
       active: true,
       infrastructure: 1,
-      protocols: {
-        http: {
-          versions: ['http1', 'http2'],
-          httpPorts: [80],
-          httpsPorts: [443],
-          quicPorts: null,
-        },
-      },
       deployments: [
         {
           name: '$DEPLOYMENT_NAME',

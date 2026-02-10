@@ -1121,7 +1121,7 @@ const azionConfigSchema = {
                           type: 'string',
                           enum: WORKLOAD_HTTP_VERSIONS,
                         },
-                        default: ['http1', 'http2'],
+                        default: ['http1', 'http2', 'http3'],
                       },
                       httpPorts: {
                         type: 'array',
@@ -1144,10 +1144,10 @@ const azionConfigSchema = {
                 },
                 default: {
                   http: {
-                    versions: ['http1', 'http2'],
+                    versions: ['http1', 'http2', 'http3'],
                     httpPorts: [80],
                     httpsPorts: [443],
-                    quicPorts: null,
+                    quicPorts: [443],
                   },
                 },
                 additionalProperties: false,

@@ -25,10 +25,10 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
       },
       protocols: {
         http: {
-          versions: workload.protocols?.http?.versions || ['http1', 'http2'],
+          versions: workload.protocols?.http?.versions || ['http1', 'http2', 'http3'],
           http_ports: workload.protocols?.http?.httpPorts || [80],
           https_ports: workload.protocols?.http?.httpsPorts || [443],
-          quic_ports: workload.protocols?.http?.quicPorts || null,
+          quic_ports: workload.protocols?.http?.quicPorts || [443],
         },
       },
       mtls: workload.mtls
