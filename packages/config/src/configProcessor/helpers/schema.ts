@@ -489,23 +489,7 @@ const schemaKV = {
 const firewallRulesBehaviorsSchema = {
   type: 'array',
   minItems: 1,
-  anyOf: [
-    {
-      maxItems: 1,
-    },
-    {
-      // When there are 2+ behaviors, at least one must be runFunction
-      // Note: JSON Schema strict mode doesn't support tuple validation to enforce
-      // that runFunction must be the FIRST item. This validation should be added
-      // in runtime validation after AJV schema validation passes.
-      minItems: 2,
-      maxItems: 10,
-      contains: {
-        type: 'object',
-        required: ['runFunction'],
-      },
-    },
-  ],
+  maxItems: 10,
   items: {
     type: 'object',
     oneOf: [
@@ -637,8 +621,7 @@ const firewallRulesBehaviorsSchema = {
     ],
     errorMessage: 'Each behavior item must contain exactly one behavior type',
   },
-  errorMessage:
-    'Multiple behaviors are only allowed when the first behavior is runFunction. Otherwise, only one behavior is permitted.',
+  errorMessage: 'The behaviors array must contain between 1 and 10 behavior items.',
 };
 
 const azionConfigSchema = {

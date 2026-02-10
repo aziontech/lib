@@ -68,13 +68,19 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private transformBehaviorsToManifest(behaviorArray: any[]) {
-    // Runtime validation: when there are 2+ behaviors, the first must be runFunction
-    if (behaviorArray.length >= 2 && !behaviorArray[0].runFunction) {
-      throw new Error(
-        'When using multiple behaviors in firewall rules, the first behavior must be runFunction. ' +
-          'Other behaviors (setWafRuleset, setRateLimit, deny, drop, setCustomResponse) can only be used ' +
-          'after runFunction in the behaviors array.',
-      );
+    // Runtime validation: deny, drop, and setCustomResponse are terminal behaviors
+    // and cannot be combined with other behaviors
+    if (behaviorArray.length > 1) {
+      const firstBehavior = behaviorArray[0];
+      const hasTerminalBehavior = firstBehavior.deny || firstBehavior.drop || firstBehavior.setCustomResponse;
+
+      if (hasTerminalBehavior) {
+        const behaviorType = firstBehavior.deny ? 'deny' : firstBehavior.drop ? 'drop' : 'setCustomResponse';
+        throw new Error(
+          `The behavior '${behaviorType}' is a terminal behavior and must be used alone. ` +
+            `It cannot be combined with other behaviors in the same rule.`,
+        );
+      }
     }
 
     const behaviors = [];
