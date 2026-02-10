@@ -68,6 +68,21 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private transformBehaviorsToManifest(behaviorArray: any[]) {
+    // Runtime validation: deny, drop, and setCustomResponse are terminal behaviors
+    // and cannot be combined with other behaviors
+    if (behaviorArray.length > 1) {
+      const firstBehavior = behaviorArray[0];
+      const hasTerminalBehavior = firstBehavior.deny || firstBehavior.drop || firstBehavior.setCustomResponse;
+
+      if (hasTerminalBehavior) {
+        const behaviorType = firstBehavior.deny ? 'deny' : firstBehavior.drop ? 'drop' : 'setCustomResponse';
+        throw new Error(
+          `The behavior '${behaviorType}' is a terminal behavior and must be used alone. ` +
+            `It cannot be combined with other behaviors in the same rule.`,
+        );
+      }
+    }
+
     const behaviors = [];
 
     for (const behaviorItem of behaviorArray) {
