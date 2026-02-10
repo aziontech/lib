@@ -38,7 +38,7 @@
     "cookie": "^1.0.2",
     "fast-glob": "^3.3.3",
     "pcre-to-regexp": "^1.1.0",
-    "webpack": "^5.97.1"
+    "webpack": "^5.105.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0"
