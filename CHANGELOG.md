@@ -1,3 +1,23 @@
+## 3.1.0 (2026-02-11)
+
+* Merge pull request #386 from aziontech/stage ([375d97b](https://github.com/aziontech/lib/commit/375d97b)), closes [#386](https://github.com/aziontech/lib/issues/386)
+* chore: remove dependabot workflow (#373) ([6570a19](https://github.com/aziontech/lib/commit/6570a19)), closes [#373](https://github.com/aziontech/lib/issues/373)
+* chore: update deps (#371) ([2faebc8](https://github.com/aziontech/lib/commit/2faebc8)), closes [#371](https://github.com/aziontech/lib/issues/371)
+* chore(release): 3.1.0-stage.1 ([b963099](https://github.com/aziontech/lib/commit/b963099))
+* chore(release): 3.1.0-stage.2 ([746c91a](https://github.com/aziontech/lib/commit/746c91a))
+* chore(release): 3.1.0-stage.3 ([af7c541](https://github.com/aziontech/lib/commit/af7c541))
+* chore(release): 3.1.0-stage.4 ([1a20035](https://github.com/aziontech/lib/commit/1a20035))
+* chore(release): 3.1.0-stage.5 ([590cb09](https://github.com/aziontech/lib/commit/590cb09))
+* chore(release): 3.1.0-stage.6 ([50a39bc](https://github.com/aziontech/lib/commit/50a39bc))
+* chore(release): 3.1.0-stage.7 ([90f1958](https://github.com/aziontech/lib/commit/90f1958))
+* fix: change ES module output extension from .mjs to .js in presets (#365) ([e138dd5](https://github.com/aziontech/lib/commit/e138dd5)), closes [#365](https://github.com/aziontech/lib/issues/365)
+* fix: enable HTTP/3 and QUIC by default in workload (#385) ([c60e53c](https://github.com/aziontech/lib/commit/c60e53c)), closes [#385](https://github.com/aziontech/lib/issues/385)
+* fix: extract firewall behaviors schema and add runtime validation (#384) ([bd4b04e](https://github.com/aziontech/lib/commit/bd4b04e)), closes [#384](https://github.com/aziontech/lib/issues/384)
+* fix: restructure firewall rules schema to support multiple behaviors and criteria (#366) ([429722d](https://github.com/aziontech/lib/commit/429722d)), closes [#366](https://github.com/aziontech/lib/issues/366)
+* feat: add KV configuration support (#350) ([1a344ca](https://github.com/aziontech/lib/commit/1a344ca)), closes [#350](https://github.com/aziontech/lib/issues/350)
+* feat: add KV storage polyfill for local development (#349) ([6d4d6f9](https://github.com/aziontech/lib/commit/6d4d6f9)), closes [#349](https://github.com/aziontech/lib/issues/349)
+* feat: migrate build system from tsup to vite (#354) ([d4130a8](https://github.com/aziontech/lib/commit/d4130a8)), closes [#354](https://github.com/aziontech/lib/issues/354)
+
 ## 3.1.0-stage.7 (2026-02-11)
 
 * fix: enable HTTP/3 and QUIC by default in workload (#385) ([c60e53c](https://github.com/aziontech/lib/commit/c60e53c)), closes [#385](https://github.com/aziontech/lib/issues/385)
