@@ -1,3 +1,7 @@
+## 3.1.0-stage.7 (2026-02-11)
+
+* fix: enable HTTP/3 and QUIC by default in workload (#385) ([c60e53c](https://github.com/aziontech/lib/commit/c60e53c)), closes [#385](https://github.com/aziontech/lib/issues/385)
+
 ## 3.1.0-stage.6 (2026-02-10)
 
 * fix: extract firewall behaviors schema and add runtime validation (#384) ([bd4b04e](https://github.com/aziontech/lib/commit/bd4b04e)), closes [#384](https://github.com/aziontech/lib/issues/384)
