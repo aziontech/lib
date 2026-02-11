@@ -294,7 +294,7 @@ export const WORKLOAD_TLS_VERSIONS = ['', 'tls_1_0', 'tls_1_1', 'tls_1_2', 'tls_
 
 export const WORKLOAD_MTLS_VERIFICATION = ['enforce', 'permissive'] as const;
 
-export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2'] as const;
+export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2', 'http3'] as const;
 
 // Constantes para Connector V4
 export const EDGE_CONNECTOR_TYPES = ['http', 'storage', 'live_ingest'] as const;

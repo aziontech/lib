@@ -173,7 +173,7 @@ export type WorkloadInfrastructure = 1 | 2;
 export type WorkloadTLSCipher = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export type WorkloadTLSVersion = '' | 'tls_1_0' | 'tls_1_1' | 'tls_1_2' | 'tls_1_3';
 export type WorkloadMTLSVerification = 'enforce' | 'permissive';
-export type WorkloadHTTPVersion = 'http1' | 'http2';
+export type WorkloadHTTPVersion = 'http1' | 'http2' | 'http3';
 
 // Connector types
 export type ConnectorType = 'http' | 'storage' | 'live_ingest';
