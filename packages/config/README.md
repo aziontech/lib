@@ -28,6 +28,7 @@ This module provides comprehensive configuration and validation for the Azion Pl
   - [`AzionFirewall`](#azionfirewall)
   - [`AzionWaf`](#azionwaf)
   - [`AzionCustomPages`](#azioncustompages)
+  - [`AzionKV`](#azionkv)
 
 ## Installation
 
@@ -357,6 +358,11 @@ const config = defineConfig({
       type: 'url',
       items: ['http://www.example.com/image.jpg'],
       layer: 'cache',
+    },
+  ],
+  kv: [
+    {
+      name: 'my-kv',
     },
   ],
 });
@@ -898,3 +904,11 @@ Type definition for individual custom pages.
     - `ttl?: number` - Time to live (0-31536000 seconds, default: 0).
     - `uri?: string | null` - URI path (must start with /, max 250 characters).
     - `customStatusCode?: number | null` - Custom status code (100-599).
+
+### `AzionKV`
+
+Type definition for the Key-Value (KV) storage configuration.
+
+**Properties:**
+
+- `name: string` - Name of the KV storage (1-255 characters).

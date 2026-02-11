@@ -1,4 +1,4 @@
-import {
+import type {
   ApiBaseFunctionInstancePayload,
   ApiFunctionInstance,
   ApiListFunctionInstancesParams,
@@ -7,4 +7,4 @@ import {
 
 export type AzionFunctionInstance = ApiFunctionInstance;
 
-export { ApiBaseFunctionInstancePayload, ApiListFunctionInstancesParams, ApiUpdateFunctionInstancePayload };
+export type { ApiBaseFunctionInstancePayload, ApiListFunctionInstancesParams, ApiUpdateFunctionInstancePayload };

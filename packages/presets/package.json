@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "type": "module",
   "scripts": {
-    "compile": "tsup --config ./tsup.config.json && tsup --config ./tsup.config.ts",
+    "compile": "vite build --config vite.config.mjs && vite build --config vite.config.presets.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
@@ -15,8 +15,9 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
     "./preset/nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
     "./preset/sveltekit/*": "./src/presets/svelte/kit/index.js",

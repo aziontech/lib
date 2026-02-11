@@ -36,7 +36,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           name: rule.name,
           description: rule.description || '',
           active: rule.active ?? true,
-          behaviors: this.transformBehaviorsToManifest(rule.behavior),
+          behaviors: this.transformBehaviorsToManifest(rule.behaviors),
           criteria: rule.criteria
             ? [
                 rule.criteria.map((criterion) => {
@@ -67,62 +67,78 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private transformBehaviorsToManifest(behavior: any) {
+  private transformBehaviorsToManifest(behaviorArray: any[]) {
+    // Runtime validation: deny, drop, and setCustomResponse are terminal behaviors
+    // and cannot be combined with other behaviors
+    if (behaviorArray.length > 1) {
+      const firstBehavior = behaviorArray[0];
+      const hasTerminalBehavior = firstBehavior.deny || firstBehavior.drop || firstBehavior.setCustomResponse;
+
+      if (hasTerminalBehavior) {
+        const behaviorType = firstBehavior.deny ? 'deny' : firstBehavior.drop ? 'drop' : 'setCustomResponse';
+        throw new Error(
+          `The behavior '${behaviorType}' is a terminal behavior and must be used alone. ` +
+            `It cannot be combined with other behaviors in the same rule.`,
+        );
+      }
+    }
+
     const behaviors = [];
 
-    if (behavior.runFunction) {
-      behaviors.push({
-        type: 'run_function',
-        attributes: {
-          value: behavior.runFunction,
-        },
-      });
-    }
+    for (const behaviorItem of behaviorArray) {
+      if (behaviorItem.runFunction !== undefined) {
+        behaviors.push({
+          type: 'run_function',
+          attributes: {
+            value: behaviorItem.runFunction,
+          },
+        });
+      }
 
-    if (behavior.setWafRuleset) {
-      behaviors.push({
-        type: 'set_waf_ruleset',
-        attributes: {
-          mode: behavior.setWafRuleset.wafMode,
-          waf_id: behavior.setWafRuleset.wafId,
-        },
-      });
-    }
+      if (behaviorItem.setWafRuleset) {
+        behaviors.push({
+          type: 'set_waf_ruleset',
+          attributes: {
+            mode: behaviorItem.setWafRuleset.wafMode,
+            waf_id: behaviorItem.setWafRuleset.wafId,
+          },
+        });
+      }
 
-    if (behavior.setRateLimit) {
-      behaviors.push({
-        type: 'set_rate_limit',
-        attributes: {
-          type: behavior.setRateLimit.type || 'second',
-          value: behavior.setRateLimit.value,
-          limit_by: behavior.setRateLimit.limitBy,
-          average_rate_limit: behavior.setRateLimit.averageRateLimit,
-          maximum_burst_size: behavior.setRateLimit.maximumBurstSize,
-        },
-      });
-    }
+      if (behaviorItem.setRateLimit) {
+        behaviors.push({
+          type: 'set_rate_limit',
+          attributes: {
+            type: behaviorItem.setRateLimit.type || 'second',
+            limit_by: behaviorItem.setRateLimit.limitBy,
+            average_rate_limit: behaviorItem.setRateLimit.averageRateLimit,
+            maximum_burst_size: behaviorItem.setRateLimit.maximumBurstSize,
+          },
+        });
+      }
 
-    if (behavior.deny) {
-      behaviors.push({
-        type: 'deny',
-      });
-    }
+      if (behaviorItem.deny) {
+        behaviors.push({
+          type: 'deny',
+        });
+      }
 
-    if (behavior.drop) {
-      behaviors.push({
-        type: 'drop',
-      });
-    }
+      if (behaviorItem.drop) {
+        behaviors.push({
+          type: 'drop',
+        });
+      }
 
-    if (behavior.setCustomResponse) {
-      behaviors.push({
-        type: 'set_custom_response',
-        attributes: {
-          status_code: behavior.setCustomResponse.statusCode,
-          content_type: behavior.setCustomResponse.contentType,
-          content_body: behavior.setCustomResponse.contentBody,
-        },
-      });
+      if (behaviorItem.setCustomResponse) {
+        behaviors.push({
+          type: 'set_custom_response',
+          attributes: {
+            status_code: behaviorItem.setCustomResponse.statusCode,
+            content_type: behaviorItem.setCustomResponse.contentType,
+            content_body: behaviorItem.setCustomResponse.contentBody,
+          },
+        });
+      }
     }
 
     return behaviors;
@@ -152,7 +168,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           const firewallRule: AzionFirewallRule = {
             name: rule.type,
             active: rule.active ?? true,
-            behavior: this.transformBehaviorsToConfig(rule.behaviors),
+            behaviors: this.transformBehaviorsToConfig(rule.behaviors),
             criteria:
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               rule.criteria?.[0].map((criterion: any) => {
@@ -176,47 +192,52 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private transformBehaviorsToConfig(behaviors: any[]) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const behavior: any = {};
+    const behaviorArray: any[] = [];
 
     behaviors.forEach((b) => {
       switch (b.type) {
         case 'run_function':
-          behavior.runFunction = {
-            path: b.attributes.value,
-          };
+          behaviorArray.push({
+            runFunction: b.attributes.value,
+          });
           break;
         case 'set_waf_ruleset':
-          behavior.setWafRuleset = {
-            wafMode: b.attributes.mode,
-            wafId: b.attributes.waf_id,
-          };
+          behaviorArray.push({
+            setWafRuleset: {
+              wafMode: b.attributes.mode,
+              wafId: b.attributes.waf_id,
+            },
+          });
           break;
         case 'set_rate_limit':
-          behavior.setRateLimit = {
-            type: b.attributes.type,
-            value: b.attributes.value,
-            limitBy: b.attributes.limit_by,
-            averageRateLimit: b.attributes.average_rate_limit,
-            maximumBurstSize: b.attributes.maximum_burst_size,
-          };
+          behaviorArray.push({
+            setRateLimit: {
+              type: b.attributes.type,
+              limitBy: b.attributes.limit_by,
+              averageRateLimit: b.attributes.average_rate_limit,
+              maximumBurstSize: b.attributes.maximum_burst_size,
+            },
+          });
           break;
         case 'deny':
-          behavior.deny = true;
+          behaviorArray.push({ deny: true });
           break;
         case 'drop':
-          behavior.drop = true;
+          behaviorArray.push({ drop: true });
           break;
         case 'set_custom_response':
-          behavior.setCustomResponse = {
-            statusCode: b.attributes.status_code,
-            contentType: b.attributes.content_type,
-            contentBody: b.attributes.content_body,
-          };
+          behaviorArray.push({
+            setCustomResponse: {
+              statusCode: b.attributes.status_code,
+              contentType: b.attributes.content_type,
+              contentBody: b.attributes.content_body,
+            },
+          });
           break;
       }
     });
 
-    return behavior;
+    return behaviorArray;
   }
 }
 

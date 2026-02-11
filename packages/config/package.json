@@ -2,11 +2,11 @@
   "name": "@lib/config",
   "version": "1.0.0",
   "description": "Azion configuration.",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "compile": "tsup --config ./tsup.config.ts",
+    "compile": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
@@ -18,12 +18,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
     "./rules": {
-      "types": "./dist/rules/index.d.ts",
-      "require": "./dist/rules/index.cjs",
-      "import": "./dist/rules/index.js"
+      "types": "./dist/rules.d.ts",
+      "require": "./dist/rules.cjs",
+      "import": "./dist/rules.mjs"
     }
   },
   "author": "aziontech",

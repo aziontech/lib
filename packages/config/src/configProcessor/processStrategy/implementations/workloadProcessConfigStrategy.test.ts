@@ -48,10 +48,10 @@ describe('WorkloadProcessConfigStrategy', () => {
           },
           protocols: {
             http: {
-              versions: ['http1', 'http2'],
+              versions: ['http1', 'http2', 'http3'],
               http_ports: [80],
               https_ports: [443],
-              quic_ports: null,
+              quic_ports: [443],
             },
           },
         }),

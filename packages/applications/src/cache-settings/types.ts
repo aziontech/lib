@@ -1,4 +1,4 @@
-import {
+import type {
   ApiBaseCacheSettingPayload,
   ApiCacheSetting,
   ApiListCacheSettingsParams,
@@ -7,4 +7,4 @@ import {
 
 export type AzionCacheSetting = ApiCacheSetting;
 
-export { ApiBaseCacheSettingPayload, ApiListCacheSettingsParams, ApiUpdateCacheSettingPayload };
+export type { ApiBaseCacheSettingPayload, ApiListCacheSettingsParams, ApiUpdateCacheSettingPayload };
