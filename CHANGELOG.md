@@ -1,3 +1,9 @@
+## <small>3.1.1 (2026-02-13)</small>
+
+* Merge pull request #389 from aziontech/stage ([c9bff59](https://github.com/aziontech/lib/commit/c9bff59)), closes [#389](https://github.com/aziontech/lib/issues/389)
+* chore(release): 3.1.1-stage.1 ([ce0ff91](https://github.com/aziontech/lib/commit/ce0ff91))
+* fix: simplify resize percentage calculations (#387) ([77c71c3](https://github.com/aziontech/lib/commit/77c71c3)), closes [#387](https://github.com/aziontech/lib/issues/387)
+
 ## <small>3.1.1-stage.1 (2026-02-13)</small>
 
 * fix: simplify resize percentage calculations (#387) ([77c71c3](https://github.com/aziontech/lib/commit/77c71c3)), closes [#387](https://github.com/aziontech/lib/issues/387)
