@@ -10,11 +10,11 @@ function resize(image: photon.PhotonImage, width: number, height: number, usePer
   const imageWidth = image.get_width();
   const imageHeight = image.get_height();
 
-  const widthPercent = usePercent ? width : (width * 100.0) / imageWidth;
-  const heightPercent = usePercent ? height : (height * 100.0) / imageHeight;
+  const widthPercent = usePercent ? width : width / imageWidth;
+  const heightPercent = usePercent ? height : height / imageHeight;
 
-  const newWidth = (imageWidth * widthPercent) / 100;
-  const newHeight = (imageHeight * heightPercent) / 100;
+  const newWidth = imageWidth * widthPercent;
+  const newHeight = imageHeight * heightPercent;
 
   return photon.resize(image, newWidth, newHeight, 1);
 }
@@ -45,6 +45,8 @@ function getImageResponse(image: photon.PhotonImage, format: SupportedImageForma
       break;
   }
 
+  // eslint-disable-next-line
+  // @ts-ignore
   return new Response(finalImage, { headers: { 'Content-Type': contentType } });
 }
 
