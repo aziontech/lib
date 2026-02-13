@@ -1,3 +1,7 @@
+## <small>1.20.21 (2026-02-13)</small>
+
+* fix: simplify resize percentage calculations (#388) ([e48bd14](https://github.com/aziontech/lib/commit/e48bd14)), closes [#388](https://github.com/aziontech/lib/issues/388)
+
 ## <small>1.20.20 (2026-01-13)</small>
 
 * fix: rename storage attribute in 1.20.x (#348) ([a9c8ee5](https://github.com/aziontech/lib/commit/a9c8ee5)), closes [#348](https://github.com/aziontech/lib/issues/348)
