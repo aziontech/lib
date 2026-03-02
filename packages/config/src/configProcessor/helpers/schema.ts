@@ -624,6 +624,32 @@ const firewallRulesBehaviorsSchema = {
   errorMessage: 'The behaviors array must contain between 1 and 10 behavior items.',
 };
 
+const firewallFunctionsInstances = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      errorMessage: 'The name must be a string between 1 and 100 characters long',
+    },
+    args: {
+      type: 'object',
+      default: {},
+      errorMessage: "The 'args' field must be an object",
+    },
+    ref: {
+      type: ['string', 'number'],
+      errorMessage: "The 'ref' field must be a string or number referencing an existing Function name or ID",
+    },
+  },
+  required: ['name', 'ref'],
+  additionalProperties: false,
+  errorMessage: {
+    additionalProperties: 'No additional properties are allowed in the firewallFunctionsInstance object',
+  },
+};
+
 const azionConfigSchema = {
   $id: 'azionConfig',
   definitions: {
@@ -1389,7 +1415,7 @@ const azionConfigSchema = {
                             errorMessage: `The 'operator' field must be one of: ${FIREWALL_RULE_OPERATORS.join(', ')}`,
                           },
                           argument: {
-                            type: 'string',
+                            type: ['string'],
                             errorMessage: 'The argument must be a string',
                           },
                         },
@@ -1427,6 +1453,10 @@ const azionConfigSchema = {
                       "You must use either 'match' AND 'variable' together OR 'criteria', but not both at the same time",
                   },
                 },
+              },
+              functionsInstances: {
+                type: 'array',
+                items: firewallFunctionsInstances,
               },
             },
             required: ['name'],
@@ -2026,7 +2056,6 @@ const azionConfigSchema = {
         },
       },
       additionalProperties: false,
-      required: ['build', 'applications', 'workloads'],
       errorMessage: {
         additionalProperties:
           'Config can only contain the following properties: build, functions, applications, workloads, purge, edgefirewall, networkList, waf, connectors, customPages',
