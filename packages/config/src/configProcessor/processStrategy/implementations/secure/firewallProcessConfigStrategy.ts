@@ -1,4 +1,10 @@
-import { AzionConfig, AzionFirewall, AzionFirewallCriteriaWithValue, AzionFirewallRule } from '../../../../types';
+import {
+  AzionConfig,
+  AzionFirewall,
+  AzionFirewallCriteriaWithValue,
+  AzionFirewallRule,
+  AzionFunction,
+} from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 
 /**
@@ -7,6 +13,22 @@ import ProcessConfigStrategy from '../../processConfigStrategy';
  * @description This class is implementation of the Firewall ProcessConfig Strategy.
  */
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
+  /**
+   * Validate that referenced Function exists
+   */
+  private validateFunctionReference(
+    functions: AzionFunction[] | undefined,
+    functionNameOrId: string | number,
+    instanceName: string,
+  ) {
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof functionNameOrId === 'string') {
+      if (!Array.isArray(functions) || !functions.find((func) => func.name === functionNameOrId)) {
+        throw new Error(`Function instance "${instanceName}" references non-existent Function "${functionNameOrId}".`);
+      }
+    }
+  }
+
   transformToManifest(config: AzionConfig) {
     if (!config.firewall || !Array.isArray(config.firewall)) {
       return [];
@@ -60,6 +82,18 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
                 ],
               ],
         }));
+      }
+
+      if (fw.functionsInstances && fw.functionsInstances.length > 0) {
+        payload.functions_instances = fw.functionsInstances.map((instance) => {
+          this.validateFunctionReference(config.functions, instance.ref, instance.name);
+          return {
+            name: instance.name,
+            args: instance.args || {},
+            active: instance.active ?? true,
+            function: instance.ref,
+          };
+        });
       }
 
       return payload;
@@ -182,6 +216,16 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           };
           return firewallRule;
         });
+      }
+
+      if (fw.functions_instance && fw.functions_instance.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        firewallConfig.functionsInstances = fw.functions_instance.map((instance: any) => ({
+          name: instance.name,
+          args: instance.args || {},
+          active: instance.active ?? true,
+          ref: instance.function,
+        }));
       }
 
       return firewallConfig;

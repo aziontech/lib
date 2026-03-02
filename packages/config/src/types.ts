@@ -53,7 +53,8 @@ export type CommonVariable =
   | 'request_method'
   | 'request_uri'
   | 'scheme'
-  | 'uri';
+  | 'uri'
+  | 'network';
 export type RequestVariable =
   | CommonVariable
   | 'server_addr'
@@ -82,7 +83,9 @@ export type RuleOperatorWithValue =
   | 'starts_with'
   | 'does_not_start_with'
   | 'matches'
-  | 'does_not_match';
+  | 'does_not_match'
+  | 'is_in_list'
+  | 'is_not_in_list';
 export type RuleOperatorWithoutValue = 'exists' | 'does_not_exist';
 export type RuleConditional = 'if' | 'and' | 'or';
 
@@ -627,6 +630,17 @@ export type AzionFirewallRule = {
   behaviors: AzionFirewallBehavior;
 };
 
+export type AzionFirewallFunctionsInstance = {
+  /** Function instance name */
+  name: string;
+  /** Function instance arguments */
+  args?: Record<string, string>;
+  /** Active */
+  active?: boolean;
+  /** Reference to Function name or ID */
+  ref: string | number;
+};
+
 /**
  * Firewall configuration for Azion.
  */
@@ -645,6 +659,8 @@ export type AzionFirewall = {
   rules?: AzionFirewallRule[];
   /** Debug mode */
   debugRules?: boolean;
+  /** Functions Instances */
+  functionsInstances?: AzionFirewallFunctionsInstance[];
 };
 
 // WAF V4 Types
