@@ -148,8 +148,8 @@ describe('FirewallProcessConfigStrategy', () => {
       // criteria wrapped into array-of-arrays
       expect(rule.criteria).toEqual([
         [
-          { variable: 'host', operator: 'is_equal', conditional: 'if', argument: 'example.com' },
-          { variable: 'request_method', operator: 'exists', conditional: 'and' },
+          { variable: '${host}', operator: 'is_equal', conditional: 'if', argument: 'example.com' },
+          { variable: '${request_method}', operator: 'exists', conditional: 'and' },
         ],
       ]);
     });
@@ -301,8 +301,8 @@ describe('FirewallProcessConfigStrategy', () => {
 
       expect(rule.criteria).toEqual([
         [
-          { variable: 'host', operator: 'is_equal', conditional: 'if', argument: 'example.com' },
-          { variable: 'request_method', operator: 'matches', conditional: 'and', argument: '^(GET|POST)$' },
+          { variable: '${host}', operator: 'is_equal', conditional: 'if', argument: 'example.com' },
+          { variable: '${request_method}', operator: 'matches', conditional: 'and', argument: '^(GET|POST)$' },
         ],
       ]);
       expect(rule.behaviors).toEqual([{ type: 'deny' }]);

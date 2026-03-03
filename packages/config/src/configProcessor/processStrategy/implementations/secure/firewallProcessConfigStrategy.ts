@@ -66,7 +66,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
                   const { argument, ...rest } = criterion as AzionFirewallCriteriaWithValue;
                   return {
                     ...rest,
-                    variable: criterion.variable,
+                    variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
                     ...(isWithArgument && { argument }),
                   };
                 }),
