@@ -600,7 +600,7 @@ export type AzionFirewallCriteriaWithValue = AzionFirewallCriteriaBase & {
   /** Operator for comparison that requires input value */
   operator: RuleOperatorWithValue;
   /** Argument for comparison */
-  argument: string;
+  argument: string | number;
 };
 
 export type AzionFirewallCriteriaWithoutValue = AzionFirewallCriteriaBase & {
