@@ -477,40 +477,56 @@ const config: AzionConfig = {
   ],
   firewall: [
     {
-      name: 'my_firewall',
+      name: 'my-firewall',
       active: true,
       functions: true,
       networkProtection: true,
       waf: true,
+      functionsInstances: [
+        {
+          name: 'my_func_instance',
+          ref: 'my_func_name',
+        },
+      ],
       rules: [
         {
-          name: 'rateLimit_Then_Drop',
-          active: true,
-          match: '^/api/sensitive/',
-          variable: 'request_uri',
+          name: 'rule-network',
+          description: 'Rule Network List',
+          criteria: [
+            {
+              variable: 'network',
+              conditional: 'if',
+              operator: 'is_in_list',
+              argument: 'my-ip-allowlist',
+            },
+            {
+              variable: 'network',
+              conditional: 'and',
+              operator: 'is_in_list',
+              argument: 'trusted-asn-list',
+            },
+          ],
           behaviors: [
             {
-              setRateLimit: {
-                type: 'second',
-                limitBy: 'clientIp',
-                averageRateLimit: '10',
-                maximumBurstSize: '20',
-              },
+              deny: true,
             },
           ],
         },
         {
-          name: 'customResponse_Only',
+          name: 'rateLimit_Then_Drop',
           active: true,
           criteria: [
             {
               variable: 'request_uri',
-              operator: 'matches',
               conditional: 'if',
-              argument: '^/custom-error/',
+              operator: 'matches',
+              argument: '^/api/sensitive/',
             },
           ],
           behaviors: [
+            {
+              runFunction: 'my_func_instance',
+            },
             {
               setCustomResponse: {
                 statusCode: 403,

@@ -1,3 +1,11 @@
+## <small>3.1.2-stage.2 (2026-03-03)</small>
+
+* fix: update firewall schema to accept variables (#396) ([607d246](https://github.com/aziontech/lib/commit/607d246)), closes [#396](https://github.com/aziontech/lib/issues/396)
+
+## <small>3.1.2-stage.1 (2026-03-02)</small>
+
+* fix: firewall functions instances support (#395) ([8d24afc](https://github.com/aziontech/lib/commit/8d24afc)), closes [#395](https://github.com/aziontech/lib/issues/395)
+
 ## <small>3.1.1 (2026-02-13)</small>
 
 * Merge pull request #389 from aziontech/stage ([c9bff59](https://github.com/aziontech/lib/commit/c9bff59)), closes [#389](https://github.com/aziontech/lib/issues/389)
