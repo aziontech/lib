@@ -1,3 +1,8 @@
+## <small>3.1.3-stage.1 (2026-03-16)</small>
+
+* fix: deps update week 12 (#403) ([bfa8a2b](https://github.com/aziontech/lib/commit/bfa8a2b)), closes [#403](https://github.com/aziontech/lib/issues/403)
+* chore: update dependencies week 11 (#399) ([2756762](https://github.com/aziontech/lib/commit/2756762)), closes [#399](https://github.com/aziontech/lib/issues/399)
+
 ## <small>3.1.2 (2026-03-04)</small>
 
 * Merge pull request #397 from aziontech/stage ([5f9ce8f](https://github.com/aziontech/lib/commit/5f9ce8f)), closes [#397](https://github.com/aziontech/lib/issues/397)
