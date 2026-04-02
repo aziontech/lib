@@ -1,0 +1,66 @@
+name: Publish prereleases
+
+on:
+  push:
+    branches: [main, experimental]
+  pull_request:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      pull-requests: write
+    name: Publish builder package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          node-version: 24
+
+      - name: Detect changed packages
+        id: changeset
+        run: |
+          # Try to get changeset status, ignore error if no changesets
+          STATUS=$(pnpm exec changeset status --output=json 2>/dev/null || echo '{"changesets":[],"releases":[]}')
+
+          # Count releases
+          RELEASE_COUNT=$(echo "$STATUS" | jq '.releases | length')
+
+          echo "release_count=$RELEASE_COUNT" >> $GITHUB_OUTPUT
+          echo "status<<EOF" >> $GITHUB_OUTPUT
+          echo "$STATUS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Build changed packages
+        if: steps.changeset.outputs.release_count != '0'
+        run: |
+          # Parse packages from changeset status
+          PACKAGES=$(echo '${{ steps.changeset.outputs.status }}' | jq -r '.releases[].name' | sed 's/@aziontech\///g')
+
+          # Build each package
+          for PKG in $PACKAGES; do
+            echo "Building $PKG..."
+            pnpm -F "@aziontech/$PKG" run compile
+          done
+
+      - name: Publish to pkg-pr-new
+        if: steps.changeset.outputs.release_count != '0'
+        run: |
+          # Parse packages and build paths
+          PACKAGES=$(echo '${{ steps.changeset.outputs.status }}' | jq -r '.releases[].name' | sed 's/@aziontech\///g')
+
+          # Build publish command
+          CMD="pnpm exec pkg-pr-new publish --pnpm --compact"
+          for PKG in $PACKAGES; do
+            CMD="$CMD './packages/$PKG'"
+          done
+
+          echo "Running: $CMD"
+          eval $CMD

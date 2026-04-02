@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/vite-config",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Shared Vite configuration for Azion packages",
   "private": true,
   "type": "module",

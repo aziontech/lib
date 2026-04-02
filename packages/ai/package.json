@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/ai",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Azion AI client for interacting with Copilot API",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/config",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Azion configuration.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
