@@ -1,5 +1,5 @@
 {
-  "name": "@lib/router",
+  "name": "@aziontech/router",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -24,5 +24,8 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:^"
+  }
 }

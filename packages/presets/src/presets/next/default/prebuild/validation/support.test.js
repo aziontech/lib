@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
+import * as utils from '@aziontech/utils/node';
 import { jest } from '@jest/globals';
-import * as utils from 'azion/utils/node';
 import mockFs from 'mock-fs';
 import { validateSupport, validationSupportAndRetrieveFromVcConfig } from './support.js';
 

@@ -1,5 +1,5 @@
 /**
- * @module @azion/ai
+ * @module @aziontech/ai
  * @description This module provides a client for interacting with Azion AI services.
  */
 

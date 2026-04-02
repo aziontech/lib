@@ -1,5 +1,5 @@
-import unenvPresetAzion from 'azion/unenv-preset';
-import { getAbsoluteDirPath } from 'azion/utils/node';
+import unenvPresetAzion from '@aziontech/unenv-preset';
+import { getAbsoluteDirPath } from '@aziontech/utils/node';
 import fs from 'fs';
 import { createRequire } from 'module';
 import path from 'path';

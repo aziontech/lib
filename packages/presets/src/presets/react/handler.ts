@@ -1,5 +1,5 @@
-import { AzionRuntimeModule, AzionRuntimeRequest } from 'azion/types';
-import { mountSPA } from 'azion/utils/edge';
+import { AzionRuntimeModule, AzionRuntimeRequest } from '@aziontech/types';
+import { mountSPA } from '@aziontech/utils/edge';
 import metadata from './metadata';
 
 const handler: AzionRuntimeModule = {

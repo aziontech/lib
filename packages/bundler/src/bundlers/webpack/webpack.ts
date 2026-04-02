@@ -1,4 +1,4 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { flow } from 'lodash-es';
 import webpack, { Configuration } from 'webpack';
 import { applyDefineVars, createBundlerPlugins, extendConfig, getBannerContent } from '../../helpers/bundler-utils';

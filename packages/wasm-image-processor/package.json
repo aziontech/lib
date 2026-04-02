@@ -1,5 +1,5 @@
 {
-  "name": "@lib/wasm-image-processor",
+  "name": "@aziontech/wasm-image-processor",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -29,7 +29,9 @@
     "package.json"
   ],
   "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
     "@types/jest": "^29.5.12",
+    "@types/node": "^22.13.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2"
   }

@@ -14,7 +14,7 @@ import { AzionConfig } from './types';
  * @returns {AzionConfig} The same configuration object (no validation or processing)
  *
  * @example
- * import { defineConfig } from 'azion/config';
+ * import { defineConfig } from '@aziontech/config';
  *
  * export default defineConfig({
  *   build: {

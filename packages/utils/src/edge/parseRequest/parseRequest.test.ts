@@ -1,4 +1,4 @@
-import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from 'azion/types';
+import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from '@aziontech/types';
 import parseRequest from './parseRequest';
 
 describe('parseRequest', () => {

@@ -1,4 +1,4 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
 import * as esbuild from 'esbuild';
 import { Plugin as ESBuildPlugin } from 'esbuild';
 import { flow } from 'lodash-es';

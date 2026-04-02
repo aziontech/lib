@@ -26,7 +26,7 @@ const require = createRequire(import.meta.url);
 
 export default defineNuxtConfig({
   nitro: {
-    preset: require.resolve('azion/preset/nuxt/ssr'),
+    preset: require.resolve('@aziontech/preset/nuxt/ssr'),
   },
 });
 ```
@@ -36,7 +36,7 @@ Or directly with the path node_modules:
 ```typescript
 export default defineNuxtConfig({
   nitro: {
-    preset: './node_modules/azion/packages/presets/src/presets/nuxt/nitro/ssr',
+    preset: './node_modules/@aziontech/packages/presets/src/presets/nuxt/nitro/ssr',
   },
 });
 ```
@@ -49,7 +49,7 @@ If you're using `nuxt-og-image` in your project with SSR, you need to add the fo
 export default defineNuxtConfig({
   modules: ['nuxt-og-image'],
   nitro: {
-    preset: require.resolve('azion/preset/nuxt/ssr'),
+    preset: require.resolve('@aziontech/preset/nuxt/ssr'),
   },
   ogImage: {
     compatibility: {
@@ -73,7 +73,7 @@ const require = createRequire(import.meta.url);
 
 export default defineNuxtConfig({
   nitro: {
-    preset: require.resolve('azion/preset/nuxt/ssg'),
+    preset: require.resolve('@aziontech/preset/nuxt/ssg'),
   },
 });
 ```
@@ -83,7 +83,7 @@ Or directly with the path node_modules:
 ```typescript
 export default defineNuxtConfig({
   nitro: {
-    preset: './node_modules/azion/packages/presets/src/presets/nuxt/nitro/ssg',
+    preset: './node_modules/@aziontech/packages/presets/src/presets/nuxt/nitro/ssg',
   },
 });
 ```

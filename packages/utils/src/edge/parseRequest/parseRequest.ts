@@ -1,4 +1,4 @@
-import { AzionRuntimeRequest } from 'azion/types';
+import { AzionRuntimeRequest } from '@aziontech/types';
 import { ParsedRequest, ParseRequestFunction } from '../types';
 
 /**

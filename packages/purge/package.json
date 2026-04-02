@@ -1,5 +1,5 @@
 {
-  "name": "@lib/purge",
+  "name": "@aziontech/purge",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -26,5 +26,9 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
+    "@types/node": "^22.13.1"
+  }
 }

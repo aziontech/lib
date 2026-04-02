@@ -1,4 +1,4 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

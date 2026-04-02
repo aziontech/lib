@@ -1,5 +1,5 @@
 {
-  "name": "@lib/presets",
+  "name": "@aziontech/presets",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -35,12 +35,20 @@
     "src/presets/svelte/kit/*"
   ],
   "dependencies": {
+    "@aziontech/config": "workspace:*",
+    "@aziontech/presets": "workspace:*",
+    "@aziontech/types": "workspace:*",
+    "@aziontech/unenv-preset": "workspace:*",
+    "@aziontech/utils": "workspace:*",
     "cookie": "^1.0.2",
     "fast-glob": "^3.3.3",
     "pcre-to-regexp": "^1.1.0",
+    "semver": "^7.7.4",
+    "ts-jest": "^29.4.9",
     "webpack": "^5.97.1"
   },
   "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
     "@jest/globals": "^29.7.0"
   }
 }

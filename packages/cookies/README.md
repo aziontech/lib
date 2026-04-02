@@ -37,7 +37,7 @@ yarn add azion
 **JavaScript:**
 
 ```javascript
-import { getCookie } from 'azion/cookies';
+import { getCookie } from '@aziontech/cookies';
 
 const myCookie = getCookie(request, 'my-cookie');
 console.log(myCookie); // Outputs the value of 'my-cookie'
@@ -46,7 +46,7 @@ console.log(myCookie); // Outputs the value of 'my-cookie'
 **TypeScript:**
 
 ```typescript
-import { getCookie } from 'azion/cookies';
+import { getCookie } from '@aziontech/cookies';
 
 const myCookie: string | undefined = getCookie(request, 'my-cookie');
 const secureCookie: string | undefined = getCookie(request, 'my-cookie', 'secure');
@@ -59,7 +59,7 @@ console.log(secureCookie); // Outputs the value of '__Secure-my-cookie'
 **JavaScript:**
 
 ```javascript
-import { setCookie } from 'azion/cookies';
+import { setCookie } from '@aziontech/cookies';
 
 const res = setCookie(response, 'my-cookie', 'cookie-value', { maxAge: 3600 });
 ```
@@ -67,8 +67,8 @@ const res = setCookie(response, 'my-cookie', 'cookie-value', { maxAge: 3600 });
 **TypeScript:**
 
 ```typescript
-import { setCookie } from 'azion/cookies';
-import type { CookieOptions } from 'azion/cookies';
+import { setCookie } from '@aziontech/cookies';
+import type { CookieOptions } from '@aziontech/cookies';
 
 const options: CookieOptions = { maxAge: 3600 };
 const res = setCookie(response, 'my-cookie', 'cookie-value', options);

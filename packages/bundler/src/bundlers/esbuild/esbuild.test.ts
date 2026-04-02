@@ -1,9 +1,9 @@
-import { jest } from '@jest/globals';
+import { afterAll, afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 import tmp from 'tmp';
 
-import { BuildConfiguration, BuildContext } from 'azion/config';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { createAzionESBuildConfig } from './esbuild';
 import helper from './plugins/node-polyfills/helper';
 

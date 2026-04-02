@@ -1,4 +1,4 @@
-# @lib/vite-config
+# @aziontech/vite-config
 
 Shared Vite configuration for Azion library packages.
 
@@ -7,7 +7,7 @@ Shared Vite configuration for Azion library packages.
 ### Basic Configuration
 
 ```js
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 
 export default createViteConfig({
   dirname: __dirname,
@@ -17,7 +17,7 @@ export default createViteConfig({
 ### With SSR
 
 ```js
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 
 export default createViteConfig({
   dirname: __dirname,
@@ -28,7 +28,7 @@ export default createViteConfig({
 ### With External Dependencies
 
 ```js
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 
 export default createViteConfig({
   dirname: __dirname,
@@ -39,7 +39,7 @@ export default createViteConfig({
 ### With Multiple Entry Points
 
 ```js
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 
 export default createViteConfig({
   dirname: __dirname,
@@ -54,7 +54,7 @@ export default createViteConfig({
 
 ```js
 import { resolve } from 'path';
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 
 export default createViteConfig({
   dirname: __dirname,
@@ -71,7 +71,7 @@ export default createViteConfig({
 
 ```js
 import { defineConfig } from 'vite';
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 import customPlugin from './custom-plugin';
 
 const baseConfig = createViteConfig({

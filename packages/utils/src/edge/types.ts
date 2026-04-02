@@ -1,4 +1,4 @@
-import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from 'azion/types';
+import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from '@aziontech/types';
 
 /**
  * Represents the request URL for the SSG or SPA.

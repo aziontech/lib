@@ -40,7 +40,7 @@ The `Metadata` interface provides a structured way to represent request metadata
 **TypeScript Example:**
 
 ```typescript
-import { Metadata } from 'azion/types';
+import { Metadata } from '@aziontech/types';
 
 const requestMetadata: Metadata = {
   geoip_asn: '12345',
@@ -69,7 +69,7 @@ The `FetchEvent` interface extends the standard `Event` interface to include req
 **TypeScript Example:**
 
 ```typescript
-import { FetchEvent, Metadata } from 'azion/types';
+import { FetchEvent, Metadata } from '@aziontech/types';
 
 addEventListener('fetch', (event: FetchEvent) => {
   const { request } = event;
@@ -90,7 +90,7 @@ The `FirewallEvent` interface provides additional methods specific to firewall e
 **TypeScript Example:**
 
 ```typescript
-import { FirewallEvent } from 'azion/types';
+import { FirewallEvent } from '@aziontech/types';
 
 addEventListener('firewall', (event: FirewallEvent) => {
   const { request } = event;

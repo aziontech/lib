@@ -1,5 +1,5 @@
 {
-  "name": "@lib/jwt",
+  "name": "@aziontech/jwt",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -27,6 +27,7 @@
     "package.json"
   ],
   "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
     "@jest/globals": "^29.7.0",
     "@peculiar/webcrypto": "^1.5.0",
     "@types/jest": "^29.5.12",

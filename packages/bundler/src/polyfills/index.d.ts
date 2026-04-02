@@ -2,7 +2,7 @@
 
 // this is temp solution to avoid typescript error
 
-declare module 'azion/bundler/polyfills' {
+declare module '@aziontech/bundler/polyfills' {
   export const fetchContext: any;
   export const FetchEventContext: any;
   export const AsyncHooksContext: any;

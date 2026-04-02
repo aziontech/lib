@@ -63,8 +63,8 @@ Create a client instance with specific configurations.
 #### Chat
 
 ```typescript
-import { chat } from 'azion/ai';
-import type { AzionAIRequest, AzionAIResponse, AzionAIResult } from '@azion/ai';
+import { chat } from '@aziontech/ai';
+import type { AzionAIRequest, AzionAIResponse, AzionAIResult } from '@@aziontech/ai';
 
 const request: AzionAIRequest = {
   messages: [{ role: 'user', content: 'Explain what Azion Edge Computing is.' }],
@@ -80,8 +80,8 @@ if (response) {
 #### Streaming Chat
 
 ```typescript
-import { streamChat } from 'azion/ai';
-import type { AzionAIRequest, AzionAIStreamResponse, AzionAIResult } from '@azion/ai';
+import { streamChat } from '@aziontech/ai';
+import type { AzionAIRequest, AzionAIStreamResponse, AzionAIResult } from '@@aziontech/ai';
 
 const request: AzionAIRequest = {
   messages: [{ role: 'user', content: 'List 5 use cases for Azion Edge Functions.' }],
@@ -151,7 +151,7 @@ import type {
   AzionAIClient,
   AzionClientOptions,
   CreateAzionAIClient,
-} from '@azion/ai';
+} from '@@aziontech/ai';
 
 // AzionAIMessage
 ```

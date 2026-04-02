@@ -2,10 +2,10 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { copyDirectory, feedback } from 'azion/utils/node';
+import { copyDirectory, feedback } from '@aziontech/utils/node';
 import VercelUtils from './utils/vercel/index';
 
-import { AzionPrebuildResult, BuildConfiguration, BuildContext } from 'azion/config';
+import { AzionPrebuildResult, BuildConfiguration, BuildContext } from '@aziontech/config';
 import runDefaultBuild from './default/prebuild/index.js';
 import { validationSupportAndRetrieveFromVcConfig } from './default/prebuild/validation/support.js';
 import runNodeBuild from './node/prebuild/index.js';

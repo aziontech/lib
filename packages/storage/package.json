@@ -1,5 +1,5 @@
 {
-  "name": "@lib/storage",
+  "name": "@aziontech/storage",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -26,5 +26,12 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "dependencies": {
+    "@aziontech/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:^",
+    "@types/node": "^22.13.1"
+  }
 }

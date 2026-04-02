@@ -1,5 +1,5 @@
 {
-  "name": "@lib/utils",
+  "name": "@aziontech/utils",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.cjs",
@@ -40,9 +40,11 @@
     "package.json"
   ],
   "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
     "@types/signale": "^1.4.7"
   },
   "dependencies": {
+    "@aziontech/types": "workspace:*",
     "signale": "^1.4.0"
   }
 }

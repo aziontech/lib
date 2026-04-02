@@ -1,7 +1,7 @@
 import { rmSync, statSync } from 'fs';
 import { resolve } from 'path';
 
-import * as utils from 'azion/utils/node';
+import * as utils from '@aziontech/utils/node';
 import { addLeadingSlash, stripIndexRoute } from '../../../utils/routing.js';
 
 /**

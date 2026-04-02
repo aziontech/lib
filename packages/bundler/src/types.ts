@@ -1,4 +1,4 @@
-import type { BuildConfiguration, BuildContext } from 'azion/config';
+import type { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { BuildOptions as ESBuildConfig, Plugin as ESBuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, WebpackPluginInstance } from 'webpack';
 

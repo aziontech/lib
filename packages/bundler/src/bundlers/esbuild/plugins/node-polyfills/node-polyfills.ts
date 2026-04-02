@@ -1,4 +1,4 @@
-import unenvPresetAzion from 'azion/unenv-preset';
+import unenvPresetAzion from '@aziontech/unenv-preset';
 import { PluginBuild } from 'esbuild';
 import fs from 'fs';
 import { createRequire } from 'module';
@@ -11,7 +11,7 @@ const requireCustom = createRequire(import.meta.url);
 
 const { env } = defineEnv({
   nodeCompat: true,
-  resolve: false,
+  resolve: true,
   overrides: {
     ...unenvPresetAzion,
   },
@@ -174,12 +174,26 @@ function nodeBuiltInModules(
  */
 function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: string) => string) {
   const UNENV_GLOBALS_RE = /_global_polyfill-([^.]+)\.js$/;
+  const UNENV_POLYFILL_RE = /^@aziontech\/unenv-preset\/polyfills\/.+/;
+  const BUNDLER_POLYFILL_RE = /^@aziontech\/bundler\/polyfills\/.+/;
   const prefix = path.resolve(getAbsolutePath('../'), '_global_polyfill-');
 
   build.initialOptions.inject = [
     ...(build.initialOptions.inject ?? []),
     ...Object.keys(inject).map((globalName) => `${prefix}${globalName}.js`),
   ];
+
+  // Resolve polyfills from @aziontech/unenv-preset
+  build.onResolve({ filter: UNENV_POLYFILL_RE }, (args) => {
+    const resolved = requireCustom.resolve(args.path);
+    return { path: resolved };
+  });
+
+  // Resolve polyfills from @aziontech/bundler
+  build.onResolve({ filter: BUNDLER_POLYFILL_RE }, (args) => {
+    const resolved = requireCustom.resolve(args.path);
+    return { path: resolved };
+  });
 
   build.onResolve({ filter: UNENV_GLOBALS_RE }, (args) => ({
     path: args.path,
@@ -204,7 +218,7 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
 
 /**
  * Handle internal polyfill env dev
- * @param {*} build Build object
+ * Uses polyfills from @aziontech/bundler package
  */
 function handleInternalPolyfillEnvDev(build: PluginBuild, namespace: string, prefix: string, internalPath: string) {
   build.onLoad({ filter: /.*/, namespace: namespace }, async (args) => {
@@ -214,12 +228,18 @@ function handleInternalPolyfillEnvDev(build: PluginBuild, namespace: string, pre
       if (!polyfillPath) {
         throw new Error(`Polyfill not found for ${argsPathWhitoutNode}`);
       }
-      const internalPolyfillsPath = path.join(
-        internalPath,
-        polyfillPath.replace(`${prefix}${argsPathWhitoutNode}:/`, ''),
-      );
-      const contents = await fs.promises.readFile(internalPolyfillsPath, 'utf8');
-      const resolveDir = path.dirname(internalPolyfillsPath);
+
+      // Extract the polyfill file path from the polyfill entry
+      // Format: aziondev:fs:/fs/fs.polyfills.js -> fs/fs.polyfills.js
+      const polyfillFile = polyfillPath.replace(`${prefix}${argsPathWhitoutNode}:/`, '');
+
+      // Resolve from @aziontech/bundler package exports
+      // internalPath is '/polyfills', so we use '@aziontech/bundler/polyfills/...'
+      const moduleSpecifier = `@aziontech/bundler${internalPath}/${polyfillFile}`;
+      const resolved = requireCustom.resolve(moduleSpecifier);
+
+      const contents = await fs.promises.readFile(resolved, 'utf8');
+      const resolveDir = path.dirname(resolved);
       return {
         loader: 'js',
         contents,
@@ -233,6 +253,7 @@ function handleInternalPolyfillEnvDev(build: PluginBuild, namespace: string, pre
 
 /**
  * Handle internal polyfill env prod
+ * Uses polyfills from @aziontech/unenv-preset package
  */
 function handleInternalPolyfillEnvProd(build: PluginBuild, namespace: string, prefix: string, internalPath: string) {
   build.onLoad({ filter: /.*/, namespace: namespace }, async (args) => {
@@ -242,8 +263,14 @@ function handleInternalPolyfillEnvProd(build: PluginBuild, namespace: string, pr
         throw new Error(`Polyfill not found for ${args.path}`);
       }
 
-      const internalPolyfillsPath = path.join(internalPath, polyfillPath.replace(`${prefix}${args.path}:/`, ''));
-      const resolved = requireCustom.resolve(internalPolyfillsPath);
+      // Extract the polyfill file path from the polyfill entry
+      // Format: azionprd:fs:/fs.js -> fs.js
+      const polyfillFile = polyfillPath.replace(`${prefix}${args.path}:/`, '');
+
+      // Resolve from @aziontech/unenv-preset package exports
+      // internalPath is '/polyfills/node', so we use '@aziontech/unenv-preset/polyfills/node/...'
+      const moduleSpecifier = `@aziontech/unenv-preset${internalPath}/${polyfillFile}`;
+      const resolved = requireCustom.resolve(moduleSpecifier);
 
       const contents = await fs.promises.readFile(resolved, 'utf8');
       const resolveDir = path.dirname(resolved);
@@ -330,18 +357,8 @@ const ESBuildNodeModulePlugin = (buildProd: boolean) => {
       );
       handleAliasUnenv(build);
       handleNodeJSGlobals(build, getAbsolutePath);
-      handleInternalPolyfillEnvDev(
-        build,
-        INTERNAL_POLYFILL_DEV,
-        POLYFILL_PREFIX_DEV,
-        getAbsolutePath('src', INTERNAL_POLYFILL_PATH),
-      );
-      handleInternalPolyfillEnvProd(
-        build,
-        INTERNAL_POLYFILL_PROD,
-        POLYFILL_PREFIX_PROD,
-        getAbsolutePath('../unenv-preset/src', INTERNAL_POLYFILL_PATH_PROD),
-      );
+      handleInternalPolyfillEnvDev(build, INTERNAL_POLYFILL_DEV, POLYFILL_PREFIX_DEV, INTERNAL_POLYFILL_PATH);
+      handleInternalPolyfillEnvProd(build, INTERNAL_POLYFILL_PROD, POLYFILL_PREFIX_PROD, INTERNAL_POLYFILL_PATH_PROD);
     },
   };
 };

@@ -21,15 +21,15 @@ const getPresetsEntries = () => {
 export default defineConfig({
   resolve: {
     alias: {
-      'azion/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
-      'azion/utils/edge': resolve(__dirname, '../utils/src/edge/'),
-      'azion/utils/node': resolve(__dirname, '../utils/src/node/'),
-      'azion/utils': resolve(__dirname, '../utils/src/'),
-      'azion/config/rules': resolve(__dirname, '../config/src/rules/'),
-      'azion/config': resolve(__dirname, '../config/src/'),
-      'azion/presets': resolve(__dirname, '../presets/src/'),
-      'azion/bundler': resolve(__dirname, '../bundler/src/'),
-      'azion/types': resolve(__dirname, '../types/src/'),
+      '@aziontech/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
+      '@aziontech/utils/edge': resolve(__dirname, '../utils/src/edge/'),
+      '@aziontech/utils/node': resolve(__dirname, '../utils/src/node/'),
+      '@aziontech/utils': resolve(__dirname, '../utils/src/'),
+      '@aziontech/config/rules': resolve(__dirname, '../config/src/rules/'),
+      '@aziontech/config': resolve(__dirname, '../config/src/'),
+      '@aziontech/presets': resolve(__dirname, '../presets/src/'),
+      '@aziontech/bundler': resolve(__dirname, '../bundler/src/'),
+      '@aziontech/types': resolve(__dirname, '../types/src/'),
     },
   },
   build: {

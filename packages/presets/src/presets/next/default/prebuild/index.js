@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
-import { feedback, getAbsoluteDirPath } from 'azion/utils/node';
+import { feedback, getAbsoluteDirPath } from '@aziontech/utils/node';
 import { getNextProjectConfig } from '../../utils/next.js';
 import VercelUtils from '../../utils/vercel';
 import { assetsPaths } from './mapping/assets.js';
@@ -58,7 +58,7 @@ function writeOutputReferencesFile(functionsFile, vercelOutput) {
  * Build the application.
  * @param {object} prebuildContext The prebuild context.
  * @param {object} prebuildContext.vcConfigObjects The Vercel configuration objects.
- * @returns {Promise<import('azion/config').AzionPrebuildResult>} The build result.
+ * @returns {Promise<import('@aziontech/config').AzionPrebuildResult>} The build result.
  */
 async function run(prebuildContext) {
   const targetDir = process.cwd();

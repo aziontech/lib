@@ -1,9 +1,5 @@
-import { getAbsoluteDirPath } from 'azion/utils/node';
-import path from 'path';
-
-const getAbsolutePath = () => path.resolve(getAbsoluteDirPath(import.meta.url, 'bundler'), 'src');
-
-const externalPolyfillsPath = `${getAbsolutePath()}/polyfills/azion`;
+// Use package exports for polyfills so they can be resolved externally
+const externalPolyfillsPath = '@aziontech/bundler/polyfills/azion';
 
 export default {
   libs: new Map(),

@@ -1,4 +1,4 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { Plugin as ESBuildPlugin } from 'esbuild';
 import webpack, { WebpackPluginInstance } from 'webpack';
 import { bannerCli, bannerDevelopment } from '../constants/banners';

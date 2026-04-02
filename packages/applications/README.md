@@ -67,7 +67,7 @@ Debug mode provides detailed logging of API requests and responses. Enable it by
 ### Using Environment Variables
 
 ```typescript
-import { createApplication, getApplications } from 'azion/applications';
+import { createApplication, getApplications } from '@aziontech/applications';
 
 // Create a new application
 const { data: newApp, error } = await createApplication({
@@ -87,7 +87,7 @@ const { data: apps, error } = await getApplications({
 ### Using Client Configuration
 
 ```typescript
-import createClient from 'azion/applications';
+import createClient from '@aziontech/applications';
 
 const client = createClient({
   token: 'your-api-token',
@@ -572,7 +572,7 @@ import type {
   AzionOrigin,
   AzionRule,
   AzionClientOptions,
-} from 'azion/applications';
+} from '@aziontech/applications';
 ```
 
 For more detailed information about these types, please refer to the source code.

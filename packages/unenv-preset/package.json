@@ -1,5 +1,5 @@
 {
-  "name": "@lib/unenv-preset",
+  "name": "@aziontech/unenv-preset",
   "version": "1.0.0",
   "description": "Azion Unenv preset.",
   "main": "./dist/index.cjs",
@@ -27,6 +27,15 @@
     "src/polyfills/*"
   ],
   "dependencies": {
-    "crypto-browserify": "^3.12.1"
+    "assert-browserify": "^2.0.0",
+    "browserify-zlib": "^0.2.0",
+    "base64-js": "^1.5.1",
+    "crypto-browserify": "^3.12.1",
+    "unenv": "^2.0.0-rc.15",
+    "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:^",
+    "@types/node": "^22.13.1"
   }
 }

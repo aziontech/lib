@@ -1,5 +1,5 @@
 {
-  "name": "@azion/types",
+  "name": "@aziontech/types",
   "version": "1.0.0",
   "description": "Global types for Azion packages",
   "main": "./dist/index.cjs",
@@ -23,5 +23,8 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:^"
+  }
 }
