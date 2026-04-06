@@ -6,14 +6,14 @@
   "scripts": {
     "prepare": "husky",
     "compile": "pnpm -r --if-present compile",
-    "lint": "npm run lint --workspaces --if-present",
-    "lint:fix": "npm run lint:fix --workspaces --if-present",
-    "format": "npm run prettier --workspaces --if-present",
-    "format:check": "npm run prettier:check --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present ./packages/*",
+    "lint": "pnpm -r --if-present lint",
+    "lint:fix": "pnpm -r --if-present lint:fix",
+    "format": "pnpm -r --if-present prettier",
+    "format:check": "pnpm -r --if-present prettier:check",
+    "test": "pnpm -r --if-present test ./packages/*",
     "test:e2e": "npx jest ./tests/e2e/*",
     "download:cli": "node ./cli/scripts/download-cli.mjs",
-    "build": "npm run compile"
+    "build": "pnpm -r --if-present compile"
   },
   "keywords": [
     "azion",
@@ -31,10 +31,6 @@
     {
       "name": "José Filho",
       "url": "https://github.com/jcsbfilho"
-    },
-    {
-      "name": "Jessandro Benicio",
-      "url": "https://github.com/enicio"
     },
     {
       "name": "Magnun A V F",
@@ -79,183 +75,5 @@
     "packages/presets/src/presets/next/*",
     "packages/presets/src/presets/nuxt/nitro/*",
     "packages/presets/src/presets/svelte/kit/*"
-  ],
-  "exports": {
-    ".": {
-      "types": "./packages/client/dist/index.d.ts",
-      "require": "./packages/client/dist/index.cjs",
-      "import": "./packages/client/dist/index.mjs"
-    },
-    "./presets": {
-      "types": "./packages/presets/dist/index.d.ts",
-      "require": "./packages/presets/dist/index.cjs",
-      "import": "./packages/presets/dist/index.mjs"
-    },
-    "./presets/preset/*": "./packages/presets/dist/presets/*",
-    "./preset/nuxt/*": "./packages/presets/src/presets/nuxt/nitro/*/index.js",
-    "./preset/sveltekit": "./packages/presets/src/presets/svelte/kit/index.js",
-    "./preset/sveltekit/cache": "./packages/presets/src/presets/svelte/kit/cache/index.js",
-    "./bundler": {
-      "types": "./packages/bundler/dist/index.d.ts",
-      "require": "./packages/bundler/dist/index.cjs",
-      "import": "./packages/bundler/dist/index.mjs"
-    },
-    "./bundler/polyfills": {
-      "types": "./packages/bundler/src/polyfills/index.d.ts",
-      "import": "./packages/bundler/src/polyfills/index.js"
-    },
-    "./unenv-preset": {
-      "types": "./packages/unenv-preset/dist/index.d.ts",
-      "require": "./packages/unenv-preset/dist/index.cjs",
-      "import": "./packages/unenv-preset/dist/index.mjs"
-    },
-    "./unenv-preset/polyfills/*": "./packages/unenv-preset/src/polyfills/*",
-    "./ai": {
-      "types": "./packages/ai/dist/index.d.ts",
-      "require": "./packages/ai/dist/index.cjs",
-      "import": "./packages/ai/dist/index.mjs"
-    },
-    "./applications": {
-      "types": "./packages/applications/dist/index.d.ts",
-      "require": "./packages/applications/dist/index.cjs",
-      "import": "./packages/applications/dist/index.mjs"
-    },
-    "./types": {
-      "types": "./packages/types/dist/index.d.ts",
-      "require": "./packages/types/dist/index.cjs",
-      "import": "./packages/types/dist/index.mjs"
-    },
-    "./config": {
-      "types": "./packages/config/dist/index.d.ts",
-      "require": "./packages/config/dist/index.cjs",
-      "import": "./packages/config/dist/index.mjs"
-    },
-    "./config/rules": {
-      "types": "./packages/config/dist/rules.d.ts",
-      "require": "./packages/config/dist/rules.cjs",
-      "import": "./packages/config/dist/rules.mjs"
-    },
-    "./sql": {
-      "types": "./packages/sql/dist/index.d.ts",
-      "require": "./packages/sql/dist/index.cjs",
-      "import": "./packages/sql/dist/index.mjs"
-    },
-    "./storage": {
-      "types": "./packages/storage/dist/index.d.ts",
-      "require": "./packages/storage/dist/index.cjs",
-      "import": "./packages/storage/dist/index.mjs"
-    },
-    "./cookies": {
-      "types": "./packages/cookies/dist/index.d.ts",
-      "require": "./packages/cookies/dist/index.cjs",
-      "import": "./packages/cookies/dist/index.mjs"
-    },
-    "./jwt": {
-      "types": "./packages/jwt/dist/index.d.ts",
-      "require": "./packages/jwt/dist/index.cjs",
-      "import": "./packages/jwt/dist/index.mjs"
-    },
-    "./purge": {
-      "types": "./packages/purge/dist/index.d.ts",
-      "require": "./packages/purge/dist/index.cjs",
-      "import": "./packages/purge/dist/index.mjs"
-    },
-    "./router": {
-      "types": "./packages/router/dist/index.d.ts",
-      "require": "./packages/router/dist/index.cjs",
-      "import": "./packages/router/dist/index.mjs"
-    },
-    "./wasm-image-processor": {
-      "types": "./packages/wasm-image-processor/dist/index.d.ts",
-      "require": "./packages/wasm-image-processor/dist/index.cjs",
-      "import": "./packages/wasm-image-processor/dist/index.mjs"
-    },
-    "./utils": {
-      "types": "./packages/utils/dist/index.d.ts",
-      "require": "./packages/utils/dist/index.cjs",
-      "import": "./packages/utils/dist/index.mjs"
-    },
-    "./utils/edge": {
-      "types": "./packages/utils/dist/edge.d.ts",
-      "require": "./packages/utils/dist/edge.cjs",
-      "import": "./packages/utils/dist/edge.mjs"
-    },
-    "./utils/node": {
-      "types": "./packages/utils/dist/node.d.ts",
-      "require": "./packages/utils/dist/node.cjs",
-      "import": "./packages/utils/dist/node.mjs"
-    },
-    "./domains": {
-      "types": "./packages/domains/dist/index.d.ts",
-      "require": "./packages/domains/dist/index.cjs",
-      "import": "./packages/domains/dist/index.mjs"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "ai": [
-        "./packages/ai/dist/index.d.ts"
-      ],
-      "config": [
-        "./packages/config/dist/index.d.ts"
-      ],
-      "config/rules": [
-        "./packages/config/dist/rules.d.ts"
-      ],
-      "presets": [
-        "./packages/presets/dist/index.d.ts"
-      ],
-      "unenv-preset": [
-        "./packages/unenv-preset/dist/index.d.ts"
-      ],
-      "bundler": [
-        "./packages/bundler/dist/index.d.ts"
-      ],
-      "bundler/polyfills": [
-        "./packages/bundler/src/polyfills/index.d.ts"
-      ],
-      "application": [
-        "./packages/application/dist/index.d.ts"
-      ],
-      "client": [
-        "./packages/client/dist/index.d.ts"
-      ],
-      "types": [
-        "./packages/types/dist/index.d.ts"
-      ],
-      "storage": [
-        "./packages/storage/dist/index.d.ts"
-      ],
-      "sql": [
-        "./packages/sql/dist/index.d.ts"
-      ],
-      "purge": [
-        "./packages/purge/dist/index.d.ts"
-      ],
-      "cookies": [
-        "./packages/cookies/dist/index.d.ts"
-      ],
-      "jwt": [
-        "./packages/jwt/dist/index.d.ts"
-      ],
-      "router": [
-        "./packages/router/dist/index.d.ts"
-      ],
-      "wasm-image-processor": [
-        "./packages/wasm-image-processor/dist/index.d.ts"
-      ],
-      "utils": [
-        "./packages/utils/dist/index.d.ts"
-      ],
-      "domains": [
-        "./packages/domains/dist/index.d.ts"
-      ],
-      "utils/edge": [
-        "./packages/utils/dist/edge.d.ts"
-      ],
-      "utils/node": [
-        "./packages/utils/dist/node.d.ts"
-      ]
-    }
-  }
+  ]
 }
