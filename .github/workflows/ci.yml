@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - stage
 
 permissions: write-all
 
@@ -14,25 +13,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
         with:
-          node-version: 20
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm install
+          node-version: 24
 
       - name: Run linting
-        run: npm run lint
+        run: pnpm lint
 
       - name: Check formatting
-        run: npm run format:check
+        run: pnpm format:check
 
       - name: Build
-        run: npm run compile
+        run: pnpm compile
 
   test_unit:
     name: Unit Tests
@@ -40,22 +35,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
         with:
-          node-version: 20
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm install
+          node-version: 24
 
       - name: Build
-        run: npm run compile
+        run: pnpm compile
 
       - name: Run unit tests
-        run: npm run test
+        run: pnpm test
 
   test-e2e:
     name: E2E Tests
@@ -63,19 +54,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
         with:
-          node-version: 20
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm install
+          node-version: 24
 
       - name: Build
-        run: npm run compile
+        run: pnpm compile
 
       - name: Run E2E tests
-        run: npm run test:e2e
+        run: pnpm test:e2e
