@@ -25,6 +25,7 @@
     "package.json"
   ],
   "devDependencies": {
-    "@aziontech/vite-config": "workspace:^"
+    "@aziontech/vite-config": "workspace:^",
+    "@types/node": "^22.13.1"
   }
 }

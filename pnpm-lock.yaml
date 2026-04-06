@@ -68,6 +68,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14
+      '@types/node':
+        specifier: ^22.13.1
+        version: 22.19.15
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@types/node@22.19.15)(typescript@5.9.3))
@@ -83,6 +86,9 @@ importers:
       '@aziontech/vite-config':
         specifier: workspace:^
         version: link:../vite-config
+      '@types/node':
+        specifier: ^22.13.1
+        version: 22.19.15
 
   packages/bundler:
     dependencies:
@@ -317,6 +323,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14
+      '@types/node':
+        specifier: ^22.13.1
+        version: 22.19.15
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@types/node@22.19.15)(typescript@5.9.3))
