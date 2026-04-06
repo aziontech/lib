@@ -1,4 +1,4 @@
-import { afterEach, beforeEach } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import mockFs from 'mock-fs';
 import { LOCK_FILES } from './constants';
 import getPackageManager from './index';

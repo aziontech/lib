@@ -1,5 +1,7 @@
 /* eslint-disable */
 /* tslint-disable */
+import { jest } from '@jest/globals';
+
 export class PhotonImage {
   constructor() {}
 
@@ -30,7 +32,7 @@ export class PhotonImage {
   }
 }
 
-export const resize = jest.fn((photon_img, width, height, sampling_filter) => {
+export const resize = jest.fn((photon_img: any, width: any, height: any, sampling_filter: any) => {
   return new PhotonImage();
 });
 

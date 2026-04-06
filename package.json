@@ -10,7 +10,7 @@
     "lint:fix": "pnpm -r --if-present lint:fix",
     "format": "pnpm -r --if-present prettier",
     "format:check": "pnpm -r --if-present prettier:check",
-    "test": "pnpm -r --if-present test ./packages/*",
+    "test": "pnpm -r --if-present --workspace-concurrency=1 test",
     "test:e2e": "npx jest ./tests/e2e/*",
     "download:cli": "node ./cli/scripts/download-cli.mjs",
     "build": "pnpm -r --if-present compile"

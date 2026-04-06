@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { SUPPORTED_FORMATS_IN_RESPONSE } from './constants';
 import { loadImage } from './index';
 import * as photon from './photon/lib/index';
@@ -38,7 +39,7 @@ describe('WasmImage - index', () => {
     test('throws error when image fetch fails', async () => {
       const imageUrl = 'https://example.com/image.jpg';
       const mockedResponse = new Response(null, { status: 404 });
-      global.fetch = jest.fn().mockResolvedValue(mockedResponse);
+      jest.spyOn(global, 'fetch').mockResolvedValueOnce(mockedResponse);
 
       await expect(loadImage(imageUrl)).rejects.toThrow(
         `Error getting image. Http status code: ${mockedResponse.status}`,

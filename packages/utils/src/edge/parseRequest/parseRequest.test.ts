@@ -1,4 +1,5 @@
 import { AzionRuntimeRequest, AzionRuntimeRequestMetadata } from '@aziontech/types';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import parseRequest from './parseRequest';
 
 describe('parseRequest', () => {
@@ -139,7 +140,7 @@ describe('parseRequest', () => {
     // Mock the clone method to throw an error
     mockRequest.clone = jest.fn().mockImplementation(() => {
       throw new Error('Clone failed');
-    });
+    }) as () => Request;
 
     const result = await parseRequest(mockRequest);
 

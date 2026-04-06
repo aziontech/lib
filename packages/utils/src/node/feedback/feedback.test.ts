@@ -1,7 +1,8 @@
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import feedback from './feedback';
 
 describe('feedback', () => {
-  let stdoutSpy: jest.SpyInstance;
+  let stdoutSpy: ReturnType<typeof jest.spyOn>;
 
   beforeAll(() => {
     stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => false);

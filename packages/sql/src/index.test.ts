@@ -1,3 +1,4 @@
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import {
   AzionSQLClient,
   createClient,
@@ -20,9 +21,22 @@ jest.mock('../src/utils/fetch/index', () => ({
   default: jest.fn(),
 }));
 
+const mockedFetch = fetchWithErrorHandling as jest.MockedFunction<typeof fetchWithErrorHandling>;
+
 describe('SQL Module', () => {
   const mockToken = 'mock-token';
   const mockDebug = true;
+  let originalConsoleLog: typeof console.log;
+
+  beforeAll(() => {
+    originalConsoleLog = console.log;
+    console.log = jest.fn();
+  });
+
+  afterAll(() => {
+    console.log = originalConsoleLog;
+    jest.clearAllMocks();
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -64,11 +78,8 @@ describe('SQL Module', () => {
           status: 'created',
         },
       };
-      (servicesApi.postDatabase as jest.Mock).mockResolvedValue(mockApiDatabaseResponse);
-    });
-
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postDatabase as any).mockResolvedValue(mockApiDatabaseResponse);
     });
 
     it('should successfully create a database', async () => {
@@ -79,7 +90,8 @@ describe('SQL Module', () => {
     });
 
     it('should return error on failure', async () => {
-      (servicesApi.postDatabase as jest.Mock).mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postDatabase as any).mockResolvedValue({
         error: {
           message: 'Database already exists',
           operation: 'create database',
@@ -99,7 +111,7 @@ describe('SQL Module', () => {
         {
           id: 0,
           name: 'db-1',
-          status: 'created',
+          status: 'created' as const,
           active: true,
           last_modified: '2019-08-24T14:15:22Z',
           last_editor: 'string',
@@ -107,12 +119,10 @@ describe('SQL Module', () => {
         },
       ],
     };
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
 
     it('should successfully retrieve a database', async () => {
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockApiResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockApiResponse);
 
       const result = await getDatabase('db-1', { debug: mockDebug });
       expect(servicesApi.getDatabases).toHaveBeenCalledWith(
@@ -135,7 +145,8 @@ describe('SQL Module', () => {
     });
 
     it('should return error if database not found', async () => {
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue({
         error: { message: 'Not found.', operation: 'retrieve database' },
       });
 
@@ -147,18 +158,17 @@ describe('SQL Module', () => {
   });
 
   describe('deleteDatabase', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
     it('should successfully delete a database', async () => {
-      (servicesApi.deleteDatabase as jest.Mock).mockResolvedValue({ state: 'pending', data: { id: 1 } });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.deleteDatabase as any).mockResolvedValue({ state: 'pending', data: { id: 1 } });
       const result = await deleteDatabase(1, { debug: mockDebug });
       expect(result).toEqual({ data: { state: 'pending' } });
       expect(servicesApi.deleteDatabase).toHaveBeenCalledWith(mockToken, 1, true, 'production');
     });
 
     it('should return error on failure', async () => {
-      (servicesApi.deleteDatabase as jest.Mock).mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.deleteDatabase as any).mockResolvedValue({
         error: { message: 'Failed to delete database', operation: 'delete database' },
       });
       const result = await deleteDatabase(1, { debug: mockDebug });
@@ -169,14 +179,6 @@ describe('SQL Module', () => {
   });
 
   describe('getDatabases', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should successfully retrieve databases', async () => {
       const mockResponse = {
         count: 2,
@@ -184,7 +186,7 @@ describe('SQL Module', () => {
           {
             id: 0,
             name: 'db-1',
-            status: 'created',
+            status: 'created' as const,
             active: true,
             last_modified: '2019-08-24T14:15:22Z',
             last_editor: 'string',
@@ -193,7 +195,7 @@ describe('SQL Module', () => {
           {
             id: 1,
             name: 'db-2',
-            status: 'creating',
+            status: 'creating' as const,
             active: true,
             last_modified: '2019-08-24T14:15:22Z',
             last_editor: 'string',
@@ -201,7 +203,8 @@ describe('SQL Module', () => {
           },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponse);
 
       const { data } = await getDatabases({ page: 1, page_size: 10 }, { debug: mockDebug });
       expect(data?.databases).toHaveLength(2);
@@ -220,7 +223,8 @@ describe('SQL Module', () => {
     });
 
     it('should return error if retrieval fails', async () => {
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue({
         error: { message: 'Failed to retrieve databases', operation: 'get databases' },
       });
 
@@ -230,10 +234,6 @@ describe('SQL Module', () => {
   });
 
   describe('useQuery', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
     afterAll(() => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (globalThis as any).Azion = {};
@@ -246,16 +246,34 @@ describe('SQL Module', () => {
     it('should successfully execute a query', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
       const mockResponse = {
-        state: 'executed',
+        state: 'executed' as const,
         data: [{ results: { columns: ['id', 'name'], rows: [[1, 'test']] } }],
       };
-      (servicesApi.postQueryDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockResolvedValue(mockResponse);
 
       const result = await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
       expect(result.data).toEqual(
@@ -275,11 +293,28 @@ describe('SQL Module', () => {
     it('should throw an error if useQuery is called with an invalid statement', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
 
       await expect(
         useQuery('test-db', ["INSERT INTO users (id, name) VALUES (1, 'John Doe')"], { debug: mockDebug }),
@@ -289,12 +324,30 @@ describe('SQL Module', () => {
     it('should return error if query execution fails', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
-      (servicesApi.postQueryDatabase as jest.Mock).mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockResolvedValue({
         error: { message: 'Error executing query', operation: 'executing query' },
       });
 
@@ -305,7 +358,8 @@ describe('SQL Module', () => {
     });
 
     it('should successfully execute useQuery with apiQuery called', async () => {
-      const spyApiQuery = jest.spyOn(services, 'apiQuery').mockResolvedValue({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const spyApiQuery = jest.spyOn(services, 'apiQuery' as any).mockResolvedValue({
         data: { toObject: () => null, state: 'executed' },
       });
 
@@ -324,7 +378,8 @@ describe('SQL Module', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (globalThis as any).Azion = { Sql: {} };
       const spyRuntimeQuery = jest
-        .spyOn(services, 'runtimeQuery')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .spyOn(services, 'runtimeQuery' as any)
         .mockResolvedValue({ data: { state: 'executed-runtime', toObject: () => null } });
 
       await useQuery('test-db', ['SELECT * FROM test'], { debug: mockDebug });
@@ -342,13 +397,30 @@ describe('SQL Module', () => {
       const mockResponseDatabases = {
         count: 2,
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
 
-      (fetchWithErrorHandling as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'executed',
         data: [
           {
@@ -364,10 +436,13 @@ describe('SQL Module', () => {
             error: 'no such table: main',
           },
         ],
-      });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
-      (servicesApi.postQueryDatabase as jest.Mock).mockImplementation(
-        jest.requireActual('../src/services/api/index').postQueryDatabase,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockImplementation(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (jest.requireActual('../src/services/api/index') as any).postQueryDatabase,
       );
       await expect(
         useQuery('test-db', ['pragma table_list', 'select * from main'], {
@@ -393,13 +468,30 @@ describe('SQL Module', () => {
     it('should return error if useQuery when last statement is invalid', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
 
-      (fetchWithErrorHandling as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'executed',
         data: [
           {
@@ -421,10 +513,13 @@ describe('SQL Module', () => {
             error: 'no such table: main',
           },
         ],
-      });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
-      (servicesApi.postQueryDatabase as jest.Mock).mockImplementation(
-        jest.requireActual('../src/services/api/index').postQueryDatabase,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockImplementation(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (jest.requireActual('../src/services/api/index') as any).postQueryDatabase,
       );
 
       await expect(
@@ -448,20 +543,39 @@ describe('SQL Module', () => {
     it('should return error if useQuery when data rows is empty', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
-
-      (servicesApi.postQueryDatabase as jest.Mock).mockImplementation(
-        jest.requireActual('../src/services/api/index').postQueryDatabase,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockImplementation(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (jest.requireActual('../src/services/api/index') as any).postQueryDatabase,
       );
 
-      (fetchWithErrorHandling as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'executed',
         data: [{ results: { columns: ['id', 'name'], rows: [] } }],
-      });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
       await expect(
         useQuery('test-db', ['select * from users'], {
@@ -479,9 +593,6 @@ describe('SQL Module', () => {
   });
 
   describe('useExecute', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
     afterAll(() => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (globalThis as any).Azion = {};
@@ -492,15 +603,33 @@ describe('SQL Module', () => {
     it('should successfully execution by useExecute', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
       const mockResponse = {
         data: [{ results: { columns: [], rows: [] } }],
       };
-      (servicesApi.postQueryDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockResolvedValue(mockResponse);
       const result = await useExecute('test-db', ["INSERT INTO users (id, name) VALUES (1, 'John Doe')"], {
         debug: mockDebug,
       });
@@ -523,11 +652,28 @@ describe('SQL Module', () => {
     it('should throw an error if useExecute is called with an invalid statement', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
 
       await expect(useExecute('test-db', ['SELECT * FROM test'], { debug: mockDebug })).resolves.toEqual({
         error: { message: 'Only write statements are allowed', operation: 'execute database' },
@@ -541,7 +687,8 @@ describe('SQL Module', () => {
           operation: 'get databases',
         },
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
 
       await expect(
         useExecute('test-db', ['INSERT INTO users (id, name) VALUES (1, "John Doe")'], { debug: mockDebug }),
@@ -555,11 +702,28 @@ describe('SQL Module', () => {
     it('should successfully list tables', async () => {
       const mockResponseDatabases = {
         results: [
-          { id: 1, name: 'test-db' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponseDatabases);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponseDatabases);
       const mockResponse = {
         data: [
           {
@@ -570,7 +734,8 @@ describe('SQL Module', () => {
           },
         ],
       };
-      (servicesApi.postQueryDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockResolvedValue(mockResponse);
 
       const result = await getTables('test-db', { debug: mockDebug });
       expect(result.data).toEqual(
@@ -597,10 +762,6 @@ describe('SQL Module', () => {
   describe('Client methods', () => {
     let client: AzionSQLClient;
 
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
     beforeEach(() => {
       client = createClient({ token: 'custom-token', options: { debug: false } });
     });
@@ -610,24 +771,49 @@ describe('SQL Module', () => {
     });
 
     it('should call createDatabase method', async () => {
-      const mockResponse = { data: { id: 1, name: 'test-db' } };
-      (servicesApi.postDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = {
+        data: {
+          id: 1,
+          name: 'test-db',
+          status: 'created' as const,
+          active: true,
+          last_modified: '',
+          last_editor: '',
+          product_version: '',
+        },
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postDatabase as any).mockResolvedValue(mockResponse);
 
       await client.createDatabase('test-db');
       expect(servicesApi.postDatabase).toHaveBeenCalledWith('custom-token', 'test-db', false, 'production');
     });
 
     it('should call deleteDatabase method', async () => {
-      const mockResponse = { data: { message: 'Database deleted' }, state: 'success' };
-      (servicesApi.deleteDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = { data: { message: 'Database deleted' }, state: 'executed' as const };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.deleteDatabase as any).mockResolvedValue(mockResponse);
 
       await client.deleteDatabase(1);
       expect(servicesApi.deleteDatabase).toHaveBeenCalledWith('custom-token', 1, false, 'production');
     });
 
     it('should call getDatabase method', async () => {
-      const mockResponse = { results: [{ id: 1, name: 'test-db' }] };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = {
+        results: [
+          {
+            id: 1,
+            name: 'test-db',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+        ],
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponse);
       if (client.getDatabase) {
         await client.getDatabase('test-db');
       }
@@ -642,11 +828,28 @@ describe('SQL Module', () => {
     it('should call getDatabases method', async () => {
       const mockResponse = {
         results: [
-          { id: 1, name: 'test-db-1' },
-          { id: 2, name: 'test-db-2' },
+          {
+            id: 1,
+            name: 'test-db-1',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
+          {
+            id: 2,
+            name: 'test-db-2',
+            status: 'created' as const,
+            active: true,
+            last_modified: '',
+            last_editor: '',
+            product_version: '',
+          },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockResponse);
 
       await client.getDatabases({ page: 1, page_size: 10 });
       expect(servicesApi.getDatabases).toHaveBeenCalledWith(
@@ -659,17 +862,9 @@ describe('SQL Module', () => {
   });
 
   describe('toJson method', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should convert query execution response to JSON object', async () => {
       const mockResponse = {
-        state: 'executed',
+        state: 'executed' as const,
         data: [
           {
             results: {
@@ -688,7 +883,7 @@ describe('SQL Module', () => {
           {
             id: 0,
             name: 'db-1',
-            status: 'created',
+            status: 'created' as const,
             active: true,
             last_modified: '2019-08-24T14:15:22Z',
             last_editor: 'string',
@@ -696,11 +891,14 @@ describe('SQL Module', () => {
           },
         ],
       };
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockDBResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockDBResponse);
 
       const resultDatabase = await getDatabase('db-1', { debug: mockDebug });
-      (servicesApi.getDatabases as jest.Mock).mockResolvedValue(mockDBResponse);
-      (servicesApi.postQueryDatabase as jest.Mock).mockResolvedValue(mockResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.getDatabases as any).mockResolvedValue(mockDBResponse);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (servicesApi.postQueryDatabase as any).mockResolvedValue(mockResponse);
       const result = await resultDatabase.data?.query(['SELECT * FROM test'], { debug: mockDebug });
       const toObjectResponse = result?.data?.toObject();
       expect(toObjectResponse).toEqual(
