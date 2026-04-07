@@ -26,13 +26,12 @@ jobs:
 
       - name: Setup git for changeset
         run: |
-          # refs remote branches
+          # Fetch all remote refs
           git fetch origin --tags --force
 
-          # Ensure main branch points to the latest commit
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            git branch -f main HEAD
-          fi
+          # Create local main branch pointing to origin/main
+          # Changeset looks for local "main" branch, not origin/main
+          git branch -f main origin/main
 
       - name: Detect changed packages
         id: changeset
