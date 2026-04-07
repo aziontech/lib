@@ -24,6 +24,16 @@ jobs:
         with:
           node-version: 24
 
+      - name: Setup git for changeset
+        run: |
+          # refs remote branches
+          git fetch origin --tags --force
+
+          # Ensure main branch points to the latest commit
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            git branch -f main HEAD
+          fi
+
       - name: Detect changed packages
         id: changeset
         run: |
