@@ -27,12 +27,9 @@ jobs:
       - name: Detect changed packages
         id: changeset
         run: |
-          # Get changeset status and save to file
-          pnpm exec changeset status --output /tmp/status.json 2>/dev/null || echo '{"changesets":[],"releases":[]}' > /tmp/status.json
+          pnpm exec changeset status --output /tmp/status.json
 
-          # Count releases
           RELEASE_COUNT=$(jq '.releases | length' /tmp/status.json)
-
           echo "release_count=$RELEASE_COUNT" >> $GITHUB_OUTPUT
           echo "Found $RELEASE_COUNT packages to release"
 
