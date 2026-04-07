@@ -46,13 +46,17 @@ jobs:
         if: steps.changeset.outputs.release_count != '0'
         run: |
           # Parse packages from changeset status
-          PACKAGES=$(jq -r '.releases[].name' /tmp/status.json | sed 's/@aziontech\///g')
+          PACKAGES=$(jq -r '.releases[].name' /tmp/status.json)
 
-          # Build each package
+          # Build filter arguments for pnpm
+          FILTER_ARGS=""
           for PKG in $PACKAGES; do
-            echo "Building $PKG..."
-            pnpm -F "@aziontech/$PKG" run compile
+            FILTER_ARGS="$FILTER_ARGS --filter \"$PKG...\""
           done
+
+          # Build all packages including their dependencies in correct order
+          # The "..." syntax includes dependencies of the target packages
+          eval "pnpm run compile $FILTER_ARGS"
 
       - name: Publish to pkg-pr-new
         if: steps.changeset.outputs.release_count != '0'
@@ -60,8 +64,8 @@ jobs:
           # Parse packages and build paths
           PACKAGES=$(jq -r '.releases[].name' /tmp/status.json | sed 's/@aziontech\///g')
 
-          # Build publish command
-          CMD="pnpm exec pkg-pr-new publish --pnpm --compact"
+          # Build publish command (removed --compact since packages aren't on npm yet)
+          CMD="pnpm exec pkg-pr-new publish --pnpm"
           for PKG in $PACKAGES; do
             CMD="$CMD './packages/$PKG'"
           done
