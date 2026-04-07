@@ -32,7 +32,7 @@ class NodePolyfillPlugin implements WebpackPluginInstance {
   }
 
   static getAbsolutePath = (internalPath: string, moving: string) => {
-    const pathDir = path.join(getAbsoluteDirPath(import.meta.url, 'bundler'), moving);
+    const pathDir = path.join(getAbsoluteDirPath(import.meta.url, 'builder'), moving);
     return `${pathDir}${internalPath}`;
   };
 

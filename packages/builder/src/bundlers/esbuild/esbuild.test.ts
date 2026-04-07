@@ -173,7 +173,7 @@ describe('Esbuild Bundler', () => {
       };
 
       jest.spyOn(helper, 'getAbsolutePath').mockImplementation((moving, internalPath) => {
-        const pathDir = path.resolve('../bundler', moving);
+        const pathDir = path.resolve('../builder', moving);
         return `${pathDir}${internalPath ? internalPath : ''}`;
       });
 

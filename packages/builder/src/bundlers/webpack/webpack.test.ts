@@ -187,7 +187,7 @@ describe('Webpack Bundler', () => {
       };
 
       jest.spyOn(NodePolyfills, 'getAbsolutePath').mockImplementation((internalPath, moving) => {
-        const pathDir = path.resolve('../bundler', moving);
+        const pathDir = path.resolve('../builder', moving);
         return `${pathDir}${internalPath}`;
       });
 
@@ -227,7 +227,7 @@ describe('Webpack Bundler', () => {
       };
 
       jest.spyOn(NodePolyfills, 'getAbsolutePath').mockImplementation((internalPath, moving) => {
-        const pathDir = path.resolve('../bundler', moving);
+        const pathDir = path.resolve('../builder', moving);
         return `${pathDir}${internalPath}`;
       });
 

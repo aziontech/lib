@@ -175,7 +175,7 @@ function nodeBuiltInModules(
 function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: string) => string) {
   const UNENV_GLOBALS_RE = /_global_polyfill-([^.]+)\.js$/;
   const UNENV_POLYFILL_RE = /^@aziontech\/unenv-preset\/polyfills\/.+/;
-  const BUNDLER_POLYFILL_RE = /^@aziontech\/bundler\/polyfills\/.+/;
+  const BUNDLER_POLYFILL_RE = /^@aziontech\/builder\/polyfills\/.+/;
   const prefix = path.resolve(getAbsolutePath('../'), '_global_polyfill-');
 
   build.initialOptions.inject = [

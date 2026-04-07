@@ -28,7 +28,7 @@ export default defineConfig({
       '@aziontech/config/rules': resolve(__dirname, '../config/src/rules/'),
       '@aziontech/config': resolve(__dirname, '../config/src/'),
       '@aziontech/presets': resolve(__dirname, '../presets/src/'),
-      '@aziontech/builder': resolve(__dirname, '../bundler/src/'),
+      '@aziontech/builder': resolve(__dirname, '../builder/src/'),
       '@aziontech/types': resolve(__dirname, '../types/src/'),
     },
   },

@@ -71,7 +71,7 @@
     "packages/**/dist/**/*",
     "cli/**/*",
     "packages/unenv-preset/src/polyfills/*",
-    "packages/bundler/src/polyfills/*",
+    "packages/builder/src/polyfills/*",
     "packages/presets/src/presets/next/*",
     "packages/presets/src/presets/nuxt/nitro/*",
     "packages/presets/src/presets/svelte/kit/*"
