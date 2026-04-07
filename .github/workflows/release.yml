@@ -34,3 +34,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           NODE_ENV: 'production'
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

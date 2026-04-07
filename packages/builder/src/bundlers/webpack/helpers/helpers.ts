@@ -13,7 +13,7 @@ export function generateWebpackBanner(filesPaths: string[]): string {
   try {
     return filesPaths
       .map((filePath) => {
-        // Resolve package exports (e.g., @aziontech/bundler/polyfills/...)
+        // Resolve package exports (e.g., @aziontech/builder/polyfills/...)
         const resolved = requireCustom.resolve(filePath);
         return readFileSync(resolved, 'utf-8');
       })

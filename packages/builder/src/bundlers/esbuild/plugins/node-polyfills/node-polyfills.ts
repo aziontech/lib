@@ -189,7 +189,7 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
     return { path: resolved };
   });
 
-  // Resolve polyfills from @aziontech/bundler
+  // Resolve polyfills from @aziontech/builder
   build.onResolve({ filter: BUNDLER_POLYFILL_RE }, (args) => {
     const resolved = requireCustom.resolve(args.path);
     return { path: resolved };
@@ -218,7 +218,7 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
 
 /**
  * Handle internal polyfill env dev
- * Uses polyfills from @aziontech/bundler package
+ * Uses polyfills from @aziontech/builder package
  */
 function handleInternalPolyfillEnvDev(build: PluginBuild, namespace: string, prefix: string, internalPath: string) {
   build.onLoad({ filter: /.*/, namespace: namespace }, async (args) => {
@@ -233,9 +233,9 @@ function handleInternalPolyfillEnvDev(build: PluginBuild, namespace: string, pre
       // Format: aziondev:fs:/fs/fs.polyfills.js -> fs/fs.polyfills.js
       const polyfillFile = polyfillPath.replace(`${prefix}${argsPathWhitoutNode}:/`, '');
 
-      // Resolve from @aziontech/bundler package exports
-      // internalPath is '/polyfills', so we use '@aziontech/bundler/polyfills/...'
-      const moduleSpecifier = `@aziontech/bundler${internalPath}/${polyfillFile}`;
+      // Resolve from @aziontech/builder package exports
+      // internalPath is '/polyfills', so we use '@aziontech/builder/polyfills/...'
+      const moduleSpecifier = `@aziontech/builder${internalPath}/${polyfillFile}`;
       const resolved = requireCustom.resolve(moduleSpecifier);
 
       const contents = await fs.promises.readFile(resolved, 'utf8');

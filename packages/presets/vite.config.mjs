@@ -12,7 +12,7 @@ export default createViteConfig({
     '@aziontech/config': resolve(__dirname, '../config/src/'),
     '@aziontech/config/rules': resolve(__dirname, '../config/src/rules/'),
     '@aziontech/presets': resolve(__dirname, '../presets/src/'),
-    '@aziontech/bundler': resolve(__dirname, '../bundler/src/'),
+    '@aziontech/builder': resolve(__dirname, '../bundler/src/'),
     '@aziontech/types': resolve(__dirname, '../types/src/'),
   },
   external: (id) => {

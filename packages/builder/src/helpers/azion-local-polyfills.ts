@@ -1,5 +1,5 @@
 // Use package exports for polyfills so they can be resolved externally
-const externalPolyfillsPath = '@aziontech/bundler/polyfills/azion';
+const externalPolyfillsPath = '@aziontech/builder/polyfills/azion';
 
 export default {
   libs: new Map(),

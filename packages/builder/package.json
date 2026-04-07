@@ -1,5 +1,5 @@
 {
-  "name": "@aziontech/bundler",
+  "name": "@aziontech/builder",
   "version": "0.0.0",
   "description": "",
   "main": "./dist/index.cjs",

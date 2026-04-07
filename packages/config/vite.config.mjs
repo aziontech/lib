@@ -11,7 +11,7 @@ export default createViteConfig({
   alias: {
     '@aziontech/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
     '@aziontech/utils/node': resolve(__dirname, '../utils/src/node/'),
-    '@aziontech/bundler': resolve(__dirname, '../bundler/src/'),
+    '@aziontech/builder': resolve(__dirname, '../bundler/src/'),
   },
   external: ['ajv', 'ajv-errors', 'ajv-keywords', 'mathjs'],
   dts: {
