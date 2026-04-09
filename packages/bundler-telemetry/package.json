@@ -1,0 +1,39 @@
+{
+  "name": "@aziontech/bundler-telemetry",
+  "version": "0.0.0",
+  "description": "Telemetry system for measuring and reporting build performance in Azion Bundler",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "compile": "vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prettier": "prettier --write .",
+    "test": "jest --clearCache && jest",
+    "test:watch": "jest -c jest.config.js . --watch",
+    "test:coverage": "jest --clearCache && jest -c jest.config.js . --coverage"
+  },
+  "author": "aziontech",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^22.13.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.5",
+    "ts-node": "^10.9.2"
+  }
+}
