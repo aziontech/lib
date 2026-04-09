@@ -1,5 +1,5 @@
-import type { AzionConfig } from 'azion/config';
-import { createSPARules } from 'azion/config/rules';
+import type { AzionConfig } from '@aziontech/config';
+import { createSPARules } from '@aziontech/config/rules';
 
 const config: AzionConfig = {
   build: {

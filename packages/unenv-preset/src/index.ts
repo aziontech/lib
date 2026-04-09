@@ -1,11 +1,5 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const getAbsolutePath = () => path.resolve(__dirname, '../../', 'unenv-preset', 'src');
-
-const polyfillsPath = `${getAbsolutePath()}/polyfills`;
+// Use package exports for polyfills so they can be resolved externally
+const polyfillsPath = '@aziontech/unenv-preset/polyfills';
 
 export default {
   inject: {
@@ -20,17 +14,17 @@ export default {
     dateToString: `${polyfillsPath}/node/globals/date-to-string.js`,
   },
   alias: {
-    'azion/utils': 'azion/utils',
-    'azion/utils/edge': 'azion/utils/edge',
-    'azion/utils/node': 'azion/utils/node',
+    '@aziontech/utils': '@aziontech/utils',
+    '@aziontech/utils/edge': '@aziontech/utils/edge',
+    '@aziontech/utils/node': '@aziontech/utils/node',
     '@fastly/http-compute-js': '@fastly/http-compute-js',
     accepts: 'accepts',
     assert: 'assert-browserify',
     buffer: `${polyfillsPath}/node/buffer.js`,
     https: `${polyfillsPath}/node/https.js`,
     module: `${polyfillsPath}/node/module.js`,
-    string_decoder: 'string_decoder/lib/string_decoder.js',
-    timers: 'timers-browserify/',
+    string_decoder: 'string_decoder',
+    timers: 'timers-browserify',
     util: `${polyfillsPath}/node/util.js`,
     zlib: `${polyfillsPath}/node/zlib.js`,
   },

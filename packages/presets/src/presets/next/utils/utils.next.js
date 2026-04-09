@@ -1,7 +1,7 @@
 import { access, constants, readFile } from 'fs/promises';
 import { join, resolve } from 'path';
 
-import { feedback } from 'azion/utils/node';
+import { feedback } from '@aziontech/utils/node';
 
 /**
  * Get a project manifest generated after build

@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { NO_EXTENSION_MSG } from './constants';
 import { getFileExtension, isUrl, validateImageExtension } from './utils';
 

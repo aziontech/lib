@@ -1,4 +1,4 @@
-import { exec } from 'azion/utils/node';
+import { exec } from '@aziontech/utils/node';
 import { mkdir } from 'fs/promises';
 
 /**

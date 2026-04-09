@@ -1,4 +1,4 @@
-import { feedback } from 'azion/utils/node';
+import { feedback } from '@aziontech/utils/node';
 import fs from 'fs';
 import mime from 'mime-types';
 import path, { basename } from 'path';

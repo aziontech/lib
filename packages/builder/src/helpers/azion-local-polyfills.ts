@@ -1,0 +1,15 @@
+// Use package exports for polyfills so they can be resolved externally
+const externalPolyfillsPath = '@aziontech/builder/polyfills/azion';
+
+export default {
+  libs: new Map(),
+  globals: new Map(),
+  alias: new Map(),
+  external: new Map([
+    ['azion:storage', `${externalPolyfillsPath}/storage/storage.polyfills.js`],
+    ['Azion.env', `${externalPolyfillsPath}/env-vars/env-vars.polyfills.js`],
+    ['Azion.networkList', `${externalPolyfillsPath}/network-list/network-list.polyfills.js`],
+    ['Azion.Storage', `${externalPolyfillsPath}/storage/storage.polyfills.js`],
+    ['Azion.KV', `${externalPolyfillsPath}/kv/kv.polyfills.js`],
+  ]),
+};

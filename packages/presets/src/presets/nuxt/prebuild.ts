@@ -1,5 +1,5 @@
-import { AzionPrebuildResult, BuildConfiguration, BuildContext } from 'azion/config';
-import { exec } from 'azion/utils/node';
+import { AzionPrebuildResult, BuildConfiguration, BuildContext } from '@aziontech/config';
+import { exec } from '@aziontech/utils/node';
 import { existsSync } from 'fs';
 import { mkdir, readFile, readdir } from 'fs/promises';
 

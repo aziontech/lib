@@ -2,7 +2,7 @@ import { copyFile, mkdir, readdir, rm, stat } from 'fs/promises';
 import { basename, dirname, extname, join } from 'path';
 import { coerce, gte, valid } from 'semver';
 
-import { copyDirectory, exec, feedback, getPackageManager, getPackageVersion } from 'azion/utils/node';
+import { copyDirectory, exec, feedback, getPackageManager, getPackageVersion } from '@aziontech/utils/node';
 import { getNextConfig, readManifestFile } from '../utils/utils.next.js';
 
 /**
@@ -178,7 +178,7 @@ function validateStaticSiteMode(nextConfig) {
 
 /**
  * Runs custom prebuild actions
- * @returns {import('azion/config').AzionPrebuildResult} - info about the build
+ * @returns {import('@aziontech/config').AzionPrebuildResult} - info about the build
  */
 async function prebuild(ctx) {
   feedback.prebuild.info('Starting Next.js static build process...');

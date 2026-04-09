@@ -1,18 +1,18 @@
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 import { resolve } from 'path';
 
 export default createViteConfig({
   dirname: __dirname,
   ssr: true,
   alias: {
-    'azion/ai': resolve(__dirname, '../ai/src/'),
-    'azion/sql': resolve(__dirname, '../sql/src/'),
-    'azion/storage': resolve(__dirname, '../storage/src/'),
-    'azion/purge': resolve(__dirname, '../purge/src/'),
-    'azion/config': resolve(__dirname, '../config/src/'),
-    'azion/domains': resolve(__dirname, '../domains/src/'),
-    'azion/applications': resolve(__dirname, '../applications/src/'),
-    'azion/types': resolve(__dirname, '../types/src/'),
+    '@aziontech/ai': resolve(__dirname, '../ai/src/'),
+    '@aziontech/sql': resolve(__dirname, '../sql/src/'),
+    '@aziontech/storage': resolve(__dirname, '../storage/src/'),
+    '@aziontech/purge': resolve(__dirname, '../purge/src/'),
+    '@aziontech/config': resolve(__dirname, '../config/src/'),
+    '@aziontech/domains': resolve(__dirname, '../domains/src/'),
+    '@aziontech/applications': resolve(__dirname, '../applications/src/'),
+    '@aziontech/types': resolve(__dirname, '../types/src/'),
     azion: resolve(__dirname, './src/'),
   },
   dts: {

@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { deleteDatabase, getDatabases, postDatabase, postQueryDatabase, retrieveDatabase } from '.';
 import * as fetchWithErrorHandling from '../../utils/fetch/index';
 
@@ -6,19 +7,25 @@ jest.mock('../../utils/fetch/index', () => ({
   default: jest.fn(),
 }));
 
+const mockedFetch = fetchWithErrorHandling.default as jest.MockedFunction<typeof fetchWithErrorHandling.default>;
+
 describe('SQL API Service', () => {
+  let originalConsoleLog: typeof console.log;
+
+  beforeAll(() => {
+    originalConsoleLog = console.log;
+    console.log = jest.fn();
+  });
+
+  afterAll(() => {
+    console.log = originalConsoleLog;
+    jest.clearAllMocks();
+  });
+
   describe('postDatabase', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should create a database successfully', async () => {
       const dbName = 'test_db';
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'executed',
         data: {
           id: 0,
@@ -46,7 +53,7 @@ describe('SQL API Service', () => {
 
     it('should create a database with error handling', async () => {
       const dbName = 'test_db';
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         errors: [
           {
             status: 'str',
@@ -73,16 +80,8 @@ describe('SQL API Service', () => {
   });
 
   describe('retrieveDatabase', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should retrieve a database successfully', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         data: {
           id: 0,
           name: 'test_db',
@@ -108,7 +107,7 @@ describe('SQL API Service', () => {
     });
 
     it('should handle errors when retrieving a database', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         errors: [
           {
             status: 'str',
@@ -135,16 +134,8 @@ describe('SQL API Service', () => {
   });
 
   describe('deleteDatabase', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should delete a database successfully with state executed', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'executed',
       });
       const result = await deleteDatabase('valid_token', 1, true, 'production');
@@ -154,7 +145,7 @@ describe('SQL API Service', () => {
     });
 
     it('should delete a database successfully with state pending', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'pending',
       });
       const result = await deleteDatabase('valid_token', 1, true, 'production');
@@ -164,7 +155,7 @@ describe('SQL API Service', () => {
     });
 
     it('should handle errors when deleting a database', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         errors: [
           {
             status: 'str',
@@ -191,16 +182,8 @@ describe('SQL API Service', () => {
   });
 
   describe('postQueryDatabase', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should execute a query successfully with state executed', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'executed',
         data: [
           {
@@ -226,7 +209,7 @@ describe('SQL API Service', () => {
     });
 
     it('should execute a query successfully with state pending', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         state: 'pending',
         data: [
           {
@@ -252,7 +235,7 @@ describe('SQL API Service', () => {
     });
 
     it('should handle errors when executing a query', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         errors: [
           {
             status: 'str',
@@ -279,16 +262,8 @@ describe('SQL API Service', () => {
   });
 
   describe('getDatabases', () => {
-    beforeAll(() => {
-      jest.spyOn(console, 'log').mockImplementation();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it('should get all EdgeDBs successfully', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         count: 10,
         results: [
           {
@@ -320,7 +295,7 @@ describe('SQL API Service', () => {
     });
 
     it('should handle errors when get EdgeDBs', async () => {
-      (fetchWithErrorHandling.default as jest.Mock).mockResolvedValue({
+      mockedFetch.mockResolvedValue({
         errors: [
           {
             status: 'str',

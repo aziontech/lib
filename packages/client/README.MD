@@ -66,7 +66,7 @@ You can create a client instance with specific configurations.
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/storage';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
@@ -89,14 +89,14 @@ if (deletedBucket) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/storage';
 import {
   AzionClient,
   AzionStorageResponse,
   AzionBucket,
   AzionDeletedBucket,
   AzionBucketCollection,
-} from 'azion/storage';
+} from '@aziontech/storage';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -125,7 +125,7 @@ if (deletedBucket) {
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/sql';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
@@ -148,9 +148,9 @@ if (queryResult.data) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion';
-import type { AzionClient } from 'azion/client';
-import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sql';
+import { createClient } from '@aziontech/sql';
+import type { AzionClient } from '@aziontech/client';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from '@aziontech/sql';
 
 const client: AzionClient = createClient({ token: 'your-api-token', { debug: true } });
 
@@ -175,7 +175,7 @@ if (queryResult?.data) {
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/purge';
 
 const client = createClient({ token: 'your-api-token', { debug: true } });
 
@@ -198,8 +198,8 @@ if (wildcardResult) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion';
-import { AzionClient, AzionPurgeResponse, AzionPurge } from 'azion/purge/types';
+import { createClient } from '@aziontech/purge';
+import { AzionClient, AzionPurgeResponse, AzionPurge } from '@aziontech/purge/types';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -231,7 +231,7 @@ if (wildcardResult) {
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/domains';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
@@ -257,14 +257,14 @@ if (deletedDomain) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/domains';
 import {
   AzionClient,
   AzionDomainsResponse,
   AzionDomain,
   AzionDeletedDomain,
   AzionDomainCollection,
-} from 'azion/domains';
+} from '@aziontech/domains';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 

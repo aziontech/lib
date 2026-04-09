@@ -85,7 +85,7 @@ You can create a client instance with specific configurations.
 **JavaScript:**
 
 ```javascript
-import { createDomain } from 'azion/domains';
+import { createDomain } from '@aziontech/domains';
 
 const { data: domain, error } = await createDomain({ name: 'example domain', edgeApplicationId: 123 });
 if (domain) {
@@ -98,8 +98,8 @@ if (domain) {
 **TypeScript:**
 
 ```typescript
-import { createDomain } from 'azion/domains';
-import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
+import { createDomain } from '@aziontech/domains';
+import type { AzionDomain, AzionDomainsResponse } from '@aziontech/domains';
 
 const { data: domain, error }: AzionDomainsResponse<AzionDomain> = await createDomain({
   name: 'example domain',
@@ -117,7 +117,7 @@ if (domain) {
 **JavaScript:**
 
 ```javascript
-import { getDomains } from 'azion/domains';
+import { getDomains } from '@aziontech/domains';
 
 const { data: domains, error } = await getDomains();
 
@@ -131,8 +131,8 @@ if (domains) {
 **TypeScript:**
 
 ```typescript
-import { getDomains } from 'azion/domains';
-import type { AzionDomainCollection, AzionDomainsResponse } from 'azion/domains';
+import { getDomains } from '@aziontech/domains';
+import type { AzionDomainCollection, AzionDomainsResponse } from '@aziontech/domains';
 
 const { data: domains, error }: AzionDomainsResponse<AzionDomainCollection> = await getDomains();
 
@@ -148,7 +148,7 @@ if (domains) {
 **JavaScript:**
 
 ```javascript
-import { getDomain } from 'azion/domains';
+import { getDomain } from '@aziontech/domains';
 
 const domainId = 123;
 const { data: domain, error } = await getDomain(domainId);
@@ -163,8 +163,8 @@ if (domain) {
 **TypeScript:**
 
 ```typescript
-import { getDomain } from 'azion/domains';
-import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
+import { getDomain } from '@aziontech/domains';
+import type { AzionDomain, AzionDomainsResponse } from '@aziontech/domains';
 
 const domainId = 123;
 const { data: domain, error }: AzionDomainsResponse<AzionDomain> = await getDomain(domainId);
@@ -181,7 +181,7 @@ if (domain) {
 **JavaScript:**
 
 ```javascript
-import { updateDomain } from 'azion/domains';
+import { updateDomain } from '@aziontech/domains';
 
 const domainId = 123;
 const { data: domain, error } = await updateDomain(domainId, { name: 'new domain name', edgeApplicationId: 456 });
@@ -196,8 +196,8 @@ if (domain) {
 **TypeScript:**
 
 ```typescript
-import { updateDomain } from 'azion/domains';
-import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
+import { updateDomain } from '@aziontech/domains';
+import type { AzionDomain, AzionDomainsResponse } from '@aziontech/domains';
 
 const domainId = 123;
 const { data: domain, error }: AzionDomainsResponse<AzionDomain> = await updateDomain(domainId, {
@@ -217,7 +217,7 @@ if (domain) {
 **JavaScript:**
 
 ```javascript
-import { deleteDomain } from 'azion/domains';
+import { deleteDomain } from '@aziontech/domains';
 
 const domainId = 123;
 const { data: deletedDomain, error } = await deleteDomain(domainId);
@@ -232,8 +232,8 @@ if (deletedDomain) {
 **TypeScript:**
 
 ```typescript
-import { deleteDomain } from 'azion/domains';
-import type { AzionDomain, AzionDomainsResponse } from 'azion/domains';
+import { deleteDomain } from '@aziontech/domains';
+import type { AzionDomain, AzionDomainsResponse } from '@aziontech/domains';
 
 const domainId = 123;
 const { data: deletedDomain, error }: AzionDomainsResponse<AzionDomain> = await deleteDomain(domainId);
@@ -250,7 +250,7 @@ if (deletedDomain) {
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion/domains';
+import { createClient } from '@aziontech/domains';
 
 const client = createClient({ token: 'your-api-token', { debug: true } });
 
@@ -265,8 +265,8 @@ if (newDomain) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion/domains';
-import type { AzionDomain, AzionDomainsClient } from 'azion/domains';
+import { createClient } from '@aziontech/domains';
+import type { AzionDomain, AzionDomainsClient } from '@aziontech/domains';
 
 const client: AzionDomainsClient = createClient({ token: 'your-api-token', { debug: true } });
 

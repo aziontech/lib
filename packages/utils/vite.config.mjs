@@ -1,4 +1,4 @@
-import { createViteConfig } from '@lib/vite-config';
+import { createViteConfig } from '@aziontech/vite-config';
 
 export default createViteConfig({
   dirname: __dirname,

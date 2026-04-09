@@ -1,4 +1,4 @@
-import * as utils from 'azion/utils/node';
+import * as utils from '@aziontech/utils/node';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, relative } from 'path';
 import { normalizePath, validateFile } from '../../../utils/fs.js';

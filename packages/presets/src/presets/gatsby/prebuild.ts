@@ -1,5 +1,5 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
-import { exec, getPackageManager } from 'azion/utils/node';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
+import { exec, getPackageManager } from '@aziontech/utils/node';
 import { mkdir } from 'fs/promises';
 
 /**

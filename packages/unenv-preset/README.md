@@ -37,7 +37,7 @@ yarn add azion
 The preset can be used with unenv to provide compatibility between Node.js and Azion Edge Runtime environments:
 
 ```javascript
-import { preset } from 'azion/unenv-preset';
+import { preset } from '@aziontech/unenv-preset';
 // Use with unenv
 export default {
   preset: preset,
@@ -65,7 +65,7 @@ This preset provides polyfills for common Node.js APIs to ensure compatibility w
 Example using crypto polyfill:
 
 ```javascript
-import { createHash, randomUUID } from 'azion/unenv-preset/polyfills/node/crypto';
+import { createHash, randomUUID } from '@aziontech/unenv-preset/polyfills/node/crypto';
 
 // Create a hash
 const hash = createHash('sha256');
@@ -83,7 +83,7 @@ The preset includes comprehensive file system polyfills that mirror Node.js's `f
 #### Basic File Operations
 
 ```javascript
-import { readFileSync, writeFileSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { readFileSync, writeFileSync } from '@aziontech/unenv-preset/polyfills/node/fs';
 
 // Read a file
 const content = readFileSync('/path/to/file.txt', 'utf8');
@@ -95,7 +95,7 @@ writeFileSync('/path/to/new-file.txt', 'Hello World', 'utf8');
 #### Directory Operations
 
 ```javascript
-import { readdirSync, mkdirSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { readdirSync, mkdirSync } from '@aziontech/unenv-preset/polyfills/node/fs';
 
 // List directory contents
 const files = readdirSync('/path/to/dir');
@@ -107,7 +107,7 @@ mkdirSync('/path/to/new-dir');
 #### File Stats and Information
 
 ```javascript
-import { statSync, existsSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { statSync, existsSync } from '@aziontech/unenv-preset/polyfills/node/fs';
 
 // Check if file exists
 if (existsSync('/path/to/file.txt')) {
@@ -122,7 +122,7 @@ if (existsSync('/path/to/file.txt')) {
 #### File Descriptors
 
 ```javascript
-import { openSync, closeSync, readSync } from 'azion/unenv-preset/polyfills/node/fs';
+import { openSync, closeSync, readSync } from '@aziontech/unenv-preset/polyfills/node/fs';
 
 // Open file and get file descriptor
 const fd = openSync('/path/to/file.txt', 'r');
@@ -148,7 +148,7 @@ The preset also provides polyfills for Node.js global variables and objects:
 The preset also handles injection of these globals through the unenv configuration:
 
 ```javascript
-import { preset } from 'azion/unenv-preset';
+import { preset } from '@aziontech/unenv-preset';
 
 // Preset configuration automatically injects globals
 export default {

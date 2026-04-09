@@ -1,6 +1,6 @@
 {
-  "name": "@lib/config",
-  "version": "1.0.0",
+  "name": "@aziontech/config",
+  "version": "0.0.0",
   "description": "Azion configuration.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -33,21 +33,25 @@
     "package.json"
   ],
   "dependencies": {
+    "@aziontech/types": "workspace:*",
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",
     "ajv-keywords": "^5.1.0",
     "mathjs": "^13.1.1"
   },
   "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.12",
     "@types/mock-fs": "^4.13.4",
     "@types/node": "^22.13.1",
     "@types/tmp": "^0.2.6",
+    "esbuild": "^0.25.10",
     "jest": "^29.7.0",
     "mock-fs": "^5.5.0",
     "tmp": "^0.2.5",
     "ts-jest": "^29.1.5",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "webpack": "^5.97.1"
   }
 }

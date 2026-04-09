@@ -1,5 +1,5 @@
-import { AzionPrebuildResult, BuildConfiguration, BuildContext } from 'azion/config';
-import { exec, getPackageManager } from 'azion/utils/node';
+import { AzionPrebuildResult, BuildConfiguration, BuildContext } from '@aziontech/config';
+import { exec, getPackageManager } from '@aziontech/utils/node';
 import { existsSync } from 'fs';
 import { mkdir, readFile, rm } from 'fs/promises';
 
@@ -8,7 +8,7 @@ const AZION_CONFIG_FILES = ['azion.config.js', 'azion.config.ts', 'azion.config.
 const PATHS = {
   BUILD_DIR_DEFAULT: 'build',
   AZION_BUILD_DIR: '.svelte-kit/azion',
-  WORKER_FILE: '.svelte-kit/azion/_worker.js',
+  WORKER_FILE: '.svelte-kit/@aziontech/_worker.js',
 } as const;
 
 async function readSvelteConfig() {
@@ -27,7 +27,7 @@ async function readSvelteConfig() {
 
     const content = await readFile(configPath, 'utf8');
     const hasAzionPreset = /azion\/preset\/sveltekit/i.test(content);
-    const hasAzionAdapter = /@sveltejs\/adapter-azion/i.test(content);
+    const hasAzionAdapter = /@sveltejs\/adapter-@aziontech/i.test(content);
     const hasAzionConfig = hasAzionPreset || hasAzionAdapter;
 
     // check if adapater-static and assets,pages config exists

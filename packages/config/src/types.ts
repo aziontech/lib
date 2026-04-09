@@ -1,4 +1,4 @@
-import { AzionRuntimeModule } from 'azion/types';
+import { AzionRuntimeModule } from '@aziontech/types';
 
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';

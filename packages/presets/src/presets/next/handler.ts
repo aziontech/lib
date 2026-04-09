@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AzionRuntimeCtx, AzionRuntimeRequest } from 'azion/types';
+import { AzionRuntimeCtx, AzionRuntimeRequest } from '@aziontech/types';
 import { handleImageResizingRequest } from './default/handler/images.js';
 import { adjustRequestForVercel } from './default/handler/routing/http.js';
 import handlerStatic from './static/handler.js';
