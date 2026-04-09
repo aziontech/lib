@@ -1,4 +1,4 @@
-import { lookup as lookupCache, save as saveCache } from '@aziontech/preset/sveltekit/cache';
+import { lookup as lookupCache, save as saveCache } from '@aziontech/presets/preset/sveltekit/cache/default';
 import { base_path, manifest, prerendered } from 'MANIFEST';
 import { Server } from 'SERVER';
 
