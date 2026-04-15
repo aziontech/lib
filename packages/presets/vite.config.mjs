@@ -1,20 +1,8 @@
 import { createViteConfig } from '@aziontech/vite-config';
-import { resolve } from 'path';
 
 export default createViteConfig({
   dirname: __dirname,
   ssr: true,
-  alias: {
-    '@aziontech/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
-    '@aziontech/utils/edge': resolve(__dirname, '../utils/src/edge/'),
-    '@aziontech/utils/node': resolve(__dirname, '../utils/src/node/'),
-    '@aziontech/utils': resolve(__dirname, '../utils/src/'),
-    '@aziontech/config': resolve(__dirname, '../config/src/'),
-    '@aziontech/config/rules': resolve(__dirname, '../config/src/rules/'),
-    '@aziontech/presets': resolve(__dirname, '../presets/src/'),
-    '@aziontech/builder': resolve(__dirname, '../builder/src/'),
-    '@aziontech/types': resolve(__dirname, '../types/src/'),
-  },
   external: (id) => {
     if (id.includes('node_modules')) return true;
 
@@ -29,6 +17,9 @@ export default createViteConfig({
       'fs/promises',
       'path',
       'cookie',
+      '@aziontech/unenv-preset',
+      '@aziontech/utils',
+      '@aziontech/config',
     ];
 
     return deps.some((dep) => id === dep || id.startsWith(`${dep}/`));

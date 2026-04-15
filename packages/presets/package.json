@@ -36,7 +36,6 @@
   ],
   "dependencies": {
     "@aziontech/config": "workspace:*",
-    "@aziontech/presets": "workspace:*",
     "@aziontech/types": "workspace:*",
     "@aziontech/unenv-preset": "workspace:*",
     "@aziontech/utils": "workspace:*",
@@ -45,6 +44,7 @@
     "pcre-to-regexp": "^1.1.0",
     "semver": "^7.7.4",
     "ts-jest": "^29.4.9",
+    "mime-types": "^3.0.1",
     "webpack": "^5.97.1"
   },
   "devDependencies": {

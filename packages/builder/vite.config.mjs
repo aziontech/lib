@@ -1,17 +1,15 @@
 import { createViteConfig } from '@aziontech/vite-config';
-import { resolve } from 'path';
 
 export default createViteConfig({
   dirname: __dirname,
   ssr: true,
-  alias: {
-    '@aziontech/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
-    '@aziontech/utils/node': resolve(__dirname, '../utils/src/node/'),
-  },
   external: [
     '@edge-runtime/primitives',
     '@fastly/http-compute-js',
     '@aziontech/unenv-preset',
+    '@aziontech/utils',
+    '@aziontech/config',
+    '@aziontech/presets',
     'accepts',
     'browserify-zlib',
     'dotenv',

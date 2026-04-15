@@ -23,7 +23,7 @@ export default {
     buffer: `${polyfillsPath}/node/buffer.js`,
     https: `${polyfillsPath}/node/https.js`,
     module: `${polyfillsPath}/node/module.js`,
-    string_decoder: 'string_decoder',
+    string_decoder: 'string_decoder/',
     timers: 'timers-browserify',
     util: `${polyfillsPath}/node/util.js`,
     zlib: `${polyfillsPath}/node/zlib.js`,

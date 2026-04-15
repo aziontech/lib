@@ -1,5 +1,4 @@
 import { createViteConfig } from '@aziontech/vite-config';
-import { resolve } from 'path';
 
 export default createViteConfig({
   dirname: __dirname,
@@ -7,11 +6,6 @@ export default createViteConfig({
   entry: {
     index: 'src/index.ts',
     rules: 'src/rules/index.ts',
-  },
-  alias: {
-    '@aziontech/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
-    '@aziontech/utils/node': resolve(__dirname, '../utils/src/node/'),
-    '@aziontech/builder': resolve(__dirname, '../builder/src/'),
   },
   external: ['ajv', 'ajv-errors', 'ajv-keywords', 'mathjs'],
   dts: {
