@@ -238,10 +238,6 @@ compareReports(report1: TelemetryReport, report2: TelemetryReport): object
 extractPluginMetrics(spans: TelemetrySpan[]): TelemetryPluginMetrics[]
 ```
 
-## Environment Variables
-
-- `AZION_TELEMETRY=false` - Disable telemetry collection
-
 ## License
 
 MIT

@@ -19,10 +19,10 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
-    "./preset/nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
-    "./preset/sveltekit/*": "./src/presets/svelte/kit/index.js",
-    "./preset/sveltekit/cache/*": "./src/presets/svelte/kit/cache/index.js",
-    "./presets/preset/*": "./dist/presets/*"
+    "./nuxt/*": "./src/presets/nuxt/nitro/*/index.js",
+    "./sveltekit": "./src/presets/svelte/kit/index.js",
+    "./sveltekit/cache": "./src/presets/svelte/kit/cache/index.js",
+    "./preset/*": "./dist/presets/*"
   },
   "author": "aziontech",
   "license": "MIT",
@@ -36,7 +36,6 @@
   ],
   "dependencies": {
     "@aziontech/config": "workspace:*",
-    "@aziontech/presets": "workspace:*",
     "@aziontech/types": "workspace:*",
     "@aziontech/unenv-preset": "workspace:*",
     "@aziontech/utils": "workspace:*",
@@ -45,6 +44,7 @@
     "pcre-to-regexp": "^1.1.0",
     "semver": "^7.7.4",
     "ts-jest": "^29.4.9",
+    "mime-types": "^3.0.1",
     "webpack": "^5.97.1"
   },
   "devDependencies": {

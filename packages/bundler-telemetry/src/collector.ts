@@ -309,4 +309,8 @@ export class TelemetryCollector {
   private generateSpanId(): string {
     return `span_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
+
+  getConfig(): TelemetryConfig {
+    return this.config;
+  }
 }

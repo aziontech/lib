@@ -26,7 +26,7 @@ async function readSvelteConfig() {
     }
 
     const content = await readFile(configPath, 'utf8');
-    const hasAzionPreset = /@aziontech\/presets\/preset\/sveltekit/i.test(content);
+    const hasAzionPreset = /@aziontech\/presets\/sveltekit/i.test(content);
     const hasAzionAdapter = /@sveltejs\/adapter-azion/i.test(content);
     const hasAzionConfig = hasAzionPreset || hasAzionAdapter;
 

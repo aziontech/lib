@@ -219,14 +219,14 @@ export function compareReports(
 }
 
 export const runPhaseWithTelemetry = async <T>(
-  telemetry: TelemetryCollector,
-  telemetryEnabled: boolean,
-  outputFormat: TelemetryOutputFormat,
+  telemetry: TelemetryCollector | undefined,
+  telemetryEnabled: boolean | undefined,
+  outputFormat: TelemetryOutputFormat | undefined,
   phaseName: string,
   displayName: string,
   fn: () => Promise<T>,
 ): Promise<T> => {
-  const spanId = telemetry.startSpan(phaseName);
+  const spanId = telemetry?.startSpan(phaseName) ?? '';
   if (telemetryEnabled && outputFormat !== 'json' && outputFormat !== 'html') {
     console.log(
       formatPhaseStart({
@@ -240,14 +240,14 @@ export const runPhaseWithTelemetry = async <T>(
   }
   try {
     const result = await fn();
-    telemetry.endSpan(spanId);
+    telemetry?.endSpan(spanId);
     if (telemetryEnabled && outputFormat !== 'json' && outputFormat !== 'html') {
-      const span = telemetry.getSpan(spanId);
+      const span = telemetry?.getSpan(spanId);
       if (span) console.log(formatPhaseComplete(span));
     }
     return result;
   } catch (error) {
-    telemetry.endSpan(spanId);
+    telemetry?.endSpan(spanId);
     throw error;
   }
 };
