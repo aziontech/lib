@@ -20,6 +20,8 @@ jobs:
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
+        with:
+          node-version: 24
 
       - name: Build Azion package
         run: pnpm run compile
@@ -33,4 +35,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           NODE_ENV: 'production'
-          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} // active when publish a new package
