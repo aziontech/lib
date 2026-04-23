@@ -19,19 +19,6 @@ const getPresetsEntries = () => {
 };
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      'azion/unenv-preset': resolve(__dirname, '../unenv-preset/src/'),
-      'azion/utils/edge': resolve(__dirname, '../utils/src/edge/'),
-      'azion/utils/node': resolve(__dirname, '../utils/src/node/'),
-      'azion/utils': resolve(__dirname, '../utils/src/'),
-      'azion/config/rules': resolve(__dirname, '../config/src/rules/'),
-      'azion/config': resolve(__dirname, '../config/src/'),
-      'azion/presets': resolve(__dirname, '../presets/src/'),
-      'azion/bundler': resolve(__dirname, '../bundler/src/'),
-      'azion/types': resolve(__dirname, '../types/src/'),
-    },
-  },
   build: {
     ssr: true,
     emptyOutDir: false,
@@ -54,6 +41,9 @@ export default defineConfig({
           'fs',
           'fs/promises',
           'path',
+          '@aziontech/unenv-preset',
+          '@aziontech/utils',
+          '@aziontech/config',
         ];
 
         return deps.some((dep) => id === dep || id.startsWith(`${dep}/`));

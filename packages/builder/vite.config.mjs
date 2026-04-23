@@ -1,0 +1,38 @@
+import { createViteConfig } from '@aziontech/vite-config';
+
+export default createViteConfig({
+  dirname: __dirname,
+  ssr: true,
+  external: [
+    '@edge-runtime/primitives',
+    '@fastly/http-compute-js',
+    '@aziontech/unenv-preset',
+    '@aziontech/utils',
+    '@aziontech/config',
+    '@aziontech/presets',
+    'accepts',
+    'browserify-zlib',
+    'dotenv',
+    'esbuild',
+    'events',
+    'inherits',
+    'ip-cidr',
+    'lodash-es',
+    'mime',
+    'mime-types',
+    'stream-browserify',
+    'stream-http',
+    'string_decoder',
+    'timers-browserify',
+    'ts-loader',
+    'unenv',
+    'url',
+    'util',
+    'vm-browserify',
+    'webpack',
+  ],
+  dts: {
+    exclude: ['src/**/*.test.ts', 'src/polyfills/**/*'],
+    aliasesExclude: [/^azion\//],
+  },
+});

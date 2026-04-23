@@ -1,4 +1,4 @@
-import { Azion } from 'azion/types';
+import { Azion } from '@aziontech/types';
 import { AzionClientOptions, QueryResult } from '../../types';
 
 export const getAzionSql = () => {

@@ -340,7 +340,7 @@ export default convertLegacyConfig;
  * };
  *
  * // Convert to V4
- * import { convertV3ToV4Config } from 'azion/config';
+ * import { convertV3ToV4Config } from '@aziontech/config';
  * const v4Config = convertV3ToV4Config(legacyConfig);
  *
  * // V4 Result:
@@ -394,7 +394,7 @@ export default convertLegacyConfig;
  * // }
  *
  * // For CLI usage:
- * import { migrateConfigV3ToV4 } from 'azion/config';
+ * import { migrateConfigV3ToV4 } from '@aziontech/config';
  * const result = migrateConfigV3ToV4('./azion.config.js');
  * console.log(result.message);
  */

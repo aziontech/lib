@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path, { join } from 'path';
 
-import { copyDirectory, feedback, getAbsoluteDirPath } from 'azion/utils/node';
+import { copyDirectory, feedback, getAbsoluteDirPath } from '@aziontech/utils/node';
 import BuildStatic from './statics/index.js';
 
 /**

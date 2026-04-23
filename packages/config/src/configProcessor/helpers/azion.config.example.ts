@@ -16,7 +16,7 @@ import type {
   WorkloadMTLSVerification,
   WorkloadTLSCipher,
   WorkloadTLSVersion,
-} from 'azion/config';
+} from '@aziontech/config';
 
 const config: AzionConfig = {
   build: {

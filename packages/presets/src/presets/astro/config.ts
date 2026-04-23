@@ -1,5 +1,5 @@
-import type { AzionConfig } from 'azion/config';
-import { createMPARules } from 'azion/config/rules';
+import type { AzionConfig } from '@aziontech/config';
+import { createMPARules } from '@aziontech/config/rules';
 
 const config: AzionConfig = {
   build: {

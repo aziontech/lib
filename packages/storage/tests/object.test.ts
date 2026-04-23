@@ -1,7 +1,10 @@
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { createObject, deleteObject, getObjectByKey, getObjects, updateObject } from '../src/index';
 import * as services from '../src/services/api/index';
 
 jest.mock('../src/services/api/index');
+
+const mockedServices = services as jest.Mocked<typeof services>;
 
 describe('Storage Module - Object operations', () => {
   const mockToken = 'mock-token';
@@ -20,8 +23,8 @@ describe('Storage Module - Object operations', () => {
 
   describe('createObject', () => {
     it('should successfully create an object', async () => {
-      const mockResponse = { data: { object_key: 'test-object' }, state: 'success' };
-      (services.postObject as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = { data: { object_key: 'test-object' }, state: 'executed' as const };
+      mockedServices.postObject.mockResolvedValue(mockResponse);
 
       const result = await createObject({
         bucket: 'test-bucket',
@@ -30,8 +33,8 @@ describe('Storage Module - Object operations', () => {
         options: { debug, env },
       });
 
-      expect(result.data).toEqual({ key: 'test-object', state: 'success' });
-      expect(services.postObject).toHaveBeenCalledWith(
+      expect(result.data).toEqual({ key: 'test-object', state: 'executed' });
+      expect(mockedServices.postObject).toHaveBeenCalledWith(
         mockToken,
         'test-bucket',
         'test-object',
@@ -43,7 +46,7 @@ describe('Storage Module - Object operations', () => {
     });
 
     it('should return error on failure', async () => {
-      (services.postObject as jest.Mock).mockResolvedValue({
+      mockedServices.postObject.mockResolvedValue({
         error: { message: 'token invalid', operation: 'create object' },
       });
 
@@ -60,17 +63,17 @@ describe('Storage Module - Object operations', () => {
 
   describe('deleteObject', () => {
     it('should successfully delete an object', async () => {
-      const mockResponse = { data: { state: 'success' } };
-      (services.deleteObject as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = { data: { object_key: 'test-object' }, state: 'executed' as const };
+      mockedServices.deleteObject.mockResolvedValue(mockResponse);
 
       const result = await deleteObject({ bucket: 'test-bucket', key: 'test-object', options: { debug, env } });
 
-      expect(result.data).toEqual({ key: 'test-object' });
-      expect(services.deleteObject).toHaveBeenCalledWith(mockToken, 'test-bucket', 'test-object', debug, env);
+      expect(result.data).toEqual({ key: 'test-object', state: 'executed' });
+      expect(mockedServices.deleteObject).toHaveBeenCalledWith(mockToken, 'test-bucket', 'test-object', debug, env);
     });
 
     it('should return error on failure', async () => {
-      (services.deleteObject as jest.Mock).mockResolvedValue({
+      mockedServices.deleteObject.mockResolvedValue({
         error: { message: 'token invalid', operation: 'delete object' },
       });
 
@@ -83,16 +86,16 @@ describe('Storage Module - Object operations', () => {
   describe('getObjectByKey', () => {
     it('should successfully get an object by key', async () => {
       const mockResponse = { data: 'file-content' };
-      (services.getObjectByKey as jest.Mock).mockResolvedValue(mockResponse);
+      mockedServices.getObjectByKey.mockResolvedValue(mockResponse);
 
       const result = await getObjectByKey({ bucket: 'test-bucket', key: 'test-object', options: { debug, env } });
 
       expect(result.data).toEqual({ key: 'test-object', content: 'file-content' });
-      expect(services.getObjectByKey).toHaveBeenCalledWith(mockToken, 'test-bucket', 'test-object', debug, env);
+      expect(mockedServices.getObjectByKey).toHaveBeenCalledWith(mockToken, 'test-bucket', 'test-object', debug, env);
     });
 
     it('should return error on failure', async () => {
-      (services.getObjectByKey as jest.Mock).mockResolvedValue({
+      mockedServices.getObjectByKey.mockResolvedValue({
         error: { message: 'token invalid', operation: 'get object by key' },
       });
 
@@ -105,11 +108,11 @@ describe('Storage Module - Object operations', () => {
     it('should successfully get objects from a bucket', async () => {
       const mockResponse = {
         results: [
-          { key: 'object1', size: 100, last_modified: '2023-01-01', content_type: 'text/plain' },
-          { key: 'object2', size: 200, last_modified: '2023-01-02', content_type: 'image/jpeg' },
+          { key: 'object1', size: 100, last_modified: '2023-01-01' },
+          { key: 'object2', size: 200, last_modified: '2023-01-02' },
         ],
       };
-      (services.getObjects as jest.Mock).mockResolvedValue(mockResponse);
+      mockedServices.getObjects.mockResolvedValue(mockResponse);
 
       const result = await getObjects({
         bucket: 'test-bucket',
@@ -118,11 +121,17 @@ describe('Storage Module - Object operations', () => {
       });
       expect(result.data?.objects).toHaveLength(2);
       expect(result.data?.objects![0]).toEqual(expect.objectContaining({ key: 'object1' }));
-      expect(services.getObjects).toHaveBeenCalledWith(mockToken, 'test-bucket', { max_object_count: 50 }, debug, env);
+      expect(mockedServices.getObjects).toHaveBeenCalledWith(
+        mockToken,
+        'test-bucket',
+        { max_object_count: 50 },
+        debug,
+        env,
+      );
     });
 
     it('should return error on failure', async () => {
-      (services.getObjects as jest.Mock).mockResolvedValue({
+      mockedServices.getObjects.mockResolvedValue({
         error: { message: 'token invalid', operation: 'get objects' },
       });
 
@@ -137,8 +146,8 @@ describe('Storage Module - Object operations', () => {
 
   describe('updateObject', () => {
     it('should successfully update an object', async () => {
-      const mockResponse = { data: { object_key: 'test-object' }, state: 'success' };
-      (services.putObject as jest.Mock).mockResolvedValue(mockResponse);
+      const mockResponse = { data: { object_key: 'test-object' }, state: 'executed' as const };
+      mockedServices.putObject.mockResolvedValue(mockResponse);
 
       const result = await updateObject({
         bucket: 'test-bucket',
@@ -146,8 +155,8 @@ describe('Storage Module - Object operations', () => {
         content: 'updated-content',
         options: { debug, env },
       });
-      expect(result.data).toEqual({ key: 'test-object', content: 'updated-content', state: 'success' });
-      expect(services.putObject).toHaveBeenCalledWith(
+      expect(result.data).toEqual({ key: 'test-object', content: 'updated-content', state: 'executed' });
+      expect(mockedServices.putObject).toHaveBeenCalledWith(
         mockToken,
         'test-bucket',
         'test-object',
@@ -159,7 +168,7 @@ describe('Storage Module - Object operations', () => {
     });
 
     it('should return error on failure', async () => {
-      (services.putObject as jest.Mock).mockResolvedValue({
+      mockedServices.putObject.mockResolvedValue({
         error: { message: 'invalid token', operation: 'update object' },
       });
 

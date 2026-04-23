@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs';
 import { join, relative, resolve } from 'path';
 
-import { feedback } from 'azion/utils/node';
+import { feedback } from '@aziontech/utils/node';
 import { copyFileWithDir, normalizePath, readJsonFile, validateFile } from '../../../utils/fs.js';
 import { formatRoutePath, stripIndexRoute } from '../../../utils/routing.js';
 

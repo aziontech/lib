@@ -21,7 +21,7 @@ npm install azion
 Configure your `svelte.config.js` to use the Azion SSR adapter:
 
 ```javascript
-import adapter from 'azion/preset/svelte/ssr';
+import adapter from '@aziontech/preset/sveltekit';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

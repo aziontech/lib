@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
+import * as utils from '@aziontech/utils/node';
 import { jest } from '@jest/globals';
-import * as utils from 'azion/utils/node';
 import { processVercelOutput } from './process-mapping.js';
 
 describe('process-mapping-service', () => {

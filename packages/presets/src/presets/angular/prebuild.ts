@@ -1,5 +1,5 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
-import { exec, getPackageManager, type PackageManagerType } from 'azion/utils/node';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
+import { exec, getPackageManager, type PackageManagerType } from '@aziontech/utils/node';
 import { promises as fs } from 'fs';
 import path from 'path';
 

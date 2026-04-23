@@ -1,11 +1,6 @@
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { spawn } from 'child_process';
 import exec from './index';
-
-interface MockChildProcess {
-  stdout: { on: jest.Mock };
-  stderr: { on: jest.Mock };
-  on: jest.Mock;
-}
 
 jest.mock('child_process');
 jest.mock('signale', () => ({
@@ -16,7 +11,11 @@ jest.mock('signale', () => ({
 }));
 
 describe('exec utils', () => {
-  let mockChildProcess: MockChildProcess;
+  let mockChildProcess: {
+    stdout: { on: jest.Mock };
+    stderr: { on: jest.Mock };
+    on: jest.Mock;
+  };
 
   beforeEach(() => {
     mockChildProcess = {
@@ -28,9 +27,9 @@ describe('exec utils', () => {
   });
 
   test('Should resolve when process closes with code 0', async () => {
-    mockChildProcess.on.mockImplementation((event, callback) => {
+    mockChildProcess.on.mockImplementation((event: unknown, callback: unknown) => {
       if (event === 'close') {
-        callback(0);
+        (callback as (code: number) => void)(0);
       }
     });
 
@@ -41,9 +40,9 @@ describe('exec utils', () => {
   });
 
   test('Should reject when process closes with non-zero code', async () => {
-    mockChildProcess.on.mockImplementation((event, callback) => {
+    mockChildProcess.on.mockImplementation((event: unknown, callback: unknown) => {
       if (event === 'close') {
-        callback(1);
+        (callback as (code: number) => void)(1);
       }
     });
 
@@ -53,9 +52,9 @@ describe('exec utils', () => {
   test('Should reject when process emits an error', async () => {
     const error = new Error('Test error');
 
-    mockChildProcess.on.mockImplementation((event, callback) => {
+    mockChildProcess.on.mockImplementation((event: unknown, callback: unknown) => {
       if (event === 'error') {
-        callback(error);
+        (callback as (err: Error) => void)(error);
       }
     });
 
@@ -63,21 +62,21 @@ describe('exec utils', () => {
   });
 
   test('Should log stdout and stderr when verbose is true', async () => {
-    mockChildProcess.on.mockImplementation((event, callback) => {
+    mockChildProcess.on.mockImplementation((event: unknown, callback: unknown) => {
       if (event === 'close') {
-        callback(0);
+        (callback as (code: number) => void)(0);
       }
     });
 
-    mockChildProcess.stdout.on.mockImplementation((event, callback) => {
+    mockChildProcess.stdout.on.mockImplementation((event: unknown, callback: unknown) => {
       if (event === 'data') {
-        callback('Test stdout');
+        (callback as (data: string) => void)('Test stdout');
       }
     });
 
-    mockChildProcess.stderr.on.mockImplementation((event, callback) => {
+    mockChildProcess.stderr.on.mockImplementation((event: unknown, callback: unknown) => {
       if (event === 'data') {
-        callback('Test stderr');
+        (callback as (data: string) => void)('Test stderr');
       }
     });
 

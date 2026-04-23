@@ -1,8 +1,11 @@
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { chat, createClient, streamChat } from '../src/index';
 import * as servicesApi from '../src/services/api/index';
 import { AzionAIClient, AzionAIResponse, AzionAIStreamResponse } from './types';
 
 jest.mock('../src/services/api/index');
+
+const mockedServices = servicesApi as jest.Mocked<typeof servicesApi>;
 
 describe('AI Module', () => {
   const mockToken = 'mock-token';
@@ -59,11 +62,11 @@ describe('AI Module', () => {
           completion_tokens_details: { reasoning_tokens: 1 },
         },
       };
-      (servicesApi.chatCompletion as jest.Mock).mockResolvedValue(mockResponse);
+      mockedServices.chatCompletion.mockResolvedValue(mockResponse);
 
       const result = await chat({ messages: [{ role: 'user', content: 'Hi' }] }, { debug: mockDebug });
       expect(result.data).toEqual(mockResponse);
-      expect(servicesApi.chatCompletion).toHaveBeenCalledWith(mockToken, {
+      expect(mockedServices.chatCompletion).toHaveBeenCalledWith(mockToken, {
         messages: [{ role: 'user', content: 'Hi' }],
         stream: false,
       });
@@ -71,7 +74,7 @@ describe('AI Module', () => {
 
     it('should return error on failure', async () => {
       const mockError = new Error('API Error');
-      (servicesApi.chatCompletion as jest.Mock).mockRejectedValue(mockError);
+      mockedServices.chatCompletion.mockRejectedValue(mockError);
 
       const result = await chat({ messages: [{ role: 'user', content: 'Hi' }] }, { debug: mockDebug });
       expect(result.error).toBeInstanceOf(Error);
@@ -90,7 +93,7 @@ describe('AI Module', () => {
         system_fingerprint: 'fp-123',
       };
 
-      (servicesApi.streamChatCompletion as jest.Mock).mockImplementation(function* () {
+      mockedServices.streamChatCompletion.mockImplementation(async function* () {
         yield mockStreamResponse;
       });
 
@@ -99,7 +102,7 @@ describe('AI Module', () => {
       const result = await generator.next();
       expect(result.value.data).toEqual(mockStreamResponse);
 
-      expect(servicesApi.streamChatCompletion).toHaveBeenCalledWith(mockToken, {
+      expect(mockedServices.streamChatCompletion).toHaveBeenCalledWith(mockToken, {
         messages: [{ role: 'user', content: 'Hi' }],
         stream: true,
       });
@@ -108,7 +111,7 @@ describe('AI Module', () => {
     it('should yield error on failure', async () => {
       const mockError = new Error('Stream Error');
       // eslint-disable-next-line require-yield
-      (servicesApi.streamChatCompletion as jest.Mock).mockImplementation(function* () {
+      mockedServices.streamChatCompletion.mockImplementation(async function* () {
         throw mockError;
       });
 
@@ -143,11 +146,11 @@ describe('AI Module', () => {
           completion_tokens_details: { reasoning_tokens: 1 },
         },
       };
-      (servicesApi.chatCompletion as jest.Mock).mockResolvedValue(mockResponse);
+      mockedServices.chatCompletion.mockResolvedValue(mockResponse);
 
       const result = await client.chat({ messages: [{ role: 'user', content: 'Hi' }] });
       expect(result.data).toEqual(mockResponse);
-      expect(servicesApi.chatCompletion).toHaveBeenCalledWith('custom-token', {
+      expect(mockedServices.chatCompletion).toHaveBeenCalledWith('custom-token', {
         messages: [{ role: 'user', content: 'Hi' }],
         stream: false,
       });
@@ -163,11 +166,11 @@ describe('AI Module', () => {
         system_fingerprint: 'fp-123',
       };
 
-      function* mockStreamGenerator() {
+      async function* mockStreamGenerator() {
         yield mockStreamResponse;
       }
 
-      (servicesApi.streamChatCompletion as jest.Mock).mockReturnValue(mockStreamGenerator());
+      mockedServices.streamChatCompletion.mockReturnValue(mockStreamGenerator());
 
       const generator = client.streamChat({ messages: [{ role: 'user', content: 'Hi' }] });
 
@@ -175,7 +178,7 @@ describe('AI Module', () => {
         expect(chunk.data).toEqual(mockStreamResponse);
       }
 
-      expect(servicesApi.streamChatCompletion).toHaveBeenCalledWith('custom-token', {
+      expect(mockedServices.streamChatCompletion).toHaveBeenCalledWith('custom-token', {
         messages: [{ role: 'user', content: 'Hi' }],
         stream: true,
       });

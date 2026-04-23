@@ -38,7 +38,7 @@ The `mountSPA` function is designed to process requests to a Single Page Applica
 **JavaScript Example:**
 
 ```javascript
-import { mountSPA } from 'azion/utils/edge';
+import { mountSPA } from '@aziontech/utils/edge';
 
 const myApp = await mountSPA('https://example.com/');
 console.log(myApp);
@@ -49,7 +49,7 @@ console.log(myApp);
 **TypeScript Example:**
 
 ```typescript
-import { mountSPA } from 'azion/utils/edge';
+import { mountSPA } from '@aziontech/utils/edge';
 
 const myApp: Response = await mountSPA('https://example.com/');
 console.log(myApp);
@@ -64,7 +64,7 @@ The `mountMPA` function handles requests for Multi-Page Applications (MPA) at th
 **JavaScript Example:**
 
 ```javascript
-import { mountMPA } from 'azion/utils/edge';
+import { mountMPA } from '@aziontech/utils/edge';
 
 const myApp = await mountMPA('https://example.com/about');
 console.log(myApp);
@@ -75,7 +75,7 @@ console.log(myApp);
 **TypeScript Example:**
 
 ```typescript
-import { mountMPA } from 'azion/utils/edge';
+import { mountMPA } from '@aziontech/utils/edge';
 
 const myApp: Response = await mountMPA('https://example.com/about');
 console.log(myApp);
@@ -90,7 +90,7 @@ The `parseRequest` function is designed to parse and log the details of an incom
 **JavaScript Example:**
 
 ```javascript
-import { parseRequest } from 'azion/utils';
+import { parseRequest } from '@aziontech/utils';
 
 const parsedRequest = await parseRequest(event);
 console.log(parsedRequest);
@@ -152,8 +152,8 @@ console.log(parsedRequest);
 **TypeScript Example:**
 
 ```typescript
-import { parseRequest } from 'azion/utils';
-import type { ParsedRequest } from 'azion/utils';
+import { parseRequest } from '@aziontech/utils';
+import type { ParsedRequest } from '@aziontech/utils';
 
 const parsedRequest: ParsedRequest = await parseRequest(event);
 console.log(parsedRequest);

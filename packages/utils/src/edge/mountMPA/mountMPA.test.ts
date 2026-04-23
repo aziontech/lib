@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import mountMPA from './mountMPA';
 
 describe('mountMPA', () => {
@@ -5,7 +6,7 @@ describe('mountMPA', () => {
 
   beforeEach(() => {
     originalFetch = global.fetch;
-    global.fetch = jest.fn().mockResolvedValue({});
+    jest.spyOn(global, 'fetch').mockResolvedValue({} as Response);
   });
 
   afterEach(() => {
@@ -50,7 +51,7 @@ describe('mountMPA', () => {
 
   it('should return the fetch response', async () => {
     const mockResponse = { ok: true, status: 200 };
-    (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+    jest.spyOn(global, 'fetch').mockResolvedValue(mockResponse as Response);
 
     const requestURL = 'http://example.com/';
     const result = await mountMPA(requestURL);
@@ -60,7 +61,7 @@ describe('mountMPA', () => {
 
   it('should throw an error if fetch fails', async () => {
     const mockError = new Error('Fetch failed');
-    (global.fetch as jest.Mock).mockRejectedValue(mockError);
+    jest.spyOn(global, 'fetch').mockRejectedValue(mockError);
 
     const requestURL = 'http://example.com/';
 

@@ -76,7 +76,7 @@ const require = createRequire(import.meta.url);
 
 export default defineNuxtConfig({
   nitro: {
-    preset: require.resolve('azion/preset/nuxt/ssr'), // or 'azion/preset/nuxt/ssg'
+    preset: require.resolve('@aziontech/preset/nuxt/ssr'), // or '@aziontech/preset/nuxt/ssg'
   },
 });
 ```
@@ -103,7 +103,7 @@ npm install azion
 Configure your `svelte.config.js`:
 
 ```javascript
-import adapter from 'azion/preset/svelte/ssr';
+import adapter from '@aziontech/preset/svelte/ssr';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

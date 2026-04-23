@@ -1,12 +1,12 @@
-import { Azion } from 'azion/types';
+import { Azion } from '@aziontech/types';
 import {
-    AzionBucket,
-    AzionBucketObject,
-    AzionBucketObjects,
-    AzionDeletedBucketObject,
-    AzionObjectCollectionParams,
-    AzionStorageResponse,
-    ContentObjectStorage,
+  AzionBucket,
+  AzionBucketObject,
+  AzionBucketObjects,
+  AzionDeletedBucketObject,
+  AzionObjectCollectionParams,
+  AzionStorageResponse,
+  ContentObjectStorage,
 } from '../../types';
 import { removeLeadingSlash, retryWithBackoff } from '../../utils/index';
 

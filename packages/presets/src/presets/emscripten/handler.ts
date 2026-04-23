@@ -1,4 +1,4 @@
-import { AzionRuntimeModule, AzionRuntimeRequest } from 'azion/types';
+import { AzionRuntimeModule, AzionRuntimeRequest } from '@aziontech/types';
 import metadata from './metadata';
 
 interface WasmModule {

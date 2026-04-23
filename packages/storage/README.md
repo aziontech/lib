@@ -97,7 +97,7 @@ You can create a client instance with specific configurations.
 **JavaScript:**
 
 ```javascript
-import { createBucket } from 'azion/storage';
+import { createBucket } from '@aziontech/storage';
 
 const { data, error } = await createBucket({ name: 'my-new-bucket', workloads_access: 'read_only' });
 if (data) {
@@ -110,8 +110,8 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { createBucket } from 'azion/storage';
-import type { AzionStorageResponse, AzionBucket } from 'azion/storage';
+import { createBucket } from '@aziontech/storage';
+import type { AzionStorageResponse, AzionBucket } from '@aziontech/storage';
 const { data, error }: AzionStorageResponse<AzionBucket> = await createBucket({
   name: 'my-new-bucket',
   workloads_access: 'read_only',
@@ -128,7 +128,7 @@ if (data) {
 **JavaScript:**
 
 ```javascript
-import { deleteBucket } from 'azion/storage';
+import { deleteBucket } from '@aziontech/storage';
 
 const { data, error } = await deleteBucket({ name: 'my-bucket' });
 if (data) {
@@ -141,7 +141,7 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { deleteBucket, AzionDeletedBucket, AzionStorageResponse } from 'azion/storage';
+import { deleteBucket, AzionDeletedBucket, AzionStorageResponse } from '@aziontech/storage';
 
 const { data, error }: AzionStorageResponse<AzionDeletedBucket> = await deleteBucket({ name: 'my-bucket' });
 if (data) {
@@ -156,7 +156,7 @@ if (data) {
 **JavaScript:**
 
 ```javascript
-import { getBuckets } from 'azion/storage';
+import { getBuckets } from '@aziontech/storage';
 
 const { data: buckets, error } = await getBuckets({ params: { page: 1, page_size: 10 } });
 if (buckets) {
@@ -169,7 +169,7 @@ if (buckets) {
 **TypeScript:**
 
 ```typescript
-import { getBuckets, AzionStorageResponse, AzionBucketCollection } from 'azion/storage';
+import { getBuckets, AzionStorageResponse, AzionBucketCollection } from '@aziontech/storage';
 
 const { data: buckets, error }: AzionStorageResponse<AzionBucketCollection> = await getBuckets({
   params: { page: 1, page_size: 10 },
@@ -186,7 +186,7 @@ if (buckets) {
 **JavaScript:**
 
 ```javascript
-import { getBucket } from 'azion/storage';
+import { getBucket } from '@aziontech/storage';
 
 const { data: bucket, error } = await getBucket({ name: 'my-bucket' });
 if (bucket) {
@@ -203,7 +203,7 @@ if (bucket) {
 **TypeScript:**
 
 ```typescript
-import { getBucket, AzionBucket, AzionStorageResponse } from 'azion/storage';
+import { getBucket, AzionBucket, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: bucket, error }: AzionStorageResponse<AzionBucket> = await getBucket({ name: 'my-bucket' });
 if (bucket) {
@@ -221,7 +221,7 @@ The `setupStorage` function provides a convenient way to ensure a bucket exists.
 **JavaScript:**
 
 ```javascript
-import { setupStorage } from 'azion/storage';
+import { setupStorage } from '@aziontech/storage';
 
 const { data: bucket, error } = await setupStorage({
   name: 'my-app-bucket',
@@ -238,7 +238,7 @@ if (bucket) {
 **TypeScript:**
 
 ```typescript
-import { setupStorage, AzionBucket, AzionStorageResponse } from 'azion/storage';
+import { setupStorage, AzionBucket, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: bucket, error }: AzionStorageResponse<AzionBucket> = await setupStorage({
   name: 'my-app-bucket',
@@ -262,7 +262,7 @@ if (bucket) {
 **JavaScript:**
 
 ```javascript
-import { updateBucket } from 'azion/storage';
+import { updateBucket } from '@aziontech/storage';
 
 const { data: updatedBucket, error } = await updateBucket({ name: 'my-bucket', workloads_access: 'private' });
 if (updatedBucket) {
@@ -275,7 +275,7 @@ if (updatedBucket) {
 **TypeScript:**
 
 ```typescript
-import { updateBucket, AzionBucket, AzionStorageResponse } from 'azion/storage';
+import { updateBucket, AzionBucket, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: updatedBucket, error }: AzionStorageResponse<AzionBucket> | null = await updateBucket({
   name: 'my-bucket',
@@ -293,7 +293,7 @@ if (updatedBucket) {
 **JavaScript:**
 
 ```javascript
-import { createObject } from 'azion/storage';
+import { createObject } from '@aziontech/storage';
 
 const { data: newObject, error } = await createObject({
   bucket: 'my-bucket',
@@ -313,7 +313,7 @@ if (newObject) {
 **TypeScript:**
 
 ```typescript
-import { createObject, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
+import { createObject, AzionBucketObject, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: newObject, error }: AzionStorageResponse<AzionBucketObject> = await createObject({
   bucket: 'my-bucket',
@@ -335,7 +335,7 @@ if (newObject) {
 **JavaScript:**
 
 ```javascript
-import { getObjectByKey } from 'azion/storage';
+import { getObjectByKey } from '@aziontech/storage';
 
 const { data: object, error } = await getObjectByKey({ bucket: 'my-bucket', key: 'file.txt' });
 if (object) {
@@ -348,7 +348,7 @@ if (object) {
 **TypeScript:**
 
 ```typescript
-import { getObjectByKey, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
+import { getObjectByKey, AzionBucketObject, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: object, error }: AzionStorageResponse<AzionBucketObject> = await getObjectByKey({
   bucket: 'my-bucket',
@@ -366,7 +366,7 @@ if (object) {
 **JavaScript:**
 
 ```javascript
-import { getObjects } from 'azion/storage';
+import { getObjects } from '@aziontech/storage';
 
 const { data: objectsResult, error } = await getObjects({ bucket: 'my-bucket' });
 if (objectsResult) {
@@ -379,7 +379,7 @@ if (objectsResult) {
 **TypeScript:**
 
 ```typescript
-import { getObjects, AzionBucketObject, AzionStorageResponse } from 'azion/storage';
+import { getObjects, AzionBucketObject, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: objectResult, error }: AzionStorageResponse<AzionBucketObjects> = await getObjects({
   bucket: 'my-bucket',
@@ -396,7 +396,7 @@ if (objectResult) {
 **JavaScript:**
 
 ```javascript
-import { updateObject } from 'azion/storage';
+import { updateObject } from '@aziontech/storage';
 
 const { data: updatedObject, error } = await updateObject({
   bucket: 'my-bucket',
@@ -416,7 +416,7 @@ if (updatedObject) {
 **TypeScript:**
 
 ```typescript
-import { updateObject, AzionBucketObject } from 'azion/storage';
+import { updateObject, AzionBucketObject } from '@aziontech/storage';
 
 const { data: updatedObject, error }: AzionStorageResponse<AzionBucketObject> = await updateObject({
   bucket: 'my-bucket',
@@ -438,7 +438,7 @@ if (updatedObject) {
 **JavaScript:**
 
 ```javascript
-import { deleteObject } from 'azion/storage';
+import { deleteObject } from '@aziontech/storage';
 
 const { data: result, error } = await deleteObject({ bucket: 'my-bucket', key: 'file.txt' });
 if (result) {
@@ -451,7 +451,7 @@ if (result) {
 **TypeScript:**
 
 ```typescript
-import { deleteObject, AzionDeletedBucketObject, AzionStorageResponse } from 'azion/storage';
+import { deleteObject, AzionDeletedBucketObject, AzionStorageResponse } from '@aziontech/storage';
 
 const { data: result, error }: AzionStorageResponse<AzionDeletedBucketObject> = await deleteObject({
   bucket: 'my-bucket',
@@ -469,7 +469,7 @@ if (result) {
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion/storage';
+import { createClient } from '@aziontech/storage';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
@@ -518,7 +518,7 @@ import {
   AzionBucket,
   AzionBucketObject,
   AzionBucketCollection,
-} from 'azion/storage';
+} from '@aziontech/storage';
 
 const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
 

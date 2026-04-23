@@ -96,7 +96,7 @@ You can create a client instance with specific configurations.
 **JavaScript:**
 
 ```javascript
-import { createDatabase } from 'azion/sql';
+import { createDatabase } from '@aziontech/sql';
 
 const { data, error } = await createDatabase('my-new-database', { debug: true });
 if (data) {
@@ -109,8 +109,8 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { createDatabase, AzionDatabase } from 'azion/sql';
-import type { AzionDatabaseResponse, AzionDatabase } from 'azion/sql';
+import { createDatabase, AzionDatabase } from '@aziontech/sql';
+import type { AzionDatabaseResponse, AzionDatabase } from '@aziontech/sql';
 
 const { data, error }: AzionDatabaseResponse<AzionDatabase> = await createDatabase('my-new-database', { debug: true });
 if (data) {
@@ -126,7 +126,7 @@ if (data) {
 **JavaScript:**
 
 ```javascript
-import { deleteDatabase } from 'azion/sql';
+import { deleteDatabase } from '@aziontech/sql';
 
 const { data, error } = await deleteDatabase(123, { debug: true });
 if (data) {
@@ -139,8 +139,8 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { deleteDatabase } from 'azion/sql';
-import type { AzionDatabaseResponse, AzionDatabaseDeleteResponse } from 'azion/sql';
+import { deleteDatabase } from '@aziontech/sql';
+import type { AzionDatabaseResponse, AzionDatabaseDeleteResponse } from '@aziontech/sql';
 
 const { data, error }: AzionDatabaseResponse<AzionDatabaseDeleteResponse> = await deleteDatabase(123, { debug: true });
 if (data) {
@@ -155,7 +155,7 @@ if (data) {
 **JavaScript:**
 
 ```javascript
-import { getDatabase } from 'azion/sql';
+import { getDatabase } from '@aziontech/sql';
 
 const { data, error } = await getDatabase('my-db', { debug: true });
 if (data) {
@@ -168,8 +168,8 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { getDatabase } from 'azion/sql';
-import type { AzionDatabaseResponse, AzionDatabase } from 'azion/sql';
+import { getDatabase } from '@aziontech/sql';
+import type { AzionDatabaseResponse, AzionDatabase } from '@aziontech/sql';
 
 const { data, error }: AzionDatabaseResponse<AzionDatabase> = await getDatabase('my-db', { debug: true });
 if (data) {
@@ -185,7 +185,7 @@ if (data) {
 **JavaScript:**
 
 ```javascript
-import { getDatabases } from 'azion/sql';
+import { getDatabases } from '@aziontech/sql';
 
 const { data, error } = await getDatabases({ page: 1, page_size: 10 }, { debug: true });
 if (data) {
@@ -198,8 +198,8 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { getDatabases } from 'azion/sql';
-import type { AzionDatabaseResponse, AzionDatabaseCollections } from 'azion/sql';
+import { getDatabases } from '@aziontech/sql';
+import type { AzionDatabaseResponse, AzionDatabaseCollections } from '@aziontech/sql';
 
 const { data: allDatabases, error }: AzionDatabaseResponse<AzionDatabaseCollections> = await getDatabases(
   { page: 1, page_size: 10 },
@@ -217,7 +217,7 @@ if (allDatabases) {
 **JavaScript:**
 
 ```javascript
-import { useQuery } from 'azion/sql';
+import { useQuery } from '@aziontech/sql';
 
 const result = await useQuery('my-db', ['SELECT * FROM users'], { debug: true });
 if (result) {
@@ -230,7 +230,7 @@ if (result) {
 **TypeScript:**
 
 ```typescript
-import { useQuery, AzionDatabaseQueryResponse, AzionDatabaseResponse } from 'azion/sql';
+import { useQuery, AzionDatabaseQueryResponse, AzionDatabaseResponse } from '@aziontech/sql';
 
 const { data: result, error }: AzionDatabaseResponse<AzionDatabaseQueryResponse> = await useQuery(
   'my-db',
@@ -251,7 +251,7 @@ if (result) {
 **JavaScript:**
 
 ```javascript
-import { useExecute } from 'azion/sql';
+import { useExecute } from '@aziontech/sql';
 
 const result = await useExecute('my-db', ['INSERT INTO users (name) VALUES ("John")'], { debug: true });
 if (result?.state === 'executed') {
@@ -264,7 +264,7 @@ if (result?.state === 'executed') {
 **TypeScript:**
 
 ```typescript
-import { useExecute, AzionDatabaseQueryResponse } from 'azion/sql';
+import { useExecute, AzionDatabaseQueryResponse } from '@aziontech/sql';
 
 const result: AzionDatabaseQueryResponse | null = await useExecute(
   'my-db',
@@ -285,7 +285,7 @@ if (result?.state === 'executed') {
 **JavaScript:**
 
 ```javascript
-import { getTables } from 'azion/sql';
+import { getTables } from '@aziontech/sql';
 
 const { data, error } = await getTables('my-db', { debug: true });
 
@@ -299,8 +299,8 @@ if (data) {
 **TypeScript:**
 
 ```typescript
-import { getTables } from 'azion/sql';
-import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from 'azion/sql';
+import { getTables } from '@aziontech/sql';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse } from '@aziontech/sql';
 
 const { data, error }: AzionDatabaseResponse<AzionDatabaseQueryResponse> = await getTables('my-db', { debug: true });
 

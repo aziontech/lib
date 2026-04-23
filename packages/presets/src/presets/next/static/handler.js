@@ -1,8 +1,8 @@
-import { mountMPA } from 'azion/utils/edge';
+import { mountMPA } from '@aziontech/utils/edge';
 /**
  * Handles the request using Azion Workers pattern.
- * @param {import('azion/types').AzionRuntimeRequest} request - The request object with metadata.
- * @param {import('azion/types').AzionRuntimeCtx} ctx - The execution context.
+ * @param {import('@aziontech/types').AzionRuntimeRequest} request - The request object with metadata.
+ * @param {import('@aziontech/types').AzionRuntimeCtx} ctx - The execution context.
  * @returns {Promise<Response>} The response for the request.
  */
 const handler = {

@@ -1,0 +1,4 @@
+packages:
+  - packages/*
+# catalog:
+#   '@dotenvx/dotenvx': 1.31.0

@@ -42,7 +42,7 @@ yarn add azion-wasm-image-processor
 **JavaScript:**
 
 ```javascript
-import { loadImage } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
 
 const image = await loadImage('https://example.com/image.jpg');
 ```
@@ -50,8 +50,8 @@ const image = await loadImage('https://example.com/image.jpg');
 **TypeScript:**
 
 ```typescript
-import { loadImage } from 'azion/wasm-image-processor';
-import type { WasmImage } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
+import type { WasmImage } from '@aziontech/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 ```
@@ -61,7 +61,7 @@ const image: WasmImage = await loadImage('https://example.com/image.jpg');
 **JavaScript:**
 
 ```javascript
-import { loadImage } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
 
 const image = await loadImage('https://example.com/image.jpg');
 const resizedImage = image.resize(0.5, 0.5);
@@ -70,8 +70,8 @@ const resizedImage = image.resize(0.5, 0.5);
 **TypeScript:**
 
 ```typescript
-import { loadImage } from 'azion/wasm-image-processor';
-import type { WasmImage } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
+import type { WasmImage } from '@aziontech/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const resizedImage: WasmImage = image.resize(0.5, 0.5);
@@ -82,7 +82,7 @@ const resizedImage: WasmImage = image.resize(0.5, 0.5);
 **JavaScript:**
 
 ```javascript
-import { loadImage } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
 
 const image = await loadImage('https://example.com/image.jpg');
 const imageResponse = image.getImageResponse('jpeg');
@@ -92,8 +92,8 @@ console.log(imageResponse);
 **TypeScript:**
 
 ```typescript
-import { loadImage } from 'azion/wasm-image-processor';
-import type { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
+import type { WasmImage, SupportedImageFormat } from '@aziontech/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const imageResponse: Response = image.getImageResponse('jpeg' as SupportedImageFormat);
@@ -105,7 +105,7 @@ console.log(imageResponse);
 **JavaScript:**
 
 ```javascript
-import { loadImage } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
 
 const image = await loadImage('https://example.com/image.jpg');
 image.clean();
@@ -114,8 +114,8 @@ image.clean();
 **TypeScript:**
 
 ```typescript
-import { loadImage } from 'azion/wasm-image-processor';
-import type { WasmImage, SupportedImageFormat } from 'azion/wasm-image-processor';
+import { loadImage } from '@aziontech/wasm-image-processor';
+import type { WasmImage, SupportedImageFormat } from '@aziontech/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 image.clean();
@@ -126,7 +126,7 @@ image.clean();
 **JavaScript:**
 
 ```javascript
-import { loadImage, resize, getImageResponse, clean } from 'azion/wasm-image-processor';
+import { loadImage, resize, getImageResponse, clean } from '@aziontech/wasm-image-processor';
 
 const image = await loadImage('https://example.com/image.jpg');
 const resizedImage = resize(image.image, 0.5, 0.5);
@@ -138,8 +138,8 @@ clean(resizedImage);
 **TypeScript:**
 
 ```typescript
-import { loadImage, resize, getImageResponse, clean } from 'azion/wasm-image-processor';
-import type { WasmImage, PhotonImage } from 'azion/wasm-image-processor';
+import { loadImage, resize, getImageResponse, clean } from '@aziontech/wasm-image-processor';
+import type { WasmImage, PhotonImage } from '@aziontech/wasm-image-processor';
 
 const image: WasmImage = await loadImage('https://example.com/image.jpg');
 const resizedImage: PhotonImage = resize(image.image, 0.5, 0.5);

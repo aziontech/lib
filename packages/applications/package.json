@@ -1,6 +1,6 @@
 {
-  "name": "@lib/application",
-  "version": "1.0.0",
+  "name": "@aziontech/applications",
+  "version": "0.0.0",
   "description": "",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -23,5 +23,9 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:^",
+    "@types/node": "^22.13.1"
+  }
 }

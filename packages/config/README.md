@@ -62,7 +62,7 @@ export default config;
 2. Using the `defineConfig` function to enforce types and provide configuration:
 
 ```javascript
-import { defineConfig } from 'azion/config';
+import { defineConfig } from '@aziontech/config';
 
 const config = defineConfig({
   build: {
@@ -371,7 +371,7 @@ const config = defineConfig({
 ### Example Process Configuration
 
 ```javascript
-import { processConfig } from 'azion';
+import { processConfig } from '@aziontech/config';
 
 const config = {...};
 
@@ -381,7 +381,7 @@ console.log(manifest);
 ```
 
 ```typescript
-import { AzionConfig, processConfig } from 'azion';
+import { AzionConfig, processConfig } from '@aziontech/config';
 
 const config: AzionConfig = {...};
 
@@ -393,7 +393,7 @@ console.log(manifest);
 ### Example Convert JSON Configuration to Object
 
 ```javascript
-import { convertJsonConfigToObject } from 'azion';
+import { convertJsonConfigToObject } from '@aziontech/config';
 
 const manifestJson = {
   workloads: [
@@ -439,7 +439,7 @@ console.log(manifest);
 ```
 
 ```typescript
-import { AzionConfig, convertJsonConfigToObject } from 'azion';
+import { AzionConfig, convertJsonConfigToObject } from '@aziontech/config';
 
 const manifestJson = {
   workloads: [

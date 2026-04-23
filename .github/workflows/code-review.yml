@@ -1,11 +1,12 @@
 name: Azion AI Code Review
 
 on:
-  pull_request:
-    types: [opened, synchronize]
-    branches:
-      - main
-      - stage
+  workflow_dispatch:
+  # pull_request:
+  #   types: [opened, synchronize]
+  #   branches:
+  #     - main
+  #     - stage
 
 permissions:
   contents: read
@@ -16,22 +17,18 @@ jobs:
   ai-code-review:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
         with:
-          node-version: 20
-          cache: "npm"
-
-      - name: Install
-        run: npm install
+          node-version: 24
 
       - name: Build
-        run: npm run compile
+        run: pnpm compile
 
       - name: Install Action GitHub
         run: |

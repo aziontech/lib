@@ -1,6 +1,6 @@
 {
-  "name": "@lib/jwt",
-  "version": "1.0.0",
+  "name": "@aziontech/jwt",
+  "version": "0.0.0",
   "description": "",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -11,7 +11,7 @@
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "test": "jest"
+    "test": "jest --clearCache && jest"
   },
   "exports": {
     ".": {
@@ -27,6 +27,7 @@
     "package.json"
   ],
   "devDependencies": {
+    "@aziontech/vite-config": "workspace:*",
     "@jest/globals": "^29.7.0",
     "@peculiar/webcrypto": "^1.5.0",
     "@types/jest": "^29.5.12",

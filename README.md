@@ -55,7 +55,7 @@ yarn add azion
 The Azion client provides a unified interface to interact with all products and services. You can use the client to access and manage all functionalities across Storage, SQL, Purge, and more. When using the client, you can pass configurations (e.g., `token`, `debug`) explicitly as parameters.
 
 ```javascript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/sql';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
@@ -73,7 +73,7 @@ Alternatively, if you prefer to use individual functions directly from each pack
 Example with explicit client for a specific module:
 
 ```typescript
-import { createClient, StorageClient } from 'azion/storage';
+import { createClient, StorageClient } from '@aziontech/storage';
 
 const client: StorageClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -92,7 +92,7 @@ if (data) {
 You can also use individual functions without any client by importing them directly from the package. This approach requires environment variables for configuration:
 
 ```javascript
-import { createDatabase } from 'azion/sql';
+import { createDatabase } from '@aziontech/sql';
 
 const { data, error } = await createDatabase('my-new-database', { debug: true });
 if (data) {
@@ -115,12 +115,15 @@ The Azion Client provides a unified interface to interact with all Azion service
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion';
+import { createClient } from '@aziontech/storage';
 
 const client = createClient({ token: 'your-api-token', debug: true });
 
 // Storage
-const { data: newBucket, error } = await client.storage.createBucket({ name: 'my-new-bucket', workloads_access: 'read_only' });
+const { data: newBucket, error } = await client.storage.createBucket({
+  name: 'my-new-bucket',
+  workloads_access: 'read_only',
+});
 console.log(`Bucket created with name: ${newBucket.name}`);
 
 const { data: allBuckets, error } = await client.storage.getBuckets();
@@ -141,11 +144,11 @@ console.log(`Purge successful: ${purgeResult.items}`);
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion';
-import type { AzionClient } from 'azion/client';
-import type { AzionDatabaseResponse, AzionDatabaseQueryResponse, AzionDatabaseCollection } from 'azion/sql';
-import type { AzionStorageResponse, AzionBucket, AzionBucketCollection } from 'azion/storage';
-import type { AzionPurgeResponse, AzionPurge } from 'azion/purge';
+import { createClient } from '@aziontech/storage';
+import type { AzionClient } from '@aziontech/client';
+import type { AzionDatabaseResponse, AzionDatabaseQueryResponse, AzionDatabaseCollection } from '@aziontech/sql';
+import type { AzionStorageResponse, AzionBucket, AzionBucketCollection } from '@aziontech/storage';
+import type { AzionPurgeResponse, AzionPurge } from '@aziontech/purge';
 
 const client: AzionClient = createClient({ token: 'your-api-token', debug: true });
 
@@ -331,7 +334,7 @@ export default config;
 This is the second example using the `defineConfig` function to enforce types and provide configuration:
 
 ```javascript
-import { defineConfig } from 'azion';
+import { defineConfig } from '@aziontech/config';
 
 const config = defineConfig({
   build: {
@@ -373,9 +376,9 @@ export default config;
 Here's a more advanced example using preset customization with TypeScript:
 
 ```typescript
-import { defineConfig } from 'azion';
-import type { AzionBuildPreset, AzionPrebuildResult, BuildContext, BuildConfiguration } from 'azion/config';
-import { Next } from 'azion/presets';
+import { defineConfig } from '@aziontech/config';
+import type { AzionBuildPreset, AzionPrebuildResult, BuildContext, BuildConfiguration } from '@aziontech/config';
+import { Next } from '@aziontech/presets';
 
 export default defineConfig({
   build: {

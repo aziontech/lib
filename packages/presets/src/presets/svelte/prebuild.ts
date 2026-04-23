@@ -1,5 +1,5 @@
-import { AzionPrebuildResult, BuildConfiguration, BuildContext } from 'azion/config';
-import { exec, getPackageManager } from 'azion/utils/node';
+import { AzionPrebuildResult, BuildConfiguration, BuildContext } from '@aziontech/config';
+import { exec, getPackageManager } from '@aziontech/utils/node';
 import { existsSync } from 'fs';
 import { mkdir, readFile, rm } from 'fs/promises';
 
@@ -26,7 +26,7 @@ async function readSvelteConfig() {
     }
 
     const content = await readFile(configPath, 'utf8');
-    const hasAzionPreset = /azion\/preset\/sveltekit/i.test(content);
+    const hasAzionPreset = /@aziontech\/presets\/sveltekit/i.test(content);
     const hasAzionAdapter = /@sveltejs\/adapter-azion/i.test(content);
     const hasAzionConfig = hasAzionPreset || hasAzionAdapter;
 

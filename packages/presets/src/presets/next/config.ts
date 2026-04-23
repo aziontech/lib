@@ -1,4 +1,4 @@
-import type { AzionConfig } from 'azion/config';
+import type { AzionConfig } from '@aziontech/config';
 const config: AzionConfig = {
   build: {
     bundler: 'esbuild',

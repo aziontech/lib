@@ -1,4 +1,4 @@
-import type { AzionBuild, AzionConfig } from 'azion/config';
+import type { AzionBuild, AzionConfig } from '@aziontech/config';
 
 const config: AzionConfig = {
   build: {

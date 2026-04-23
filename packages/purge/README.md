@@ -79,7 +79,7 @@ You can create a client instance with specific configurations.
 **JavaScript:**
 
 ```javascript
-import { purgeURL } from 'azion/purge';
+import { purgeURL } from '@aziontech/purge';
 
 const url = ['http://www.domain.com/path/image.jpg'];
 const { data: response, error } = await purgeURL(url, { debug: true });
@@ -93,8 +93,8 @@ if (response) {
 **TypeScript:**
 
 ```typescript
-import { purgeURL } from 'azion/purge';
-import type { AzionPurgeResponse, AzionPurge } from 'azion/purge';
+import { purgeURL } from '@aziontech/purge';
+import type { AzionPurgeResponse, AzionPurge } from '@aziontech/purge';
 
 const url: string[] = ['http://www.domain.com/path/image.jpg'];
 const { data: response, error }: AzionPurgeResponse<AzionPurge> = await purgeURL(url, { debug: true });
@@ -110,7 +110,7 @@ if (response) {
 **JavaScript:**
 
 ```javascript
-import { purgeCacheKey } from 'azion/purge';
+import { purgeCacheKey } from '@aziontech/purge';
 
 const cacheKey = ['http://www.domain.com/path/image.jpg'];
 const { data: response, error } = await purgeCacheKey(cacheKey, { debug: true });
@@ -124,8 +124,8 @@ if (response) {
 **TypeScript:**
 
 ```typescript
-import { purgeCacheKey } from 'azion/purge';
-import type { AzionPurgeResponse, AzionPurge } from 'azion/purge';
+import { purgeCacheKey } from '@aziontech/purge';
+import type { AzionPurgeResponse, AzionPurge } from '@aziontech/purge';
 
 const cacheKey: string[] = ['http://www.domain.com/path/image.jpg'];
 const { data: response, error }: AzionPurgeResponse<AzionPurge> = await purgeCacheKey(cacheKey, { debug: true });
@@ -141,7 +141,7 @@ if (response) {
 **JavaScript:**
 
 ```javascript
-import { purgeWildCard } from 'azion/purge';
+import { purgeWildCard } from '@aziontech/purge';
 
 const wildcard = ['http://www.domain.com/path/image.jpg*'];
 const { data: response, error } = await purgeWildCard(wildcard, { debug: true });
@@ -155,8 +155,8 @@ if (response) {
 **TypeScript:**
 
 ```typescript
-import { purgeWildCard } from 'azion/purge';
-import type { AzionPurgeResponse, AzionPurge } from 'azion/purge';
+import { purgeWildCard } from '@aziontech/purge';
+import type { AzionPurgeResponse, AzionPurge } from '@aziontech/purge';
 
 const wildcard: string[] = ['http://www.domain.com/path/image.jpg*'];
 const { data: response, error }: AzionPurgeResponse<AzionPurge> = await purgeWildCard(wildcard, { debug: true });
@@ -172,7 +172,7 @@ if (response) {
 **JavaScript:**
 
 ```javascript
-import { createClient } from 'azion/purge';
+import { createClient } from '@aziontech/purge';
 
 const client = createClient({ token: 'your-api-token', options: { debug: true } });
 
@@ -201,8 +201,8 @@ if (purgeWildCardResponse) {
 **TypeScript:**
 
 ```typescript
-import { createClient } from 'azion/purge';
-import type { AzionPurgeClient, AzionPurgeResponse, AzionPurge } from 'azion/purge';
+import { createClient } from '@aziontech/purge';
+import type { AzionPurgeClient, AzionPurgeResponse, AzionPurge } from '@aziontech/purge';
 
 const client: AzionPurgeClient = createClient({ token: 'your-api-token', options: { debug: true } });
 

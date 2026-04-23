@@ -1,5 +1,5 @@
-import { BuildConfiguration, BuildContext } from 'azion/config';
-import { copyDirectory, exec, getPackageManager } from 'azion/utils/node';
+import { BuildConfiguration, BuildContext } from '@aziontech/config';
+import { copyDirectory, exec, getPackageManager } from '@aziontech/utils/node';
 import { lstat, mkdir, readFile } from 'fs/promises';
 import { join } from 'path';
 

@@ -47,7 +47,7 @@ yarn add azion
 **JavaScript:**
 
 ```javascript
-import { sign } from 'azion/jwt';
+import { sign } from '@aziontech/jwt';
 
 const privateKey = 'your-private-key';
 const payload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
@@ -57,8 +57,8 @@ sign(payload, privateKey).then((token) => console.log(token)); // Outputs the si
 **TypeScript:**
 
 ```typescript
-import { sign } from 'azion/jwt';
-import type { JWTPayload } from 'azion/jwt';
+import { sign } from '@aziontech/jwt';
+import type { JWTPayload } from '@aziontech/jwt';
 
 const privateKey: string = 'your-private-key';
 const payload: JWTPayload = { userId: 123, exp: Math.floor(Date.now() / 1000) + 3600 }; // 1 hour expiration
@@ -70,7 +70,7 @@ sign(payload, privateKey).then((token: string) => console.log(token)); // Output
 **JavaScript:**
 
 ```javascript
-import { verify } from 'azion/jwt';
+import { verify } from '@aziontech/jwt';
 
 const publicKey = 'your-public-key';
 const token = 'your-jwt-token';
@@ -82,8 +82,8 @@ verify(token, publicKey)
 **TypeScript:**
 
 ```typescript
-import { verify } from 'azion/jwt';
-import type { JWTPayload } from 'azion/jwt';
+import { verify } from '@aziontech/jwt';
+import type { JWTPayload } from '@aziontech/jwt';
 
 const publicKey: string = 'your-public-key';
 const token: string = 'your-jwt-token';
@@ -97,7 +97,7 @@ verify(token, publicKey)
 **JavaScript:**
 
 ```javascript
-import { decode } from 'azion/jwt';
+import { decode } from '@aziontech/jwt';
 
 const token = 'your-jwt-token';
 const { header, payload } = decode(token);
@@ -107,8 +107,8 @@ console.log(header, payload); // Outputs the decoded header and payload
 **TypeScript:**
 
 ```typescript
-import { decode } from 'azion/jwt';
-import type { JWTPayload, TokenHeader } from 'azion/jwt';
+import { decode } from '@aziontech/jwt';
+import type { JWTPayload, TokenHeader } from '@aziontech/jwt';
 
 const token: string = 'your-jwt-token';
 const { header, payload }: { header: TokenHeader; payload: JWTPayload } = decode(token);

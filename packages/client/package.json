@@ -1,6 +1,6 @@
 {
-  "name": "@lib/client",
-  "version": "1.0.0",
+  "name": "@aziontech/client",
+  "version": "0.0.0",
   "description": "",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -23,5 +23,18 @@
   "files": [
     "dist",
     "package.json"
-  ]
+  ],
+  "dependencies": {
+    "@aziontech/sql": "workspace:*",
+    "@aziontech/storage": "workspace:*",
+    "@aziontech/purge": "workspace:*",
+    "@aziontech/config": "workspace:*",
+    "@aziontech/domains": "workspace:*",
+    "@aziontech/applications": "workspace:*",
+    "@aziontech/ai": "workspace:*",
+    "@aziontech/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@aziontech/vite-config": "workspace:^"
+  }
 }
