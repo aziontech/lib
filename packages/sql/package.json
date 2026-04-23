@@ -1,7 +1,7 @@
 {
   "name": "@aziontech/sql",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "description": "Azion SQL Client provides a simple interface to interact with the Azion SQL API, allowing you to create, delete, and query databases.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

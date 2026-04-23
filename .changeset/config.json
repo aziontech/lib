@@ -12,6 +12,16 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [],
+  "ignore": [
+    "@aziontech/ai",
+    "@aziontech/applications",
+    "@aziontech/client",
+    "@aziontech/cookies",
+    "@aziontech/domains",
+    "@aziontech/jwt",
+    "@aziontech/purge",
+    "@aziontech/router",
+    "@aziontech/wasm-image-processor"
+  ],
   "privatePackages": false
 }
