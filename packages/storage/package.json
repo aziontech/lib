@@ -1,7 +1,7 @@
 {
   "name": "@aziontech/storage",
   "version": "0.0.0",
-  "description": "",
+  "description": "Azion Storage Client provides a simple interface to interact with the Azion Storage API, allowing you to manage buckets and objects.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

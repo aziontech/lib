@@ -1,7 +1,7 @@
 {
   "name": "@aziontech/utils",
   "version": "0.0.0",
-  "description": "",
+  "description": "The Azion Utils package provides a set of utility functions designed to simplify common tasks when working with Azion functions.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
