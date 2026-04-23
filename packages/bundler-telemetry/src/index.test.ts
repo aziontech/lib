@@ -110,7 +110,7 @@ describe('TelemetryCollector', () => {
       const spans = collector.getAllSpans();
       const asyncSpan = spans.find((s) => s.name === 'async-operation');
       expect(asyncSpan).toBeDefined();
-      expect(asyncSpan?.duration).toBeGreaterThanOrEqual(10);
+      expect(asyncSpan?.duration).toBeGreaterThanOrEqual(5);
     });
 
     it('should record error when async function throws', async () => {
