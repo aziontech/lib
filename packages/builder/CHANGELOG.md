@@ -1,5 +1,11 @@
 # @aziontech/builder
 
+## 1.0.1
+
+### Patch Changes
+
+- [#432](https://github.com/aziontech/lib/pull/432) [`07dec4c`](https://github.com/aziontech/lib/commit/07dec4c04c8230cae1e922fa779de06b2bfc486b) Thanks [@jcbsfilho](https://github.com/jcbsfilho)! - ci: Trusted Publisher
+
 ## 1.0.0
 
 ### Major Changes
