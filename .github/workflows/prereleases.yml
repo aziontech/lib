@@ -12,6 +12,8 @@ jobs:
       pull-requests: write
     name: Publish builder package
     runs-on: ubuntu-latest
+    # Skip PRs created by changesets/action (pattern: changeset-release/{branch})
+    if: github.event_name != 'pull_request' || !startsWith(github.event.pull_request.head.ref, 'changeset-release/')
 
     steps:
       - name: Checkout Repo
