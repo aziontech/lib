@@ -37,8 +37,6 @@ jobs:
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
-        with:
-          node-version: 24
 
       - name: Build
         run: pnpm compile
@@ -56,8 +54,6 @@ jobs:
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
-        with:
-          node-version: 24
 
       - name: Build
         run: pnpm compile
