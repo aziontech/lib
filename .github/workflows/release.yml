@@ -20,8 +20,6 @@ jobs:
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
-        with:
-          node-version: 24
 
       - name: Build Azion package
         run: pnpm run compile

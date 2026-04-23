@@ -21,8 +21,6 @@ jobs:
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
-        with:
-          node-version: 24
 
       - name: Setup git for changeset
         run: |
