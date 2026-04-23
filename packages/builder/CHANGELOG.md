@@ -1,5 +1,11 @@
 # @aziontech/builder
 
+## 1.0.1
+
+### Patch Changes
+
+- [#430](https://github.com/aziontech/lib/pull/430) [`04aa395`](https://github.com/aziontech/lib/commit/04aa3957f68acd79653e18162b45c22179895201) Thanks [@jcbsfilho](https://github.com/jcbsfilho)! - feat: add readme
+
 ## 1.0.0
 
 ### Major Changes

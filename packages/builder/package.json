@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This a builder utility for Azion's platform, designed to streamline the development process and enhance productivity.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
