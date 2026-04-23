@@ -46,7 +46,7 @@ jobs:
 
   test-e2e:
     name: E2E Tests
-    needs: lint_and_build, test_unit
+    needs: [lint_and_build, test_unit]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
