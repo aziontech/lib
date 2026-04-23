@@ -79,5 +79,10 @@
     "tmp": "^0.2.5",
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aziontech/lib.git",
+    "directory": "packages/builder"
   }
 }

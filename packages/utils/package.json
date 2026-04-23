@@ -52,5 +52,10 @@
   "dependencies": {
     "@aziontech/types": "workspace:*",
     "signale": "^1.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aziontech/lib.git",
+    "directory": "packages/utils"
   }
 }
