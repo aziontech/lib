@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/presets",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "The Presets package provides pre-configured presets for different frameworks and libraries to simplify deployment on the Azion Edge Platform.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

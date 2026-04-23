@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/bundler-telemetry",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Telemetry system for measuring and reporting build performance in Azion Bundler",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
