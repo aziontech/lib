@@ -53,5 +53,10 @@
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2",
     "webpack": "^5.97.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aziontech/lib.git",
+    "directory": "packages/config"
   }
 }
