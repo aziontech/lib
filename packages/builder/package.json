@@ -31,7 +31,8 @@
   "files": [
     "dist",
     "package.json",
-    "src/polyfills/*"
+    "src/polyfills/*",
+    "README.md"
   ],
   "dependencies": {
     "@aziontech/config": "workspace:*",
