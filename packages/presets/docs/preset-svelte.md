@@ -13,7 +13,7 @@ This preset enables Server-Side Rendering (SSR) and Static Site Generation (SSG)
 First, install the Azion package in your SvelteKit project:
 
 ```bash
-npm install azion
+npm install @aziontech/presets
 ```
 
 ## Configuration SSR
