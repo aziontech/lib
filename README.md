@@ -4,6 +4,16 @@
 
 # Azion Library - The Edge Developer's Toolkit
 
+> ⚠️ **Deprecation Notice - Package Migration**
+>
+> This package (`azion`) has been **migrated** to scoped packages under `@aziontech/*` (e.g., `@aziontech/sql`, `@aziontech/storage`, `@aziontech/config`, and more).
+>
+> - This package will only receive **bug fixes** — no new features will be added.
+> - Maintenance will be **discontinued at the end of December 2026**.
+> - **We strongly recommend migrating to the new scoped packages** to continue receiving updates and new features.
+>
+> For documentation, see the [`https://www.azion.com/en/blog/why-azion-is-migrating-to-individual-npm-packages-distributed-monorepo`](https://www.azion.com/en/blog/why-azion-is-migrating-to-individual-npm-packages-distributed-monorepo) directory.
+
 [![Version](https://img.shields.io/npm/v/azion.svg)](https://www.npmjs.com/package/azion)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![Downloads](https://img.shields.io/npm/dm/azion.svg)](https://www.npmjs.com/package/azion)
@@ -120,7 +130,10 @@ import { createClient } from 'azion';
 const client = createClient({ token: 'your-api-token', debug: true });
 
 // Storage
-const { data: newBucket, error } = await client.storage.createBucket({ name: 'my-new-bucket', workloads_access: 'read_only' });
+const { data: newBucket, error } = await client.storage.createBucket({
+  name: 'my-new-bucket',
+  workloads_access: 'read_only',
+});
 console.log(`Bucket created with name: ${newBucket.name}`);
 
 const { data: allBuckets, error } = await client.storage.getBuckets();
