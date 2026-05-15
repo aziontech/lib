@@ -1,3 +1,7 @@
+## <small>3.1.3 (2026-05-15)</small>
+
+* fix: set up maintenance-v3 branch and add deprecation notice ([8d8de8f](https://github.com/aziontech/lib/commit/8d8de8f))
+
 ## <small>3.1.2 (2026-03-04)</small>
 
 * Merge pull request #397 from aziontech/stage ([5f9ce8f](https://github.com/aziontech/lib/commit/5f9ce8f)), closes [#397](https://github.com/aziontech/lib/issues/397)
