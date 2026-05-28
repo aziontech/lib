@@ -5,6 +5,7 @@ export default {
   inject: {
     __dirname: `${polyfillsPath}/node/globals/path-dirname.js`,
     __filename: `${polyfillsPath}/node/globals/path-filename.js`,
+    'import.meta.url': `${polyfillsPath}/node/globals/import-meta-url.js`,
     process: `${polyfillsPath}/node/globals/process.cjs`,
     performance: `unenv/polyfill/performance`,
     setInterval: `${polyfillsPath}/node/globals/set-interval.js`,
