@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { injectNameHelper } from './patches/inject-name-helper.js';
 
 export default {
   extends: 'base-worker',
@@ -41,38 +42,12 @@ export default {
   },
   hooks: {
     async compiled(nitro) {
-      // Fix: seroval's switch(a) { case Object: } uses strict === which fails across V8 realms.
-      // EdgeVM creates its own realm, so objects from the outer Node.js context have a
-      // different Object constructor identity. Normalise it to the local Object before the switch.
-      // const ssrBundlePath = resolve(
-      //   nitro.options.output.serverDir,
-      //   '_ssr',
-      //   'ssr.mjs',
-      // )
-      // try {
-      //   let ssrContent = await readFile(ssrBundlePath, 'utf-8')
-      //   const pattern = /switch \((\w+)\) \{\n(\s+)case Object:/g
-      //   let count = 0
-      //   ssrContent = ssrContent.replace(pattern, (full, switchVar, indent) => {
-      //     count++
-      //     const normalizer =
-      //       `if (${switchVar} != null && ${switchVar} !== Object && ${switchVar}.name === "Object") ${switchVar} = Object;\n` +
-      //       `${indent}`
-      //     return normalizer + full
-      //   })
-      //   if (count > 0) {
-      //     await writeFile(ssrBundlePath, ssrContent)
-      //     console.log(
-      //       `[azion preset] Applied seroval cross-realm Object fix to _ssr/ssr.mjs (${count} patch(es))`,
-      //     )
-      //   } else {
-      //     console.warn(
-      //       '[azion preset] seroval switch (...) { case Object: pattern not found in _ssr/ssr.mjs',
-      //     )
-      //   }
-      // } catch (e) {
-      //   console.warn('[azion preset] Could not patch _ssr/ssr.mjs:', e.message)
-      // }
+      const ssrBundlePath = resolve(nitro.options.output.serverDir, '_ssr', 'ssr.mjs');
+      try {
+        await injectNameHelper(ssrBundlePath);
+      } catch (e) {
+        console.warn('[azion preset] Could not patch _ssr/ssr.mjs for __name:', e.message);
+      }
 
       await writeFile(
         resolve(nitro.options.output.dir, 'package.json'),
