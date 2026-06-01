@@ -2,7 +2,6 @@ import { writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { injectNameHelper } from './patches/inject-name-helper.js';
 
 export default {
   extends: 'base-worker',
@@ -42,13 +41,6 @@ export default {
   },
   hooks: {
     async compiled(nitro) {
-      const ssrBundlePath = resolve(nitro.options.output.serverDir, '_ssr', 'ssr.mjs');
-      try {
-        await injectNameHelper(ssrBundlePath);
-      } catch (e) {
-        console.warn('[azion preset] Could not patch _ssr/ssr.mjs for __name:', e.message);
-      }
-
       await writeFile(
         resolve(nitro.options.output.dir, 'package.json'),
         JSON.stringify({ private: true, main: './server/index.mjs' }, null, 2),
