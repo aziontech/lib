@@ -25,8 +25,12 @@ const nitroApp = useNitroApp();
 
 export default {
   async fetch(request, env, context) {
-    globalThis.__env__ = env;
-    attachRuntimeContext(request, { env, context });
+    globalThis.__env__ = {
+      ...env,
+      // Fallback to process.env
+      ...process.env,
+    };
+    attachRuntimeContext(request, { env: globalThis.__env__, context });
 
     const url = new URL(request.url);
 
