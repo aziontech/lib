@@ -10,6 +10,7 @@ export * from './presets/hugo';
 export * from './presets/javascript';
 export * from './presets/jekyll';
 export * from './presets/next';
+export * from './presets/nitro';
 export * from './presets/nuxt';
 export * from './presets/opennextjs';
 export * from './presets/preact';

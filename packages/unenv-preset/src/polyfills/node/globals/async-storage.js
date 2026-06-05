@@ -19,4 +19,6 @@ if (async_hooks.AsyncLocalStorage && !async_hooks.AsyncLocalStorage.snapshot) {
   };
 }
 
+globalThis.AsyncLocalStorage = async_hooks.AsyncLocalStorage;
+
 export default async_hooks.AsyncLocalStorage;

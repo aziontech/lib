@@ -178,9 +178,18 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
   const BUNDLER_POLYFILL_RE = /^@aziontech\/builder\/polyfills\/.+/;
   const prefix = path.resolve(getAbsolutePath('../'), '_global_polyfill-');
 
+  const dotNotationKeys = new Set(['import.meta.url']);
+
+  if (inject['import.meta.url']) {
+    build.initialOptions.define = build.initialOptions.define ?? {};
+    build.initialOptions.define['import.meta.url'] = JSON.stringify('file://' + process.cwd() + '/index.js');
+  }
+
   build.initialOptions.inject = [
     ...(build.initialOptions.inject ?? []),
-    ...Object.keys(inject).map((globalName) => `${prefix}${globalName}.js`),
+    ...Object.keys(inject)
+      .filter((globalName) => !dotNotationKeys.has(globalName))
+      .map((globalName) => `${prefix}${globalName}.js`),
   ];
 
   // Resolve polyfills from @aziontech/unenv-preset
