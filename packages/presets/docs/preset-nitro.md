@@ -8,19 +8,33 @@ This preset enables server-side rendering for Nitro-based applications on the Az
 - A Nitro-based project (e.g. TanStack Start, Analog, or a custom Nitro app)
 - Azion CLI installed globally
 
-## Installation
-
-Install the Azion presets package in your project:
-
-```bash
-npm install @aziontech/presets
-```
-
 ## Configuration
 
-### TanStack Start + Vite
+### Step 1 — Install the Azion Presets package
 
-Configure your `vite.config.ts` to use the Azion Nitro preset:
+```bash
+npm install @aziontech/presets -D
+# or
+yarn add @aziontech/presets -D
+# or
+pnpm add @aziontech/presets -D
+```
+
+### Step 2 — Install the Nitro package
+
+The preset requires the Nitro nightly build:
+
+```bash
+npm install nitro-nightly@latest -D
+# or
+yarn add nitro-nightly@latest -D
+# or
+pnpm add nitro-nightly@latest -D
+```
+
+### Step 3 — Configure vite.config.ts
+
+> **Note:** The example below is for a **TanStack Start + Nitro** setup. For full details on the TanStack + Nitro preset integration, refer to the [TanStack Start Hosting documentation](https://tanstack.com/router/latest/docs/framework/react/start/hosting).
 
 ```typescript
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
@@ -55,30 +69,19 @@ export default defineConfig(() => {
 });
 ```
 
-### Generic Nitro App
+## Project Reference
 
-For any Nitro-based project, configure your `vite.config.ts`:
+This template is based on the [TanStack Start Basic React Query example](https://github.com/TanStack/router/tree/main/examples/react/start-basic-react-query), which includes:
 
-```typescript
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+- **File-based routing** via TanStack Router
+- **API routes** via TanStack Router API
+- **Server-side data fetching** with React Query
 
-export default defineNitroConfig({
-  preset: require.resolve('@aziontech/presets/nitro/preset'),
-});
-```
-
-Or directly with the node_modules path:
-
-```typescript
-export default defineNitroConfig({
-  preset: './node_modules/@aziontech/presets/src/presets/nitro/custom/index.js',
-});
-```
+It is a good starting point to understand how routing and API routes are structured before deploying to Azion.
 
 ## Project Setup
 
-### 1. Link Your Project
+### Link Your Project
 
 Connect your project to Azion and select the Nitro preset:
 
@@ -90,9 +93,7 @@ When prompted, choose the **Nitro preset** from the available options.
 
 ## Development Workflow
 
-### Preview Your Application
-
-#### Build and Preview
+### Build and Preview
 
 Build your application and preview it locally:
 
@@ -113,7 +114,7 @@ This is useful when you've already built your application and want to quickly te
 
 ## Deployment
 
-### Deploy to Azion Edge
+### Deploy to Azion
 
 Deploy your application directly from your local environment:
 
@@ -125,43 +126,18 @@ azion deploy --local
 This command will:
 
 1. Build your application with the Nitro preset
-2. Package the edge function
-3. Deploy to Azion's edge network
+2. Package the function
+3. Deploy to Azion's network
 4. Provide you with the deployment URL
-
-## How It Works
-
-After a successful build, Nitro outputs two directories:
-
-- `.output/server/` — the server-side bundle (`index.mjs`) deployed as an Azion edge function
-- `.output/public/` — static assets uploaded to Azion's storage bucket
-
-At runtime, the Azion Nitro module:
-
-1. Attaches the Azion runtime context (`env`, `ctx`) to each incoming request
-2. Checks if the request targets a static asset
-3. Serves static assets directly from storage
-4. Forwards all other requests to Nitro's native fetch handler
 
 ## Features
 
 The Nitro preset provides:
 
 - **Server-Side Rendering**: Full SSR support via Nitro's native server
-- **Edge Runtime**: Optimized for Azion's edge computing platform
+- **Edge Runtime**: Optimized for Azion's computing platform
 - **Static Asset Handling**: Efficient static file serving from Azion storage with cache policy
 - **API Routes**: Support for Nitro server API routes
-- **WASM Support**: WebAssembly modules supported out of the box
-
-## Troubleshooting
-
-### Common Issues
-
-**Build Errors**: Ensure the preset path in your config resolves correctly. Use `require.resolve` when possible to guarantee the path is valid.
-
-**Deployment Failures**: Verify that the Azion CLI is authenticated and your project is properly linked.
-
-**Runtime Errors**: Check that your application is compatible with edge runtime constraints (no Node.js-only APIs).
 
 ### Getting Help
 
@@ -170,22 +146,11 @@ For additional support:
 - Check the [Azion Documentation](https://www.azion.com/en/documentation/)
 - Contact Azion Support for platform-specific issues
 
-## Example Project Structure
-
-```
-my-nitro-app/
-├── vite.config.ts          # Azion preset configuration (TanStack Start)
-├── package.json            # Include @aziontech/presets dependency
-├── app/                    # Application source
-├── server/                 # Nitro server routes and middleware
-└── public/                 # Static assets
-```
-
 ## Next Steps
 
 After successful deployment:
 
-1. Test your application on the provided edge URL
+1. Test your application on the provided URL
 2. Configure custom domains if needed
 
 > **Note**: We are currently working on a Pull Request to the official Nitro repository to include an Azion preset natively. This will simplify the configuration process in future versions.
