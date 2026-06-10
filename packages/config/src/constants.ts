@@ -337,3 +337,5 @@ export const CUSTOM_PAGE_ERROR_CODES = [
 ] as const;
 
 export const CUSTOM_PAGE_TYPES = ['page_connector'] as const;
+
+export const FIREWALL_NO_ARGS_BEHAVIORS = ['deny', 'drop'] as const;

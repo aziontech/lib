@@ -106,10 +106,12 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     // and cannot be combined with other behaviors
     if (behaviorArray.length > 1) {
       const firstBehavior = behaviorArray[0];
-      const hasTerminalBehavior = firstBehavior.deny || firstBehavior.drop || firstBehavior.setCustomResponse;
+      const hasTerminalBehavior =
+        firstBehavior.type === 'deny' || firstBehavior.type === 'drop' || firstBehavior.type === 'set_custom_response';
 
       if (hasTerminalBehavior) {
-        const behaviorType = firstBehavior.deny ? 'deny' : firstBehavior.drop ? 'drop' : 'setCustomResponse';
+        const behaviorType =
+          firstBehavior.type === 'deny' ? 'deny' : firstBehavior.type === 'drop' ? 'drop' : 'set_custom_response';
         throw new Error(
           `The behavior '${behaviorType}' is a terminal behavior and must be used alone. ` +
             `It cannot be combined with other behaviors in the same rule.`,
@@ -120,56 +122,47 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
     const behaviors = [];
 
     for (const behaviorItem of behaviorArray) {
-      if (behaviorItem.runFunction !== undefined) {
-        behaviors.push({
-          type: 'run_function',
-          attributes: {
-            value: behaviorItem.runFunction,
-          },
-        });
+      if (behaviorItem.type === 'run_function') {
+        behaviors.push(behaviorItem);
       }
 
-      if (behaviorItem.setWafRuleset) {
+      if (behaviorItem.type === 'set_waf_ruleset') {
         behaviors.push({
           type: 'set_waf_ruleset',
           attributes: {
-            mode: behaviorItem.setWafRuleset.wafMode,
-            waf_id: behaviorItem.setWafRuleset.wafId,
+            mode: behaviorItem.attributes.wafMode,
+            waf_id: behaviorItem.attributes.wafId,
           },
         });
       }
 
-      if (behaviorItem.setRateLimit) {
+      if (behaviorItem.type === 'set_rate_limit') {
         behaviors.push({
           type: 'set_rate_limit',
           attributes: {
-            type: behaviorItem.setRateLimit.type || 'second',
-            limit_by: behaviorItem.setRateLimit.limitBy,
-            average_rate_limit: behaviorItem.setRateLimit.averageRateLimit,
-            maximum_burst_size: behaviorItem.setRateLimit.maximumBurstSize,
+            type: behaviorItem.attributes.type,
+            limit_by: behaviorItem.attributes.limitBy,
+            average_rate_limit: behaviorItem.attributes.averageRateLimit,
+            maximum_burst_size: behaviorItem.attributes.maximumBurstSize,
           },
         });
       }
 
-      if (behaviorItem.deny) {
-        behaviors.push({
-          type: 'deny',
-        });
+      if (behaviorItem.type === 'deny') {
+        behaviors.push(behaviorItem);
       }
 
-      if (behaviorItem.drop) {
-        behaviors.push({
-          type: 'drop',
-        });
+      if (behaviorItem.type === 'drop') {
+        behaviors.push(behaviorItem);
       }
 
-      if (behaviorItem.setCustomResponse) {
+      if (behaviorItem.type === 'set_custom_response') {
         behaviors.push({
           type: 'set_custom_response',
           attributes: {
-            status_code: behaviorItem.setCustomResponse.statusCode,
-            content_type: behaviorItem.setCustomResponse.contentType,
-            content_body: behaviorItem.setCustomResponse.contentBody,
+            status_code: behaviorItem.attributes.statusCode,
+            content_type: behaviorItem.attributes.contentType,
+            content_body: behaviorItem.attributes.contentBody,
           },
         });
       }
@@ -242,20 +235,23 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
       switch (b.type) {
         case 'run_function':
           behaviorArray.push({
-            runFunction: b.attributes.value,
+            type: 'run_function',
+            attributes: b.attributes,
           });
           break;
         case 'set_waf_ruleset':
           behaviorArray.push({
-            setWafRuleset: {
-              wafMode: b.attributes.mode,
-              wafId: b.attributes.waf_id,
+            type: 'set_waf_ruleset',
+            attributes: {
+              mode: b.attributes.mode,
+              waf_id: b.attributes.waf_id,
             },
           });
           break;
         case 'set_rate_limit':
           behaviorArray.push({
-            setRateLimit: {
+            type: 'set_rate_limit',
+            attributes: {
               type: b.attributes.type,
               limitBy: b.attributes.limit_by,
               averageRateLimit: b.attributes.average_rate_limit,
@@ -264,14 +260,15 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           });
           break;
         case 'deny':
-          behaviorArray.push({ deny: true });
+          behaviorArray.push({ type: 'deny' });
           break;
         case 'drop':
-          behaviorArray.push({ drop: true });
+          behaviorArray.push({ type: 'drop' });
           break;
         case 'set_custom_response':
           behaviorArray.push({
-            setCustomResponse: {
+            type: 'set_custom_response',
+            attributes: {
               statusCode: b.attributes.status_code,
               contentType: b.attributes.content_type,
               contentBody: b.attributes.content_body,
