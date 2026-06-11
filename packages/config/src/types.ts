@@ -112,7 +112,7 @@ export type FirewallBehaviorName =
   | 'deny'
   | 'drop'
   | 'set_rate_limit'
-  | 'set_waf_ruleset'
+  | 'set_waf'
   | 'run_function'
   | 'set_custom_response';
 export type FirewallRateLimitType = 'second' | 'minute';
@@ -570,7 +570,7 @@ export type AzionApplication = {
  */
 export type AzionFirewallBehaviorItem =
   | { type: 'run_function'; attributes: { value: string | number } }
-  | { type: 'set_waf_ruleset'; attributes: { mode: FirewallWafMode; wafId: string | number } }
+  | { type: 'set_waf'; attributes: { mode: FirewallWafMode; wafId: string | number } }
   | {
       type: 'set_rate_limit';
       attributes: {
@@ -582,7 +582,10 @@ export type AzionFirewallBehaviorItem =
     }
   | { type: 'deny' }
   | { type: 'drop' }
-  | { type: 'set_custom_response'; attributes: { statusCode: number | string; contentType: string; contentBody: string } };
+  | {
+      type: 'set_custom_response';
+      attributes: { statusCode: number | string; contentType: string; contentBody: string };
+    };
 
 /**
  * Firewall behavior configuration for Azion.

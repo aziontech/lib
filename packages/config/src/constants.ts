@@ -93,7 +93,7 @@ export const FIREWALL_BEHAVIOR_NAMES = [
   'deny',
   'drop',
   'set_rate_limit',
-  'set_waf_ruleset',
+  'set_waf',
   'run_function',
   'set_custom_response',
 ] as const;

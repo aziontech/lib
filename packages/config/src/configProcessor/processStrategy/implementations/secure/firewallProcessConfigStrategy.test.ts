@@ -96,7 +96,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 ],
                 behaviors: [
                   { type: 'run_function', attributes: { value: 'func-1' } },
-                  { type: 'set_waf_ruleset', attributes: { mode: 'blocking', wafId: 123 } },
+                  { type: 'set_waf', attributes: { mode: 'blocking', wafId: 123 } },
                   {
                     type: 'set_rate_limit',
                     attributes: {
@@ -130,7 +130,7 @@ describe('FirewallProcessConfigStrategy', () => {
       // behaviors
       expect(rule.behaviors).toEqual([
         { type: 'run_function', attributes: { value: 'func-1' } },
-        { type: 'set_waf_ruleset', attributes: { mode: 'blocking', waf_id: 123 } },
+        { type: 'set_waf', attributes: { mode: 'blocking', waf_id: 123 } },
         {
           type: 'set_rate_limit',
           attributes: {
@@ -255,7 +255,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 variable: 'request_uri',
                 behaviors: [
                   { type: 'run_function', attributes: { value: 123 } },
-                  { type: 'set_waf_ruleset', attributes: { mode: 'blocking', wafId: 456 } },
+                  { type: 'set_waf', attributes: { mode: 'blocking', wafId: 456 } },
                   { type: 'deny' },
                 ],
               },
@@ -270,7 +270,7 @@ describe('FirewallProcessConfigStrategy', () => {
 
       expect(rule.behaviors).toEqual([
         { type: 'run_function', attributes: { value: 123 } },
-        { type: 'set_waf_ruleset', attributes: { mode: 'blocking', waf_id: 456 } },
+        { type: 'set_waf', attributes: { mode: 'blocking', waf_id: 456 } },
         { type: 'deny' },
       ]);
     });
@@ -374,7 +374,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 active: false,
                 behaviors: [
                   { type: 'run_function', attributes: { value: '/path/to/f.js' } },
-                  { type: 'set_waf_ruleset', attributes: { mode: 'learning', waf_id: 999 } },
+                  { type: 'set_waf', attributes: { mode: 'learning', waf_id: 999 } },
                   {
                     type: 'set_rate_limit',
                     attributes: {
@@ -418,7 +418,7 @@ describe('FirewallProcessConfigStrategy', () => {
         active: false,
         behaviors: [
           { type: 'run_function', attributes: { value: '/path/to/f.js' } },
-          { type: 'set_waf_ruleset', attributes: { mode: 'learning', wafId: 999 } },
+          { type: 'set_waf', attributes: { mode: 'learning', wafId: 999 } },
           {
             type: 'set_rate_limit',
             attributes: {
@@ -430,7 +430,10 @@ describe('FirewallProcessConfigStrategy', () => {
           },
           { type: 'deny' },
           { type: 'drop' },
-          { type: 'set_custom_response', attributes: { statusCode: 403, contentType: 'text/plain', contentBody: 'forbidden' } },
+          {
+            type: 'set_custom_response',
+            attributes: { statusCode: 403, contentType: 'text/plain', contentBody: 'forbidden' },
+          },
         ],
         criteria: [
           { variable: 'host', operator: 'is_equal', conditional: 'if', argument: 'bad.com' },
@@ -546,7 +549,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 active: true,
                 behaviors: [
                   { type: 'run_function', attributes: { value: 999 } },
-                  { type: 'set_waf_ruleset', attributes: { mode: 'counting', waf_id: 111 } },
+                  { type: 'set_waf', attributes: { mode: 'counting', waf_id: 111 } },
                   {
                     type: 'set_custom_response',
                     attributes: {
@@ -573,7 +576,7 @@ describe('FirewallProcessConfigStrategy', () => {
         active: true,
         behaviors: [
           { type: 'run_function', attributes: { value: 999 } },
-          { type: 'set_waf_ruleset', attributes: { mode: 'counting', wafId: 111 } },
+          { type: 'set_waf', attributes: { mode: 'counting', wafId: 111 } },
           {
             type: 'set_custom_response',
             attributes: {

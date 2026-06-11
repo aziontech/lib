@@ -126,9 +126,9 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
         behaviors.push(behaviorItem);
       }
 
-      if (behaviorItem.type === 'set_waf_ruleset') {
+      if (behaviorItem.type === 'set_waf') {
         behaviors.push({
-          type: 'set_waf_ruleset',
+          type: 'set_waf',
           attributes: {
             mode: behaviorItem.attributes.mode,
             waf_id: behaviorItem.attributes.wafId,
@@ -239,9 +239,9 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
             attributes: b.attributes,
           });
           break;
-        case 'set_waf_ruleset':
+        case 'set_waf':
           behaviorArray.push({
-            type: 'set_waf_ruleset',
+            type: 'set_waf',
             attributes: {
               mode: b.attributes.mode,
               wafId: b.attributes.waf_id,
