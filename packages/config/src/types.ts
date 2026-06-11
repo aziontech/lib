@@ -569,19 +569,20 @@ export type AzionApplication = {
  * Individual firewall behavior types
  */
 export type AzionFirewallBehaviorItem =
-  | { runFunction: string | number }
-  | { setWafRuleset: { wafMode: FirewallWafMode; wafId: string | number } }
+  | { type: 'run_function'; attributes: { value: string | number } }
+  | { type: 'set_waf_ruleset'; attributes: { mode: FirewallWafMode; wafId: string | number } }
   | {
-      setRateLimit: {
+      type: 'set_rate_limit';
+      attributes: {
         type: FirewallRateLimitType;
         limitBy: FirewallRateLimitBy;
         averageRateLimit: string;
         maximumBurstSize: string;
       };
     }
-  | { deny: true }
-  | { drop: true }
-  | { setCustomResponse: { statusCode: number | string; contentType: string; contentBody: string } };
+  | { type: 'deny' }
+  | { type: 'drop' }
+  | { type: 'set_custom_response'; attributes: { statusCode: number | string; contentType: string; contentBody: string } };
 
 /**
  * Firewall behavior configuration for Azion.
