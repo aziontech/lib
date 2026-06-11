@@ -306,13 +306,13 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@types/jest':
-        specifier: ^29.5.12
+        specifier: ^29.5.14
         version: 29.5.14
       '@types/mock-fs':
         specifier: ^4.13.4
         version: 4.13.4
       '@types/node':
-        specifier: ^22.13.1
+        specifier: ^22.19.15
         version: 22.19.15
       '@types/tmp':
         specifier: ^0.2.6

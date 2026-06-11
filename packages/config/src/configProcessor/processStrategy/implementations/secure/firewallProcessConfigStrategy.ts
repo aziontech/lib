@@ -130,7 +130,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
         behaviors.push({
           type: 'set_waf_ruleset',
           attributes: {
-            mode: behaviorItem.attributes.wafMode,
+            mode: behaviorItem.attributes.mode,
             waf_id: behaviorItem.attributes.wafId,
           },
         });
@@ -244,7 +244,7 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
             type: 'set_waf_ruleset',
             attributes: {
               mode: b.attributes.mode,
-              waf_id: b.attributes.waf_id,
+              wafId: b.attributes.waf_id,
             },
           });
           break;
