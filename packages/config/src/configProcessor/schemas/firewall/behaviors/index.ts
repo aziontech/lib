@@ -53,8 +53,8 @@ const setWafRuleSetBehaviorSchema = {
   properties: {
     type: {
       type: 'string',
-      enum: ['set_waf_rule_set'],
-      errorMessage: "The 'type' field must be a valid set_waf_rule_set behavior type.",
+      enum: ['set_waf_ruleset'],
+      errorMessage: "The 'type' field must be a valid set_waf_ruleset behavior type.",
     },
     attributes: {
       type: 'object',
@@ -72,8 +72,8 @@ const setWafRuleSetBehaviorSchema = {
       required: ['wafMode', 'wafId'],
       additionalProperties: false,
       errorMessage: {
-        additionalProperties: 'No additional properties are allowed in the setWafRuleSet object',
-        required: "Both 'wafMode' and 'wafId' fields are required in setWafRuleSet attributes",
+        additionalProperties: 'No additional properties are allowed in the set_waf_ruleset object',
+        required: "Both 'wafMode' and 'wafId' fields are required in set_waf_ruleset attributes",
       },
     },
   },
