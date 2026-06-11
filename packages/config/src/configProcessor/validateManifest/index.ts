@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import ajvErrors from 'ajv-errors';
 import addKeywords from 'ajv-keywords';
 
-import { schemaManifest as azionManifestSchema } from '../helpers/schemaManifest';
+import { schemaManifest as azionManifestSchema } from '../schemas/schemaManifest';
 
 /**
  * Validates the provided manifest against the Azion Manifest Schema.

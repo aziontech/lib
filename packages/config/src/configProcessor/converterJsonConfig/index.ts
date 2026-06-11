@@ -1,6 +1,6 @@
 import { AzionConfig } from '../../types';
-import { schemaManifest } from '../helpers/schemaManifest';
 import { factoryProcessContext } from '../processStrategy';
+import { schemaManifest } from '../schemas/schemaManifest';
 import { validateConfig } from '../validateConfig';
 
 /**
