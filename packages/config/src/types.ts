@@ -116,7 +116,7 @@ export type FirewallBehaviorName =
   | 'run_function'
   | 'set_custom_response';
 export type FirewallRateLimitType = 'second' | 'minute';
-export type FirewallRateLimitBy = 'clientIp' | 'global';
+export type FirewallRateLimitBy = 'client_ip' | 'global';
 export type FirewallWafMode = 'learning' | 'blocking';
 export type FirewallVariable =
   | 'header_accept'

@@ -100,7 +100,7 @@ export const FIREWALL_BEHAVIOR_NAMES = [
 
 export const FIREWALL_RATE_LIMIT_TYPES = ['second', 'minute'] as const;
 
-export const FIREWALL_RATE_LIMIT_BY = ['clientIp', 'global'] as const;
+export const FIREWALL_RATE_LIMIT_BY = ['client_ip', 'global'] as const;
 
 export const FIREWALL_WAF_MODES = ['learning', 'blocking'] as const;
 

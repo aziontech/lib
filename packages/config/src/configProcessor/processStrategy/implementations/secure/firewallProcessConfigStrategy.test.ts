@@ -101,7 +101,7 @@ describe('FirewallProcessConfigStrategy', () => {
                     type: 'set_rate_limit',
                     attributes: {
                       type: 'minute',
-                      limitBy: 'clientIp',
+                      limitBy: 'client_ip',
                       averageRateLimit: '60',
                       maximumBurstSize: '20',
                     },
@@ -135,7 +135,7 @@ describe('FirewallProcessConfigStrategy', () => {
           type: 'set_rate_limit',
           attributes: {
             type: 'minute',
-            limit_by: 'clientIp',
+            limit_by: 'client_ip',
             average_rate_limit: '60',
             maximum_burst_size: '20',
           },

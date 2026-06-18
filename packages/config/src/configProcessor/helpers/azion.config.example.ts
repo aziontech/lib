@@ -529,7 +529,7 @@ const config: AzionConfig = {
               attributes: {
                 type: 'second',
                 averageRateLimit: '1',
-                limitBy: 'clientIp',
+                limitBy: 'client_ip',
                 maximumBurstSize: '1',
               },
             },

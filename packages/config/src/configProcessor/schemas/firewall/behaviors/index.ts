@@ -178,14 +178,21 @@ const runFunctionBehaviorSchema = {
 };
 
 const firewallBehaviorSchema = {
-  oneOf: [
-    runFunctionBehaviorSchema,
-    setWafRuleSetBehaviorSchema,
-    setRateLimitBehaviorSchema,
-    noArgsBehaviorSchema,
-    setCustomResponseBehaviorSchema,
-  ],
-  errorMessage: 'Each behavior must match one of the valid behavior formats.',
+  if: { type: 'object', properties: { type: { const: 'run_function' } }, required: ['type'] },
+  then: runFunctionBehaviorSchema,
+  else: {
+    if: { type: 'object', properties: { type: { const: 'set_waf' } }, required: ['type'] },
+    then: setWafRuleSetBehaviorSchema,
+    else: {
+      if: { type: 'object', properties: { type: { const: 'set_rate_limit' } }, required: ['type'] },
+      then: setRateLimitBehaviorSchema,
+      else: {
+        if: { type: 'object', properties: { type: { const: 'set_custom_response' } }, required: ['type'] },
+        then: setCustomResponseBehaviorSchema,
+        else: noArgsBehaviorSchema,
+      },
+    },
+  },
 };
 
 export default firewallBehaviorSchema;

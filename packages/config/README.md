@@ -301,7 +301,7 @@ const config = defineConfig({
               type: 'set_rate_limit',
               attributes: {
                 type: 'second',
-                limitBy: 'clientIp',
+                limitBy: 'client_ip',
                 averageRateLimit: '10',
                 maximumBurstSize: '20',
               },
@@ -849,7 +849,7 @@ A discriminated union — one of:
 
 - `{ type: 'run_function'; attributes: { value: string | number } }` — Run a serverless function (function name or ID).
 - `{ type: 'set_waf'; attributes: { mode: 'learning' | 'blocking'; wafId: string | number } }` — Set WAF ruleset and operation mode.
-- `{ type: 'set_rate_limit'; attributes: { type: 'second' | 'minute'; limitBy: 'clientIp' | 'global'; averageRateLimit: string; maximumBurstSize: string } }` — Set rate limit configuration.
+- `{ type: 'set_rate_limit'; attributes: { type: 'second' | 'minute'; limitBy: 'client_ip' | 'global'; averageRateLimit: string; maximumBurstSize: string } }` — Set rate limit configuration.
 - `{ type: 'deny' }` — Deny the request.
 - `{ type: 'drop' }` — Drop the request.
 - `{ type: 'set_custom_response'; attributes: { statusCode: number | string; contentType: string; contentBody: string } }` — Return a custom HTTP response.
