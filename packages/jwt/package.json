@@ -1,6 +1,6 @@
 {
   "name": "@aziontech/jwt",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "The Azion JWT Library provides utility functions for signing, verifying, and decoding JSON Web Tokens (JWTs).",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
