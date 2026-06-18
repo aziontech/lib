@@ -18,7 +18,6 @@
     "@aziontech/client",
     "@aziontech/cookies",
     "@aziontech/domains",
-    "@aziontech/jwt",
     "@aziontech/purge",
     "@aziontech/router",
     "@aziontech/wasm-image-processor"
