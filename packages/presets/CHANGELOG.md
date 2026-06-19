@@ -1,5 +1,12 @@
 # @aziontech/presets
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`02193f2`](https://github.com/aziontech/lib/commit/02193f22e7d19bd673de0f94bebd12a0ae8e0f93)]:
+  - @aziontech/config@1.0.1
+
 ## 1.1.0
 
 ### Minor Changes

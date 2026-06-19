@@ -1,5 +1,14 @@
 # @aziontech/config
 
+## 1.0.1
+
+### Patch Changes
+
+- [#439](https://github.com/aziontech/lib/pull/439) [`02193f2`](https://github.com/aziontech/lib/commit/02193f22e7d19bd673de0f94bebd12a0ae8e0f93) Thanks [@jcbsfilho](https://github.com/jcbsfilho)! - refactor(config): reorganize schemas and normalize firewall behavior shape
+  - move schema files from helpers/ to a dedicated schemas/ directory
+  - split monolithic schema into per-feature modules
+  - rename set_waf_ruleset behavior to set_waf and update docs
+
 ## 1.0.0
 
 ### Major Changes
