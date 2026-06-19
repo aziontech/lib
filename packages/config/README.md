@@ -296,14 +296,18 @@ const config = defineConfig({
           name: 'rateLimit_Then_Drop',
           active: true,
           match: '^/api/sensitive/',
-          behavior: {
-            setRateLimit: {
-              type: 'second',
-              limitBy: 'clientIp',
-              averageRateLimit: '10',
-              maximumBurstSize: '20',
+          behaviors: [
+            {
+              type: 'set_rate_limit',
+              attributes: {
+                type: 'second',
+                limitBy: 'client_ip',
+                averageRateLimit: '10',
+                maximumBurstSize: '20',
+              },
             },
-          },
+            { type: 'drop' },
+          ],
         },
       ],
     },
@@ -833,27 +837,22 @@ Type definition for firewall rules.
 - `description?: string` - Description of the rule.
 - `active?: boolean` - Whether the rule is active.
 - `match?: string` - Match criteria for the rule (regex pattern).
-- `behavior: AzionFirewallBehavior` - Behavior to be applied when the rule matches.
+- `behaviors: AzionFirewallBehavior` - Array of behaviors to be applied when the rule matches.
 
 ### `AzionFirewallBehavior`
 
-Type definition for firewall rule behaviors.
+Array of `AzionFirewallBehaviorItem` objects. Each item uses a discriminated union on `type` to define which behavior is applied and what attributes it requires.
 
-**Properties:**
+### `AzionFirewallBehaviorItem`
 
-- `runFunction?: string | number` - Run a serverless function (function name or ID).
-- `setWafRuleset?: { wafMode: string; wafId: string | number }` - Set WAF ruleset.
-- `setRateLimit?: RateLimitConfig` - Set rate limit configuration.
-  - `type: 'second' | 'minute' | 'hour'` - Rate limit time window.
-  - `limitBy: 'clientIp' | 'global' | 'token'` - Rate limit criteria.
-  - `averageRateLimit: string` - Average rate limit.
-  - `maximumBurstSize: string` - Maximum burst size.
-- `deny?: boolean` - Deny the request.
-- `drop?: boolean` - Drop the request.
-- `setCustomResponse?: CustomResponseConfig` - Set custom response.
-  - `statusCode: number | string` - HTTP status code (200-499).
-  - `contentType: string` - Response content type.
-  - `contentBody: string` - Response content body.
+A discriminated union — one of:
+
+- `{ type: 'run_function'; attributes: { value: string | number } }` — Run a serverless function (function name or ID).
+- `{ type: 'set_waf'; attributes: { mode: 'learning' | 'blocking'; wafId: string | number } }` — Set WAF ruleset and operation mode.
+- `{ type: 'set_rate_limit'; attributes: { type: 'second' | 'minute'; limitBy: 'client_ip' | 'global'; averageRateLimit: string; maximumBurstSize: string } }` — Set rate limit configuration.
+- `{ type: 'deny' }` — Deny the request.
+- `{ type: 'drop' }` — Drop the request.
+- `{ type: 'set_custom_response'; attributes: { statusCode: number | string; contentType: string; contentBody: string } }` — Return a custom HTTP response.
 
 ### `AzionWaf`
 

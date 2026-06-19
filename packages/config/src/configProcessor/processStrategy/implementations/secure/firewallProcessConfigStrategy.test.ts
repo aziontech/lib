@@ -35,7 +35,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 description: 'desc',
                 match: '/api/*',
                 variable: 'request_uri',
-                behaviors: [{ deny: true }],
+                behaviors: [{ type: 'deny' }],
               },
             ],
           },
@@ -95,19 +95,21 @@ describe('FirewallProcessConfigStrategy', () => {
                   { variable: 'request_method', operator: 'exists', conditional: 'and' },
                 ],
                 behaviors: [
-                  { runFunction: 'func-1' },
-                  { setWafRuleset: { wafMode: 'blocking', wafId: 123 } },
+                  { type: 'run_function', attributes: { value: 'func-1' } },
+                  { type: 'set_waf', attributes: { mode: 'blocking', wafId: 123 } },
                   {
-                    setRateLimit: {
+                    type: 'set_rate_limit',
+                    attributes: {
                       type: 'minute',
-                      limitBy: 'clientIp',
+                      limitBy: 'client_ip',
                       averageRateLimit: '60',
                       maximumBurstSize: '20',
                     },
                   },
-                  { drop: true },
+                  { type: 'drop' },
                   {
-                    setCustomResponse: {
+                    type: 'set_custom_response',
+                    attributes: {
                       statusCode: 429,
                       contentType: 'application/json',
                       contentBody: '{"err":true}',
@@ -128,12 +130,12 @@ describe('FirewallProcessConfigStrategy', () => {
       // behaviors
       expect(rule.behaviors).toEqual([
         { type: 'run_function', attributes: { value: 'func-1' } },
-        { type: 'set_waf_ruleset', attributes: { mode: 'blocking', waf_id: 123 } },
+        { type: 'set_waf', attributes: { mode: 'blocking', waf_id: 123 } },
         {
           type: 'set_rate_limit',
           attributes: {
             type: 'minute',
-            limit_by: 'clientIp',
+            limit_by: 'client_ip',
             average_rate_limit: '60',
             maximum_burst_size: '20',
           },
@@ -167,7 +169,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 name: 'rule-runFunction-deny',
                 match: '/api/*',
                 variable: 'request_uri',
-                behaviors: [{ runFunction: 'my-function' }, { deny: true }],
+                behaviors: [{ type: 'run_function', attributes: { value: 'my-function' } }, { type: 'deny' }],
               },
             ],
           },
@@ -197,7 +199,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 name: 'rule-single-deny',
                 match: '/blocked/*',
                 variable: 'request_uri',
-                behaviors: [{ deny: true }],
+                behaviors: [{ type: 'deny' }],
               },
             ],
           },
@@ -224,7 +226,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 name: 'rule-drop',
                 match: '/drop/*',
                 variable: 'request_uri',
-                behaviors: [{ drop: true }],
+                behaviors: [{ type: 'drop' }],
               },
             ],
           },
@@ -252,9 +254,9 @@ describe('FirewallProcessConfigStrategy', () => {
                 match: '/protected/*',
                 variable: 'request_uri',
                 behaviors: [
-                  { runFunction: 123 },
-                  { setWafRuleset: { wafMode: 'blocking', wafId: 456 } },
-                  { deny: true },
+                  { type: 'run_function', attributes: { value: 123 } },
+                  { type: 'set_waf', attributes: { mode: 'blocking', wafId: 456 } },
+                  { type: 'deny' },
                 ],
               },
             ],
@@ -268,7 +270,7 @@ describe('FirewallProcessConfigStrategy', () => {
 
       expect(rule.behaviors).toEqual([
         { type: 'run_function', attributes: { value: 123 } },
-        { type: 'set_waf_ruleset', attributes: { mode: 'blocking', waf_id: 456 } },
+        { type: 'set_waf', attributes: { mode: 'blocking', waf_id: 456 } },
         { type: 'deny' },
       ]);
     });
@@ -288,7 +290,7 @@ describe('FirewallProcessConfigStrategy', () => {
                   { variable: 'host', operator: 'is_equal', conditional: 'if', argument: 'example.com' },
                   { variable: 'request_method', operator: 'matches', conditional: 'and', argument: '^(GET|POST)$' },
                 ],
-                behaviors: [{ deny: true }],
+                behaviors: [{ type: 'deny' }],
               },
             ],
           },
@@ -372,7 +374,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 active: false,
                 behaviors: [
                   { type: 'run_function', attributes: { value: '/path/to/f.js' } },
-                  { type: 'set_waf_ruleset', attributes: { mode: 'learning', waf_id: 999 } },
+                  { type: 'set_waf', attributes: { mode: 'learning', waf_id: 999 } },
                   {
                     type: 'set_rate_limit',
                     attributes: {
@@ -415,19 +417,23 @@ describe('FirewallProcessConfigStrategy', () => {
         name: 'BlockBots',
         active: false,
         behaviors: [
-          { runFunction: '/path/to/f.js' },
-          { setWafRuleset: { wafMode: 'learning', wafId: 999 } },
+          { type: 'run_function', attributes: { value: '/path/to/f.js' } },
+          { type: 'set_waf', attributes: { mode: 'learning', wafId: 999 } },
           {
-            setRateLimit: {
+            type: 'set_rate_limit',
+            attributes: {
               type: 'second',
               limitBy: 'global',
               averageRateLimit: '10',
               maximumBurstSize: '5',
             },
           },
-          { deny: true },
-          { drop: true },
-          { setCustomResponse: { statusCode: 403, contentType: 'text/plain', contentBody: 'forbidden' } },
+          { type: 'deny' },
+          { type: 'drop' },
+          {
+            type: 'set_custom_response',
+            attributes: { statusCode: 403, contentType: 'text/plain', contentBody: 'forbidden' },
+          },
         ],
         criteria: [
           { variable: 'host', operator: 'is_equal', conditional: 'if', argument: 'bad.com' },
@@ -469,7 +475,7 @@ describe('FirewallProcessConfigStrategy', () => {
       expect(transformedPayload.firewall?.[0]?.rules?.[0]).toMatchObject({
         name: 'RunThenDeny',
         active: true,
-        behaviors: [{ runFunction: 'my-func' }, { deny: true }],
+        behaviors: [{ type: 'run_function', attributes: { value: 'my-func' } }, { type: 'deny' }],
       });
     });
 
@@ -497,7 +503,7 @@ describe('FirewallProcessConfigStrategy', () => {
       expect(transformedPayload.firewall?.[0]?.rules?.[0]).toMatchObject({
         name: 'DenyOnly',
         active: true,
-        behaviors: [{ deny: true }],
+        behaviors: [{ type: 'deny' }],
       });
     });
 
@@ -527,7 +533,7 @@ describe('FirewallProcessConfigStrategy', () => {
       expect(transformedPayload.firewall?.[0]?.rules?.[0]).toMatchObject({
         name: 'DropOnly',
         active: true,
-        behaviors: [{ drop: true }],
+        behaviors: [{ type: 'drop' }],
       });
     });
 
@@ -543,7 +549,7 @@ describe('FirewallProcessConfigStrategy', () => {
                 active: true,
                 behaviors: [
                   { type: 'run_function', attributes: { value: 999 } },
-                  { type: 'set_waf_ruleset', attributes: { mode: 'counting', waf_id: 111 } },
+                  { type: 'set_waf', attributes: { mode: 'counting', waf_id: 111 } },
                   {
                     type: 'set_custom_response',
                     attributes: {
@@ -569,10 +575,11 @@ describe('FirewallProcessConfigStrategy', () => {
         name: 'ComplexRule',
         active: true,
         behaviors: [
-          { runFunction: 999 },
-          { setWafRuleset: { wafMode: 'counting', wafId: 111 } },
+          { type: 'run_function', attributes: { value: 999 } },
+          { type: 'set_waf', attributes: { mode: 'counting', wafId: 111 } },
           {
-            setCustomResponse: {
+            type: 'set_custom_response',
+            attributes: {
               statusCode: 429,
               contentType: 'application/json',
               contentBody: '{"error":"rate limit"}',

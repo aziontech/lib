@@ -3,7 +3,7 @@ import ajvErrors from 'ajv-errors';
 import addKeywords from 'ajv-keywords';
 
 import { AzionConfig } from '../../types';
-import azionConfigSchema from '../helpers/schema';
+import azionConfigSchema from '../schemas/schema';
 
 /**
  * Validates the provided configuration against a JSON Schema.

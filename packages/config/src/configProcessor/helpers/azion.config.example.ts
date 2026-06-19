@@ -508,7 +508,7 @@ const config: AzionConfig = {
           ],
           behaviors: [
             {
-              deny: true,
+              type: 'deny',
             },
           ],
         },
@@ -525,10 +525,17 @@ const config: AzionConfig = {
           ],
           behaviors: [
             {
-              runFunction: 'my_func_instance',
+              type: 'set_rate_limit',
+              attributes: {
+                type: 'second',
+                averageRateLimit: '1',
+                limitBy: 'client_ip',
+                maximumBurstSize: '1',
+              },
             },
             {
-              setCustomResponse: {
+              type: 'set_custom_response',
+              attributes: {
                 statusCode: 403,
                 contentType: 'application/json',
                 contentBody: '{"error": "Custom error response"}',

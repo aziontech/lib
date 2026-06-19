@@ -93,14 +93,14 @@ export const FIREWALL_BEHAVIOR_NAMES = [
   'deny',
   'drop',
   'set_rate_limit',
-  'set_waf_ruleset',
+  'set_waf',
   'run_function',
   'set_custom_response',
 ] as const;
 
 export const FIREWALL_RATE_LIMIT_TYPES = ['second', 'minute'] as const;
 
-export const FIREWALL_RATE_LIMIT_BY = ['clientIp', 'global'] as const;
+export const FIREWALL_RATE_LIMIT_BY = ['client_ip', 'global'] as const;
 
 export const FIREWALL_WAF_MODES = ['learning', 'blocking'] as const;
 
@@ -337,3 +337,5 @@ export const CUSTOM_PAGE_ERROR_CODES = [
 ] as const;
 
 export const CUSTOM_PAGE_TYPES = ['page_connector'] as const;
+
+export const FIREWALL_NO_ARGS_BEHAVIORS = ['deny', 'drop'] as const;

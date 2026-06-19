@@ -304,7 +304,7 @@ const schemaFirewallRuleBehaviorArguments = {
     required: ['type', 'limit_by', 'average_rate_limit'],
     additionalProperties: false,
   },
-  set_waf_ruleset: {
+  set_waf: {
     type: 'object',
     properties: {
       waf_id: {
@@ -320,8 +320,8 @@ const schemaFirewallRuleBehaviorArguments = {
     required: ['waf_id', 'mode'],
     additionalProperties: false,
     errorMessage: {
-      additionalProperties: 'No additional properties are allowed in the set_waf_ruleset object',
-      required: "Both 'waf_id' and 'mode' fields are required in set_waf_ruleset",
+      additionalProperties: 'No additional properties are allowed in the set_waf object',
+      required: "Both 'waf_id' and 'mode' fields are required in set_waf",
     },
   },
   set_custom_response: {
@@ -375,7 +375,7 @@ const schemaFirewallRuleBehavior = {
         { type: 'null' },
         { type: 'string' },
         schemaFirewallRuleBehaviorArguments.set_rate_limit,
-        schemaFirewallRuleBehaviorArguments.set_waf_ruleset,
+        schemaFirewallRuleBehaviorArguments.set_waf,
         schemaFirewallRuleBehaviorArguments.set_custom_response,
       ],
       errorMessage: "The 'target' must be a string, object, or null depending on the behavior.",
