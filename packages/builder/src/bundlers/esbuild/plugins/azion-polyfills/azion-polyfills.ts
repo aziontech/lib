@@ -1,7 +1,10 @@
 import { PluginBuild } from 'esbuild';
 import fs from 'fs';
+import { createRequire } from 'module';
 import path from 'path';
 import azionLibs from '../../../../helpers/azion-local-polyfills';
+
+const requireCustom = createRequire(import.meta.url);
 
 /**
  * ESBuild Azion Module Plugin for polyfilling node modules.
@@ -89,8 +92,10 @@ const ESBuildAzionModulePlugin = (isProduction: boolean) => {
           throw new Error(`Could not resolve module: ${args.path}`);
         }
 
-        const contents = await fs.promises.readFile(resolved, 'utf8');
-        const resolveDir = path.dirname(resolved);
+        // Resolve package exports (e.g., @aziontech/builder/polyfills/...) to a filesystem path
+        const resolvedPath = requireCustom.resolve(resolved);
+        const contents = await fs.promises.readFile(resolvedPath, 'utf8');
+        const resolveDir = path.dirname(resolvedPath);
 
         return {
           loader: 'js',
