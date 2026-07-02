@@ -1,5 +1,11 @@
 # @aziontech/builder
 
+## 1.0.4
+
+### Patch Changes
+
+- [#449](https://github.com/aziontech/lib/pull/449) [`d400288`](https://github.com/aziontech/lib/commit/d400288c7b92d51d8bf9f368bc33fdb6ebc0bbc4) Thanks [@jcbsfilho](https://github.com/jcbsfilho)! - fix(builder): resolve azion polyfills package specifier to filesystem path in esbuild plugin
+
 ## 1.0.3
 
 ### Patch Changes
