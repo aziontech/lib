@@ -184,18 +184,35 @@ const postQueryDatabase = async (
       };
     }
 
+    // The SQL API reports per-statement failures inside the `data` array
+    // (e.g. `{ error: 'no such table: ...' }`) rather than in `result.errors`.
+    const statementError = Array.isArray(result.data)
+      ? result.data.find((statement: any) => statement && statement.error)
+      : undefined;
+
+    if (statementError) {
+      return {
+        error: { message: statementError.error, operation: 'post query' },
+      };
+    }
+
     const dataResult = result.data;
 
     if (debug) {
       const limitedData: ApiQueryExecutionResponse = {
         ...result,
-        data: (result as ApiQueryExecutionResponse)?.data?.map((data) => ({
-          ...data,
-          results: {
-            ...data.results,
-            rows: limitArraySize(data.results?.rows, 10),
-          },
-        })),
+        data: (result as ApiQueryExecutionResponse)?.data?.map((data) => {
+          if (!data || !data.results) {
+            return data;
+          }
+          return {
+            ...data,
+            results: {
+              ...data.results,
+              rows: limitArraySize(data.results?.rows, 10),
+            },
+          };
+        }),
       };
       console.log('Response Query:', JSON.stringify(limitedData));
     }
