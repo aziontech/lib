@@ -246,6 +246,10 @@ if (result) {
 }
 ```
 
+> **Note:** Statement-level failures reported by the database (for example querying a
+> non-existent table, which returns `no such table: ...`) are surfaced through the
+> `error` field of the response, not thrown. Always check `error` before using `data`.
+
 #### Use Execute
 
 **JavaScript:**
@@ -522,7 +526,7 @@ The response object from a database operation.
 - `columns: string[]`
 - `statement: string`
 - `rows: (number | string)[][]`
-- `error?: string`
+- `error?: string` — set when the individual statement fails (e.g. `no such table: ...`). When present, the operation also resolves with a top-level `error` object.
 
 ### `AzionClientOptions`
 
