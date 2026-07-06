@@ -1,3 +1,7 @@
+## <small>1.20.22 (2026-07-06)</small>
+
+* fix: resolve security vulnerabilities in dependencies (#452) ([413cc5f](https://github.com/aziontech/lib/commit/413cc5f)), closes [#452](https://github.com/aziontech/lib/issues/452)
+
 ## <small>1.20.21 (2026-02-13)</small>
 
 * fix: simplify resize percentage calculations (#388) ([e48bd14](https://github.com/aziontech/lib/commit/e48bd14)), closes [#388](https://github.com/aziontech/lib/issues/388)
