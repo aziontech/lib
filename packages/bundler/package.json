@@ -37,7 +37,7 @@
     "esbuild": "^0.25.10",
     "events": "^3.3.0",
     "inherits": "^2.0.4",
-    "ip-cidr": "^4.0.2",
+    "ipaddr.js": "^2.4.0",
     "lodash-es": "^4.17.21",
     "mime": "^4.1.0",
     "mime-types": "^3.0.1",

@@ -1,4 +1,4 @@
-import ipCidrLib from 'ip-cidr';
+import ipaddr from 'ipaddr.js';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import nodePath from 'node:path';
@@ -47,7 +47,7 @@ class NetworkListContext {
     const network = this.#networkList.find((networkItem) => {
       // At runtime, networkListId is the id of the network list, but in this local context,
       // it is not the name of the object in the networkList[] array. Instead, it is the id property of the object.
-      return networkItem.name === networkListId;
+      return networkItem.id == networkListId;
     });
     return this.#containsType(network, value);
   }
@@ -71,8 +71,7 @@ class NetworkListContext {
     return listContent.some((currentIp) => {
       if (currentIp.includes('/')) {
         try {
-          const cidr = new ipCidrLib(currentIp);
-          return cidr.contains(ipAddress);
+          return ipaddr.parse(ipAddress).match(ipaddr.parseCIDR(currentIp));
         } catch {
           return false; // Invalid CIDR format
         }
