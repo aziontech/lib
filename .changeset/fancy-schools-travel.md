@@ -17,3 +17,5 @@ security(deps): remediate pnpm audit vulnerabilities
 - drop unused crypto-browserify polyfill dependency from unenv-preset
 - replace ip-cidr with ipaddr.js for CIDR matching in the network-list
   polyfill
+- pin @fastly/js-compute to ^3.43.1 in builder, fixing a security
+  vulnerability disclosed in the 3.40.1 peer dependency
