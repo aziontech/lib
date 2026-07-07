@@ -1,4 +1,4 @@
-import ipCidrLib from 'ip-cidr';
+import ipaddr from 'ipaddr.js';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import nodePath from 'node:path';
@@ -71,8 +71,7 @@ class NetworkListContext {
     return listContent.some((currentIp) => {
       if (currentIp.includes('/')) {
         try {
-          const cidr = new ipCidrLib(currentIp);
-          return cidr.contains(ipAddress);
+          return ipaddr.parse(ipAddress).match(ipaddr.parseCIDR(currentIp));
         } catch {
           return false; // Invalid CIDR format
         }
