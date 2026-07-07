@@ -1,5 +1,11 @@
 # @aziontech/sql
 
+## 1.0.1
+
+### Patch Changes
+
+- [#451](https://github.com/aziontech/lib/pull/451) [`c8eed03`](https://github.com/aziontech/lib/commit/c8eed031f974b1afdec439fbb32193bcbf0a1569) Thanks [@MagnunAVFAzion](https://github.com/MagnunAVFAzion)! - fix surface statement-level query errors
+
 ## 1.0.0
 
 ### Major Changes
