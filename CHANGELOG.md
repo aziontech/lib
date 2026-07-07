@@ -1,3 +1,7 @@
+## <small>1.20.23 (2026-07-07)</small>
+
+* fix: v1.20.x override decompress to patched fork to fix critical zip-slip vulnerability (#455) ([768a071](https://github.com/aziontech/lib/commit/768a071)), closes [#455](https://github.com/aziontech/lib/issues/455)
+
 ## <small>1.20.22 (2026-07-06)</small>
 
 * fix: resolve security vulnerabilities in dependencies (#452) ([413cc5f](https://github.com/aziontech/lib/commit/413cc5f)), closes [#452](https://github.com/aziontech/lib/issues/452)
