@@ -448,21 +448,12 @@ describe('SQL Module', () => {
         useQuery('test-db', ['pragma table_list', 'select * from main'], {
           debug: mockDebug,
         }),
-      ).resolves.toEqual(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            state: 'executed',
-            results: expect.arrayContaining([
-              expect.anything(),
-              expect.objectContaining({ error: 'no such table: main' }),
-            ]),
-          }),
-          error: expect.objectContaining({
-            message: 'no such table: main',
-            operation: 'apiQuery',
-          }),
+      ).resolves.toEqual({
+        error: expect.objectContaining({
+          message: 'no such table: main',
+          operation: 'apiQuery',
         }),
-      );
+      });
     });
 
     it('should return error if useQuery when last statement is invalid', async () => {
@@ -526,18 +517,12 @@ describe('SQL Module', () => {
         useQuery('test-db', ['pragma table_list', 'select * from sqlite_schema', 'select * from main'], {
           debug: mockDebug,
         }),
-      ).resolves.toEqual(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            state: 'executed',
-            results: expect.arrayContaining([
-              expect.anything(),
-              expect.anything(),
-              expect.objectContaining({ error: 'no such table: main' }),
-            ]),
-          }),
+      ).resolves.toEqual({
+        error: expect.objectContaining({
+          message: 'no such table: main',
+          operation: 'apiQuery',
         }),
-      );
+      });
     });
 
     it('should return error if useQuery when data rows is empty', async () => {
