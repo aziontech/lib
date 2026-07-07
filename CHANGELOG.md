@@ -1,3 +1,7 @@
+## <small>3.1.5 (2026-07-07)</small>
+
+* fix: override decompress to patched fork to fix critical zip-slip vulnerability (#454) ([a3a74d9](https://github.com/aziontech/lib/commit/a3a74d9)), closes [#454](https://github.com/aziontech/lib/issues/454)
+
 ## <small>3.1.4 (2026-07-07)</small>
 
 * fix: remove vulnerable dependencies and resolve npm audit findings (#453) ([4ff825c](https://github.com/aziontech/lib/commit/4ff825c)), closes [#453](https://github.com/aziontech/lib/issues/453)
