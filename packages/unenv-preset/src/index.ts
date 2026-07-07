@@ -18,7 +18,7 @@ export default {
     '@aziontech/utils': '@aziontech/utils',
     '@aziontech/utils/edge': '@aziontech/utils/edge',
     '@aziontech/utils/node': '@aziontech/utils/node',
-    '@fastly/http-compute-js': '@fastly/http-compute-js',
+    'fetch-to-node': 'fetch-to-node',
     accepts: 'accepts',
     assert: 'assert-browserify',
     buffer: `${polyfillsPath}/node/buffer.js`,

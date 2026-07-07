@@ -2,6 +2,7 @@
 '@aziontech/unenv-preset': patch
 '@aziontech/builder': patch
 '@aziontech/config': patch
+'@aziontech/presets': patch
 ---
 
 security(deps): remediate pnpm audit vulnerabilities
@@ -17,5 +18,7 @@ security(deps): remediate pnpm audit vulnerabilities
 - drop unused crypto-browserify polyfill dependency from unenv-preset
 - replace ip-cidr with ipaddr.js for CIDR matching in the network-list
   polyfill
-- pin @fastly/js-compute to ^3.43.1 in builder, fixing a security
-  vulnerability disclosed in the 3.40.1 peer dependency
+- replace @fastly/http-compute-js with fetch-to-node (same API, zero
+  dependencies) in the Next.js 12.3.x custom server preset, removing
+  @fastly/js-compute and the unfixed decompress vulnerability pulled in
+  transitively via @bytecodealliance/weval

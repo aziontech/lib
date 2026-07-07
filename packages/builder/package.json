@@ -34,9 +34,6 @@
     "src/polyfills/*",
     "README.md"
   ],
-  "overrides": {
-    "decompress": "npm:@xhmikosr/decompress@^11.1.3"
-  },
   "dependencies": {
     "@aziontech/config": "workspace:*",
     "@aziontech/presets": "workspace:*",
@@ -47,14 +44,13 @@
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-typescript": "^7.27.1",
     "@edge-runtime/primitives": "^3.1.1",
-    "@fastly/http-compute-js": "^1.1.5",
-    "@fastly/js-compute": "^3.43.1",
     "accepts": "^1.3.8",
     "babel-loader": "^10.0.0",
     "browserify-zlib": "^0.2.0",
     "dotenv": "^17.2.2",
     "esbuild": "^0.25.10",
     "events": "^3.3.0",
+    "fetch-to-node": "^2.1.0",
     "inherits": "^2.0.4",
     "ipaddr.js": "^2.4.0",
     "lodash-es": "^4.18.1",
