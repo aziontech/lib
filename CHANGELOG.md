@@ -1,3 +1,7 @@
+## <small>3.1.4 (2026-07-07)</small>
+
+* fix: remove vulnerable dependencies and resolve npm audit findings (#453) ([4ff825c](https://github.com/aziontech/lib/commit/4ff825c)), closes [#453](https://github.com/aziontech/lib/issues/453)
+
 ## <small>3.1.3 (2026-05-15)</small>
 
 * fix: set up maintenance-v3 branch and add deprecation notice ([8d8de8f](https://github.com/aziontech/lib/commit/8d8de8f))
