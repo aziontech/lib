@@ -1,3 +1,8 @@
+## <small>1.20.24 (2026-07-08)</small>
+
+* fix: replace fastly/http-compute-js with fetch-to-node to eliminate vulnerable decompress (#459) ([838291c](https://github.com/aziontech/lib/commit/838291c)), closes [#459](https://github.com/aziontech/lib/issues/459)
+* fix: restore conventional-changelog-conventionalcommits devDependency (#460) ([ea13171](https://github.com/aziontech/lib/commit/ea13171)), closes [#460](https://github.com/aziontech/lib/issues/460)
+
 ## <small>1.20.23 (2026-07-07)</small>
 
 * fix: v1.20.x override decompress to patched fork to fix critical zip-slip vulnerability (#455) ([768a071](https://github.com/aziontech/lib/commit/768a071)), closes [#455](https://github.com/aziontech/lib/issues/455)
