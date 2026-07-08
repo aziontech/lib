@@ -23,7 +23,7 @@ export default {
     'azion/utils': 'azion/utils',
     'azion/utils/edge': 'azion/utils/edge',
     'azion/utils/node': 'azion/utils/node',
-    '@fastly/http-compute-js': '@fastly/http-compute-js',
+    'fetch-to-node': 'fetch-to-node',
     accepts: 'accepts',
     assert: 'assert-browserify',
     buffer: `${polyfillsPath}/node/buffer.js`,
