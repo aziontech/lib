@@ -452,9 +452,6 @@ importers:
       semver:
         specifier: ^7.7.4
         version: 7.7.4
-      ts-jest:
-        specifier: ^29.4.9
-        version: 29.4.9(@babel/core@8.0.1)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@8.0.1))(esbuild@0.28.1)(jest-util@30.4.1)(jest@30.4.2(@types/node@22.19.15)(ts-node@10.9.2(@types/node@22.19.15)(typescript@5.9.3)))(typescript@5.9.3)
       webpack:
         specifier: ^5.97.1
         version: 5.105.4
@@ -468,6 +465,9 @@ importers:
       jest:
         specifier: ^30.4.2
         version: 30.4.2(@types/node@22.19.15)(ts-node@10.9.2(@types/node@22.19.15)(typescript@5.9.3))
+      ts-jest:
+        specifier: ^29.1.5
+        version: 29.4.9(@babel/core@8.0.1)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@8.0.1))(esbuild@0.28.1)(jest-util@30.4.1)(jest@30.4.2(@types/node@22.19.15)(ts-node@10.9.2(@types/node@22.19.15)(typescript@5.9.3)))(typescript@5.9.3)
 
   packages/purge:
     devDependencies:
