@@ -5,7 +5,7 @@
  * Portions of this file Copyright Fastly, Inc, licensed under the MIT license. See LICENSE file for details.
  */
 
-import { toComputeResponse, toReqRes } from '@fastly/http-compute-js';
+import { toFetchResponse, toReqRes } from 'fetch-to-node';
 
 // imports user project dependencies (node_modules)
 
@@ -90,7 +90,7 @@ export class NextServer {
     if (nextResponse.overrideResponse != null) {
       computeResponse = nextResponse.overrideResponse;
     } else {
-      computeResponse = await toComputeResponse(res);
+      computeResponse = await toFetchResponse(res);
     }
 
     if (nextResponse.compress && computeResponse.body != null) {
