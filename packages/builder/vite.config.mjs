@@ -5,7 +5,6 @@ export default createViteConfig({
   ssr: true,
   external: [
     '@edge-runtime/primitives',
-    '@fastly/http-compute-js',
     '@aziontech/unenv-preset',
     '@aziontech/utils',
     '@aziontech/config',
@@ -15,8 +14,9 @@ export default createViteConfig({
     'dotenv',
     'esbuild',
     'events',
+    'fetch-to-node',
     'inherits',
-    'ip-cidr',
+    'ipaddr.js',
     'lodash-es',
     'mime',
     'mime-types',
