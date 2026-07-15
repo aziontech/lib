@@ -1,4 +1,4 @@
-import { AzionConfig, WafThreshold } from '../../../../types';
+import { AzionConfig, AzionWaf, WafThreshold } from '../../../../types';
 import ProcessConfigStrategy from '../../processConfigStrategy';
 
 /**
@@ -34,6 +34,12 @@ class WafProcessConfigStrategy extends ProcessConfigStrategy {
           },
         },
       };
+
+      if (wafConfig.versionId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (item as any).version_id = wafConfig.versionId;
+      }
+
       payload.push(item);
     });
 
@@ -52,7 +58,7 @@ class WafProcessConfigStrategy extends ProcessConfigStrategy {
 
     transformedPayload.waf = [];
     waf.forEach((wafItem) => {
-      const item = {
+      const item: AzionWaf = {
         name: wafItem.name,
         productVersion: wafItem.product_version,
         engineSettings: {
@@ -67,6 +73,10 @@ class WafProcessConfigStrategy extends ProcessConfigStrategy {
           },
         },
       };
+
+      if (wafItem.version_id) {
+        item.versionId = wafItem.version_id;
+      }
 
       transformedPayload.waf!.push(item);
     });

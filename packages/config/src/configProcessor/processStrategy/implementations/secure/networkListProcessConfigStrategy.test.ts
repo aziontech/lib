@@ -110,6 +110,34 @@ describe('NetworkListProcessConfigStrategy', () => {
       expect(result![2].items).toEqual(['BR', 'US', 'CA']);
       expect(result![2].active).toBe(true);
     });
+
+    it('should include version_id in the manifest only when versionId is provided (optional field)', () => {
+      const configWithVersionId: AzionConfig = {
+        networkList: [
+          {
+            name: 'network-list-with-version',
+            type: 'ip_cidr' as NetworkListType,
+            items: ['192.168.1.1/24'],
+            versionId: 'version-abc-123',
+          },
+        ],
+      };
+      const configWithoutVersionId: AzionConfig = {
+        networkList: [
+          {
+            name: 'network-list-without-version',
+            type: 'ip_cidr' as NetworkListType,
+            items: ['192.168.1.1/24'],
+          },
+        ],
+      };
+
+      const resultWith = strategy.transformToManifest(configWithVersionId);
+      const resultWithout = strategy.transformToManifest(configWithoutVersionId);
+
+      expect(resultWith![0].version_id).toBe('version-abc-123');
+      expect(resultWithout![0].version_id).toBeUndefined();
+    });
   });
 
   describe('transformToConfig', () => {
@@ -232,6 +260,38 @@ describe('NetworkListProcessConfigStrategy', () => {
       expect(transformedPayload.networkList![0].name).toBe('new-network-list');
       expect(transformedPayload.networkList![0].type).toBe('ip_cidr');
       expect(transformedPayload.networkList![0].items).toEqual(['192.168.1.1/24']);
+    });
+
+    it('should include versionId in the config only when version_id is provided (optional field)', () => {
+      const payloadWithVersionId = {
+        networkList: [
+          {
+            name: 'network-list-with-version',
+            type: 'ip_cidr',
+            items: ['192.168.1.1/24'],
+            active: true,
+            version_id: 'version-abc-123',
+          },
+        ],
+      };
+      const payloadWithoutVersionId = {
+        networkList: [
+          {
+            name: 'network-list-without-version',
+            type: 'ip_cidr',
+            items: ['192.168.1.1/24'],
+            active: true,
+          },
+        ],
+      };
+
+      const transformedWithVersionId: AzionConfig = {};
+      const transformedWithoutVersionId: AzionConfig = {};
+      strategy.transformToConfig(payloadWithVersionId, transformedWithVersionId);
+      strategy.transformToConfig(payloadWithoutVersionId, transformedWithoutVersionId);
+
+      expect(transformedWithVersionId.networkList![0].versionId).toBe('version-abc-123');
+      expect(transformedWithoutVersionId.networkList![0].versionId).toBeUndefined();
     });
   });
 });

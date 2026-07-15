@@ -451,6 +451,13 @@ const applicationsSchema = {
         },
         errorMessage: "The 'functions' field must be an array of function instance objects",
       },
+      versionId: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 36,
+        pattern: '.*',
+        errorMessage: "The 'versionId' field must be a string between 1 and 36 characters",
+      },
     },
     required: ['name'],
     additionalProperties: false,

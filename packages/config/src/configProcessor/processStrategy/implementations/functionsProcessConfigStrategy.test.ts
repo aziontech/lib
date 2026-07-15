@@ -203,6 +203,32 @@ describe('FunctionsProcessConfigStrategy', () => {
 
       expect(() => strategy.transformToManifest(config)).not.toThrow();
     });
+
+    it('should include version_id in the manifest only when versionId is provided (optional field)', () => {
+      const configWithVersionId: AzionConfig = {
+        functions: [
+          {
+            name: 'function-with-version',
+            path: './functions/function-with-version.js',
+            versionId: 'version-abc-123',
+          },
+        ],
+      };
+      const configWithoutVersionId: AzionConfig = {
+        functions: [
+          {
+            name: 'function-without-version',
+            path: './functions/function-without-version.js',
+          },
+        ],
+      };
+
+      const resultWith = strategy.transformToManifest(configWithVersionId);
+      const resultWithout = strategy.transformToManifest(configWithoutVersionId);
+
+      expect(resultWith[0].version_id).toBe('version-abc-123');
+      expect(resultWithout[0].version_id).toBeUndefined();
+    });
   });
 
   describe('transformToConfig', () => {
@@ -333,6 +359,40 @@ describe('FunctionsProcessConfigStrategy', () => {
       // The transformToConfig method replaces the existing functions array
       expect(transformedPayload.functions).toHaveLength(1);
       expect(transformedPayload.functions![0].name).toBe('new-function');
+    });
+
+    it('should include versionId in the config only when version_id is provided (optional field)', () => {
+      const payloadWithVersionId = {
+        functions: [
+          {
+            name: 'function-with-version',
+            runtime: 'azion_js',
+            default_args: {},
+            execution_environment: 'application',
+            active: true,
+            version_id: 'version-abc-123',
+          },
+        ],
+      };
+      const payloadWithoutVersionId = {
+        functions: [
+          {
+            name: 'function-without-version',
+            runtime: 'azion_js',
+            default_args: {},
+            execution_environment: 'application',
+            active: true,
+          },
+        ],
+      };
+
+      const transformedWithVersionId: AzionConfig = {};
+      const transformedWithoutVersionId: AzionConfig = {};
+      strategy.transformToConfig(payloadWithVersionId, transformedWithVersionId);
+      strategy.transformToConfig(payloadWithoutVersionId, transformedWithoutVersionId);
+
+      expect(transformedWithVersionId.functions![0].versionId).toBe('version-abc-123');
+      expect(transformedWithoutVersionId.functions![0].versionId).toBeUndefined();
     });
   });
 });

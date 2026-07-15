@@ -212,6 +212,13 @@ const workloadsSchema = {
         minItems: 1,
         errorMessage: "The 'deployments' field must be an array of deployment objects with at least one item.",
       },
+      versionId: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 36,
+        pattern: '.*',
+        errorMessage: "The 'versionId' field must be a string between 1 and 36 characters",
+      },
     },
     required: ['name', 'deployments'],
     additionalProperties: false,

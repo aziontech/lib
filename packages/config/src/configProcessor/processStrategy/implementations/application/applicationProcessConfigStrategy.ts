@@ -58,6 +58,10 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         );
       }
 
+      if (app.versionId) {
+        application.version_id = app.versionId;
+      }
+
       return application;
     });
   }
@@ -85,6 +89,7 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy {
         functionsInstances: app.functions_instances
           ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)
           : undefined,
+        versionId: app.version_id,
       };
     });
 
