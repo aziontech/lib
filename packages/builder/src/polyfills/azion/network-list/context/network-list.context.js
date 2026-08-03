@@ -177,6 +177,7 @@ class NetworkListContext {
   #changeEsmImports(originalConfigPath, file) {
     const regex = /import\s+(.*)\s+from\s+['"]\.(.*)['"]/g;
     let changed = false;
+    // eslint-disable-next-line no-useless-assignment -- explicit default kept for readability; reassigned when the regex matches below
     let fileUpdated = file;
     if (file.match(regex)) {
       changed = true;

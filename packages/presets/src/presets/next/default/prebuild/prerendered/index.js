@@ -186,6 +186,7 @@ export default async function handlePrerenderedRoutes(vcConfigPaths, prerendered
   } catch (error) {
     const message = `Error handling prerendered routes: ${error}`;
     feedback.prebuild.error(message);
+    // eslint-disable-next-line preserve-caught-error -- message already embeds the original error
     throw Error(message);
   }
 }

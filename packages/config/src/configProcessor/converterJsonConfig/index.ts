@@ -31,7 +31,7 @@ import { validateConfig } from '../validateConfig';
  *
  */
 function convertJsonConfigToObject(config: string): AzionConfig {
-  let configObject = {};
+  let configObject: Record<string, unknown>;
   try {
     configObject = JSON.parse(config);
   } catch {

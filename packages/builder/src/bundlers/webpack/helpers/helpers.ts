@@ -19,6 +19,7 @@ export function generateWebpackBanner(filesPaths: string[]): string {
       })
       .join('\n');
   } catch (error: unknown) {
+    // eslint-disable-next-line preserve-caught-error -- message already embeds the original error
     throw new Error(`Failed to generate webpack banner: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

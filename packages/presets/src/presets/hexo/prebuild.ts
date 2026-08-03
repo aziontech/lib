@@ -19,6 +19,7 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
   const configFileContent = await readFile('./_config.yml', 'utf-8');
   const attributeMatch = Array.from(configFileContent.matchAll(/public_dir:(.*)\n/g), (match) => match)[0];
   if (attributeMatch) {
+    // eslint-disable-next-line no-useless-assignment -- kept for parity with other presets that resolve public_dir from config
     outDir = attributeMatch[1].trim().replace(/["']/g, '');
   }
 
