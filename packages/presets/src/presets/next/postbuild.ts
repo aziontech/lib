@@ -21,6 +21,7 @@ async function postbuild(config: BuildConfiguration, ctx: BuildContext) {
       const modifiedCode = sourceCode.replace(pattern, replacement);
       writeFileSync(absolutePath, modifiedCode);
     } catch (error) {
+      // eslint-disable-next-line preserve-caught-error -- message already embeds the original error
       throw new Error(`Failed to process file ${filePath}: ${error}`);
     }
   }

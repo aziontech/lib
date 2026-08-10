@@ -47,6 +47,7 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
       // Browser folder doesn't exist, nothing to move
     }
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error -- message already embeds the original error
     throw new Error(`Error during Angular prebuild: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

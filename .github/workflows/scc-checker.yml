@@ -4,15 +4,17 @@ on:
   pull_request:
     branches: [main]
 
+permissions: {}
+
 jobs:
   scc-check:
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0
 
-      - uses: aziontech/scc_check@main
+      - uses: aziontech/scc_check@ef8c23bc9056bf6c21cc8a391fed67412a5fd3c1 # main

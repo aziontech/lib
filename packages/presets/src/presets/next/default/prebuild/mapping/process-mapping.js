@@ -241,6 +241,7 @@ export function detectBuildedFunctions() {
     const functionsDir = resolve('.vercel/output/functions');
     statSync(functionsDir);
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error -- message already carries the original error text
     throw new Error(error.message);
   }
 }

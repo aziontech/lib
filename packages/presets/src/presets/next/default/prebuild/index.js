@@ -50,6 +50,7 @@ function writeOutputReferencesFile(functionsFile, vercelOutput) {
         .join(',')}};`,
     );
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error -- message already carries the original error text
     throw new Error(error.message);
   }
 }

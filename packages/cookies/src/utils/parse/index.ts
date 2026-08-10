@@ -5,8 +5,7 @@ export const parseCookie = (cookie: string, key?: string): Record<string, string
     .reduce(
       (acc, cookie) => {
         const [key, value] = cookie.split('=');
-        let keyName = key;
-        keyName = key.trim();
+        const keyName = key.trim();
         if (keyName) {
           let cookieValue = decodeURIComponent(value).trim();
           if (cookieValue.startsWith('"') && cookieValue.endsWith('"')) {

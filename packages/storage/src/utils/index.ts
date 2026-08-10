@@ -45,6 +45,7 @@ export const retryWithBackoff = async <T>(fn: () => Promise<T>, delay: number = 
         console.warn('Attempting to synchronize. The content may not be synchronized on the edge yet.');
       }
       if (Date.now() - startTime >= maxTime) {
+        // eslint-disable-next-line preserve-caught-error -- backoff-timeout error, not the caught one
         throw new Error('Max retry time reached');
       }
       console.log(`Retry attempt ${attempt + 1} failed. Retrying in ${delay * Math.pow(2, attempt)} ms...`);

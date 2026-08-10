@@ -196,6 +196,7 @@ export default class NextComputeJsServer extends BaseServer {
       return content.trim();
     } catch (err) {
       if (!assetFileExists(this.serverOptions.computeJs.assets, buildIdFile, this.dir)) {
+        // eslint-disable-next-line preserve-caught-error -- message is a distinct, more actionable diagnostic than the original read error
         throw new Error(
           `Could not find a production build in the '${this.distDir}' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id`,
         );

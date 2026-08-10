@@ -195,6 +195,7 @@ export async function mapAndAdaptFunctions(applicationMapping, tmpFunctionsDir, 
   } catch (error) {
     const message = `Error adapting functions: ${error}`;
     utils.feedback.prebuild.error(message);
+    // eslint-disable-next-line preserve-caught-error -- message already embeds the original error
     throw Error(message);
   }
 

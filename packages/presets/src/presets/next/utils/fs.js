@@ -29,6 +29,7 @@ export function normalizePath(path) {
  * @returns {JSON} Parsed JSON file.
  */
 export async function readJsonFile(path) {
+  // eslint-disable-next-line no-useless-assignment -- explicit default kept for readability; reassigned in both branches below
   let parsed = null;
   try {
     const contents = await readFile(path, 'utf8');

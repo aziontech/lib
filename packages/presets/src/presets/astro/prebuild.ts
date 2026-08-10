@@ -42,6 +42,7 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
       verbose: true,
     });
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error -- message already embeds the original error
     throw new Error(`Error during Astro prebuild: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

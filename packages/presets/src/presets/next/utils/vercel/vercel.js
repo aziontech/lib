@@ -31,6 +31,7 @@ function createVercelProjectConfig() {
       writeFileSync(projectConfigFilePath, '{"projectId":"_","orgId":"_","settings":{}}');
     }
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error -- message already carries the original error text
     throw new Error(error.message);
   }
 }
@@ -80,6 +81,7 @@ function loadVercelConfigs() {
 
     return config;
   } catch (error) {
+    // eslint-disable-next-line preserve-caught-error -- message already carries the original error text
     throw new Error(error.message);
   }
 }
