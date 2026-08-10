@@ -27,6 +27,6 @@
   ],
   "devDependencies": {
     "@aziontech/vite-config": "workspace:^",
-    "@types/node": "^22.13.1"
+    "@types/node": "^26.1.2"
   }
 }

@@ -41,7 +41,7 @@
     "@aziontech/types": "workspace:*",
     "@aziontech/unenv-preset": "workspace:*",
     "@aziontech/utils": "workspace:*",
-    "cookie": "^1.0.2",
+    "cookie": "^2.0.1",
     "fast-glob": "^3.3.3",
     "pcre-to-regexp": "^1.1.0",
     "semver": "^7.7.4",
