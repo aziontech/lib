@@ -30,11 +30,11 @@
     "@aziontech/vite-config": "workspace:*",
     "@jest/globals": "^30.4.1",
     "@peculiar/webcrypto": "^1.5.0",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "jest": "^30.4.2",
     "ts-jest": "^29.2.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^7.0.2"
   },
   "repository": {
     "type": "git",
