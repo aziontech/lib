@@ -164,7 +164,10 @@ export interface AzionStorageClient {
    * @param {EdgeAccessType} params.workloads_access - Workloads access configuration for the bucket.
    * @returns {Promise<AzionStorageResponse>} The created bucket or error message.
    */
-  createBucket: (params: { name: string; workloads_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
+  createBucket: (params: {
+    name: string;
+    workloads_access: EdgeAccessType;
+  }) => Promise<AzionStorageResponse<AzionBucket>>;
 
   /**
    * Updates a bucket by its name.
@@ -173,7 +176,10 @@ export interface AzionStorageClient {
    * @param {EdgeAccessType} params.workloads_access - New Workloads access configuration for the bucket.
    * @returns {Promise<AzionStorageResponse<AzionBucket>>} The updated bucket or error message.
    */
-  updateBucket: (params: { name: string; workloads_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
+  updateBucket: (params: {
+    name: string;
+    workloads_access: EdgeAccessType;
+  }) => Promise<AzionStorageResponse<AzionBucket>>;
   /**
    * Deletes a bucket by its name.
    * @param {Object} params - Parameters for deleting a bucket.
@@ -195,7 +201,10 @@ export interface AzionStorageClient {
    * @param {EdgeAccessType} params.workloads_access - Workloads access configuration for the bucket (used only if creating).
    * @returns {Promise<AzionStorageResponse<AzionBucket>>} The existing or created bucket.
    */
-  setupStorage: (params: { name: string; workloads_access: EdgeAccessType }) => Promise<AzionStorageResponse<AzionBucket>>;
+  setupStorage: (params: {
+    name: string;
+    workloads_access: EdgeAccessType;
+  }) => Promise<AzionStorageResponse<AzionBucket>>;
 }
 
 export type AzionBucketCollectionParams = {

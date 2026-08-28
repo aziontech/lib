@@ -24,6 +24,7 @@ class NetworkListProcessConfigStrategy extends ProcessConfigStrategy {
         type: network.type,
         items: network.items,
         active: network.active ?? true,
+        version_id: network.versionId,
       };
       payload.push(item);
     });
@@ -48,6 +49,7 @@ class NetworkListProcessConfigStrategy extends ProcessConfigStrategy {
         type: network.type,
         items: network.items,
         active: network.active,
+        versionId: network.version_id,
       };
       transformedPayload.networkList!.push(item);
     });

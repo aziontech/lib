@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fetchWithErrorHandling } from '../../utils/index';
 import {
-    ApiCreateBucketResponse,
-    ApiCreateObjectResponse,
-    ApiDeleteBucketResponse,
-    ApiDeleteObjectResponse,
-    ApiEditBucketResponse,
-    ApiError,
-    ApiGetBucketResponse,
-    ApiListBucketsParams,
-    ApiListBucketsResponse,
-    ApiListObjectsParams,
-    ApiListObjectsResponse,
+  ApiCreateBucketResponse,
+  ApiCreateObjectResponse,
+  ApiDeleteBucketResponse,
+  ApiDeleteObjectResponse,
+  ApiEditBucketResponse,
+  ApiError,
+  ApiGetBucketResponse,
+  ApiListBucketsParams,
+  ApiListBucketsResponse,
+  ApiListObjectsParams,
+  ApiListObjectsResponse,
 } from './types';
 
 import { AzionEnvironment, ContentObjectStorage, EdgeAccessType } from '../../types';
@@ -554,15 +554,14 @@ const deleteObject = async (
 };
 
 export {
-    deleteBucket,
-    deleteObject,
-    getBucketByName,
-    getBuckets,
-    getObjectByKey,
-    getObjects,
-    patchBucket,
-    postBucket,
-    postObject,
-    putObject
+  deleteBucket,
+  deleteObject,
+  getBucketByName,
+  getBuckets,
+  getObjectByKey,
+  getObjects,
+  patchBucket,
+  postBucket,
+  postObject,
+  putObject,
 };
-

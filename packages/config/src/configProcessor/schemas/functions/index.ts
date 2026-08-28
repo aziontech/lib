@@ -66,6 +66,13 @@ const functionsSchema = {
           additionalProperties: 'No additional properties are allowed in the bindings object',
         },
       },
+      versionId: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 36,
+        pattern: '.*',
+        errorMessage: "The 'versionId' field must be a string between 1 and 36 characters",
+      },
     },
     required: ['name', 'path'],
     additionalProperties: false,
