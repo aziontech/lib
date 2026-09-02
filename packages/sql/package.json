@@ -32,10 +32,10 @@
   },
   "devDependencies": {
     "@aziontech/vite-config": "workspace:*",
-    "@jest/globals": "^30.4.1",
-    "@types/jest": "^29.5.12",
-    "@types/node": "^22.13.1",
-    "jest": "^30.4.2",
+    "@jest/globals": "^30.5.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.4.0",
+    "jest": "^30.5.0",
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2"
   },

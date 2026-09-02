@@ -41,18 +41,18 @@
   },
   "devDependencies": {
     "@aziontech/vite-config": "workspace:*",
-    "@jest/globals": "^30.4.1",
-    "@types/jest": "^29.5.14",
+    "@jest/globals": "^30.5.0",
+    "@types/jest": "^30.0.0",
     "@types/mock-fs": "^4.13.4",
-    "@types/node": "^22.19.15",
+    "@types/node": "^26.4.0",
     "@types/tmp": "^0.2.6",
     "esbuild": "^0.25.10",
-    "jest": "^30.4.2",
+    "jest": "^30.5.0",
     "mock-fs": "^5.5.0",
     "tmp": "^0.2.7",
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2",
-    "webpack": "^5.97.1"
+    "webpack": "^5.110.2"
   },
   "repository": {
     "type": "git",
