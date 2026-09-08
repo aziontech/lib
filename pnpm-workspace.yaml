@@ -1,4 +1,9 @@
 packages:
   - packages/*
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  unrs-resolver: true
+
 # catalog:
 #   '@dotenvx/dotenvx': 1.31.0
