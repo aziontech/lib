@@ -34,25 +34,25 @@
   ],
   "dependencies": {
     "@aziontech/types": "workspace:*",
-    "ajv": "^8.17.1",
+    "ajv": "^8.20.0",
     "ajv-errors": "^3.0.0",
     "ajv-keywords": "^5.1.0",
     "mathjs": "^15.2.0"
   },
   "devDependencies": {
     "@aziontech/vite-config": "workspace:*",
-    "@jest/globals": "^30.4.1",
+    "@jest/globals": "^30.5.1",
     "@types/jest": "^29.5.14",
     "@types/mock-fs": "^4.13.4",
-    "@types/node": "^22.19.15",
+    "@types/node": "^22.20.1",
     "@types/tmp": "^0.2.6",
-    "esbuild": "^0.25.10",
-    "jest": "^30.4.2",
+    "esbuild": "^0.25.12",
+    "jest": "^30.5.1",
     "mock-fs": "^5.5.0",
     "tmp": "^0.2.7",
-    "ts-jest": "^29.1.5",
+    "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
-    "webpack": "^5.97.1"
+    "webpack": "^5.110.3"
   },
   "repository": {
     "type": "git",
