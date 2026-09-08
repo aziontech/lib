@@ -41,18 +41,18 @@
     "@aziontech/types": "workspace:*",
     "@aziontech/unenv-preset": "workspace:*",
     "@aziontech/utils": "workspace:*",
-    "cookie": "^1.0.2",
+    "cookie": "^1.1.1",
     "fast-glob": "^3.3.3",
+    "mime-types": "^3.0.2",
     "pcre-to-regexp": "^1.1.0",
-    "semver": "^7.7.4",
-    "mime-types": "^3.0.1",
-    "webpack": "^5.97.1"
+    "semver": "^7.8.5",
+    "webpack": "^5.110.3"
   },
   "devDependencies": {
     "@aziontech/vite-config": "workspace:*",
-    "@jest/globals": "^30.4.1",
-    "jest": "^30.4.2",
-    "ts-jest": "^29.1.5"
+    "@jest/globals": "^30.5.1",
+    "jest": "^30.5.1",
+    "ts-jest": "^29.4.12"
   },
   "repository": {
     "type": "git",

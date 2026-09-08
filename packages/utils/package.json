@@ -41,13 +41,13 @@
   ],
   "devDependencies": {
     "@aziontech/vite-config": "workspace:*",
-    "@jest/globals": "^30.4.1",
-    "@types/jest": "^29.5.12",
+    "@jest/globals": "^30.5.1",
+    "@types/jest": "^29.5.14",
     "@types/mock-fs": "^4.13.4",
     "@types/signale": "^1.4.7",
-    "jest": "^30.4.2",
+    "jest": "^30.5.1",
     "mock-fs": "^5.5.0",
-    "ts-jest": "^29.1.5"
+    "ts-jest": "^29.4.12"
   },
   "dependencies": {
     "@aziontech/types": "workspace:*",
