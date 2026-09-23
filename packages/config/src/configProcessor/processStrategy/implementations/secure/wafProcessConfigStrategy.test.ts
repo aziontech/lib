@@ -149,6 +149,46 @@ describe('WafProcessConfigStrategy', () => {
       expect(result![1].engine_settings.attributes.thresholds[0].threat).toBe('cross_site_scripting');
       expect(result![1].engine_settings.attributes.thresholds[1].sensitivity).toBe('highest');
     });
+
+    it('should include version_id in the manifest only when versionId is provided (optional field)', () => {
+      const configWithVersionId: AzionConfig = {
+        waf: [
+          {
+            name: 'waf-with-version',
+            versionId: 'version-abc-123',
+            engineSettings: {
+              engineVersion: '2021-Q3' as WafEngineVersion,
+              type: 'score' as WafEngineType,
+              attributes: {
+                rulesets: [1] as WafRuleset[],
+                thresholds: [],
+              },
+            },
+          },
+        ],
+      };
+      const configWithoutVersionId: AzionConfig = {
+        waf: [
+          {
+            name: 'waf-without-version',
+            engineSettings: {
+              engineVersion: '2021-Q3' as WafEngineVersion,
+              type: 'score' as WafEngineType,
+              attributes: {
+                rulesets: [1] as WafRuleset[],
+                thresholds: [],
+              },
+            },
+          },
+        ],
+      };
+
+      const resultWith = strategy.transformToManifest(configWithVersionId);
+      const resultWithout = strategy.transformToManifest(configWithoutVersionId);
+
+      expect(resultWith![0].version_id).toBe('version-abc-123');
+      expect(resultWithout![0].version_id).toBeUndefined();
+    });
   });
 
   describe('transformToConfig', () => {
@@ -316,6 +356,50 @@ describe('WafProcessConfigStrategy', () => {
       // The transformToConfig method replaces the existing waf array
       expect(transformedPayload.waf).toHaveLength(1);
       expect(transformedPayload.waf![0].name).toBe('new-waf');
+    });
+
+    it('should include versionId in the config only when version_id is provided (optional field)', () => {
+      const payloadWithVersionId = {
+        waf: [
+          {
+            name: 'waf-with-version',
+            product_version: '1.0',
+            version_id: 'version-abc-123',
+            engine_settings: {
+              engine_version: '2021-Q3',
+              type: 'score',
+              attributes: {
+                rulesets: [1],
+                thresholds: [],
+              },
+            },
+          },
+        ],
+      };
+      const payloadWithoutVersionId = {
+        waf: [
+          {
+            name: 'waf-without-version',
+            product_version: '1.0',
+            engine_settings: {
+              engine_version: '2021-Q3',
+              type: 'score',
+              attributes: {
+                rulesets: [1],
+                thresholds: [],
+              },
+            },
+          },
+        ],
+      };
+
+      const transformedWithVersionId: AzionConfig = {};
+      const transformedWithoutVersionId: AzionConfig = {};
+      strategy.transformToConfig(payloadWithVersionId, transformedWithVersionId);
+      strategy.transformToConfig(payloadWithoutVersionId, transformedWithoutVersionId);
+
+      expect(transformedWithVersionId.waf![0].versionId).toBe('version-abc-123');
+      expect(transformedWithoutVersionId.waf![0].versionId).toBeUndefined();
     });
   });
 });

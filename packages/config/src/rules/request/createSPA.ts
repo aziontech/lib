@@ -1,4 +1,4 @@
-import type { AzionRules } from '@aziontech/config';
+import type { AzionRules } from '../../types';
 import { ALL_EXTENSIONS } from '../constants';
 
 /**

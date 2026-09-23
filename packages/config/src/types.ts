@@ -469,6 +469,8 @@ export type AzionNetworkList = {
   items: string[];
   /** Active status */
   active?: boolean;
+  /** Version ID */
+  versionId?: string;
 };
 
 /**
@@ -521,6 +523,8 @@ export type AzionFunction = {
   active?: boolean;
   /** Function bindings */
   bindings?: AzionFunctionBindings;
+  /** Version ID */
+  versionId?: string;
 };
 
 /**
@@ -563,6 +567,8 @@ export type AzionApplication = {
   deviceGroups?: AzionDeviceGroup[];
   /** Function instances */
   functionsInstances?: AzionFunctionInstance[];
+  /** Version ID */
+  versionId?: string;
 };
 
 /**
@@ -665,6 +671,8 @@ export type AzionFirewall = {
   debugRules?: boolean;
   /** Functions Instances */
   functionsInstances?: AzionFirewallFunctionsInstance[];
+  /** Version ID */
+  versionId?: string;
 };
 
 // WAF V4 Types
@@ -698,6 +706,8 @@ export type AzionWaf = {
   productVersion?: string;
   /** Engine settings */
   engineSettings: WafEngineSettings;
+  /** Version ID */
+  versionId?: string;
 };
 
 export type BuildConfiguration = Omit<AzionBuild<WebpackConfig | ESBuildConfig>, 'preset' | 'entry'> & {
@@ -828,6 +838,8 @@ export type AzionWorkload = {
   workloadDomainAllowAccess?: boolean;
   /** Workload deployments */
   deployments?: AzionWorkloadDeployment[];
+  /** Version ID */
+  versionId?: string;
 };
 
 // Connector V4 Types
@@ -959,6 +971,8 @@ export interface AzionConnectorStorage {
   type: 'storage';
   /** Connector attributes */
   attributes: ConnectorStorageAttributes;
+  /** Version ID */
+  versionId?: string;
 }
 
 export interface AzionConnectorHttp {
@@ -970,6 +984,8 @@ export interface AzionConnectorHttp {
   type: 'http';
   /** Connector attributes */
   attributes: ConnectorHttpAttributes;
+  /** Version ID */
+  versionId?: string;
 }
 
 export interface AzionConnectorLiveIngest {
@@ -981,6 +997,8 @@ export interface AzionConnectorLiveIngest {
   type: 'live_ingest';
   /** Connector attributes */
   attributes: ConnectorLiveIngestAttributes;
+  /** Version ID */
+  versionId?: string;
 }
 
 export type AzionConnector = AzionConnectorStorage | AzionConnectorHttp | AzionConnectorLiveIngest;
@@ -1019,6 +1037,8 @@ export interface AzionCustomPage {
   active?: boolean;
   /** Array of error page configurations */
   pages: AzionCustomPageEntry[];
+  /** Version ID */
+  versionId?: string;
 }
 
 /**

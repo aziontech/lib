@@ -146,6 +146,32 @@ describe('WorkloadProcessConfigStrategy', () => {
       expect(result[0].name).toBe('workload-1');
       expect(result[1].name).toBe('workload-2');
     });
+
+    it('should include version_id in the manifest only when versionId is provided (optional field)', () => {
+      const configWithVersionId: AzionConfig = {
+        workloads: [
+          {
+            name: 'workload-with-version',
+            domains: ['example.com'],
+            versionId: 'version-abc-123',
+          },
+        ],
+      };
+      const configWithoutVersionId: AzionConfig = {
+        workloads: [
+          {
+            name: 'workload-without-version',
+            domains: ['example.com'],
+          },
+        ],
+      };
+
+      const resultWith = strategy.transformToManifest(configWithVersionId, {});
+      const resultWithout = strategy.transformToManifest(configWithoutVersionId, {});
+
+      expect(resultWith[0].version_id).toBe('version-abc-123');
+      expect(resultWithout[0].version_id).toBeUndefined();
+    });
   });
 
   describe('transformToConfig', () => {
@@ -387,6 +413,38 @@ describe('WorkloadProcessConfigStrategy', () => {
       }>;
 
       expect(result[0].mtls).toBeUndefined();
+    });
+
+    it('should include versionId in the config only when version_id is provided (optional field)', () => {
+      const payloadWithVersionId = {
+        workloads: [
+          {
+            name: 'workload-with-version',
+            domains: ['example.com'],
+            version_id: 'version-abc-123',
+          },
+        ],
+      };
+      const payloadWithoutVersionId = {
+        workloads: [
+          {
+            name: 'workload-without-version',
+            domains: ['example.com'],
+          },
+        ],
+      };
+
+      const transformedWithVersionId: AzionConfig = {};
+      const transformedWithoutVersionId: AzionConfig = {};
+      const resultWith = strategy.transformToConfig(payloadWithVersionId, transformedWithVersionId) as Array<{
+        versionId?: string;
+      }>;
+      const resultWithout = strategy.transformToConfig(payloadWithoutVersionId, transformedWithoutVersionId) as Array<{
+        versionId?: string;
+      }>;
+
+      expect(resultWith[0].versionId).toBe('version-abc-123');
+      expect(resultWithout[0].versionId).toBeUndefined();
     });
   });
 });

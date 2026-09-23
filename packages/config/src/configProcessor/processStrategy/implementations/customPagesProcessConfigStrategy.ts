@@ -61,6 +61,7 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy {
             },
           },
         })),
+        version_id: customPage.versionId,
       };
     });
   }
@@ -85,6 +86,7 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy {
             };
           };
         }>;
+        version_id?: string;
       }>;
     },
     transformedPayload: AzionConfig,
@@ -108,6 +110,7 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy {
           },
         },
       })),
+      versionId: customPage.version_id,
     }));
 
     return transformedPayload.customPages;

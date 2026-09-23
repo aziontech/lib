@@ -91,6 +91,13 @@ const customPagesSchema = {
         },
         errorMessage: "The 'pages' field must be an array of page configurations with at least one item",
       },
+      versionId: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 36,
+        pattern: '.*',
+        errorMessage: "The 'versionId' field must be a string between 1 and 36 characters",
+      },
     },
     required: ['name', 'pages'],
     additionalProperties: false,

@@ -41,6 +41,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
             },
           }
         : undefined,
+      version_id: workload.versionId,
     }));
   }
 
@@ -79,6 +80,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy {
             },
           }
         : undefined,
+      versionId: workload.version_id,
     }));
 
     return transformedPayload.workloads;

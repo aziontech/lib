@@ -28,6 +28,7 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
         name: connector.name,
         active: connector.active ?? true,
         type: connector.type,
+        version_id: connector.versionId,
       };
 
       // Handle different connector types
@@ -116,6 +117,7 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
         name: string;
         active?: boolean;
         type: ConnectorType;
+        version_id?: string;
         attributes: {
           // For storage
           bucket?: string;
@@ -183,6 +185,7 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy {
         name: connector.name,
         active: connector.active,
         type: connector.type,
+        versionId: connector.version_id,
       };
 
       // Handle different connector types

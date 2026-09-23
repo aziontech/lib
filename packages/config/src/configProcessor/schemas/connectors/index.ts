@@ -312,6 +312,13 @@ const connectorsSchema = {
         errorMessage:
           "The 'attributes' field must match either  storage format (bucket, prefix) or HTTP/Live Ingest format (addresses, connectionOptions, modules).",
       },
+      versionId: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 36,
+        pattern: '.*',
+        errorMessage: "The 'versionId' field must be a string between 1 and 36 characters",
+      },
     },
     required: ['name', 'type', 'attributes'],
     additionalProperties: false,

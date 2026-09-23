@@ -96,6 +96,10 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
         });
       }
 
+      if (fw.versionId) {
+        payload.version_id = fw.versionId;
+      }
+
       return payload;
     });
   }
@@ -219,6 +223,10 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
           active: instance.active ?? true,
           ref: instance.function,
         }));
+      }
+
+      if (fw.version_id) {
+        firewallConfig.versionId = fw.version_id;
       }
 
       return firewallConfig;

@@ -309,6 +309,36 @@ describe('FirewallProcessConfigStrategy', () => {
       ]);
       expect(rule.behaviors).toEqual([{ type: 'deny' }]);
     });
+
+    it('should include version_id in the manifest only when versionId is provided (optional field)', () => {
+      const configWithVersionId: AzionConfig = {
+        firewall: [
+          {
+            name: 'fw-with-version',
+            functions: false,
+            networkProtection: true,
+            waf: false,
+            versionId: 'version-abc-123',
+          },
+        ],
+      };
+      const configWithoutVersionId: AzionConfig = {
+        firewall: [
+          {
+            name: 'fw-without-version',
+            functions: false,
+            networkProtection: true,
+            waf: false,
+          },
+        ],
+      };
+
+      const resultWith = strategy.transformToManifest(configWithVersionId)!;
+      const resultWithout = strategy.transformToManifest(configWithoutVersionId)!;
+
+      expect(resultWith[0].version_id).toBe('version-abc-123');
+      expect(resultWithout[0].version_id).toBeUndefined();
+    });
   });
 
   describe('transformToConfig', () => {
@@ -587,6 +617,34 @@ describe('FirewallProcessConfigStrategy', () => {
           },
         ],
       });
+    });
+
+    it('should include versionId in the config only when version_id is provided (optional field)', () => {
+      const payloadWithVersionId = {
+        firewall: [
+          {
+            name: 'fw-with-version',
+            modules: { functions: { enabled: false }, network_protection: { enabled: true }, waf: { enabled: false } },
+            version_id: 'version-abc-123',
+          },
+        ],
+      };
+      const payloadWithoutVersionId = {
+        firewall: [
+          {
+            name: 'fw-without-version',
+            modules: { functions: { enabled: false }, network_protection: { enabled: true }, waf: { enabled: false } },
+          },
+        ],
+      };
+
+      const transformedWithVersionId: AzionConfig = {};
+      const transformedWithoutVersionId: AzionConfig = {};
+      strategy.transformToConfig(payloadWithVersionId, transformedWithVersionId);
+      strategy.transformToConfig(payloadWithoutVersionId, transformedWithoutVersionId);
+
+      expect(transformedWithVersionId.firewall?.[0]?.versionId).toBe('version-abc-123');
+      expect(transformedWithoutVersionId.firewall?.[0]?.versionId).toBeUndefined();
     });
   });
 });

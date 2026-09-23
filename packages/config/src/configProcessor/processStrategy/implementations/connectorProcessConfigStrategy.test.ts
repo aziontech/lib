@@ -340,6 +340,40 @@ describe('ConnectorProcessConfigStrategy', () => {
       expect(result![1].name).toBe('http-connector');
       expect(result![1].type).toBe('http' as ConnectorType);
     });
+
+    it('should include version_id in the manifest only when versionId is provided (optional field)', () => {
+      const configWithVersionId: AzionConfig = {
+        connectors: [
+          {
+            name: 'connector-with-version',
+            type: 'storage' as ConnectorType,
+            versionId: 'version-abc-123',
+            attributes: {
+              bucket: 'my-bucket',
+              prefix: 'my-prefix',
+            },
+          } as AzionConnector,
+        ],
+      };
+      const configWithoutVersionId: AzionConfig = {
+        connectors: [
+          {
+            name: 'connector-without-version',
+            type: 'storage' as ConnectorType,
+            attributes: {
+              bucket: 'my-bucket',
+              prefix: 'my-prefix',
+            },
+          } as AzionConnector,
+        ],
+      };
+
+      const resultWith = strategy.transformToManifest(configWithVersionId);
+      const resultWithout = strategy.transformToManifest(configWithoutVersionId);
+
+      expect(resultWith![0].version_id).toBe('version-abc-123');
+      expect(resultWithout![0].version_id).toBeUndefined();
+    });
   });
 
   describe('transformToConfig', () => {
@@ -687,6 +721,42 @@ describe('ConnectorProcessConfigStrategy', () => {
       // The transformToConfig method replaces the existing connectors array
       expect(transformedPayload.connectors).toHaveLength(1);
       expect(transformedPayload.connectors![0].name).toBe('new-connector');
+    });
+
+    it('should include versionId in the config only when version_id is provided (optional field)', () => {
+      const payloadWithVersionId = {
+        connectors: [
+          {
+            name: 'connector-with-version',
+            type: 'storage' as ConnectorType,
+            version_id: 'version-abc-123',
+            attributes: {
+              bucket: 'my-bucket',
+              prefix: 'my-prefix',
+            },
+          },
+        ],
+      };
+      const payloadWithoutVersionId = {
+        connectors: [
+          {
+            name: 'connector-without-version',
+            type: 'storage' as ConnectorType,
+            attributes: {
+              bucket: 'my-bucket',
+              prefix: 'my-prefix',
+            },
+          },
+        ],
+      };
+
+      const transformedWithVersionId: AzionConfig = {};
+      const transformedWithoutVersionId: AzionConfig = {};
+      strategy.transformToConfig(payloadWithVersionId, transformedWithVersionId);
+      strategy.transformToConfig(payloadWithoutVersionId, transformedWithoutVersionId);
+
+      expect(transformedWithVersionId.connectors![0].versionId).toBe('version-abc-123');
+      expect(transformedWithoutVersionId.connectors![0].versionId).toBeUndefined();
     });
   });
 });

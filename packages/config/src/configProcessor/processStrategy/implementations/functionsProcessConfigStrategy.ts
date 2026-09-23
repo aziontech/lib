@@ -41,6 +41,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
         active: func.active ?? true,
         path: func.path,
         bindings: func.bindings,
+        version_id: func.versionId,
       };
     });
   }
@@ -56,6 +57,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
         default_args?: Record<string, unknown>;
         execution_environment?: string;
         active?: boolean;
+        version_id?: string;
       }>;
     },
     transformedPayload: AzionConfig,
@@ -71,6 +73,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy {
       defaultArgs: func.default_args,
       executionEnvironment: func.execution_environment as FunctionExecutionEnvironment,
       active: func.active,
+      versionId: func.version_id,
     }));
   }
 }
