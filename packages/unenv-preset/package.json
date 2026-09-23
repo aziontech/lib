@@ -38,8 +38,8 @@
   },
   "devDependencies": {
     "@aziontech/vite-config": "workspace:^",
-    "@types/node": "^22.20.1",
-    "jest": "^30.5.1",
+    "@types/node": "^26.6.2",
+    "jest": "^30.5.2",
     "ts-jest": "^29.4.12"
   },
   "repository": {
