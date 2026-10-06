@@ -42,10 +42,10 @@
     "@aziontech/unenv-preset": "workspace:*",
     "@aziontech/utils": "workspace:*",
     "cookie": "^1.1.1",
-    "fast-glob": "^3.3.3",
     "mime-types": "^3.0.2",
     "pcre-to-regexp": "^1.1.0",
     "semver": "^7.8.5",
+    "tinyglobby": "^0.2.17",
     "webpack": "^5.110.3"
   },
   "devDependencies": {
