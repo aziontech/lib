@@ -1,0 +1,39 @@
+{
+  "build": {
+    "entry": "index.ts",
+    "preset": "typescript",
+    "polyfills": true
+  },
+  "functions": [
+    {
+      "name": "my-typescript-function",
+      "target": "./functions/index.js",
+      "args": {}
+    }
+  ],
+  "rules": [
+    {
+      "name": "Execute Edge Function",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 2,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": "^\\/"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "run_function",
+          "target": "my-typescript-function"
+        }
+      ]
+    }
+  ]
+}

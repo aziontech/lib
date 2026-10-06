@@ -1,0 +1,285 @@
+import {
+  AzionConfig,
+  AzionFirewall,
+  AzionFirewallCriteriaWithValue,
+  AzionFirewallRule,
+  AzionFunction,
+} from '../../../../../types';
+import ProcessConfigStrategy from '../../processConfigStrategy';
+
+/**
+ * FirewallProcessConfigStrategy
+ * @class FirewallProcessConfigStrategy
+ * @description This class is implementation of the Firewall ProcessConfig Strategy.
+ */
+class FirewallProcessConfigStrategy extends ProcessConfigStrategy {
+  /**
+   * Validate that referenced Function exists
+   */
+  private validateFunctionReference(
+    functions: AzionFunction[] | undefined,
+    functionNameOrId: string | number,
+    instanceName: string,
+  ) {
+    // Only validate if it's a string (name), skip validation for numbers (IDs)
+    if (typeof functionNameOrId === 'string') {
+      if (!Array.isArray(functions) || !functions.find((func) => func.name === functionNameOrId)) {
+        throw new Error(`Function instance "${instanceName}" references non-existent Function "${functionNameOrId}".`);
+      }
+    }
+  }
+
+  transformToManifest(config: AzionConfig) {
+    if (!config.firewall || !Array.isArray(config.firewall)) {
+      return [];
+    }
+
+    return config.firewall.map((fw) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        name: fw.name,
+        modules: {
+          functions: {
+            enabled: fw.functions ?? true,
+          },
+          network_protection: {
+            enabled: fw.networkProtection ?? true,
+          },
+          waf: {
+            enabled: fw.waf ?? false,
+          },
+        },
+        debug: false,
+        active: true,
+      };
+
+      if (fw.rules && fw.rules.length > 0) {
+        payload.rules_engine = fw.rules.map((rule) => ({
+          name: rule.name,
+          description: rule.description || '',
+          active: rule.active ?? true,
+          behaviors: this.transformBehaviorsToManifest(rule.behaviors),
+          criteria: rule.criteria
+            ? [
+                rule.criteria.map((criterion) => {
+                  const isWithArgument = 'argument' in criterion;
+                  const { argument, ...rest } = criterion as AzionFirewallCriteriaWithValue;
+                  return {
+                    ...rest,
+                    variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
+                    ...(isWithArgument && { argument }),
+                  };
+                }),
+              ]
+            : [
+                [
+                  {
+                    variable: rule.variable,
+                    operator: 'matches',
+                    conditional: 'if',
+                    argument: rule.match,
+                  },
+                ],
+              ],
+        }));
+      }
+
+      if (fw.functionsInstances && fw.functionsInstances.length > 0) {
+        payload.functions_instances = fw.functionsInstances.map((instance) => {
+          this.validateFunctionReference(config.functions, instance.ref, instance.name);
+          return {
+            name: instance.name,
+            args: instance.args || {},
+            active: instance.active ?? true,
+            function: instance.ref,
+          };
+        });
+      }
+
+      return payload;
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private transformBehaviorsToManifest(behaviorArray: any[]) {
+    // Runtime validation: deny, drop, and setCustomResponse are terminal behaviors
+    // and cannot be combined with other behaviors
+    if (behaviorArray.length > 1) {
+      const firstBehavior = behaviorArray[0];
+      const hasTerminalBehavior =
+        firstBehavior.type === 'deny' || firstBehavior.type === 'drop' || firstBehavior.type === 'set_custom_response';
+
+      if (hasTerminalBehavior) {
+        const behaviorType =
+          firstBehavior.type === 'deny' ? 'deny' : firstBehavior.type === 'drop' ? 'drop' : 'set_custom_response';
+        throw new Error(
+          `The behavior '${behaviorType}' is a terminal behavior and must be used alone. ` +
+            `It cannot be combined with other behaviors in the same rule.`,
+        );
+      }
+    }
+
+    const behaviors = [];
+
+    for (const behaviorItem of behaviorArray) {
+      if (behaviorItem.type === 'run_function') {
+        behaviors.push(behaviorItem);
+      }
+
+      if (behaviorItem.type === 'set_waf') {
+        behaviors.push({
+          type: 'set_waf',
+          attributes: {
+            mode: behaviorItem.attributes.mode,
+            waf_id: behaviorItem.attributes.wafId,
+          },
+        });
+      }
+
+      if (behaviorItem.type === 'set_rate_limit') {
+        behaviors.push({
+          type: 'set_rate_limit',
+          attributes: {
+            type: behaviorItem.attributes.type,
+            limit_by: behaviorItem.attributes.limitBy,
+            average_rate_limit: behaviorItem.attributes.averageRateLimit,
+            maximum_burst_size: behaviorItem.attributes.maximumBurstSize,
+          },
+        });
+      }
+
+      if (behaviorItem.type === 'deny') {
+        behaviors.push(behaviorItem);
+      }
+
+      if (behaviorItem.type === 'drop') {
+        behaviors.push(behaviorItem);
+      }
+
+      if (behaviorItem.type === 'set_custom_response') {
+        behaviors.push({
+          type: 'set_custom_response',
+          attributes: {
+            status_code: behaviorItem.attributes.statusCode,
+            content_type: behaviorItem.attributes.contentType,
+            content_body: behaviorItem.attributes.contentBody,
+          },
+        });
+      }
+    }
+
+    return behaviors;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformToConfig(payload: any, transformedPayload: AzionConfig) {
+    if (!payload.firewall || !Array.isArray(payload.firewall)) {
+      transformedPayload.firewall = [];
+      return transformedPayload.firewall;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    transformedPayload.firewall = payload.firewall.map((fw: any) => {
+      const firewallConfig: AzionFirewall = {
+        name: fw?.name,
+        active: fw?.active ?? true,
+        functions: fw?.modules?.functions?.enabled ?? false,
+        networkProtection: fw?.modules?.network_protection?.enabled ?? false,
+        waf: fw?.modules?.waf?.enabled ?? false,
+        debugRules: fw?.debug_rules ?? false,
+      };
+
+      if (fw.rules_engine && fw.rules_engine.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        firewallConfig.rules = fw.rules_engine.map((rule: any) => {
+          const firewallRule: AzionFirewallRule = {
+            name: rule.type,
+            active: rule.active ?? true,
+            behaviors: this.transformBehaviorsToConfig(rule.behaviors),
+            criteria:
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              rule.criteria?.[0].map((criterion: any) => {
+                const isWithArgument = 'argument' in criterion;
+                const { argument, ...rest } = criterion;
+                return {
+                  ...rest,
+                  ...(isWithArgument && { argument }),
+                };
+              }) || [],
+          };
+          return firewallRule;
+        });
+      }
+
+      if (fw.functions_instance && fw.functions_instance.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        firewallConfig.functionsInstances = fw.functions_instance.map((instance: any) => ({
+          name: instance.name,
+          args: instance.args || {},
+          active: instance.active ?? true,
+          ref: instance.function,
+        }));
+      }
+
+      return firewallConfig;
+    });
+    return transformedPayload.firewall;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private transformBehaviorsToConfig(behaviors: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const behaviorArray: any[] = [];
+
+    behaviors.forEach((b) => {
+      switch (b.type) {
+        case 'run_function':
+          behaviorArray.push({
+            type: 'run_function',
+            attributes: b.attributes,
+          });
+          break;
+        case 'set_waf':
+          behaviorArray.push({
+            type: 'set_waf',
+            attributes: {
+              mode: b.attributes.mode,
+              wafId: b.attributes.waf_id,
+            },
+          });
+          break;
+        case 'set_rate_limit':
+          behaviorArray.push({
+            type: 'set_rate_limit',
+            attributes: {
+              type: b.attributes.type,
+              limitBy: b.attributes.limit_by,
+              averageRateLimit: b.attributes.average_rate_limit,
+              maximumBurstSize: b.attributes.maximum_burst_size,
+            },
+          });
+          break;
+        case 'deny':
+          behaviorArray.push({ type: 'deny' });
+          break;
+        case 'drop':
+          behaviorArray.push({ type: 'drop' });
+          break;
+        case 'set_custom_response':
+          behaviorArray.push({
+            type: 'set_custom_response',
+            attributes: {
+              statusCode: b.attributes.status_code,
+              contentType: b.attributes.content_type,
+              contentBody: b.attributes.content_body,
+            },
+          });
+          break;
+      }
+    });
+
+    return behaviorArray;
+  }
+}
+
+export default FirewallProcessConfigStrategy;

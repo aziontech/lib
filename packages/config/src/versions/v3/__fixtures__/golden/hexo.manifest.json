@@ -1,0 +1,112 @@
+{
+  "build": {
+    "bundler": "esbuild",
+    "preset": "hexo",
+    "polyfills": false
+  },
+  "origin": [
+    {
+      "name": "origin-storage-default",
+      "origin_type": "object_storage",
+      "prefix": ""
+    }
+  ],
+  "rules": [
+    {
+      "name": "Set Storage Origin for All Requests",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 2,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": "^\\/"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "set_origin",
+          "target": "origin-storage-default"
+        }
+      ]
+    },
+    {
+      "name": "Deliver Static Assets",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 3,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": ".(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|json|xml|html)$"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "set_origin",
+          "target": "origin-storage-default"
+        },
+        {
+          "name": "deliver",
+          "target": null
+        }
+      ]
+    },
+    {
+      "name": "Redirect to index.html",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 4,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": ".*/$"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "rewrite_request",
+          "target": "${uri}index.html"
+        }
+      ]
+    },
+    {
+      "name": "Redirect to index.html for Subpaths",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 5,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": "^(?!.*\\/$)(?![\\s\\S]*\\.[a-zA-Z0-9]+$).*"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "rewrite_request",
+          "target": "${uri}/index.html"
+        }
+      ]
+    }
+  ]
+}

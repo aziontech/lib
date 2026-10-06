@@ -1,0 +1,46 @@
+{
+  "build": {
+    "entry": "index.js",
+    "preset": "rustwasm",
+    "polyfills": false
+  },
+  "origin": [
+    {
+      "name": "origin-storage-default",
+      "origin_type": "object_storage",
+      "prefix": ""
+    }
+  ],
+  "functions": [
+    {
+      "name": "my-rustwasm-function",
+      "target": "./functions/index.js",
+      "args": {}
+    }
+  ],
+  "rules": [
+    {
+      "name": "Execute Edge F nction",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 2,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": "^\\/"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "run_function",
+          "target": "my-rustwasm-function"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 import { AzionRuntimeModule } from '@aziontech/types';
 
+import type { ApiVersion, ConfigByVersion } from './versions/types';
+
 import { BuildOptions as ESBuildConfig, type Plugin as EsbuildPlugin } from 'esbuild';
 import { Configuration as WebpackConfig, type WebpackPluginInstance as WebpackPlugin } from 'webpack';
 
@@ -724,8 +726,16 @@ export type PresetMetadata = {
   ext?: string;
 };
 
+/**
+ * Preset config per Azion API version. A version that is not listed is not supported by the preset.
+ */
+export type AzionPresetConfigs = { [V in ApiVersion]?: ConfigByVersion[V] };
+
 export interface AzionBuildPreset {
+  /** Config for the default API version (4). Prefer `configs` + `resolvePresetConfig` to be version aware. */
   config: AzionConfig;
+  /** Config for each API version the preset supports. */
+  configs?: AzionPresetConfigs;
   handler?: AzionRuntimeModule;
   prebuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void | AzionPrebuildResult>;
   postbuild?: (config: BuildConfiguration, ctx: BuildContext) => Promise<void>;
@@ -1025,6 +1035,8 @@ export interface AzionCustomPage {
  * Main configuration type for Azion.
  */
 export type AzionConfig = {
+  /** Azion API version this config targets. Omitting it targets the default version (4). */
+  version?: 4;
   /** Build configuration */
   build?: AzionBuild;
   /** Application configuration */
