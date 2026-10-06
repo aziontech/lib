@@ -1,0 +1,78 @@
+import { defineConfig } from '@aziontech/config';
+
+export default defineConfig({
+  version: 3,
+  build: {
+    bundler: 'esbuild',
+    preset: 'svelte',
+    polyfills: true,
+  },
+  origin: [
+    {
+      name: 'origin-storage-default',
+      type: 'object_storage',
+    },
+  ],
+  functions: [
+    {
+      name: 'handler',
+      path: './functions/index.js',
+    },
+  ],
+  rules: {
+    request: [
+      {
+        name: 'Execute SvelteKit Function when starts with /_app/immutable',
+        description: 'Handle SvelteKit immutable assets requests',
+        criteria: [
+          {
+            variable: '${uri}',
+            operator: 'starts_with',
+            conditional: 'if',
+            inputValue: '/_app/immutable',
+          },
+        ],
+        behavior: {
+          setOrigin: {
+            name: 'origin-storage-default',
+            type: 'object_storage',
+          },
+          deliver: true,
+        },
+      },
+      {
+        name: 'Redirect to index.html for Subpaths',
+        match: '^(?!.*/$)(?![sS]*.[a-zA-Z0-9]+$).*',
+        behavior: {
+          rewrite: '${uri}/index.html',
+        },
+      },
+      {
+        name: 'Redirect to index.html',
+        match: '.*/$',
+        behavior: {
+          rewrite: '${uri}index.html',
+        },
+      },
+      {
+        name: 'Deliver Static Assets',
+        match: '.(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|xml|html)$',
+        behavior: {
+          setOrigin: {
+            name: 'origin-storage-default',
+            type: 'object_storage',
+          },
+          deliver: true,
+        },
+      },
+      {
+        name: 'Execute Edge Function',
+        match: '^/',
+        behavior: {
+          runFunction: 'handler',
+          forwardCookies: true,
+        },
+      },
+    ],
+  },
+});

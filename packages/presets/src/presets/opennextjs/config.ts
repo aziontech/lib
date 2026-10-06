@@ -2,7 +2,7 @@ import type { AzionBuild, AzionConfig } from '@aziontech/config';
 
 const config: AzionConfig = {
   build: {
-    entry: '.open-next/worker.js',
+    entry: { index: '.open-next/worker.js' },
     polyfills: true,
     bundler: 'esbuild',
     preset: 'opennextjs',
@@ -29,7 +29,7 @@ const config: AzionConfig = {
   functions: [
     {
       name: '$FUNCTION_NAME',
-      path: './functions/worker.js',
+      path: './functions/index.js',
       bindings: {
         storage: {
           bucket: '$BUCKET_NAME',

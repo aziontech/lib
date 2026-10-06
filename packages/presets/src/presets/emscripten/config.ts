@@ -3,7 +3,7 @@ import webpack, { Configuration } from 'webpack';
 
 const config: AzionConfig = {
   build: {
-    entry: 'handler.js',
+    entry: 'index.js',
     bundler: 'webpack',
     polyfills: false,
     extend: (context: Configuration) => {
@@ -36,7 +36,7 @@ const config: AzionConfig = {
   functions: [
     {
       name: '$FUNCTION_NAME',
-      path: './functions/handler.js',
+      path: './functions/index.js',
     },
   ],
   applications: [

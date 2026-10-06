@@ -26,7 +26,7 @@ const config: AzionConfig = {
   functions: [
     {
       name: '$FUNCTION_NAME',
-      path: './functions/handler.js',
+      path: './functions/index.js',
       bindings: {
         storage: {
           bucket: '$BUCKET_NAME',
