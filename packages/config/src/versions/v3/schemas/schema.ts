@@ -28,9 +28,10 @@ const criteriaBaseSchema = {
           pattern: '^\\$\\{(' + RULE_VARIABLES.join('|') + ')\\}$',
         },
         {
-          // dynamic variables validation
+          // dynamic variables validation. DYNAMIC_VARIABLE_PATTERNS are regular expression fragments (not input),
+          // so they are joined as they are: escaping them would turn `[a-zA-Z0-9_]+` into literal text.
           type: 'string',
-          pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|').replace(/\$/g, '\\$') + ')\\}$',
+          pattern: '^\\$\\{(' + DYNAMIC_VARIABLE_PATTERNS.join('|') + ')\\}$',
         },
       ],
       errorMessage:
