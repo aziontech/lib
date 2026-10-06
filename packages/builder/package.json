@@ -70,7 +70,7 @@
   "devDependencies": {
     "@aziontech/vite-config": "workspace:*",
     "@jest/globals": "^30.5.1",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/lodash-es": "^4.17.12",
     "@types/mock-fs": "^4.13.4",
     "@types/node": "^22.20.1",
