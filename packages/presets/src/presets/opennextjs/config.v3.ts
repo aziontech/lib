@@ -3,7 +3,7 @@ import type { AzionConfigV3, V3 } from '@aziontech/config';
 const config: AzionConfigV3 = {
   version: 3,
   build: {
-    entry: { index: '.open-next/worker.js' },
+    entry: '.open-next/worker.js',
     polyfills: true,
     bundler: 'esbuild',
     preset: 'opennextjs',

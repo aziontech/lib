@@ -3,14 +3,14 @@ import { defineConfig } from '@aziontech/config';
 export default defineConfig({
   version: 3,
   build: {
-    entry: 'index.js',
+    entry: 'handler.js',
     preset: 'javascript',
     polyfills: true,
   },
   functions: [
     {
       name: 'my-javascript-function',
-      path: './functions/index.js',
+      path: './functions/handler.js',
     },
   ],
   rules: {

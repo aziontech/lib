@@ -1,13 +1,13 @@
 {
   "build": {
-    "entry": "index.js",
+    "entry": "handler.js",
     "preset": "javascript",
     "polyfills": true
   },
   "functions": [
     {
       "name": "my-javascript-function",
-      "target": "./functions/index.js",
+      "target": "./functions/handler.js",
       "args": {}
     }
   ],

@@ -1,13 +1,13 @@
 {
   "build": {
-    "entry": "index.ts",
+    "entry": "handler.ts",
     "preset": "typescript",
     "polyfills": true
   },
   "functions": [
     {
       "name": "my-typescript-function",
-      "target": "./functions/index.js",
+      "target": "./functions/handler.js",
       "args": {}
     }
   ],

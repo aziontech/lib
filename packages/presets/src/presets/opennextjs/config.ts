@@ -2,7 +2,7 @@ import type { AzionBuild, AzionConfig } from '@aziontech/config';
 
 const config: AzionConfig = {
   build: {
-    entry: { index: '.open-next/worker.js' },
+    entry: '.open-next/worker.js',
     polyfills: true,
     bundler: 'esbuild',
     preset: 'opennextjs',

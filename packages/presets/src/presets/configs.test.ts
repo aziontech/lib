@@ -55,18 +55,16 @@ describe('preset configs by API version', () => {
     });
   });
 
-  // the bundler takes the default entry and bundler from `preset.config` (the default version) whatever the version of
-  // the project is, and prebuilds that switch the entry change that config: they must be the same in every version
+  // the bundler reads the default build (entry, bundler) from the config of the version of the project and falls back to
+  // `preset.config` for what it does not declare (prebuilds such as nuxt and svelte change `preset.config`), so a version
+  // may have its own entry, but it must not declare a bundler that differs without being on purpose
   it.each(presets.filter((preset) => preset.configs?.[3]).map((preset) => [preset.metadata.name, preset] as const))(
-    '%s: build.entry and build.bundler are the same in every version',
+    '%s: build.bundler is the same in every version',
     (_name, preset) => {
       // a preset that does not declare the bundler gets the default one of the bundler, esbuild
-      const pick = (build?: { entry?: unknown; bundler?: unknown }) => ({
-        entry: build?.entry,
-        bundler: build?.bundler ?? 'esbuild',
-      });
+      const bundler = (build?: { bundler?: unknown }) => build?.bundler ?? 'esbuild';
 
-      expect(pick(preset.configs?.[3]?.build)).toEqual(pick(preset.configs?.[4]?.build));
+      expect(bundler(preset.configs?.[3]?.build)).toEqual(bundler(preset.configs?.[4]?.build));
     },
   );
 

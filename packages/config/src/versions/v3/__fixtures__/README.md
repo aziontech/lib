@@ -11,15 +11,14 @@ The fixtures are frozen on purpose: do not regenerate them from this code base.
 
 ## Intentional differences from 1.20.x
 
-The fixtures are the 1.20.x output with two deliberate, uniform changes, so that the preset configs follow the
-`index.js` convention of the bundler (the generated function is always `.edge/functions/index.js`):
+The fixtures are the 1.20.x output with a few deliberate changes, so that the preset configs match what the bundler
+generates:
 
-- `functions[].path` is relative to `.edge` and matches the file the bundler generates: `./functions/handler.js` for the
-  presets with a built-in handler and no entry (next, nuxt, svelte) and `./functions/index.js` for the others (it was
-  `.edge/functions/handler.js` for all);
-- presets whose source entry is not `index.*` declare it as `entry: { index: '<source file>' }`, which keeps the source
-  file and names the output `index.js` (opennextjs). javascript, typescript, emscripten and rustwasm default to `index.js` / `index.ts`, like v4.
-
+- `functions[].path` is relative to `.edge` and is the file the bundler generates: `./functions/handler.js` for the
+  presets with a built-in handler and no entry (next, nuxt, svelte, and javascript and typescript, whose v3 entry is
+  `handler.js` / `handler.ts`) and `./functions/index.js` for the others. It was `.edge/functions/handler.js` for all.
+- `emscripten` and `rustwasm` default to the entry `index.js`, as in v4, and `opennextjs` declares
+  `entry: { index: '.open-next/worker.js' }` (the key names the generated file, `index.js`).
 - `nuxt` does not declare `build.polyfills`, as its v4 config.
 - `emscripten` uses `bundler: 'webpack'`, as its v4 config (its `extend` is a webpack configuration).
 
