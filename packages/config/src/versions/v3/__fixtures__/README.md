@@ -14,7 +14,9 @@ The fixtures are frozen on purpose: do not regenerate them from this code base.
 The fixtures are the 1.20.x output with two deliberate, uniform changes, so that the preset configs follow the
 `index.js` convention of the bundler (the generated function is always `.edge/functions/index.js`):
 
-- `functions[].path` is `./functions/index.js` (it was `.edge/functions/handler.js`);
+- `functions[].path` is relative to `.edge` and matches the file the bundler generates: `./functions/handler.js` for the
+  presets with a built-in handler and no entry (next, nuxt, svelte) and `./functions/index.js` for the others (it was
+  `.edge/functions/handler.js` for all);
 - presets whose source entry is not `index.*` declare it as `entry: { index: '<source file>' }`, which keeps the source
   file and names the output `index.js` (opennextjs). javascript, typescript, emscripten and rustwasm default to `index.js` / `index.ts`, like v4.
 

@@ -13,7 +13,7 @@
   "functions": [
     {
       "name": "handler",
-      "target": "./functions/index.js",
+      "target": "./functions/handler.js",
       "args": {}
     }
   ],

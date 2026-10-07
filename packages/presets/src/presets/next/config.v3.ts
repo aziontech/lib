@@ -16,7 +16,7 @@ export default defineConfig({
   functions: [
     {
       name: 'handler',
-      path: './functions/index.js',
+      path: './functions/handler.js',
     },
   ],
   rules: {

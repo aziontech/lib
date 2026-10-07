@@ -69,4 +69,31 @@ describe('preset configs by API version', () => {
       expect(pick(preset.configs?.[3]?.build)).toEqual(pick(preset.configs?.[4]?.build));
     },
   );
+
+  // The bundler names the generated function after the entry (the key of an object entry, the file name of a string
+  // one) or `handler` for a preset with a built-in handler and no entry, and fails the build when `functions[].path` is
+  // not that file.
+  const outputName = (entry: unknown): string => {
+    if (!entry) return 'handler';
+    if (typeof entry === 'string')
+      return entry
+        .split('/')
+        .pop()!
+        .replace(/\.[^.]+$/, '');
+    if (Array.isArray(entry)) return outputName(entry[0]);
+    return Object.keys(entry as Record<string, string>)[0];
+  };
+
+  describe.each(presets.map((preset) => [preset.metadata.name, preset] as const))('%s', (_name, preset) => {
+    it.each(getPresetApiVersions(preset))('v%i: functions[].path is the file the bundler generates', (version) => {
+      const config = resolvePresetConfig(preset, version) as {
+        build?: { entry?: unknown };
+        functions?: { path: string }[];
+      };
+
+      (config.functions ?? []).forEach((fn) => {
+        expect(fn.path).toBe(`./functions/${outputName(config.build?.entry)}.js`);
+      });
+    });
+  });
 });
