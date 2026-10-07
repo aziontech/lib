@@ -1,8 +1,6 @@
 {
   "build": {
-    "entry": {
-      "index": ".open-next/worker.js"
-    },
+    "entry": ".open-next/worker.js",
     "polyfills": true,
     "bundler": "esbuild",
     "preset": "opennextjs"
@@ -17,7 +15,7 @@
   "functions": [
     {
       "name": "handler",
-      "target": "./functions/index.js",
+      "target": "./functions/worker.js",
       "args": {}
     }
   ],

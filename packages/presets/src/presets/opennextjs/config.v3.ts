@@ -17,7 +17,7 @@ const config: AzionConfigV3 = {
   functions: [
     {
       name: 'handler',
-      path: './functions/index.js',
+      path: './functions/worker.js',
     },
   ],
   rules: {

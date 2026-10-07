@@ -29,7 +29,7 @@ const config: AzionConfig = {
   functions: [
     {
       name: '$FUNCTION_NAME',
-      path: './functions/index.js',
+      path: './functions/worker.js',
       bindings: {
         storage: {
           bucket: '$BUCKET_NAME',
