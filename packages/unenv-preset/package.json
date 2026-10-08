@@ -38,9 +38,9 @@
   },
   "devDependencies": {
     "@aziontech/vite-config": "workspace:^",
-    "@types/node": "^22.20.1",
-    "jest": "^30.5.1",
-    "ts-jest": "^29.4.12"
+    "@types/node": "^26.6.4",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.14"
   },
   "repository": {
     "type": "git",
