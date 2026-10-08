@@ -1,0 +1,150 @@
+{
+  "build": {
+    "bundler": "esbuild",
+    "preset": "svelte",
+    "polyfills": true
+  },
+  "origin": [
+    {
+      "name": "origin-storage-default",
+      "origin_type": "object_storage",
+      "prefix": ""
+    }
+  ],
+  "functions": [
+    {
+      "name": "handler",
+      "target": "./functions/handler.js",
+      "args": {}
+    }
+  ],
+  "rules": [
+    {
+      "name": "Execute SvelteKit Function when starts with /_app/immutable",
+      "phase": "request",
+      "description": "Handle SvelteKit immutable assets requests",
+      "is_active": true,
+      "order": 2,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "starts_with",
+            "conditional": "if",
+            "input_value": "/_app/immutable"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "set_origin",
+          "target": "origin-storage-default"
+        },
+        {
+          "name": "deliver",
+          "target": null
+        }
+      ]
+    },
+    {
+      "name": "Redirect to index.html for Subpaths",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 3,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": "^(?!.*/$)(?![sS]*.[a-zA-Z0-9]+$).*"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "rewrite_request",
+          "target": "${uri}/index.html"
+        }
+      ]
+    },
+    {
+      "name": "Redirect to index.html",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 4,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": ".*/$"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "rewrite_request",
+          "target": "${uri}index.html"
+        }
+      ]
+    },
+    {
+      "name": "Deliver Static Assets",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 5,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": ".(css|js|ttf|woff|woff2|pdf|svg|jpg|jpeg|gif|bmp|png|ico|mp4|xml|html)$"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "set_origin",
+          "target": "origin-storage-default"
+        },
+        {
+          "name": "deliver",
+          "target": null
+        }
+      ]
+    },
+    {
+      "name": "Execute Edge Function",
+      "phase": "request",
+      "description": "",
+      "is_active": true,
+      "order": 6,
+      "criteria": [
+        [
+          {
+            "variable": "${uri}",
+            "operator": "matches",
+            "conditional": "if",
+            "input_value": "^/"
+          }
+        ]
+      ],
+      "behaviors": [
+        {
+          "name": "run_function",
+          "target": "handler"
+        },
+        {
+          "name": "forward_cookies",
+          "target": null
+        }
+      ]
+    }
+  ]
+}

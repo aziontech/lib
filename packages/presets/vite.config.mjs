@@ -11,7 +11,7 @@ export default createViteConfig({
       './.wasm-bindgen/azion_rust_edge_function.js',
       './.wasm-bindgen/azion_rust_edge_function_bg.wasm',
       'signale',
-      'fast-glob',
+      'tinyglobby',
       'mime-types',
       'fs',
       'fs/promises',

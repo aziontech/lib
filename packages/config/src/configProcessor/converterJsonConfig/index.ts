@@ -1,49 +1,17 @@
 import { AzionConfig } from '../../types';
-import { factoryProcessContext } from '../processStrategy';
-import { schemaManifest } from '../schemas/schemaManifest';
-import { validateConfig } from '../validateConfig';
+import { getVersionModule } from '../../versions/registry';
+import { ApiVersion, DEFAULT_API_VERSION } from '../../versions/types';
 
 /**
- * Converts a JSON string to an AzionConfig object.
- * @param {string} config - The JSON string to be converted.
- * @returns {AzionConfig} The AzionConfig object.
- * @throws {Error} Throws an error if the provided JSON string is invalid.
- *
- * @example
- * const config = `{
- * "origin": [
- *   {
- *    "name": "My Origin",
- *    "origin_type": "single_origin",
- *    "origin_path": '',
- *     "method": 'ip_hash',
- *    "addresses": [
- *      {
- *        "address": "origin.example.com",
- *        "weight": 100
- *      }
- *    ],
- *   }
- * ]
- *}`;
- * const configObject = convertJsonConfigToObject(config);
- * console.log(configObject);
- *
+ * Converts a JSON manifest string into a config object of the given API version.
+ * Manifests do not carry a version, so it is passed through `options.version`.
+ * @param {string} config - JSON manifest.
+ * @param {{ version?: ApiVersion }} options - Target API version. Defaults to the package default.
+ * @returns {AzionConfig} The config object.
+ * @throws {Error} If the JSON is invalid or the manifest fails validation.
  */
-function convertJsonConfigToObject(config: string): AzionConfig {
-  let configObject: Record<string, unknown>;
-  try {
-    configObject = JSON.parse(config);
-  } catch {
-    throw new Error('Invalid JSON configuration.');
-  }
-  validateConfig(configObject, schemaManifest);
-  const payloadConfig: AzionConfig = {};
-  const processConfigContext = factoryProcessContext();
-
-  processConfigContext.transformToConfig(configObject, payloadConfig);
-
-  return payloadConfig;
+function convertJsonConfigToObject(config: string, options: { version?: ApiVersion } = {}): AzionConfig {
+  return getVersionModule(options.version ?? DEFAULT_API_VERSION).convertJsonConfigToObject(config);
 }
 
 export { convertJsonConfigToObject };

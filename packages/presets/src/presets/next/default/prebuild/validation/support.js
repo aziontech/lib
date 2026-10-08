@@ -1,5 +1,5 @@
 import { coerce, valid } from 'semver';
-import glob from 'fast-glob';
+import { globSync } from 'tinyglobby';
 import { readFileSync } from 'fs';
 import { getNextProjectConfig, isLocalePath } from '../../../utils/next.js';
 import VERSION_RUNTIME_MAP_SUPPORT from './supported-versions.js';
@@ -84,7 +84,7 @@ async function readVcConfigFunctions(path = '.vercel/output/functions/**/.vc-con
     `${buildedFunctionsPath}/_not-found.rsc.func/.vc-config.json`,
   ];
 
-  const vcConfigPaths = glob.sync(path, { ignore: pathsToIgnore });
+  const vcConfigPaths = globSync(path, { ignore: pathsToIgnore });
   const vcConfigObjects = vcConfigPaths.map((file) => ({
     path: file,
     content: JSON.parse(readFileSync(file, 'utf8')),
