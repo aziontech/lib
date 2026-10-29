@@ -1,6 +1,7 @@
 import type { AzionConfig } from '../types';
 import type { AzionConfigV3 } from './v3/types';
-import type ProcessConfigContext from './v4/processStrategy/processConfigContext';
+import type { AzionConfigV6 } from './v6/types';
+import type ProcessConfigContext from './shared/processStrategy/processConfigContext';
 
 /**
  * Config shape of each Azion API version the package knows how to process.
@@ -11,6 +12,7 @@ import type ProcessConfigContext from './v4/processStrategy/processConfigContext
 export interface ConfigByVersion {
   3: AzionConfigV3;
   4: AzionConfig;
+  6: AzionConfigV6;
 }
 
 export type ApiVersion = keyof ConfigByVersion;
@@ -32,7 +34,7 @@ export const DEFAULT_API_VERSION: ApiVersion = 4;
 export interface ConfigVersionModule {
   version: ApiVersion;
   /** Builds the strategy context that converts config <-> manifest for this version. */
-  factoryProcessContext: () => ProcessConfigContext;
+  factoryProcessContext: () => ProcessConfigContext<AnyAzionConfig>;
   /** Validates a config against this version's schema. Throws on failure. */
   validateConfig: (config: AnyAzionConfig | Record<string, unknown>, schema?: Record<string, unknown>) => void;
   /** Validates a manifest against this version's manifest schema. Throws on failure. */

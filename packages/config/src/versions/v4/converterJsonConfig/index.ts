@@ -1,4 +1,5 @@
-import { AzionConfig } from '../../../types';
+import type { AzionConfig } from '../../../types';
+import { createJsonConfigConverter } from '../../shared/converterJsonConfig';
 import { factoryProcessContext } from '../processStrategy';
 import { schemaManifest } from '../schemas/schemaManifest';
 import { validateConfig } from '../validateConfig';
@@ -30,20 +31,10 @@ import { validateConfig } from '../validateConfig';
  * console.log(configObject);
  *
  */
-function convertJsonConfigToObject(config: string): AzionConfig {
-  let configObject: Record<string, unknown>;
-  try {
-    configObject = JSON.parse(config);
-  } catch {
-    throw new Error('Invalid JSON configuration.');
-  }
-  validateConfig(configObject, schemaManifest);
-  const payloadConfig: AzionConfig = {};
-  const processConfigContext = factoryProcessContext();
-
-  processConfigContext.transformToConfig(configObject, payloadConfig);
-
-  return payloadConfig;
-}
+const convertJsonConfigToObject = createJsonConfigConverter<AzionConfig>({
+  validate: (manifest) => validateConfig(manifest, schemaManifest),
+  factoryProcessContext,
+  createConfig: () => ({}),
+});
 
 export { convertJsonConfigToObject };

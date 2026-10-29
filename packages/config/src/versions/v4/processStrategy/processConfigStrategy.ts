@@ -1,21 +1,11 @@
+import type { AzionConfig } from '../../../types';
+import SharedProcessConfigStrategy from '../../shared/processStrategy/processConfigStrategy';
+
 /**
  * ProcessConfigStrategy
  * @class ProcessConfigStrategy
- * @description This class is the base class for all process config strategies.
+ * @description Base class of the v4 process config strategies.
  */
-
-import { AzionConfig } from '../../../types';
-
-class ProcessConfigStrategy {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transformToManifest(config: any, context: any) {
-    return context;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  transformToConfig(payload: any, transformedPayload: AzionConfig): AzionConfig | any {
-    return payload;
-  }
-}
+class ProcessConfigStrategy extends SharedProcessConfigStrategy<AzionConfig> {}
 
 export default ProcessConfigStrategy;

@@ -121,3 +121,42 @@ describe('v3 support', () => {
     expect(v4.version).toBeUndefined();
   });
 });
+
+describe('v6 support', () => {
+  const v6Config = { version: 6 as const, build: { bundler: 'esbuild' as const } };
+
+  it('is registered and selected by `version: 6`', () => {
+    expect(resolveApiVersion(v6Config)).toBe(6);
+    expect(getVersionModule(6).version).toBe(6);
+    expect(SUPPORTED_API_VERSIONS).toContain(6);
+  });
+
+  it('keeps v4 as the default when version is omitted', () => {
+    expect(DEFAULT_API_VERSION).toBe(4);
+    expect(resolveApiVersion({ build: {} })).toBe(4);
+  });
+
+  it('validates a v6 config and rejects fields the v6 schema does not know yet', () => {
+    expect(() => validateConfig(v6Config)).not.toThrow();
+    expect(() => validateConfig({ version: 6, applications: [] })).toThrow();
+  });
+
+  it('does not accept v6 on the v4 schema nor the other way around', () => {
+    expect(() => validateConfig({ version: 4, build: {} })).not.toThrow();
+    expect(() => validateConfig({ version: 6, origin: [] })).toThrow();
+  });
+
+  it('processes a v6 config without leaking version into the manifest', () => {
+    expect(processConfig(v6Config)).not.toHaveProperty('version');
+  });
+
+  it('forwards the version to manifest helpers', () => {
+    expect(() => validateManifest({}, undefined, { version: 6 })).not.toThrow();
+    expect(() => convertJsonConfigToObject('{', { version: 6 })).toThrow('Invalid JSON configuration.');
+    expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6 });
+  });
+
+  it('types defineConfig by the declared version', () => {
+    expect(defineConfig(v6Config).version).toBe(6);
+  });
+});

@@ -1,10 +1,12 @@
 import { ApiVersion, ConfigVersionModule, DEFAULT_API_VERSION } from './types';
 import v3 from './v3';
 import v4 from './v4';
+import v6 from './v6';
 
 const registry: Record<ApiVersion, ConfigVersionModule> = {
   3: v3,
   4: v4,
+  6: v6,
 };
 
 /**
