@@ -91,3 +91,41 @@ export const COOKIE_BEHAVIORS = [
   'set_cookie',
   'filter_response_cookie',
 ] as const;
+
+export const WORKLOAD_INFRASTRUCTURE = [1, 2] as const;
+
+export const WORKLOAD_TLS_CIPHERS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
+
+export const WORKLOAD_TLS_VERSIONS = ['', 'tls_1_0', 'tls_1_1', 'tls_1_2', 'tls_1_3'] as const;
+
+export const WORKLOAD_MTLS_VERIFICATION = ['enforce', 'permissive'] as const;
+
+export const WORKLOAD_HTTP_VERSIONS = ['http1', 'http2', 'http3'] as const;
+
+export const ENVIRONMENT_LOG_VERBOSITY = ['normal', 'verbose'] as const;
+
+export const ENVIRONMENT_ROBOTS_POLICIES = ['index', 'noindex', 'respect_origin'] as const;
+
+export const ENVIRONMENT_BRANCH_TRACKING_MODES = ['branch_is', 'branch_starts_with', 'branch_ends_with'] as const;
+
+export const DEPLOYMENT_POLICIES = ['single_version', 'versioned_urls'] as const;
+
+export const DEPLOYMENT_BINDING_POLICIES = ['STRICT', 'FLEXIBLE'] as const;
+
+export const WORKLOADS_ACCESS_TYPES = ['read_only', 'read_write', 'restricted'] as const;
+
+export const CONNECTOR_TYPES = ['http', 'storage', 'live_ingest'] as const;
+
+export const CONNECTOR_DNS_RESOLUTION = ['both', 'force_ipv4', 'force_ipv6'] as const;
+
+export const CONNECTOR_TRANSPORT_POLICY = ['preserve', 'force_https', 'force_http'] as const;
+
+export const CONNECTOR_HTTP_VERSION_POLICY = ['http1_1'] as const;
+
+export const CONNECTOR_LOAD_BALANCE_METHOD = ['round_robin', 'least_conn', 'ip_hash'] as const;
+
+export const CONNECTOR_SERVER_ROLES = ['primary', 'backup'] as const;
+
+export const CONNECTOR_HMAC_TYPE = ['aws4_hmac_sha256'] as const;
+
+export const CONNECTOR_LIVE_INGEST_REGIONS = ['us-east-1', 'us-east-2', 'br-east-1', 'br-east-2', 'br-east-3'] as const;

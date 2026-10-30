@@ -7,13 +7,12 @@ import type {
   RuleVariable,
 } from '../../../../../types';
 import ProcessConfigStrategy from '../../../../shared/processStrategy/processConfigStrategy';
-import type { AzionConfigV6, AzionFunctionV6 } from '../../../types';
+import type { AzionConfigV6, AzionConnectorV6, AzionFunctionV6 } from '../../../types';
 
 /**
  * RulesProcessConfigStrategy
  * @class RulesProcessConfigStrategy
  * @description This class is implementation of the Rules ProcessConfig Strategy for V6.
- * TODO: validate the connectors referenced by `set_connector` once the v6 config has connectors.
  */
 class RulesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   /**
@@ -58,11 +57,40 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   }
 
   /**
+   * Validates connector references in rules
+   */
+  private validateConnectorReferences(applicationRules: AzionRules, connectors?: AzionConnectorV6[]) {
+    if (!connectors) return;
+
+    const definedConnectors = new Set(connectors.map((c) => c.name));
+
+    for (const rule of [...(applicationRules.request ?? []), ...(applicationRules.response ?? [])]) {
+      for (const behavior of rule.behaviors) {
+        if (behavior.type === 'set_connector' && behavior.attributes) {
+          // Only validate if it's a string (name), skip validation for numbers (IDs)
+          if (typeof behavior.attributes.value === 'string' && !definedConnectors.has(behavior.attributes.value)) {
+            throw new Error(
+              `Connector "${behavior.attributes.value}" referenced in rule "${rule.name}" is not defined in the connectors array.`,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Transforms azion.config rules to API manifest format
    */
-  transformToManifest(applicationRules: AzionRules, functions?: AzionFunctionV6[]): AzionManifestRule[] {
+  transformToManifest(
+    applicationRules: AzionRules,
+    functions?: AzionFunctionV6[],
+    connectors?: AzionConnectorV6[],
+  ): AzionManifestRule[] {
     // Validate function references
     this.validateFunctionReferences(applicationRules, functions);
+
+    // Validate connector references
+    this.validateConnectorReferences(applicationRules, connectors);
 
     const payload: AzionManifestRule[] = [];
 

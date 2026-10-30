@@ -72,6 +72,52 @@ describe('RulesProcessConfigStrategy (v6)', () => {
       expect(() => strategy.transformToManifest(byId, [])).not.toThrow();
     });
 
+    describe('connector references', () => {
+      const connectorRules: AzionRules = {
+        request: [
+          {
+            name: 'Deliver static assets',
+            criteria: [[{ variable: '${uri}', conditional: 'if', operator: 'matches', argument: '\\.js$' }]],
+            behaviors: [{ type: 'set_connector', attributes: { value: 'my-connector' } }],
+          },
+        ],
+      };
+
+      it('should accept a set_connector that references a declared connector', () => {
+        expect(() =>
+          strategy.transformToManifest(connectorRules, undefined, [
+            { name: 'my-connector', type: 'storage', attributes: { bucket: 'my-bucket' } },
+          ]),
+        ).not.toThrow();
+      });
+
+      it('should throw when set_connector references a connector that is not declared', () => {
+        expect(() =>
+          strategy.transformToManifest(connectorRules, undefined, [
+            { name: 'other', type: 'storage', attributes: { bucket: 'my-bucket' } },
+          ]),
+        ).toThrow(
+          'Connector "my-connector" referenced in rule "Deliver static assets" is not defined in the connectors array.',
+        );
+      });
+
+      it('should validate response rules too', () => {
+        expect(() => strategy.transformToManifest({ response: connectorRules.request }, undefined, [])).toThrow(
+          'Connector "my-connector" referenced in rule',
+        );
+      });
+
+      it('should not validate a connector referenced by id, nor when the config has no connectors', () => {
+        const byId: AzionRules = {
+          request: [
+            { ...connectorRules.request![0], behaviors: [{ type: 'set_connector', attributes: { value: 10 } }] },
+          ],
+        };
+        expect(() => strategy.transformToManifest(byId, undefined, [])).not.toThrow();
+        expect(() => strategy.transformToManifest(connectorRules)).not.toThrow();
+      });
+    });
+
     it('should not validate the function references when the config has no functions', () => {
       expect(() => strategy.transformToManifest(rules)).not.toThrow();
     });

@@ -139,7 +139,7 @@ describe('v6 support', () => {
 
   it('validates a v6 config and rejects fields the v6 schema does not know yet', () => {
     expect(() => validateConfig(v6Config)).not.toThrow();
-    expect(() => validateConfig({ version: 6, workloads: [] })).toThrow();
+    expect(() => validateConfig({ version: 6, firewall: [] })).toThrow();
   });
 
   it('does not accept v6 on the v4 schema nor the other way around', () => {
@@ -153,6 +153,9 @@ describe('v6 support', () => {
       build: v6Config.build,
       functions: [],
       applications: [],
+      environments: [],
+      deployments: [],
+      workloads: [],
     });
   });
 

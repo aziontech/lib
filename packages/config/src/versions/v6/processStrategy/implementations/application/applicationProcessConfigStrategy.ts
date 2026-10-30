@@ -42,7 +42,7 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
       };
 
       if (app.rules) {
-        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.functions);
+        application.rules = this.rulesStrategy.transformToManifest(app.rules, config.functions, config.connectors);
       }
 
       if (app.functionsInstances) {

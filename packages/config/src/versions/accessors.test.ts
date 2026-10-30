@@ -31,6 +31,28 @@ describe('version accessors', () => {
       prefix: '',
     });
     expect(getStorage(v3)).toEqual({ bucket: 'bucket-3', prefix: 'p3' });
+    expect(getStorage({ version: 6, storage: [{ name: 'bucket-6', prefix: 'p6', dir: './dist' }] })).toEqual({
+      bucket: 'bucket-6',
+      prefix: 'p6',
+    });
+  });
+
+  it('reads the first v6 storage and falls back to an empty prefix, as the prefix is optional in v6', () => {
+    expect(getStorage({ version: 6, storage: [{ name: 'bucket-6', dir: './dist' }] })).toEqual({
+      bucket: 'bucket-6',
+      prefix: '',
+    });
+    expect(
+      getStorage({
+        version: 6,
+        storage: [
+          { name: 'first-bucket', dir: './a' },
+          { name: 'second-bucket', dir: './b' },
+        ],
+      }),
+    ).toEqual({ bucket: 'first-bucket', prefix: '' });
+    expect(getStorage({ version: 6 })).toBeUndefined();
+    expect(getStorage({ version: 6, storage: [] })).toBeUndefined();
   });
 
   it('returns undefined when the config has no storage', () => {

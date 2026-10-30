@@ -7,8 +7,12 @@ import { validateManifest } from './validateManifest';
 
 const accessors: ConfigVersionAccessors = {
   getApplicationName: (config) => (config as AzionConfigV6).applications?.[0]?.name,
-  // TODO: define where v6 keeps the storage and the firewall keys
-  getStorage: () => undefined,
+  getStorage: (config) => {
+    // TODO: multiple storage support
+    const storage = (config as AzionConfigV6).storage?.[0];
+    return storage ? { bucket: storage.name, prefix: storage.prefix ?? '' } : undefined;
+  },
+  // TODO: define the keys a firewall-only project must not inherit once the v6 config has firewall
   firewallReplacedKeys: [],
 };
 
