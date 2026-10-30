@@ -9,12 +9,14 @@ import FirewallProcessConfigStrategy from './implementations/secure/firewallProc
 import NetworkListProcessConfigStrategy from './implementations/secure/networkListProcessConfigStrategy';
 import WafProcessConfigStrategy from './implementations/secure/wafProcessConfigStrategy';
 import StorageProcessConfigStrategy from './implementations/storageProcessConfigStrategy';
+import VersionProcessConfigStrategy from './implementations/versionProcessConfigStrategy';
 import WorkloadDeploymentsProcessConfigStrategy from './implementations/workloadDeploymentsProcessConfigStrategy';
 import WorkloadProcessConfigStrategy from './implementations/workloadProcessConfigStrategy';
 import ProcessConfigContext from './processConfigContext';
 
 function factoryProcessContext() {
   const processConfigContext = new ProcessConfigContext();
+  processConfigContext.setStrategy('version', new VersionProcessConfigStrategy());
   processConfigContext.setStrategy('build', new BuildProcessConfigStrategy());
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
   processConfigContext.setStrategy('network_list', new NetworkListProcessConfigStrategy());

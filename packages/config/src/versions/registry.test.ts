@@ -55,8 +55,9 @@ describe('version dispatch', () => {
     expect(processConfig({ ...config, version: 4 })).toEqual(processConfig(config));
   });
 
-  it('does not leak version into the manifest', () => {
-    expect(processConfig({ ...config, version: 4 })).not.toHaveProperty('version');
+  it('writes the version to the manifest, the default one when it is not declared', () => {
+    expect(processConfig({ ...config, version: 4 })).toHaveProperty('version', 4);
+    expect(processConfig(config)).toHaveProperty('version', 4);
   });
 
   it('rejects a config that declares an unsupported version', () => {
@@ -106,7 +107,7 @@ describe('v3 support', () => {
     expect(manifest).toHaveProperty('origin');
     expect(manifest).toHaveProperty('rules');
     expect(manifest).not.toHaveProperty('applications');
-    expect(manifest).not.toHaveProperty('version');
+    expect(manifest).toHaveProperty('version', 3);
   });
 
   it('rejects v3-only fields on a v4 config and vice versa', () => {

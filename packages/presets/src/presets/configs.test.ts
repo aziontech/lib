@@ -51,7 +51,8 @@ describe('preset configs by API version', () => {
       const config = resolvePresetConfig(byName(name), 3);
       expect(() => validateConfig(config)).not.toThrow();
       // the golden is JSON, so compare through JSON as well (drops `undefined` fields)
-      expect(JSON.parse(JSON.stringify(processConfig(config)))).toEqual(golden(name, 'manifest'));
+      // the fixtures are frozen and do not carry the `version` the v3 manifest has (see v3/__fixtures__/README.md)
+      expect(JSON.parse(JSON.stringify(processConfig(config)))).toEqual({ version: 3, ...golden(name, 'manifest') });
     });
   });
 

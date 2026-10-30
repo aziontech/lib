@@ -9,9 +9,11 @@ import WafProcessConfigStrategy from './implementations/secure/wafProcessConfigS
 import ProcessConfigContext from './processConfigContext';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
+import VersionProcessConfigStrategy from './implementations/versionProcessConfigStrategy';
 
 function factoryProcessContext() {
   const processConfigContext = new ProcessConfigContext();
+  processConfigContext.setStrategy('version', new VersionProcessConfigStrategy());
   processConfigContext.setStrategy('build', new BuildProcessConfigStrategy());
   processConfigContext.setStrategy('origin', new OriginProcessConfigStrategy());
   processConfigContext.setStrategy('cache', new CacheProcessConfigStrategy());
