@@ -1,15 +1,26 @@
+import buildSchema from './build';
+
 /**
  * JSON Schema of the v6 config.
- * TODO: placeholder. Only `version` and `build` are accepted until the v6 schemas are defined.
+ * TODO: only `version` and `build` are accepted until the schemas of the other v6 resources are defined.
  */
 const azionConfigSchema = {
   $id: 'azionConfig',
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    version: { const: 6 },
-    build: { type: 'object' },
+  definitions: {
+    mainConfig: {
+      type: 'object',
+      properties: {
+        version: { type: 'number', enum: [6] },
+        build: buildSchema,
+      },
+      additionalProperties: false,
+      errorMessage: {
+        additionalProperties: 'Config can only contain the following properties: version, build',
+        type: 'Configuration must be an object',
+      },
+    },
   },
+  $ref: '#/definitions/mainConfig',
 };
 
 export default azionConfigSchema;

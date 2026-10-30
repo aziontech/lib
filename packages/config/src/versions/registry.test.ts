@@ -146,14 +146,15 @@ describe('v6 support', () => {
     expect(() => validateConfig({ version: 6, origin: [] })).toThrow();
   });
 
-  it('processes a v6 config without leaking version into the manifest', () => {
-    expect(processConfig(v6Config)).not.toHaveProperty('version');
+  it('writes the version and the build to the v6 manifest', () => {
+    expect(processConfig(v6Config)).toEqual({ version: 6, build: v6Config.build });
   });
 
   it('forwards the version to manifest helpers', () => {
     expect(() => validateManifest({}, undefined, { version: 6 })).not.toThrow();
     expect(() => convertJsonConfigToObject('{', { version: 6 })).toThrow('Invalid JSON configuration.');
     expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6 });
+    expect(convertJsonConfigToObject(JSON.stringify(processConfig(v6Config)), { version: 6 })).toEqual(v6Config);
   });
 
   it('types defineConfig by the declared version', () => {
