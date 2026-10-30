@@ -52,7 +52,18 @@ describe('preset configs by API version', () => {
       expect(config.version).toBe(6);
       expect(() => validateConfig(config)).not.toThrow();
       expect(config.build).toEqual(resolvePresetConfig(byName('javascript'), 4).build);
-      expect(processConfig(config)).toEqual({ version: 6, build: { entry: 'index.js' } });
+      const manifest = processConfig(config);
+      expect(manifest.version).toBe(6);
+      expect(manifest.build).toEqual({ entry: 'index.js' });
+    });
+
+    it('javascript: has the same functions and application in the manifest as the v4 config', () => {
+      const v4 = processConfig(resolvePresetConfig(byName('javascript'), 4));
+      const v6 = processConfig(resolvePresetConfig(byName('javascript'), 6));
+
+      expect(v6.functions).toEqual(v4.functions);
+      expect(v6.applications).toEqual(v4.applications);
+      expect(v6.applications[0].modules.functions.enabled).toBe(true);
     });
   });
 
