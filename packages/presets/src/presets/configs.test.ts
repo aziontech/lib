@@ -40,11 +40,15 @@ describe('preset configs by API version', () => {
   });
 
   describe('v6', () => {
-    it('is declared by javascript only for now', () => {
-      const withV6 = presets.filter((preset) => preset.configs?.[6]).map((preset) => preset.metadata.name);
-      expect(withV6).toEqual(['javascript']);
+    it('is declared by javascript and react only for now', () => {
+      const withV6 = presets
+        .filter((preset) => preset.configs?.[6])
+        .map((preset) => preset.metadata.name)
+        .sort();
+      expect(withV6).toEqual(['javascript', 'react']);
       expect(getPresetApiVersions(byName('javascript'))).toEqual([3, 4, 6]);
-      expect(() => resolvePresetConfig(byName('react'), 6)).toThrow('does not support config version 6');
+      expect(getPresetApiVersions(byName('react'))).toEqual([3, 4, 6]);
+      expect(() => resolvePresetConfig(byName('vue'), 6)).toThrow('does not support config version 6');
     });
 
     it('javascript: validates and keeps the build of the v4 config', () => {
@@ -64,6 +68,38 @@ describe('preset configs by API version', () => {
       expect(v6.functions).toEqual(v4.functions);
       expect(v6.applications).toEqual(v4.applications);
       expect(v6.applications[0].modules.functions.enabled).toBe(true);
+    });
+
+    it('react: validates and has the same storage, connectors and rules in the manifest as the v4 config', () => {
+      const config = resolvePresetConfig(byName('react'), 6);
+      expect(() => validateConfig(config)).not.toThrow();
+
+      const v4 = processConfig(resolvePresetConfig(byName('react'), 4));
+      const v6 = processConfig(config);
+
+      expect(v6.version).toBe(6);
+      expect(v6.storage).toEqual(v4.storage);
+      expect(v6.connectors).toEqual(v4.connectors);
+      expect(v6.applications[0].rules).toEqual(v4.applications[0].rules);
+      // the rules deliver the static assets from the storage connector
+      expect(JSON.stringify(v6.applications[0].rules)).toContain('"set_connector"');
+      expect(v6.connectors.map((connector: { name: string }) => connector.name)).toEqual(['$CONNECTOR_NAME']);
+    });
+
+    it('javascript: binds the workload to an environment and a deployment declared in the config', () => {
+      const manifest = processConfig(resolvePresetConfig(byName('javascript'), 6));
+
+      expect(manifest.environments.map((environment: { name: string }) => environment.name)).toEqual([
+        '$ENVIRONMENT_NAME',
+      ]);
+      expect(manifest.deployments.map((deployment: { name: string }) => deployment.name)).toEqual(['$DEPLOYMENT_NAME']);
+      expect(manifest.workloads).toHaveLength(1);
+      expect(manifest.workloads[0]).toEqual(
+        expect.objectContaining({ name: '$WORKLOAD_NAME', active: true, infrastructure: 1 }),
+      );
+      expect(manifest.workloads[0].bindings).toEqual([
+        { environment_id: '$ENVIRONMENT_NAME', deployment_id: '$DEPLOYMENT_NAME', domains: [] },
+      ]);
     });
   });
 

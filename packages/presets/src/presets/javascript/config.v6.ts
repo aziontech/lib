@@ -1,6 +1,6 @@
 import type { AzionConfigV6 } from '@aziontech/config';
 
-// TODO: add the remaining v6 resources (workloads, connectors, storage...) once their schemas are defined
+// TODO: add the remaining v6 resources (connectors, storage...) once their schemas are defined
 const config: AzionConfigV6 = {
   version: 6,
   build: {
@@ -46,6 +46,30 @@ const config: AzionConfigV6 = {
         {
           name: '$FUNCTION_INSTANCE_NAME',
           ref: '$FUNCTION_NAME',
+        },
+      ],
+    },
+  ],
+  environments: [
+    {
+      name: '$ENVIRONMENT_NAME',
+    },
+  ],
+  // the application a deployment serves is set by the Azion CLI when it creates the release
+  deployments: [
+    {
+      name: '$DEPLOYMENT_NAME',
+    },
+  ],
+  workloads: [
+    {
+      name: '$WORKLOAD_NAME',
+      active: true,
+      infrastructure: 1,
+      bindings: [
+        {
+          environment: '$ENVIRONMENT_NAME',
+          deployment: '$DEPLOYMENT_NAME',
         },
       ],
     },
