@@ -139,7 +139,7 @@ describe('v6 support', () => {
 
   it('validates a v6 config and rejects fields the v6 schema does not know yet', () => {
     expect(() => validateConfig(v6Config)).not.toThrow();
-    expect(() => validateConfig({ version: 6, applications: [] })).toThrow();
+    expect(() => validateConfig({ version: 6, workloads: [] })).toThrow();
   });
 
   it('does not accept v6 on the v4 schema nor the other way around', () => {
@@ -147,15 +147,40 @@ describe('v6 support', () => {
     expect(() => validateConfig({ version: 6, origin: [] })).toThrow();
   });
 
-  it('writes the version and the build to the v6 manifest', () => {
-    expect(processConfig(v6Config)).toEqual({ version: 6, build: v6Config.build });
+  it('writes the version, the build and the applications to the v6 manifest', () => {
+    expect(processConfig(v6Config)).toEqual({
+      version: 6,
+      build: v6Config.build,
+      functions: [],
+      applications: [],
+    });
+  });
+
+  it('processes the v6 applications into the manifest', () => {
+    const manifest = processConfig({ ...v6Config, applications: [{ name: 'my-app' }] });
+    expect(manifest.applications).toEqual([
+      {
+        name: 'my-app',
+        active: true,
+        debug: false,
+        modules: {
+          cache: { enabled: true },
+          functions: { enabled: false },
+          application_accelerator: { enabled: true },
+          image_processor: { enabled: false },
+        },
+      },
+    ]);
   });
 
   it('forwards the version to manifest helpers', () => {
     expect(() => validateManifest({}, undefined, { version: 6 })).not.toThrow();
     expect(() => convertJsonConfigToObject('{', { version: 6 })).toThrow('Invalid JSON configuration.');
-    expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6 });
-    expect(convertJsonConfigToObject(JSON.stringify(processConfig(v6Config)), { version: 6 })).toEqual(v6Config);
+    expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6, applications: [] });
+    expect(convertJsonConfigToObject(JSON.stringify(processConfig(v6Config)), { version: 6 })).toEqual({
+      ...v6Config,
+      applications: [],
+    });
   });
 
   it('types defineConfig by the declared version', () => {

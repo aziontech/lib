@@ -20,6 +20,8 @@ describe('version accessors', () => {
     expect(getApplicationName(v4)).toBe('app-1');
     expect(getApplicationName({})).toBeUndefined();
     expect(getApplicationName(v3)).toBeUndefined();
+    expect(getApplicationName({ version: 6, applications: [{ name: 'app-6' }] })).toBe('app-6');
+    expect(getApplicationName({ version: 6 })).toBeUndefined();
   });
 
   it('reads the storage where each version keeps it', () => {

@@ -2,11 +2,12 @@ import type { ConfigVersionAccessors, ConfigVersionModule } from '../types';
 import { convertJsonConfigToObject } from './converterJsonConfig';
 import { factoryProcessContext } from './processStrategy';
 import { validateConfig } from './validateConfig';
+import type { AzionConfigV6 } from './types';
 import { validateManifest } from './validateManifest';
 
 const accessors: ConfigVersionAccessors = {
-  // TODO: define where v6 keeps the application name, the storage and the firewall keys
-  getApplicationName: () => undefined,
+  getApplicationName: (config) => (config as AzionConfigV6).applications?.[0]?.name,
+  // TODO: define where v6 keeps the storage and the firewall keys
   getStorage: () => undefined,
   firewallReplacedKeys: [],
 };
