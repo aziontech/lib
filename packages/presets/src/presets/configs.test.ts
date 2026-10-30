@@ -36,7 +36,24 @@ describe('preset configs by API version', () => {
 
   it('has a v3 config for every preset that existed on v3', () => {
     expect(goldenPresets.length).toBe(24);
-    goldenPresets.forEach((name) => expect(getPresetApiVersions(byName(name))).toEqual([3, 4]));
+    goldenPresets.forEach((name) => expect(getPresetApiVersions(byName(name))).toEqual(expect.arrayContaining([3, 4])));
+  });
+
+  describe('v6', () => {
+    it('is declared by javascript only for now', () => {
+      const withV6 = presets.filter((preset) => preset.configs?.[6]).map((preset) => preset.metadata.name);
+      expect(withV6).toEqual(['javascript']);
+      expect(getPresetApiVersions(byName('javascript'))).toEqual([3, 4, 6]);
+      expect(() => resolvePresetConfig(byName('react'), 6)).toThrow('does not support config version 6');
+    });
+
+    it('javascript: validates and keeps the build of the v4 config', () => {
+      const config = resolvePresetConfig(byName('javascript'), 6);
+      expect(config.version).toBe(6);
+      expect(() => validateConfig(config)).not.toThrow();
+      expect(config.build).toEqual(resolvePresetConfig(byName('javascript'), 4).build);
+      expect(processConfig(config)).toEqual({ version: 6, build: { entry: 'index.js' } });
+    });
   });
 
   describe.each(goldenPresets)('%s (v3)', (name) => {
