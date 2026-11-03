@@ -1,6 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { getApplicationName, getFirewallReplacedKeys, getStorage } from './accessors';
+import v4Schema from './v4/schemas/schema';
+import v6Schema from './v6/schemas/schema';
 
 const v4 = {
   applications: [{ name: 'app-1' }, { name: 'app-2' }],
@@ -74,5 +76,22 @@ describe('version accessors', () => {
   it('lists the preset keys a firewall-only project must not inherit', () => {
     expect(getFirewallReplacedKeys(4)).toEqual(['applications', 'workloads', 'connectors', 'functions']);
     expect(getFirewallReplacedKeys(3)).toEqual(['origin', 'cache', 'rules', 'functions']);
+    expect(getFirewallReplacedKeys(6)).toEqual([
+      'applications',
+      'workloads',
+      'connectors',
+      'functions',
+      'environments',
+      'deployments',
+    ]);
+  });
+
+  it('lists only keys that exist in the config schema of each version', () => {
+    const properties = (schema: { definitions: { mainConfig: { properties: object } } }) =>
+      Object.keys(schema.definitions.mainConfig.properties);
+    const schemas = { 4: properties(v4Schema), 6: properties(v6Schema) };
+
+    getFirewallReplacedKeys(4).forEach((key) => expect(schemas[4]).toContain(key));
+    getFirewallReplacedKeys(6).forEach((key) => expect(schemas[6]).toContain(key));
   });
 });

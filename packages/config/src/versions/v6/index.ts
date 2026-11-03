@@ -12,8 +12,9 @@ const accessors: ConfigVersionAccessors = {
     const storage = (config as AzionConfigV6).storage?.[0];
     return storage ? { bucket: storage.name, prefix: storage.prefix ?? '' } : undefined;
   },
-  // TODO: define the keys a firewall-only project must not inherit once the v6 config has firewall
-  firewallReplacedKeys: [],
+  // the keys of a preset that only serve an application, which a firewall-only project does not have. The environments
+  // and the deployments only exist to bind a workload to an application, so they go along with the workloads
+  firewallReplacedKeys: ['applications', 'workloads', 'connectors', 'functions', 'environments', 'deployments'],
 };
 
 // v6 has its own AzionConfig type, which is not assignable to the default (v4) one used by the shared contract
