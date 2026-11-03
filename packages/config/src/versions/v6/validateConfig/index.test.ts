@@ -687,3 +687,82 @@ describe('validateConfig (v6) storage and connectors', () => {
     });
   });
 });
+
+describe('validateConfig (v6) application cache', () => {
+  const cache = (value: Record<string, unknown>) => ({
+    version: 6,
+    applications: [{ name: 'my-app', cache: [{ name: 'my-cache', ...value }] }],
+  });
+
+  it('accepts a complete cache setting', () => {
+    expect(() =>
+      validateConfig(
+        cache({
+          stale: true,
+          queryStringSort: true,
+          tieredCache: { enabled: true, topology: 'us-east-1' },
+          methods: { post: true, options: false },
+          browser: { maxAgeSeconds: 7200 },
+          edge: { maxAgeSeconds: '60 * 60 * 24' },
+          cacheByCookie: { option: 'allowlist', list: ['session'] },
+          cacheByQueryString: { option: 'denylist', list: ['utm'] },
+        }),
+      ),
+    ).not.toThrow();
+    expect(() => validateConfig(cache({}))).not.toThrow();
+  });
+
+  it('requires the name and limits it to 250 characters', () => {
+    expect(() => validateConfig({ version: 6, applications: [{ name: 'a', cache: [{ stale: true }] }] })).toThrow(
+      "The 'name' field is required in each cache item.",
+    );
+    expect(() => validateConfig(cache({ name: 'a'.repeat(250) }))).not.toThrow();
+    expect(() => validateConfig(cache({ name: 'a'.repeat(251) }))).toThrow(
+      "The 'name' field must be a string with 1 to 250 characters",
+    );
+  });
+
+  it('limits a numeric max age to 0..31536000 (the v6 API limit) and accepts an expression', () => {
+    expect(() =>
+      validateConfig(cache({ browser: { maxAgeSeconds: 0 }, edge: { maxAgeSeconds: 31536000 } })),
+    ).not.toThrow();
+    expect(() => validateConfig(cache({ browser: { maxAgeSeconds: 31536001 } }))).toThrow();
+    expect(() => validateConfig(cache({ edge: { maxAgeSeconds: -1 } }))).toThrow();
+    expect(() => validateConfig(cache({ edge: { maxAgeSeconds: '60 * 60' } }))).not.toThrow();
+    expect(() => validateConfig(cache({ edge: { maxAgeSeconds: 'abc' } }))).toThrow(
+      "The 'maxAgeSeconds' field must be a valid mathematical expression.",
+    );
+  });
+
+  it('requires the topology when the tiered cache is enabled and does not accept null', () => {
+    expect(() => validateConfig(cache({ tieredCache: { enabled: true } }))).toThrow(
+      "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object.",
+    );
+    expect(() => validateConfig(cache({ tieredCache: { enabled: false } }))).not.toThrow();
+    expect(() => validateConfig(cache({ tieredCache: { enabled: false, topology: null } }))).toThrow(
+      "The 'topology' field must be one of 'nearest-region', 'br-east-1' or 'us-east-1'.",
+    );
+    expect(() => validateConfig(cache({ tieredCache: { enabled: true, topology: 'eu-west-1' } }))).toThrow();
+  });
+
+  it('validates the cache by cookie and by query string', () => {
+    expect(() => validateConfig(cache({ cacheByCookie: { option: 'sometimes' } }))).toThrow(
+      "The 'option' field must be one of 'ignore', 'all', 'allowlist' or 'denylist'.",
+    );
+    expect(() => validateConfig(cache({ cacheByQueryString: { list: ['q'] } }))).toThrow(
+      "The 'option' field is required in the 'cacheByQueryString' object.",
+    );
+    expect(() => validateConfig(cache({ cacheByQueryString: { option: 'allowlist' } }))).toThrow(
+      "The 'list' field is required when 'option' is 'allowlist' or 'denylist'.",
+    );
+  });
+
+  it('rejects unknown properties in a cache setting', () => {
+    expect(() => validateConfig(cache({ unknown: true }))).toThrow(
+      'No additional properties are allowed in cache item objects.',
+    );
+    expect(() => validateConfig(cache({ methods: { get: true } }))).toThrow(
+      "No additional properties are allowed in the 'methods' object.",
+    );
+  });
+});

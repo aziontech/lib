@@ -136,7 +136,8 @@ const createRuleSchema = (isRequestPhase = false) => ({
  * Schema of the v6 applications.
  * Based on v4, checked against the requests of the v6 API: `name` has at most 100 characters in an application
  * (`ApplicationRequest`) and in a rule (`RequestPhaseRuleRequest`, `ResponsePhaseRuleRequest`).
- * TODO: add the remaining resources of an application (cache settings, device groups).
+ * Cache: `maxAgeSeconds` is between 0 and 31536000 (1 year) and `tieredCache.topology` is not nullable, as in `CacheSettingRequest`.
+ * TODO: add the remaining resources of an application (device groups).
  */
 const applicationsSchema = {
   type: 'array',
@@ -178,6 +179,210 @@ const applicationsSchema = {
         type: 'boolean',
         default: false,
         errorMessage: "The 'imageProcessorEnabled' field must be a boolean",
+      },
+      cache: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 250,
+              errorMessage: "The 'name' field must be a string with 1 to 250 characters",
+            },
+            stale: {
+              type: 'boolean',
+              errorMessage: "The 'stale' field must be a boolean.",
+            },
+            queryStringSort: {
+              type: 'boolean',
+              errorMessage: "The 'queryStringSort' field must be a boolean.",
+            },
+            tieredCache: {
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  default: false,
+                  errorMessage: "The 'enabled' field must be a boolean.",
+                },
+                topology: {
+                  type: 'string',
+                  enum: ['nearest-region', 'us-east-1', 'br-east-1'],
+                  default: 'nearest-region',
+                  errorMessage: "The 'topology' field must be one of 'nearest-region', 'br-east-1' or 'us-east-1'.",
+                },
+              },
+              required: ['enabled'],
+              if: {
+                properties: { enabled: { const: true } },
+              },
+              then: {
+                required: ['enabled', 'topology'],
+                errorMessage: {
+                  required: "When 'enabled' is true, 'topology' is required in the 'tiered_cache' object.",
+                },
+              },
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'tiered_cache' object.",
+              },
+            },
+            methods: {
+              type: 'object',
+              properties: {
+                post: {
+                  type: 'boolean',
+                  errorMessage: "The 'post' field must be a boolean.",
+                },
+                options: {
+                  type: 'boolean',
+                  errorMessage: "The 'options' field must be a boolean.",
+                },
+              },
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'methods' object.",
+              },
+            },
+            browser: {
+              type: 'object',
+              properties: {
+                maxAgeSeconds: {
+                  oneOf: [
+                    {
+                      type: 'number',
+                      minimum: 0,
+                      maximum: 31536000,
+                      errorMessage:
+                        "The 'maxAgeSeconds' field must be a number between 0 and 31536000 or a valid mathematical expression.",
+                    },
+                    {
+                      type: 'string',
+                      pattern: '^[0-9+*/.() -]+$',
+                      errorMessage: "The 'maxAgeSeconds' field must be a valid mathematical expression.",
+                    },
+                  ],
+                },
+              },
+              required: ['maxAgeSeconds'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'browser' object.",
+                required: "The 'maxAgeSeconds' field is required in the 'browser' object.",
+              },
+            },
+            edge: {
+              type: 'object',
+              properties: {
+                maxAgeSeconds: {
+                  oneOf: [
+                    {
+                      type: 'number',
+                      minimum: 0,
+                      maximum: 31536000,
+                      errorMessage:
+                        "The 'maxAgeSeconds' field must be a number between 0 and 31536000 or a valid mathematical expression.",
+                    },
+                    {
+                      type: 'string',
+                      pattern: '^[0-9+*/.() -]+$',
+                      errorMessage: "The 'maxAgeSeconds' field must be a valid mathematical expression.",
+                    },
+                  ],
+                },
+              },
+              required: ['maxAgeSeconds'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'edge' object.",
+                required: "The 'maxAgeSeconds' field is required in the 'edge' object.",
+              },
+            },
+            cacheByCookie: {
+              type: 'object',
+              properties: {
+                option: {
+                  type: 'string',
+                  enum: ['ignore', 'all', 'allowlist', 'denylist'],
+                  errorMessage: "The 'option' field must be one of 'ignore', 'all', 'allowlist' or 'denylist'.",
+                },
+                list: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    errorMessage: "Each item in 'list' must be a string.",
+                  },
+                  errorMessage: {
+                    type: "The 'list' field must be an array of strings.",
+                  },
+                },
+              },
+              required: ['option'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'cacheByCookie' object.",
+                required: "The 'option' field is required in the 'cacheByCookie' object.",
+              },
+              if: {
+                properties: {
+                  option: { enum: ['allowlist', 'denylist'] },
+                },
+              },
+              then: {
+                required: ['list'],
+                errorMessage: {
+                  required: "The 'list' field is required when 'option' is 'allowlist' or 'denylist'.",
+                },
+              },
+            },
+            cacheByQueryString: {
+              type: 'object',
+              properties: {
+                option: {
+                  type: 'string',
+                  enum: ['ignore', 'all', 'allowlist', 'denylist'],
+                  errorMessage: "The 'option' field must be one of 'ignore', 'all', 'allowlist' or 'denylist'.",
+                },
+                list: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    errorMessage: "Each item in 'list' must be a string.",
+                  },
+                  errorMessage: {
+                    type: "The 'list' field must be an array of strings.",
+                  },
+                },
+              },
+              required: ['option'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: "No additional properties are allowed in the 'cacheByQueryString' object.",
+                required: "The 'option' field is required in the 'cacheByQueryString' object.",
+              },
+              if: {
+                properties: {
+                  option: { enum: ['allowlist', 'denylist'] },
+                },
+              },
+              then: {
+                required: ['list'],
+                errorMessage: {
+                  required: "The 'list' field is required when 'option' is 'allowlist' or 'denylist'.",
+                },
+              },
+            },
+          },
+          required: ['name'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in cache item objects.',
+            required: "The 'name' field is required in each cache item.",
+          },
+        },
+        errorMessage: "The 'cache' field must be an array of cache setting items.",
       },
       rules: {
         type: 'object',

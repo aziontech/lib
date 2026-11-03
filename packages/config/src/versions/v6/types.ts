@@ -1,5 +1,6 @@
 import type {
   AzionBuild,
+  AzionCache,
   AzionFunction,
   AzionFunctionInstance,
   AzionRules,
@@ -32,7 +33,7 @@ export type AzionFunctionV6 = AzionFunction;
 
 /**
  * Application of the Azion API v6.
- * TODO: add the remaining resources of an application (cache settings, device groups).
+ * TODO: add the remaining resources of an application (device groups).
  */
 export type AzionApplicationV6 = {
   /** Application name */
@@ -49,6 +50,8 @@ export type AzionApplicationV6 = {
   active?: boolean;
   /** Enable debug mode */
   debug?: boolean;
+  /** Cache settings */
+  cache?: AzionCache[];
   /** Rules configuration */
   rules?: AzionRules;
   /** Function instances */

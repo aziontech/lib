@@ -1,5 +1,6 @@
 import ProcessConfigStrategy from '../../../../shared/processStrategy/processConfigStrategy';
 import type { AzionApplicationV6, AzionConfigV6 } from '../../../types';
+import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
 import FunctionInstancesProcessConfigStrategy from './functionInstancesProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
 
@@ -7,9 +8,10 @@ import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
  * ApplicationProcessConfigStrategy
  * @class ApplicationProcessConfigStrategy
  * @description Converts the v6 applications between the config and the manifest.
- * TODO: convert the remaining resources of an application (cache settings, device groups).
+ * TODO: convert the remaining resources of an application (device groups).
  */
 class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
+  private cacheStrategy = new CacheProcessConfigStrategy();
   private rulesStrategy = new RulesProcessConfigStrategy();
   private functionInstancesStrategy = new FunctionInstancesProcessConfigStrategy();
 
@@ -40,6 +42,10 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
           },
         },
       };
+
+      if (app.cache) {
+        application.cache_settings = this.cacheStrategy.transformToManifest(app.cache);
+      }
 
       if (app.rules) {
         application.rules = this.rulesStrategy.transformToManifest(app.rules, config.functions, config.connectors);
@@ -72,6 +78,7 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
       functionsEnabled: app.modules?.functions?.enabled,
       applicationAcceleratorEnabled: app.modules?.application_accelerator?.enabled,
       imageProcessorEnabled: app.modules?.image_processor?.enabled,
+      cache: app.cache_settings ? this.cacheStrategy.transformToConfig(app.cache_settings) : undefined,
       rules: app.rules ? this.rulesStrategy.transformToConfig(app.rules) : undefined,
       functionsInstances: app.functions_instances
         ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)

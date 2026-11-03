@@ -92,6 +92,32 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       expect(application.functions_instances).toEqual([{ name: 'instance', function: 'fn', args: {}, active: true }]);
     });
 
+    it('should write the cache settings to the manifest as cache_settings and read them back', () => {
+      const withCache: AzionConfigV6 = {
+        version: 6,
+        applications: [{ name: 'my-app', cache: [{ name: 'my-cache', browser: { maxAgeSeconds: 7200 } }] }],
+      };
+      const [application] = strategy.transformToManifest(withCache);
+
+      expect(application.cache_settings).toHaveLength(1);
+      expect(application.cache_settings[0]).toEqual(
+        expect.objectContaining({ name: 'my-cache', browser_cache: { behavior: 'override', max_age: 7200 } }),
+      );
+
+      const transformedPayload: AzionConfigV6 = { version: 6 };
+      strategy.transformToConfig({ applications: [application] }, transformedPayload);
+
+      expect(transformedPayload.applications?.[0].cache?.[0]).toEqual(
+        expect.objectContaining({ name: 'my-cache', browser: { maxAgeSeconds: 7200 } }),
+      );
+    });
+
+    it('should not write cache_settings when the application has no cache', () => {
+      const [application] = strategy.transformToManifest({ version: 6, applications: [{ name: 'my-app' }] });
+
+      expect(application).not.toHaveProperty('cache_settings');
+    });
+
     it('should enable the functions module when the application has function instances', () => {
       const [application] = strategy.transformToManifest(config);
       expect(application.modules.functions.enabled).toBe(true);
