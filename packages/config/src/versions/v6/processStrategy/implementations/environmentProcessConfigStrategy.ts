@@ -5,9 +5,10 @@ import type { AzionConfigV6, AzionEnvironmentV6 } from '../../types';
  * EnvironmentProcessConfigStrategy
  * @class EnvironmentProcessConfigStrategy
  * @description Converts the v6 environments between the config and the manifest.
- * The API requires `log_verbosity`, `robots_policy`, `protection`, `branch_tracking` and `description`, so the manifest
- * defaults them to the least intrusive values: normal logs, the robots policy of the origin, no protection, no branch
- * tracking and no description.
+ * The creation of an environment requires `deployment_policy`, which the config must declare because the API does not
+ * accept changing it afterwards. The replacement of an environment also requires `log_verbosity`, `robots_policy`,
+ * `protection`, `branch_tracking` and `description`, so the manifest defaults them to the least intrusive values:
+ * normal logs, the robots policy of the origin, no protection, no branch tracking and no description.
  */
 class EnvironmentProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   transformToManifest(config: AzionConfigV6) {
@@ -47,7 +48,7 @@ class EnvironmentProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
               branch_match: branchTracking.branchMatch,
             }
           : null,
-        ...(environment.deploymentPolicy && { deployment_policy: environment.deploymentPolicy }),
+        deployment_policy: environment.deploymentPolicy,
       };
     });
   }

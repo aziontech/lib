@@ -123,7 +123,8 @@ export type AzionEnvironmentV6 = {
     mode: (typeof ENVIRONMENT_BRANCH_TRACKING_MODES)[number];
     branchMatch: string;
   } | null;
-  deploymentPolicy?: (typeof DEPLOYMENT_POLICIES)[number];
+  /** How the releases of the environment are served. Required by the API, and it cannot be changed afterwards */
+  deploymentPolicy: (typeof DEPLOYMENT_POLICIES)[number];
 };
 
 /**
@@ -133,7 +134,8 @@ export type AzionDeploymentV6 = {
   /** Deployment name */
   name: string;
   description?: string | null;
-  bindingPolicy?: (typeof DEPLOYMENT_BINDING_POLICIES)[number];
+  /** Whether a release can swap the resources of the deployment. Required by the API */
+  bindingPolicy: (typeof DEPLOYMENT_BINDING_POLICIES)[number];
   deploymentPolicy?: (typeof DEPLOYMENT_POLICIES)[number];
   strategyDefaults?: {
     skewProtection?: { enabled: boolean; defaultTtlSeconds: number };

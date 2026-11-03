@@ -290,11 +290,11 @@ describe('validateConfig (v6) workloads, environments and deployments', () => {
   });
   const environment = (extra: Record<string, unknown> = {}) => ({
     version: 6,
-    environments: [{ name: 'production', ...extra }],
+    environments: [{ name: 'production', deploymentPolicy: 'single_version', ...extra }],
   });
   const deployment = (extra: Record<string, unknown> = {}) => ({
     version: 6,
-    deployments: [{ name: 'default-deployment', ...extra }],
+    deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE', ...extra }],
   });
 
   describe('workloads', () => {
@@ -407,13 +407,23 @@ describe('validateConfig (v6) workloads, environments and deployments', () => {
     });
 
     it('limits the name to 3-255 characters and requires it', () => {
-      expect(() => validateConfig({ version: 6, environments: [{ description: 'x' }] })).toThrow(
-        "The 'name' field is required in each environment",
+      expect(() =>
+        validateConfig({ version: 6, environments: [{ description: 'x', deploymentPolicy: 'single_version' }] }),
+      ).toThrow("The 'name' field is required in each environment");
+      expect(() =>
+        validateConfig({ version: 6, environments: [{ name: 'ab', deploymentPolicy: 'single_version' }] }),
+      ).toThrow("The 'name' field must be a string between 3 and 255 characters");
+      expect(() =>
+        validateConfig({ version: 6, environments: [{ name: 'a'.repeat(256), deploymentPolicy: 'single_version' }] }),
+      ).toThrow();
+    });
+
+    it('requires the deploymentPolicy (the API requires it and does not accept changing it later)', () => {
+      expect(() => validateConfig({ version: 6, environments: [{ name: 'production' }] })).toThrow(
+        "The 'deploymentPolicy' field is required in each environment",
       );
-      expect(() => validateConfig({ version: 6, environments: [{ name: 'ab' }] })).toThrow(
-        "The 'name' field must be a string between 3 and 255 characters",
-      );
-      expect(() => validateConfig({ version: 6, environments: [{ name: 'a'.repeat(256) }] })).toThrow();
+      expect(() => validateConfig(environment({ deploymentPolicy: 'single_version' }))).not.toThrow();
+      expect(() => validateConfig(environment({ deploymentPolicy: 'versioned_urls' }))).not.toThrow();
     });
 
     it('rejects values out of the enums', () => {
@@ -460,9 +470,17 @@ describe('validateConfig (v6) workloads, environments and deployments', () => {
       expect(() => validateConfig({ version: 6, deployments: [{ bindingPolicy: 'STRICT' }] })).toThrow(
         "The 'name' field is required in each deployment",
       );
-      expect(() => validateConfig({ version: 6, deployments: [{ name: 'ab' }] })).toThrow(
+      expect(() => validateConfig({ version: 6, deployments: [{ name: 'ab', bindingPolicy: 'FLEXIBLE' }] })).toThrow(
         "The 'name' field must be a string between 3 and 255 characters",
       );
+    });
+
+    it('requires the bindingPolicy (the creation of a deployment requires it)', () => {
+      expect(() => validateConfig({ version: 6, deployments: [{ name: 'default-deployment' }] })).toThrow(
+        "The 'bindingPolicy' field is required in each deployment",
+      );
+      expect(() => validateConfig(deployment({ bindingPolicy: 'STRICT' }))).not.toThrow();
+      expect(() => validateConfig(deployment({ bindingPolicy: 'FLEXIBLE' }))).not.toThrow();
     });
 
     it('rejects values out of the enums and invalid skew protection', () => {

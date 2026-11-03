@@ -48,12 +48,14 @@ const config: AzionConfigV6 = {
   environments: [
     {
       name: '$ENVIRONMENT_NAME',
+      deploymentPolicy: 'single_version',
     },
   ],
   // the application a deployment serves is set by the Azion CLI when it creates the release
   deployments: [
     {
       name: '$DEPLOYMENT_NAME',
+      bindingPolicy: 'FLEXIBLE',
     },
   ],
   workloads: [

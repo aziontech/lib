@@ -6,8 +6,8 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
 
   const declared: AzionConfigV6 = {
     version: 6,
-    environments: [{ name: 'production' }],
-    deployments: [{ name: 'default-deployment' }],
+    environments: [{ name: 'production', deploymentPolicy: 'single_version' }],
+    deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE' }],
   };
 
   beforeEach(() => {

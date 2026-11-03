@@ -5,8 +5,9 @@ import type { AzionConfigV6, AzionDeploymentV6 } from '../../types';
  * DeploymentProcessConfigStrategy
  * @class DeploymentProcessConfigStrategy
  * @description Converts the v6 deployments between the config and the manifest.
- * The API requires `binding_policy`, `description` and `strategy_defaults`, so the manifest defaults them to a flexible
- * binding, no description and no skew protection.
+ * The creation of a deployment requires `binding_policy`, which the config must declare. The replacement of a
+ * deployment also requires `description` and `strategy_defaults`, so the manifest defaults them to no description and
+ * no skew protection.
  * The application a deployment serves is not part of it: the Azion CLI sets it when it creates a release.
  */
 class DeploymentProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
@@ -21,7 +22,7 @@ class DeploymentProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV
       return {
         name: deployment.name,
         description: deployment.description ?? null,
-        binding_policy: deployment.bindingPolicy ?? 'FLEXIBLE',
+        binding_policy: deployment.bindingPolicy,
         strategy_defaults: skewProtection
           ? {
               skew_protection: {

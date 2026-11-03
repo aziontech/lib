@@ -13,8 +13,13 @@ describe('DeploymentProcessConfigStrategy (v6)', () => {
       expect(strategy.transformToManifest({ version: 6 })).toEqual([]);
     });
 
-    it('should apply the defaults the API requires to a minimal deployment', () => {
-      expect(strategy.transformToManifest({ version: 6, deployments: [{ name: 'default-deployment' }] })).toEqual([
+    it('should write the binding policy and apply the defaults the API requires to the other fields', () => {
+      expect(
+        strategy.transformToManifest({
+          version: 6,
+          deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE' }],
+        }),
+      ).toEqual([
         {
           name: 'default-deployment',
           description: null,
@@ -22,6 +27,18 @@ describe('DeploymentProcessConfigStrategy (v6)', () => {
           strategy_defaults: {},
         },
       ]);
+    });
+
+    it('should write the binding policy that the config declares', () => {
+      const policies = (['STRICT', 'FLEXIBLE'] as const).map(
+        (bindingPolicy) =>
+          strategy.transformToManifest({
+            version: 6,
+            deployments: [{ name: 'default-deployment', bindingPolicy }],
+          })?.[0].binding_policy,
+      );
+
+      expect(policies).toEqual(['STRICT', 'FLEXIBLE']);
     });
 
     it('should map every field of the deployment to the manifest', () => {

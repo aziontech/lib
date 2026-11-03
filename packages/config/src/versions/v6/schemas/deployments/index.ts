@@ -1,7 +1,8 @@
 import { DEPLOYMENT_BINDING_POLICIES, DEPLOYMENT_POLICIES } from '../../constants';
 
 /**
- * Schema of the v6 deployments, from `DeploymentRequest` of the v6 API.
+ * Schema of the v6 deployments, from `DeploymentCreateRequest` and `DeploymentRequest` of the v6 API.
+ * `bindingPolicy` is required, as in the creation of a deployment.
  */
 const deploymentsSchema = {
   type: 'array',
@@ -51,11 +52,14 @@ const deploymentsSchema = {
         },
       },
     },
-    required: ['name'],
+    required: ['name', 'bindingPolicy'],
     additionalProperties: false,
     errorMessage: {
       additionalProperties: 'No additional properties are allowed in deployment objects',
-      required: { name: "The 'name' field is required in each deployment" },
+      required: {
+        name: "The 'name' field is required in each deployment",
+        bindingPolicy: "The 'bindingPolicy' field is required in each deployment",
+      },
     },
   },
   errorMessage: "The 'deployments' field must be an array of deployment objects",

@@ -6,7 +6,8 @@ import {
 } from '../../constants';
 
 /**
- * Schema of the v6 environments, from `EnvironmentRequest` of the v6 API.
+ * Schema of the v6 environments, from `EnvironmentCreateRequest` and `EnvironmentRequest` of the v6 API.
+ * `deploymentPolicy` is required, as in the creation of an environment, and the API does not accept changing it later.
  */
 const environmentsSchema = {
   type: 'array',
@@ -100,11 +101,14 @@ const environmentsSchema = {
         errorMessage: `The 'deploymentPolicy' field must be one of: ${DEPLOYMENT_POLICIES.join(', ')}`,
       },
     },
-    required: ['name'],
+    required: ['name', 'deploymentPolicy'],
     additionalProperties: false,
     errorMessage: {
       additionalProperties: 'No additional properties are allowed in environment objects',
-      required: { name: "The 'name' field is required in each environment" },
+      required: {
+        name: "The 'name' field is required in each environment",
+        deploymentPolicy: "The 'deploymentPolicy' field is required in each environment",
+      },
     },
   },
   errorMessage: "The 'environments' field must be an array of environment objects",

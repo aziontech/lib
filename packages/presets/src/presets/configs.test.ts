@@ -110,7 +110,13 @@ describe('preset configs by API version', () => {
       expect(manifest.environments.map((environment: { name: string }) => environment.name)).toEqual([
         '$ENVIRONMENT_NAME',
       ]);
+      expect(
+        manifest.environments.map((environment: { deployment_policy: string }) => environment.deployment_policy),
+      ).toEqual(['single_version']);
       expect(manifest.deployments.map((deployment: { name: string }) => deployment.name)).toEqual(['$DEPLOYMENT_NAME']);
+      expect(manifest.deployments.map((deployment: { binding_policy: string }) => deployment.binding_policy)).toEqual([
+        'FLEXIBLE',
+      ]);
       expect(manifest.workloads).toHaveLength(1);
       expect(manifest.workloads[0]).toEqual(
         expect.objectContaining({ name: '$WORKLOAD_NAME', active: true, infrastructure: 1 }),

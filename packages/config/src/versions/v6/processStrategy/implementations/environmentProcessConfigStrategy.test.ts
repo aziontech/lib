@@ -13,8 +13,13 @@ describe('EnvironmentProcessConfigStrategy (v6)', () => {
       expect(strategy.transformToManifest({ version: 6 })).toEqual([]);
     });
 
-    it('should apply the defaults the API requires to a minimal environment', () => {
-      expect(strategy.transformToManifest({ version: 6, environments: [{ name: 'production' }] })).toEqual([
+    it('should write the deployment policy and apply the defaults the API requires to the other fields', () => {
+      expect(
+        strategy.transformToManifest({
+          version: 6,
+          environments: [{ name: 'production', deploymentPolicy: 'single_version' }],
+        }),
+      ).toEqual([
         {
           name: 'production',
           description: null,
@@ -22,8 +27,19 @@ describe('EnvironmentProcessConfigStrategy (v6)', () => {
           robots_policy: 'respect_origin',
           protection: {},
           branch_tracking: null,
+          deployment_policy: 'single_version',
         },
       ]);
+    });
+
+    it('should write the deployment policy that the config declares', () => {
+      const policies = (['single_version', 'versioned_urls'] as const).map(
+        (deploymentPolicy) =>
+          strategy.transformToManifest({ version: 6, environments: [{ name: 'production', deploymentPolicy }] })?.[0]
+            .deployment_policy,
+      );
+
+      expect(policies).toEqual(['single_version', 'versioned_urls']);
     });
 
     it('should map every field of the environment to the manifest', () => {
