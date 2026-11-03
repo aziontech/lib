@@ -27,9 +27,8 @@ import type {
 
 /**
  * Function of the Azion API v6.
- * TODO: add `bindings` (storage) once the v6 config has storage.
  */
-export type AzionFunctionV6 = Omit<AzionFunction, 'bindings'>;
+export type AzionFunctionV6 = AzionFunction;
 
 /**
  * Application of the Azion API v6.

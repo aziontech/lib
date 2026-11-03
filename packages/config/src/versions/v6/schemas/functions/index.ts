@@ -1,4 +1,3 @@
-// TODO: add `bindings` (storage) once the v6 config has storage
 const functionsSchema = {
   type: 'array',
   items: {
@@ -36,6 +35,36 @@ const functionsSchema = {
         type: 'boolean',
         default: true,
         errorMessage: "The 'active' field must be a boolean",
+      },
+      bindings: {
+        type: 'object',
+        properties: {
+          storage: {
+            type: 'object',
+            properties: {
+              bucket: {
+                type: ['string', 'number'],
+                errorMessage: "The 'bucket' field must be a string or number",
+              },
+              prefix: {
+                type: 'string',
+                errorMessage: "The 'prefix' field must be a string",
+              },
+            },
+            required: ['bucket', 'prefix'],
+            additionalProperties: false,
+            errorMessage: {
+              type: "The 'storage' field must be an object",
+              additionalProperties: 'No additional properties are allowed in the storage object binding.',
+              required: "The 'bucket' and 'prefix' fields are required in the storage object binding.",
+            },
+          },
+        },
+        additionalProperties: false,
+        errorMessage: {
+          type: "The 'bindings' field must be an object",
+          additionalProperties: 'No additional properties are allowed in the bindings object',
+        },
       },
     },
     required: ['name', 'path'],

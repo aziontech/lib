@@ -150,13 +150,33 @@ describe('validateConfig (v6) functions', () => {
     ).toThrow("The 'executionEnvironment' field must be 'application' or 'firewall'");
   });
 
-  it('does not accept bindings yet (v6 has no storage)', () => {
-    expect(() =>
-      validateConfig({
-        version: 6,
-        functions: [{ name: 'a', path: './a.js', bindings: { storage: { bucket: 'b', prefix: 'p' } } }],
-      }),
-    ).toThrow();
+  describe('bindings', () => {
+    const binding = (bindings: unknown) => ({
+      version: 6,
+      functions: [{ name: 'my-function', path: './functions/index.js', bindings }],
+    });
+
+    it('accepts a storage binding with the bucket as a name or an id', () => {
+      expect(() => validateConfig(binding({ storage: { bucket: 'my-bucket', prefix: 'assets' } }))).not.toThrow();
+      expect(() => validateConfig(binding({ storage: { bucket: 10, prefix: '' } }))).not.toThrow();
+      expect(() => validateConfig(binding({}))).not.toThrow();
+    });
+
+    it('requires the bucket and the prefix of a storage binding', () => {
+      expect(() => validateConfig(binding({ storage: { bucket: 'my-bucket' } }))).toThrow(
+        "The 'bucket' and 'prefix' fields are required in the storage object binding.",
+      );
+      expect(() => validateConfig(binding({ storage: { prefix: 'assets' } }))).toThrow();
+    });
+
+    it('rejects unknown properties in the bindings and in the storage binding', () => {
+      expect(() => validateConfig(binding({ kv: {} }))).toThrow(
+        'No additional properties are allowed in the bindings object',
+      );
+      expect(() =>
+        validateConfig(binding({ storage: { bucket: 'my-bucket', prefix: 'assets', unknown: true } })),
+      ).toThrow('No additional properties are allowed in the storage object binding.');
+    });
   });
 });
 

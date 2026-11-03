@@ -6,9 +6,21 @@ import type { AzionConfigV6 } from '../../types';
  * FunctionsProcessConfigStrategy V6
  * @class FunctionsProcessConfigStrategy
  * @description This class is implementation of the Functions Process Config Strategy for API V6.
- * TODO: validate and convert `bindings` (storage) once the v6 config has storage.
  */
 class FunctionsProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
+  /**
+   * Validate storage binding reference
+   */
+  private validateStorageBinding(config: AzionConfigV6, bucketNameOrId: string | number, functionName: string) {
+    if (typeof bucketNameOrId === 'string') {
+      if (!Array.isArray(config?.storage) || !config.storage.find((storage) => storage.name === bucketNameOrId)) {
+        throw new Error(
+          `Function "${functionName}" references storage bucket "${bucketNameOrId}" which is not defined in the storage configuration.`,
+        );
+      }
+    }
+  }
+
   /**
    * Transform azion.config Functions to V6 manifest format
    */
@@ -17,14 +29,22 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
       return [];
     }
 
-    return config.functions.map((func) => ({
-      name: func.name,
-      runtime: func.runtime || 'azion_js',
-      default_args: func.defaultArgs || {},
-      execution_environment: func.executionEnvironment || 'application',
-      active: func.active ?? true,
-      path: func.path,
-    }));
+    return config.functions.map((func) => {
+      // Validate storage binding if exists
+      if (func.bindings?.storage?.bucket) {
+        this.validateStorageBinding(config, func.bindings.storage.bucket, func.name);
+      }
+
+      return {
+        name: func.name,
+        runtime: func.runtime || 'azion_js',
+        default_args: func.defaultArgs || {},
+        execution_environment: func.executionEnvironment || 'application',
+        active: func.active ?? true,
+        path: func.path,
+        bindings: func.bindings,
+      };
+    });
   }
 
   /**

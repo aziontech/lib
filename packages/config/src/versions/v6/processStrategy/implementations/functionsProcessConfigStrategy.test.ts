@@ -60,6 +60,44 @@ describe('FunctionsProcessConfigStrategy (v6)', () => {
     });
   });
 
+  describe('bindings', () => {
+    const withBinding = (bucket: string, storage?: AzionConfigV6['storage']): AzionConfigV6 => ({
+      version: 6,
+      storage,
+      functions: [
+        { name: 'my-function', path: './functions/index.js', bindings: { storage: { bucket, prefix: 'p' } } },
+      ],
+    });
+
+    it('should write the bindings to the manifest', () => {
+      const [func] = strategy.transformToManifest(
+        withBinding('my-bucket', [{ name: 'my-bucket', dir: './dist', prefix: 'p' }]),
+      );
+
+      expect(func.bindings).toEqual({ storage: { bucket: 'my-bucket', prefix: 'p' } });
+    });
+
+    it('should leave the bindings out of the manifest when the function has none', () => {
+      const [func] = strategy.transformToManifest({ version: 6, functions: [{ name: 'f', path: './f.js' }] });
+
+      expect(func.bindings).toBeUndefined();
+    });
+
+    it('should throw when the storage bucket of a binding is not defined', () => {
+      const message =
+        'Function "my-function" references storage bucket "my-bucket" which is not defined in the storage configuration.';
+
+      expect(() => strategy.transformToManifest(withBinding('my-bucket'))).toThrow(message);
+      expect(() =>
+        strategy.transformToManifest(withBinding('my-bucket', [{ name: 'other-bucket', dir: './dist' }])),
+      ).toThrow(message);
+    });
+
+    it('should not validate a bucket referenced by id', () => {
+      expect(() => strategy.transformToManifest(withBinding(10 as unknown as string))).not.toThrow();
+    });
+  });
+
   describe('transformToConfig', () => {
     it('should not set functions when the manifest has none', () => {
       const transformedPayload: AzionConfigV6 = { version: 6 };
