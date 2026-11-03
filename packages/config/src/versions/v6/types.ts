@@ -18,11 +18,25 @@ import type {
   CONNECTOR_LOAD_BALANCE_METHOD,
   CONNECTOR_SERVER_ROLES,
   CONNECTOR_TRANSPORT_POLICY,
+  CUSTOM_PAGE_ERROR_CODES,
+  CUSTOM_PAGE_TYPES,
   DEPLOYMENT_BINDING_POLICIES,
   DEPLOYMENT_POLICIES,
   ENVIRONMENT_BRANCH_TRACKING_MODES,
   ENVIRONMENT_LOG_VERBOSITY,
   ENVIRONMENT_ROBOTS_POLICIES,
+  FIREWALL_NO_ARGS_BEHAVIORS,
+  FIREWALL_RATE_LIMIT_BY,
+  FIREWALL_RATE_LIMIT_TYPES,
+  FIREWALL_RULE_CONDITIONAL,
+  FIREWALL_RULE_OPERATORS,
+  FIREWALL_WAF_MODES,
+  NETWORK_LIST_TYPES,
+  WAF_ENGINE_TYPES,
+  WAF_ENGINE_VERSIONS,
+  WAF_RULESETS,
+  WAF_SENSITIVITY,
+  WAF_THREAT_TYPES,
   WORKLOADS_ACCESS_TYPES,
 } from './constants';
 
@@ -239,6 +253,134 @@ export type AzionConnectorV6 =
     });
 
 /**
+ * Page of a custom page, served for an error code.
+ */
+export type AzionCustomPageEntryV6 = {
+  /** Error code the page is served for (or `default`) */
+  code: (typeof CUSTOM_PAGE_ERROR_CODES)[number];
+  page: {
+    type?: (typeof CUSTOM_PAGE_TYPES)[number];
+    attributes: {
+      /** Name of a connector declared in `connectors`, or its id */
+      connector: string | number;
+      /** Time to live in seconds */
+      ttl?: number;
+      /** Path the connector is requested with */
+      uri?: string | null;
+      customStatusCode?: number | null;
+    };
+  };
+};
+
+/**
+ * Custom pages of the Azion API v6.
+ */
+export type AzionCustomPageV6 = {
+  /** Custom page name */
+  name: string;
+  /** Active status */
+  active?: boolean;
+  /** Pages, one for each error code */
+  pages: AzionCustomPageEntryV6[];
+};
+
+/**
+ * Network list of the Azion API v6.
+ */
+export type AzionNetworkListV6 = {
+  /** Network list name */
+  name: string;
+  /** Type of the items: IP addresses (with or without CIDR), ASNs or country codes */
+  type: (typeof NETWORK_LIST_TYPES)[number];
+  /** Items of the list */
+  items: string[];
+  /** Active status */
+  active?: boolean;
+};
+
+/**
+ * Criterion of a firewall rule. The argument is optional (the operators `exists` and `does_not_exist` do not take one).
+ */
+export type AzionFirewallCriterionV6 = {
+  /** Variable, with or without `${}` */
+  variable: string;
+  conditional: (typeof FIREWALL_RULE_CONDITIONAL)[number];
+  operator: (typeof FIREWALL_RULE_OPERATORS)[number];
+  argument?: string | number | null;
+};
+
+/**
+ * Behavior of a firewall rule. `run_function` and `set_waf` reference a function and a waf by name or by id.
+ */
+export type AzionFirewallBehaviorV6 =
+  | { type: 'run_function'; attributes: { value: string | number } }
+  | { type: 'set_waf'; attributes: { mode: (typeof FIREWALL_WAF_MODES)[number]; wafId: string | number } }
+  | {
+      type: 'set_rate_limit';
+      attributes: {
+        type?: (typeof FIREWALL_RATE_LIMIT_TYPES)[number];
+        limitBy: (typeof FIREWALL_RATE_LIMIT_BY)[number];
+        averageRateLimit: number;
+        maximumBurstSize?: number | null;
+      };
+    }
+  | { type: (typeof FIREWALL_NO_ARGS_BEHAVIORS)[number] }
+  | {
+      type: 'set_custom_response';
+      attributes: { statusCode: number; contentType?: string; contentBody?: string };
+    };
+
+/**
+ * Rule of a firewall: either `criteria`, or `match` and `variable` together (a `matches` criterion).
+ */
+export type AzionFirewallRuleV6 = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  /** Regex the variable must match */
+  match?: string;
+  variable?: string;
+  criteria?: AzionFirewallCriterionV6[];
+  behaviors: AzionFirewallBehaviorV6[];
+};
+
+/**
+ * Firewall of the Azion API v6.
+ */
+export type AzionFirewallV6 = {
+  name: string;
+  active?: boolean;
+  debugRules?: boolean;
+  /** Enable the functions module */
+  functions?: boolean;
+  /** Enable the network protection module */
+  networkProtection?: boolean;
+  /** Enable the waf module */
+  waf?: boolean;
+  rules?: AzionFirewallRuleV6[];
+  functionsInstances?: AzionFunctionInstance[];
+};
+
+/**
+ * WAF of the Azion API v6.
+ */
+export type AzionWafV6 = {
+  name: string;
+  active?: boolean;
+  engineSettings?: {
+    engineVersion?: (typeof WAF_ENGINE_VERSIONS)[number];
+    type?: (typeof WAF_ENGINE_TYPES)[number];
+    attributes?: {
+      rulesets?: (typeof WAF_RULESETS)[number][];
+      thresholds?: {
+        threat: (typeof WAF_THREAT_TYPES)[number];
+        sensitivity?: (typeof WAF_SENSITIVITY)[number];
+      }[];
+    };
+  };
+};
+
+/**
  * Config of the Azion API v6.
  * TODO: structure placeholder. Add the remaining v6 resources once their schemas are defined.
  */
@@ -251,6 +393,14 @@ export type AzionConfigV6 = {
   functions?: AzionFunctionV6[];
   /** Storage buckets */
   storage?: AzionStorageV6[];
+  /** Custom pages */
+  customPages?: AzionCustomPageV6[];
+  /** Network lists */
+  networkList?: AzionNetworkListV6[];
+  /** WAFs */
+  waf?: AzionWafV6[];
+  /** Firewalls */
+  firewall?: AzionFirewallV6[];
   /** Connectors */
   connectors?: AzionConnectorV6[];
   /** Applications */

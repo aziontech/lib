@@ -129,3 +129,93 @@ export const CONNECTOR_SERVER_ROLES = ['primary', 'backup'] as const;
 export const CONNECTOR_HMAC_TYPE = ['aws4_hmac_sha256'] as const;
 
 export const CONNECTOR_LIVE_INGEST_REGIONS = ['us-east-1', 'us-east-2', 'br-east-1', 'br-east-2', 'br-east-3'] as const;
+
+export const FIREWALL_VARIABLES = [
+  'header_accept',
+  'header_accept_encoding',
+  'header_accept_language',
+  'header_cookie',
+  'header_origin',
+  'header_referer',
+  'header_user_agent',
+  'host',
+  'network',
+  'request_args',
+  'request_method',
+  'request_uri',
+  'scheme',
+  'client_certificate_validation',
+  'ssl_verification_status',
+] as const;
+
+export const FIREWALL_RULE_OPERATORS = [
+  'is_equal',
+  'is_not_equal',
+  'starts_with',
+  'does_not_start_with',
+  'matches',
+  'does_not_match',
+  'exists',
+  'does_not_exist',
+  'is_in_list',
+  'is_not_in_list',
+] as const;
+
+export const FIREWALL_RULE_CONDITIONAL = ['if', 'and', 'or'] as const;
+
+export const FIREWALL_NO_ARGS_BEHAVIORS = ['deny', 'drop', 'bypass'] as const;
+
+export const FIREWALL_RATE_LIMIT_TYPES = ['second', 'minute'] as const;
+
+export const FIREWALL_RATE_LIMIT_BY = ['client_ip', 'global'] as const;
+
+export const FIREWALL_WAF_MODES = ['logging', 'blocking'] as const;
+
+export const WAF_ENGINE_VERSIONS = ['2021-Q3'] as const;
+
+export const WAF_ENGINE_TYPES = ['score'] as const;
+
+export const WAF_RULESETS = [1] as const;
+
+export const WAF_THREAT_TYPES = [
+  'cross_site_scripting',
+  'directory_traversal',
+  'evading_tricks',
+  'file_upload',
+  'identified_attack',
+  'remote_file_inclusion',
+  'sql_injection',
+  'unwanted_access',
+] as const;
+
+export const WAF_SENSITIVITY = ['highest', 'high', 'medium', 'low', 'lowest'] as const;
+
+export const NETWORK_LIST_TYPES = ['ip_cidr', 'asn', 'countries'] as const;
+
+export const CUSTOM_PAGE_ERROR_CODES = [
+  'default',
+  '400',
+  '401',
+  '403',
+  '404',
+  '405',
+  '406',
+  '408',
+  '409',
+  '410',
+  '411',
+  '414',
+  '415',
+  '416',
+  '426',
+  '429',
+  '431',
+  '500',
+  '501',
+  '502',
+  '503',
+  '504',
+  '505',
+] as const;
+
+export const CUSTOM_PAGE_TYPES = ['page_connector'] as const;

@@ -139,7 +139,7 @@ describe('v6 support', () => {
 
   it('validates a v6 config and rejects fields the v6 schema does not know yet', () => {
     expect(() => validateConfig(v6Config)).not.toThrow();
-    expect(() => validateConfig({ version: 6, firewall: [] })).toThrow();
+    expect(() => validateConfig({ version: 6, purge: [] })).toThrow();
   });
 
   it('does not accept v6 on the v4 schema nor the other way around', () => {
@@ -153,6 +153,8 @@ describe('v6 support', () => {
       build: v6Config.build,
       functions: [],
       applications: [],
+      firewall: [],
+      custom_pages: [],
       environments: [],
       deployments: [],
       workloads: [],
@@ -176,12 +178,24 @@ describe('v6 support', () => {
     ]);
   });
 
+  it('processes the v6 network lists into the network_list key of the manifest', () => {
+    const manifest = processConfig({
+      ...v6Config,
+      networkList: [{ name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'] }],
+    });
+
+    expect(manifest.network_list).toEqual([
+      { name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'], active: true },
+    ]);
+  });
+
   it('forwards the version to manifest helpers', () => {
     expect(() => validateManifest({}, undefined, { version: 6 })).not.toThrow();
     expect(() => convertJsonConfigToObject('{', { version: 6 })).toThrow('Invalid JSON configuration.');
-    expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6, applications: [] });
+    expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6, firewall: [], applications: [] });
     expect(convertJsonConfigToObject(JSON.stringify(processConfig(v6Config)), { version: 6 })).toEqual({
       ...v6Config,
+      firewall: [],
       applications: [],
     });
   });

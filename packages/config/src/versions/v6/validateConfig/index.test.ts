@@ -107,8 +107,8 @@ describe('validateConfig (v6)', () => {
   });
 
   it('rejects properties the v6 schema does not know yet', () => {
-    expect(() => validateConfig({ version: 6, firewall: [] })).toThrow(
-      'Config can only contain the following properties: version, build, functions, storage, connectors, applications, workloads, environments, deployments',
+    expect(() => validateConfig({ version: 6, purge: [] })).toThrow(
+      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments',
     );
   });
 
@@ -781,6 +781,496 @@ describe('validateConfig (v6) application cache', () => {
     );
     expect(() => validateConfig(cache({ methods: { get: true } }))).toThrow(
       "No additional properties are allowed in the 'methods' object.",
+    );
+  });
+});
+
+describe('validateConfig (v6) waf and firewall', () => {
+  const waf = (extra: Record<string, unknown> = {}) => ({ version: 6, waf: [{ name: 'my-waf', ...extra }] });
+  const firewall = (extra: Record<string, unknown> = {}) => ({
+    version: 6,
+    firewall: [{ name: 'my-firewall', ...extra }],
+  });
+  const rule = (extra: Record<string, unknown> = {}) =>
+    firewall({
+      rules: [
+        {
+          name: 'rule',
+          criteria: [{ variable: 'request_uri', conditional: 'if', operator: 'starts_with', argument: '/admin' }],
+          behaviors: [{ type: 'deny' }],
+          ...extra,
+        },
+      ],
+    });
+  const behavior = (value: Record<string, unknown>) => rule({ behaviors: [value] });
+
+  describe('waf', () => {
+    it('accepts a waf with only the name, and a complete one', () => {
+      expect(() => validateConfig(waf())).not.toThrow();
+      expect(() =>
+        validateConfig(
+          waf({
+            active: false,
+            engineSettings: {
+              engineVersion: '2021-Q3',
+              type: 'score',
+              attributes: {
+                rulesets: [1],
+                thresholds: [{ threat: 'sql_injection', sensitivity: 'highest' }, { threat: 'file_upload' }],
+              },
+            },
+          }),
+        ),
+      ).not.toThrow();
+    });
+
+    it('requires the name and limits it to 250 characters', () => {
+      expect(() => validateConfig({ version: 6, waf: [{ active: true }] })).toThrow(
+        "The 'name' field is required in the WAF object",
+      );
+      expect(() => validateConfig({ version: 6, waf: [{ name: 'a'.repeat(251) }] })).toThrow();
+    });
+
+    it('does not accept id nor productVersion (they are not in the v6 request)', () => {
+      expect(() => validateConfig(waf({ id: 1 }))).toThrow('No additional properties are allowed in the WAF object');
+      expect(() => validateConfig(waf({ productVersion: '1.0' }))).toThrow(
+        'No additional properties are allowed in the WAF object',
+      );
+    });
+
+    it('validates the engine settings and the thresholds', () => {
+      const engine = (attributes: Record<string, unknown>) => waf({ engineSettings: { attributes } });
+
+      expect(() => validateConfig(waf({ engineSettings: { engineVersion: '2022-Q1' } }))).toThrow(
+        "The 'engineVersion' field must be '2021-Q3'",
+      );
+      expect(() => validateConfig(waf({ engineSettings: { type: 'rules' } }))).toThrow(
+        "The 'type' field must be 'score'",
+      );
+      expect(() => validateConfig(engine({ rulesets: [2] }))).toThrow(
+        "The 'rulesets' field must be an array containing [1]",
+      );
+      expect(() => validateConfig(engine({ thresholds: [{ sensitivity: 'low' }] }))).toThrow(
+        "The 'threat' field is required in each threshold",
+      );
+      expect(() => validateConfig(engine({ thresholds: [{ threat: 'xss' }] }))).toThrow(
+        "The 'threat' field must be one of:",
+      );
+      expect(() => validateConfig(engine({ thresholds: [{ threat: 'file_upload', sensitivity: 'max' }] }))).toThrow(
+        "The 'sensitivity' field must be one of: highest, high, medium, low, lowest",
+      );
+      expect(() =>
+        validateConfig(engine({ thresholds: Array.from({ length: 9 }, () => ({ threat: 'file_upload' })) })),
+      ).toThrow("The 'thresholds' field must be an array of threat configurations (max 8 items)");
+    });
+  });
+
+  describe('firewall', () => {
+    it('accepts a firewall with only the name, and a complete one', () => {
+      expect(() => validateConfig(firewall())).not.toThrow();
+      expect(() =>
+        validateConfig(
+          firewall({
+            active: true,
+            debugRules: false,
+            functions: true,
+            networkProtection: true,
+            waf: true,
+            rules: [
+              {
+                name: 'rule',
+                description: 'Block admin',
+                active: true,
+                criteria: [{ variable: '${host}', conditional: 'if', operator: 'exists' }],
+                behaviors: [{ type: 'bypass' }],
+              },
+            ],
+            functionsInstances: [{ name: 'instance', ref: 'fn', args: {}, active: false }],
+          }),
+        ),
+      ).not.toThrow();
+    });
+
+    it('limits the firewall name to 250 characters and the rule name to 100 (v6 API limits)', () => {
+      expect(() => validateConfig({ version: 6, firewall: [{ name: 'a'.repeat(250) }] })).not.toThrow();
+      expect(() => validateConfig({ version: 6, firewall: [{ name: 'a'.repeat(251) }] })).toThrow(
+        "The firewall configuration must have a 'name' field of type string (1-250 characters)",
+      );
+      expect(() => validateConfig(rule({ name: 'a'.repeat(100) }))).not.toThrow();
+      expect(() => validateConfig(rule({ name: 'a'.repeat(101) }))).toThrow(
+        "Each firewall rule must have a 'name' field of type string (1-100 characters)",
+      );
+      expect(() => validateConfig(rule({ description: 'a'.repeat(1001) }))).toThrow(
+        "The rule's 'description' field must be a string of at most 1000 characters",
+      );
+    });
+
+    it('requires the argument unless the operator is exists or does_not_exist', () => {
+      const criterion = (value: Record<string, unknown>) =>
+        rule({ criteria: [{ variable: 'host', conditional: 'if', ...value }] });
+      const message = "The 'argument' field is required unless the operator is 'exists' or 'does_not_exist'";
+
+      expect(() => validateConfig(criterion({ operator: 'is_equal', argument: 'example.com' }))).not.toThrow();
+      expect(() => validateConfig(criterion({ operator: 'exists' }))).not.toThrow();
+      expect(() => validateConfig(criterion({ operator: 'does_not_exist' }))).not.toThrow();
+      expect(() => validateConfig(criterion({ operator: 'is_equal' }))).toThrow(message);
+      expect(() => validateConfig(criterion({ operator: 'is_in_list' }))).toThrow(message);
+      expect(() => validateConfig(criterion({ operator: 'matches', argument: null }))).toThrow();
+    });
+
+    it('does not require the argument of a criterion and accepts null', () => {
+      const criterion = (value: Record<string, unknown>) =>
+        rule({ criteria: [{ variable: 'host', conditional: 'if', operator: 'exists', ...value }] });
+
+      expect(() => validateConfig(criterion({}))).not.toThrow();
+      expect(() => validateConfig(criterion({ argument: null }))).not.toThrow();
+      expect(() => validateConfig(criterion({ operator: 'is_in_list', argument: 12 }))).not.toThrow();
+      expect(() => validateConfig(criterion({ argument: true }))).toThrow(
+        'The argument must be a string, a number or null',
+      );
+    });
+
+    it('allows up to 10 criteria in a rule (the group limit of the v6 API)', () => {
+      const criteria = (n: number) =>
+        rule({
+          criteria: Array.from({ length: n }, () => ({ variable: 'host', conditional: 'and', operator: 'exists' })),
+        });
+
+      expect(() => validateConfig(criteria(10))).not.toThrow();
+      expect(() => validateConfig(criteria(11))).toThrow();
+    });
+
+    it('requires either criteria or match and variable together', () => {
+      expect(() =>
+        validateConfig(
+          firewall({ rules: [{ name: 'rule', match: '^/', variable: 'request_uri', behaviors: [{ type: 'drop' }] }] }),
+        ),
+      ).not.toThrow();
+      expect(() =>
+        validateConfig(firewall({ rules: [{ name: 'rule', match: '^/', behaviors: [{ type: 'drop' }] }] })),
+      ).toThrow();
+      expect(() => validateConfig(rule({ match: '^/', variable: 'request_uri' }))).toThrow();
+    });
+
+    it('accepts only the variables, operators and conditionals of the firewall', () => {
+      const criterion = (value: Record<string, unknown>) =>
+        rule({ criteria: [{ variable: 'host', conditional: 'if', operator: 'exists', ...value }] });
+
+      expect(() => validateConfig(criterion({ variable: '${uri}' }))).toThrow();
+      expect(() => validateConfig(criterion({ operator: 'contains' }))).toThrow("The 'operator' field must be one of:");
+      expect(() => validateConfig(criterion({ conditional: 'not' }))).toThrow(
+        "The 'conditional' field must be one of: if, and, or",
+      );
+    });
+
+    describe('behaviors', () => {
+      it('accepts deny, drop and bypass (new in v6)', () => {
+        ['deny', 'drop', 'bypass'].forEach((type) => expect(() => validateConfig(behavior({ type }))).not.toThrow());
+        expect(() => validateConfig(behavior({ type: 'allow' }))).toThrow();
+      });
+
+      it('validates set_waf: the mode is logging or blocking in v6 (learning in v4)', () => {
+        expect(() =>
+          validateConfig(behavior({ type: 'set_waf', attributes: { mode: 'logging', wafId: 'my-waf' } })),
+        ).not.toThrow();
+        expect(() =>
+          validateConfig(behavior({ type: 'set_waf', attributes: { mode: 'blocking', wafId: 1 } })),
+        ).not.toThrow();
+        expect(() =>
+          validateConfig(behavior({ type: 'set_waf', attributes: { mode: 'learning', wafId: 'my-waf' } })),
+        ).toThrow('The mode must be one of: logging, blocking');
+        expect(() => validateConfig(behavior({ type: 'set_waf', attributes: { mode: 'logging' } }))).toThrow(
+          "Both 'mode' and 'wafId' fields are required in set_waf attributes",
+        );
+      });
+
+      it('validates set_rate_limit: integers, and only limitBy and averageRateLimit are required', () => {
+        const rateLimit = (attributes: Record<string, unknown>) => behavior({ type: 'set_rate_limit', attributes });
+
+        expect(() => validateConfig(rateLimit({ limitBy: 'global', averageRateLimit: 10 }))).not.toThrow();
+        expect(() =>
+          validateConfig(
+            rateLimit({ type: 'minute', limitBy: 'client_ip', averageRateLimit: 10, maximumBurstSize: null }),
+          ),
+        ).not.toThrow();
+        expect(() => validateConfig(rateLimit({ limitBy: 'global', averageRateLimit: '10' }))).toThrow(
+          'The averageRateLimit must be an integer between 1 and 2147483647',
+        );
+        expect(() => validateConfig(rateLimit({ limitBy: 'global', averageRateLimit: 0 }))).toThrow();
+        expect(() =>
+          validateConfig(rateLimit({ limitBy: 'global', averageRateLimit: 5, maximumBurstSize: '1' })),
+        ).toThrow('The maximumBurstSize must be an integer between 1 and 2147483647 or null');
+        expect(() => validateConfig(rateLimit({ limitBy: 'global' }))).toThrow(
+          "The 'limitBy' and 'averageRateLimit' fields are required in set_rate_limit behavior attributes.",
+        );
+        expect(() => validateConfig(rateLimit({ type: 'hour', limitBy: 'global', averageRateLimit: 5 }))).toThrow(
+          'The rate limit type must be one of: second, minute',
+        );
+      });
+
+      it('validates set_custom_response: an integer status code and the limits of the content', () => {
+        const custom = (attributes: Record<string, unknown>) => behavior({ type: 'set_custom_response', attributes });
+
+        expect(() => validateConfig(custom({ statusCode: 403 }))).not.toThrow();
+        expect(() =>
+          validateConfig(custom({ statusCode: 200, contentType: 'text/plain', contentBody: 'a'.repeat(500) })),
+        ).not.toThrow();
+        expect(() => validateConfig(custom({ statusCode: '403' }))).toThrow(
+          'The statusCode must be an integer between 200 and 499',
+        );
+        expect(() => validateConfig(custom({ statusCode: 500 }))).toThrow();
+        expect(() => validateConfig(custom({ statusCode: 403, contentBody: 'a'.repeat(501) }))).toThrow(
+          'The contentBody must be a string of at most 500 characters',
+        );
+        expect(() => validateConfig(custom({ statusCode: 403, contentType: 'a'.repeat(256) }))).toThrow(
+          'The contentType must be a string of at most 255 characters',
+        );
+        expect(() => validateConfig(custom({}))).toThrow("The 'statusCode' field is required in setCustomResponse");
+      });
+
+      it('validates run_function', () => {
+        expect(() => validateConfig(behavior({ type: 'run_function', attributes: { value: 'fn' } }))).not.toThrow();
+        expect(() => validateConfig(behavior({ type: 'run_function', attributes: { value: 7 } }))).not.toThrow();
+        expect(() => validateConfig(behavior({ type: 'run_function', attributes: { value: 0 } }))).toThrow();
+        expect(() => validateConfig(behavior({ type: 'run_function', attributes: {} }))).toThrow(
+          "The 'value' field is required in run_function behavior attributes.",
+        );
+      });
+
+      it('requires between 1 and 10 behaviors', () => {
+        expect(() => validateConfig(rule({ behaviors: [] }))).toThrow(
+          'The behaviors must be an array with 1-10 items.',
+        );
+        expect(() =>
+          validateConfig(rule({ behaviors: Array.from({ length: 11 }, () => ({ type: 'bypass' })) })),
+        ).toThrow('The behaviors must be an array with 1-10 items.');
+      });
+    });
+
+    describe('functionsInstances', () => {
+      const instance = (value: Record<string, unknown>) => firewall({ functionsInstances: [value] });
+
+      it('accepts active (the v6 request has it) and limits the name to 100 characters', () => {
+        expect(() => validateConfig(instance({ name: 'i', ref: 'fn', active: false }))).not.toThrow();
+        expect(() => validateConfig(instance({ name: 'a'.repeat(100), ref: 10 }))).not.toThrow();
+        expect(() => validateConfig(instance({ name: 'a'.repeat(101), ref: 'fn' }))).toThrow(
+          'The name must be a string between 1 and 100 characters long',
+        );
+      });
+
+      it('requires name and ref and rejects unknown properties', () => {
+        expect(() => validateConfig(instance({ name: 'i' }))).toThrow();
+        expect(() => validateConfig(instance({ name: 'i', ref: 'fn', unknown: true }))).toThrow(
+          'No additional properties are allowed in the firewallFunctionsInstance object',
+        );
+      });
+    });
+  });
+});
+
+describe('validateConfig (v6) networkList', () => {
+  const list = (extra: Record<string, unknown> = {}) => ({
+    version: 6,
+    networkList: [{ name: 'my-list', type: 'ip_cidr', items: ['10.0.0.0/8'], ...extra }],
+  });
+
+  it('accepts every type of list, with and without active', () => {
+    expect(() => validateConfig(list())).not.toThrow();
+    expect(() => validateConfig(list({ type: 'asn', items: ['13335'], active: false }))).not.toThrow();
+    expect(() => validateConfig(list({ type: 'countries', items: ['BR', 'US'] }))).not.toThrow();
+  });
+
+  it('requires name, type and items', () => {
+    const message = "The 'name', 'type' and 'items' fields are required in each network list item.";
+
+    expect(() => validateConfig({ version: 6, networkList: [{ type: 'asn', items: ['1'] }] })).toThrow(message);
+    expect(() => validateConfig({ version: 6, networkList: [{ name: 'my-list', items: ['1'] }] })).toThrow(message);
+    expect(() => validateConfig({ version: 6, networkList: [{ name: 'my-list', type: 'asn' }] })).toThrow(message);
+  });
+
+  it('rejects an unknown type and limits the name to 250 characters', () => {
+    expect(() => validateConfig(list({ type: 'domain' }))).toThrow(
+      "The 'type' field must be a string. Accepted values are 'ip_cidr', 'asn' or 'countries'.",
+    );
+    expect(() => validateConfig(list({ name: 'a'.repeat(250) }))).not.toThrow();
+    expect(() => validateConfig(list({ name: 'a'.repeat(251) }))).toThrow(
+      "The 'name' field must be a string between 1 and 250 characters.",
+    );
+  });
+
+  it('requires 1 to 20000 items of 1 to 250 characters each (v6 API)', () => {
+    expect(() => validateConfig(list({ items: [] }))).toThrow(
+      "The 'items' field must be an array of strings with 1-20000 items.",
+    );
+    expect(() => validateConfig(list({ items: Array.from({ length: 20000 }, (_, i) => `10.0.${i}.1`) }))).not.toThrow();
+    expect(() => validateConfig(list({ items: Array.from({ length: 20001 }, (_, i) => `10.0.${i}.1`) }))).toThrow();
+    expect(() => validateConfig(list({ items: [''] }))).toThrow(
+      "Each item in 'items' must be a string between 1 and 250 characters.",
+    );
+    expect(() => validateConfig(list({ items: ['a'.repeat(251)] }))).toThrow();
+    expect(() => validateConfig(list({ items: [13335] }))).toThrow();
+  });
+
+  it('requires the ASN items to be digits only', () => {
+    expect(() => validateConfig(list({ type: 'asn', items: ['13335', '1'] }))).not.toThrow();
+    expect(() => validateConfig(list({ type: 'asn', items: ['AS13335'] }))).toThrow(
+      'Each ASN item must be a number composed of digits only.',
+    );
+    expect(() => validateConfig(list({ type: 'asn', items: ['13335', '12.5'] }))).toThrow();
+  });
+
+  it('requires the country items to be two uppercase alphanumeric characters', () => {
+    expect(() => validateConfig(list({ type: 'countries', items: ['BR', 'US', 'D3'] }))).not.toThrow();
+    expect(() => validateConfig(list({ type: 'countries', items: ['br'] }))).toThrow(
+      'Each country item must be a two-character uppercase alphanumeric code (ISO 3166-1 alpha-2).',
+    );
+    expect(() => validateConfig(list({ type: 'countries', items: ['BRA'] }))).toThrow();
+    expect(() => validateConfig(list({ type: 'countries', items: ['B'] }))).toThrow();
+  });
+
+  it('does not check the format of the ip_cidr items (IPs, CIDRs and expiration dates)', () => {
+    expect(() =>
+      validateConfig(
+        list({
+          items: ['192.168.0.1', '192.168.0.1/24', '2001:db8::/32', '192.168.0.1 --LT2025-05-29T12:25:23Z'],
+        }),
+      ),
+    ).not.toThrow();
+  });
+
+  it('rejects unknown properties', () => {
+    expect(() => validateConfig(list({ unknown: true }))).toThrow(
+      'No additional properties are allowed in network list items.',
+    );
+  });
+});
+
+describe('validateConfig (v6) customPages', () => {
+  const entry = (extra: Record<string, unknown> = {}, attributes: Record<string, unknown> = {}) => ({
+    code: '404',
+    page: { attributes: { connector: 'my-connector', ...attributes }, ...extra },
+  });
+  const customPages = (pages: unknown[], extra: Record<string, unknown> = {}) => ({
+    version: 6,
+    customPages: [{ name: 'errors', pages, ...extra }],
+  });
+
+  it('accepts a minimal and a complete custom page', () => {
+    expect(() => validateConfig(customPages([entry()]))).not.toThrow();
+    expect(() =>
+      validateConfig(
+        customPages(
+          [
+            entry({ type: 'page_connector' }, { connector: 10, ttl: 300, uri: '/error.html', customStatusCode: 200 }),
+            { code: 'default', page: { attributes: { connector: 'my-connector', uri: null, customStatusCode: null } } },
+          ],
+          { active: false },
+        ),
+      ),
+    ).not.toThrow();
+  });
+
+  it('requires name and pages, and at least one page', () => {
+    const message = "The 'name' and 'pages' fields are required in each custom page";
+
+    expect(() => validateConfig({ version: 6, customPages: [{ pages: [entry()] }] })).toThrow(message);
+    expect(() => validateConfig({ version: 6, customPages: [{ name: 'errors' }] })).toThrow(message);
+    expect(() => validateConfig(customPages([]))).toThrow(
+      "The 'pages' field must be an array of 1 to 23 page configurations",
+    );
+  });
+
+  it('allows up to 23 pages, one for each error code (v6 API limit)', () => {
+    const codes = [
+      'default',
+      '400',
+      '401',
+      '403',
+      '404',
+      '405',
+      '406',
+      '408',
+      '409',
+      '410',
+      '411',
+      '414',
+      '415',
+      '416',
+      '426',
+      '429',
+      '431',
+      '500',
+      '501',
+      '502',
+      '503',
+      '504',
+      '505',
+    ];
+    const pages = codes.map((code) => ({ ...entry(), code }));
+
+    expect(() => validateConfig(customPages(pages))).not.toThrow();
+    expect(() => validateConfig(customPages([...pages, entry()]))).toThrow(
+      "The 'pages' field must be an array of 1 to 23 page configurations",
+    );
+  });
+
+  it('accepts only the error codes of the API', () => {
+    expect(() => validateConfig(customPages([{ ...entry(), code: '418' }]))).toThrow(
+      "The 'code' field must be a valid error code",
+    );
+    expect(() => validateConfig(customPages([{ ...entry(), code: 404 }]))).toThrow();
+  });
+
+  it('requires the connector, as a name or an id between 1 and 2147483647', () => {
+    expect(() => validateConfig(customPages([entry({}, { connector: 1 })]))).not.toThrow();
+    expect(() => validateConfig(customPages([entry({}, { connector: 2147483647 })]))).not.toThrow();
+    expect(() => validateConfig(customPages([entry({}, { connector: 0 })]))).toThrow();
+    expect(() => validateConfig(customPages([entry({}, { connector: 2147483648 })]))).toThrow();
+    expect(() => validateConfig(customPages([{ code: '404', page: { attributes: { ttl: 1 } } }]))).toThrow(
+      "The 'connector' field is required in page attributes",
+    );
+  });
+
+  it('validates the ttl and the custom status code', () => {
+    expect(() => validateConfig(customPages([entry({}, { ttl: 31536000 })]))).not.toThrow();
+    expect(() => validateConfig(customPages([entry({}, { ttl: 31536001 })]))).toThrow(
+      "The 'ttl' field must be an integer between 0 and 31536000",
+    );
+    expect(() => validateConfig(customPages([entry({}, { ttl: -1 })]))).toThrow();
+    expect(() => validateConfig(customPages([entry({}, { customStatusCode: 600 })]))).toThrow(
+      "The 'customStatusCode' field must be an integer between 100 and 599 or null",
+    );
+    expect(() => validateConfig(customPages([entry({}, { customStatusCode: 99 })]))).toThrow();
+  });
+
+  it('validates the uri: 1 to 250 characters or null, with no pattern (v6 API)', () => {
+    expect(() => validateConfig(customPages([entry({}, { uri: '/errors/404.html' })]))).not.toThrow();
+    expect(() => validateConfig(customPages([entry({}, { uri: 'errors/404 page.html' })]))).not.toThrow();
+    expect(() => validateConfig(customPages([entry({}, { uri: 'a'.repeat(250) })]))).not.toThrow();
+    expect(() => validateConfig(customPages([entry({}, { uri: 'a'.repeat(251) })]))).toThrow(
+      "The 'uri' field must be a string between 1 and 250 characters or null",
+    );
+    expect(() => validateConfig(customPages([entry({}, { uri: '' })]))).toThrow();
+  });
+
+  it('accepts only the page_connector type', () => {
+    expect(() => validateConfig(customPages([entry({ type: 'page_static' })]))).toThrow(
+      "The 'type' field must be a valid page type",
+    );
+  });
+
+  it('limits the name to 255 characters and rejects unknown properties', () => {
+    expect(() =>
+      validateConfig({ version: 6, customPages: [{ name: 'a'.repeat(255), pages: [entry()] }] }),
+    ).not.toThrow();
+    expect(() => validateConfig({ version: 6, customPages: [{ name: 'a'.repeat(256), pages: [entry()] }] })).toThrow(
+      "The 'name' field must be a string between 1 and 255 characters",
+    );
+    expect(() => validateConfig(customPages([entry()], { unknown: true }))).toThrow(
+      'No additional properties are allowed in custom page objects',
+    );
+    expect(() => validateConfig(customPages([{ ...entry(), unknown: true }]))).toThrow(
+      'No additional properties are allowed in page entry',
     );
   });
 });
