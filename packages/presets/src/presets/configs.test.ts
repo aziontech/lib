@@ -40,12 +40,13 @@ describe('preset configs by API version', () => {
   });
 
   describe('v6', () => {
-    it('is declared by javascript and react only for now', () => {
+    it('is declared by javascript, opennextjs and react only for now', () => {
       const withV6 = presets
         .filter((preset) => preset.configs?.[6])
         .map((preset) => preset.metadata.name)
         .sort();
-      expect(withV6).toEqual(['javascript', 'react']);
+      expect(withV6).toEqual(['javascript', 'opennextjs', 'react']);
+      expect(getPresetApiVersions(byName('opennextjs'))).toEqual([3, 4, 6]);
       expect(getPresetApiVersions(byName('javascript'))).toEqual([3, 4, 6]);
       expect(getPresetApiVersions(byName('react'))).toEqual([3, 4, 6]);
       expect(() => resolvePresetConfig(byName('vue'), 6)).toThrow('does not support config version 6');
@@ -70,7 +71,7 @@ describe('preset configs by API version', () => {
       expect(v6.applications[0].modules.functions.enabled).toBe(true);
     });
 
-    it('react: validates and has the same storage, connectors and rules in the manifest as the v4 config', () => {
+    it('react: validates and has the same storage, connectors and application in the manifest as the v4 config', () => {
       const config = resolvePresetConfig(byName('react'), 6);
       expect(() => validateConfig(config)).not.toThrow();
 
@@ -80,10 +81,27 @@ describe('preset configs by API version', () => {
       expect(v6.version).toBe(6);
       expect(v6.storage).toEqual(v4.storage);
       expect(v6.connectors).toEqual(v4.connectors);
-      expect(v6.applications[0].rules).toEqual(v4.applications[0].rules);
+      expect(v6.applications).toEqual(v4.applications);
+      expect(v6.applications[0].cache_settings).toHaveLength(1);
       // the rules deliver the static assets from the storage connector
       expect(JSON.stringify(v6.applications[0].rules)).toContain('"set_connector"');
       expect(v6.connectors.map((connector: { name: string }) => connector.name)).toEqual(['$CONNECTOR_NAME']);
+    });
+
+    it('opennextjs: validates and has the same storage, connectors, functions and application in the manifest as the v4 config', () => {
+      const config = resolvePresetConfig(byName('opennextjs'), 6);
+      expect(() => validateConfig(config)).not.toThrow();
+
+      const v4 = processConfig(resolvePresetConfig(byName('opennextjs'), 4));
+      const v6 = processConfig(config);
+
+      expect(v6.version).toBe(6);
+      expect(v6.storage).toEqual(v4.storage);
+      expect(v6.connectors).toEqual(v4.connectors);
+      // the function keeps the storage binding
+      expect(v6.functions).toEqual(v4.functions);
+      expect(v6.functions[0].bindings).toEqual({ storage: { bucket: '$BUCKET_NAME', prefix: '$BUCKET_PREFIX' } });
+      expect(v6.applications).toEqual(v4.applications);
     });
 
     it('javascript: binds the workload to an environment and a deployment declared in the config', () => {

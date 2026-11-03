@@ -1,7 +1,6 @@
 import type { AzionConfigV6 } from '@aziontech/config';
 import { createSPARules } from '@aziontech/config/rules';
 
-// TODO: add the cache settings of the application once the v6 config has them
 const config: AzionConfigV6 = {
   version: 6,
   build: {
@@ -29,6 +28,17 @@ const config: AzionConfigV6 = {
   applications: [
     {
       name: '$APPLICATION_NAME',
+      cache: [
+        {
+          name: '$APPLICATION_NAME',
+          browser: {
+            maxAgeSeconds: 7200,
+          },
+          edge: {
+            maxAgeSeconds: 7200,
+          },
+        },
+      ],
       rules: createSPARules({
         connector: '$CONNECTOR_NAME',
         application: '$APPLICATION_NAME',
