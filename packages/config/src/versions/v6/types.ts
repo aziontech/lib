@@ -46,8 +46,17 @@ import type {
 export type AzionFunctionV6 = AzionFunction;
 
 /**
+ * Device group of an application of the Azion API v6.
+ */
+export type AzionDeviceGroupV6 = {
+  /** Device group name */
+  name: string;
+  /** User agent regex pattern */
+  userAgent: string;
+};
+
+/**
  * Application of the Azion API v6.
- * TODO: add the remaining resources of an application (device groups).
  */
 export type AzionApplicationV6 = {
   /** Application name */
@@ -70,6 +79,8 @@ export type AzionApplicationV6 = {
   rules?: AzionRules;
   /** Function instances */
   functionsInstances?: AzionFunctionInstance[];
+  /** Device groups */
+  deviceGroups?: AzionDeviceGroupV6[];
 };
 
 /**

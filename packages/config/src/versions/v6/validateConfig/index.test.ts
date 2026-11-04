@@ -281,6 +281,32 @@ describe('validateConfig (v6) application functionsInstances and rules', () => {
       ).toThrow();
     });
   });
+
+  describe('deviceGroups', () => {
+    it('accepts a device group and requires name and userAgent', () => {
+      expect(() =>
+        validateConfig(app({ deviceGroups: [{ name: 'mobile', userAgent: 'Android|iPhone' }] })),
+      ).not.toThrow();
+      expect(() => validateConfig(app({ deviceGroups: [{ name: 'mobile' }] }))).toThrow(
+        "The 'name' and 'userAgent' fields are required in each device group",
+      );
+    });
+
+    it('limits the name to 250 characters and the user agent to 512 (DeviceGroupRequest)', () => {
+      expect(() =>
+        validateConfig(app({ deviceGroups: [{ name: 'a'.repeat(250), userAgent: 'u'.repeat(512) }] })),
+      ).not.toThrow();
+      expect(() => validateConfig(app({ deviceGroups: [{ name: 'a'.repeat(251), userAgent: 'u' }] }))).toThrow();
+      expect(() => validateConfig(app({ deviceGroups: [{ name: 'a', userAgent: 'u'.repeat(513) }] }))).toThrow();
+      expect(() => validateConfig(app({ deviceGroups: [{ name: '', userAgent: 'u' }] }))).toThrow();
+    });
+
+    it('rejects unknown properties in a device group', () => {
+      expect(() => validateConfig(app({ deviceGroups: [{ name: 'a', userAgent: 'u', id: 1 }] }))).toThrow(
+        'No additional properties are allowed in device group objects',
+      );
+    });
+  });
 });
 
 describe('validateConfig (v6) workloads, environments and deployments', () => {

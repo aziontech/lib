@@ -1,6 +1,7 @@
 import ProcessConfigStrategy from '../../../../shared/processStrategy/processConfigStrategy';
 import type { AzionApplicationV6, AzionConfigV6 } from '../../../types';
 import CacheProcessConfigStrategy from './cacheProcessConfigStrategy';
+import DeviceGroupsProcessConfigStrategy from './deviceGroupsProcessConfigStrategy';
 import FunctionInstancesProcessConfigStrategy from './functionInstancesProcessConfigStrategy';
 import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
 
@@ -8,12 +9,12 @@ import RulesProcessConfigStrategy from './rulesProcessConfigStrategy';
  * ApplicationProcessConfigStrategy
  * @class ApplicationProcessConfigStrategy
  * @description Converts the v6 applications between the config and the manifest.
- * TODO: convert the remaining resources of an application (device groups).
  */
 class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   private cacheStrategy = new CacheProcessConfigStrategy();
   private rulesStrategy = new RulesProcessConfigStrategy();
   private functionInstancesStrategy = new FunctionInstancesProcessConfigStrategy();
+  private deviceGroupsStrategy = new DeviceGroupsProcessConfigStrategy();
 
   transformToManifest(config: AzionConfigV6) {
     if (!config.applications || !Array.isArray(config.applications)) {
@@ -58,6 +59,10 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
         );
       }
 
+      if (app.deviceGroups) {
+        application.device_groups = this.deviceGroupsStrategy.transformToManifest(app.deviceGroups);
+      }
+
       return application;
     });
   }
@@ -83,6 +88,7 @@ class ApplicationProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
       functionsInstances: app.functions_instances
         ? this.functionInstancesStrategy.transformToConfig(app.functions_instances)
         : undefined,
+      deviceGroups: app.device_groups ? this.deviceGroupsStrategy.transformToConfig(app.device_groups) : undefined,
     }));
 
     return transformedPayload.applications;

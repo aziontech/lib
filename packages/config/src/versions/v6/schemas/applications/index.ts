@@ -137,7 +137,7 @@ const createRuleSchema = (isRequestPhase = false) => ({
  * Based on v4, checked against the requests of the v6 API: `name` has at most 100 characters in an application
  * (`ApplicationRequest`) and in a rule (`RequestPhaseRuleRequest`, `ResponsePhaseRuleRequest`).
  * Cache: `maxAgeSeconds` is between 0 and 31536000 (1 year) and `tieredCache.topology` is not nullable, as in `CacheSettingRequest`.
- * TODO: add the remaining resources of an application (device groups).
+ * Device groups: same constraints as v4 (`DeviceGroupRequest`).
  */
 const applicationsSchema = {
   type: 'array',
@@ -397,6 +397,35 @@ const applicationsSchema = {
           },
         },
         additionalProperties: false,
+      },
+      deviceGroups: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 250,
+              pattern: '.*',
+              errorMessage: "The 'name' field must be a string between 1 and 250 characters",
+            },
+            userAgent: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 512,
+              pattern: '.*',
+              errorMessage: "The 'userAgent' field must be a valid regex pattern between 1 and 512 characters",
+            },
+          },
+          required: ['name', 'userAgent'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in device group objects',
+            required: "The 'name' and 'userAgent' fields are required in each device group",
+          },
+        },
+        errorMessage: "The 'deviceGroups' field must be an array of device group objects",
       },
       functionsInstances: {
         type: 'array',

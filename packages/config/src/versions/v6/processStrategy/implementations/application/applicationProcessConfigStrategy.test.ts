@@ -123,6 +123,27 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       expect(application.modules.functions.enabled).toBe(true);
     });
 
+    it('should round trip the device groups through the manifest', () => {
+      const deviceGroups = [{ name: 'mobile', userAgent: 'Android|iPhone' }];
+      const [application] = strategy.transformToManifest({
+        version: 6,
+        applications: [{ name: 'my-app', deviceGroups }],
+      });
+
+      expect(application.device_groups).toEqual([{ name: 'mobile', user_agent: 'Android|iPhone' }]);
+
+      const transformedPayload: AzionConfigV6 = { version: 6 };
+      strategy.transformToConfig({ applications: [application] }, transformedPayload);
+
+      expect(transformedPayload.applications?.[0].deviceGroups).toEqual(deviceGroups);
+    });
+
+    it('should not write device_groups when the application has none', () => {
+      const [application] = strategy.transformToManifest({ version: 6, applications: [{ name: 'my-app' }] });
+
+      expect(application).not.toHaveProperty('device_groups');
+    });
+
     it('should not write rules and function instances when the application has none', () => {
       const [application] = strategy.transformToManifest({ version: 6, applications: [{ name: 'my-app' }] });
 
