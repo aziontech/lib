@@ -52,6 +52,7 @@ const networkListSchema = {
             items: {
               type: 'array',
               items: {
+                type: 'string',
                 pattern: '^[0-9]+$',
                 errorMessage: 'Each ASN item must be a number composed of digits only.',
               },
@@ -66,6 +67,7 @@ const networkListSchema = {
             items: {
               type: 'array',
               items: {
+                type: 'string',
                 pattern: '^[A-Z0-9]{2}$',
                 errorMessage:
                   'Each country item must be a two-character uppercase alphanumeric code (ISO 3166-1 alpha-2).',
