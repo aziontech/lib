@@ -7,6 +7,7 @@ import CustomPagesProcessConfigStrategy from './implementations/customPagesProce
 import DeploymentProcessConfigStrategy from './implementations/deploymentProcessConfigStrategy';
 import EnvironmentProcessConfigStrategy from './implementations/environmentProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
+import PurgeProcessConfigStrategy from './implementations/purgeProcessConfigStrategy';
 import FirewallProcessConfigStrategy from './implementations/secure/firewallProcessConfigStrategy';
 import NetworkListProcessConfigStrategy from './implementations/secure/networkListProcessConfigStrategy';
 import WafProcessConfigStrategy from './implementations/secure/wafProcessConfigStrategy';
@@ -29,7 +30,7 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('environments', new EnvironmentProcessConfigStrategy());
   processConfigContext.setStrategy('deployments', new DeploymentProcessConfigStrategy());
   processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
-  // TODO: register the other v6 strategies (setStrategy) as the v6 resources are defined
+  processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
   return processConfigContext;
 }
 

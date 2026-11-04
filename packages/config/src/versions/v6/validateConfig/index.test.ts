@@ -107,8 +107,8 @@ describe('validateConfig (v6)', () => {
   });
 
   it('rejects properties the v6 schema does not know yet', () => {
-    expect(() => validateConfig({ version: 6, purge: [] })).toThrow(
-      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments',
+    expect(() => validateConfig({ version: 6, kv: [] })).toThrow(
+      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments, purge',
     );
   });
 
@@ -1298,5 +1298,61 @@ describe('validateConfig (v6) customPages', () => {
     expect(() => validateConfig(customPages([{ ...entry(), unknown: true }]))).toThrow(
       'No additional properties are allowed in page entry',
     );
+  });
+});
+
+describe('validateConfig (v6) purge', () => {
+  describe('purge', () => {
+    it('accepts the three purge types and both layers', () => {
+      expect(() =>
+        validateConfig({
+          version: 6,
+          purge: [
+            { type: 'url', items: ['https://example.com/a'], layer: 'cache' },
+            { type: 'cachekey', items: ['example.com/a'], layer: 'tiered_cache' },
+            { type: 'wildcard', items: ['https://example.com/*'] },
+          ],
+        }),
+      ).not.toThrow();
+    });
+
+    it('requires type and items', () => {
+      expect(() => validateConfig({ version: 6, purge: [{ type: 'url' }] })).toThrow(
+        "The 'type and items' fields are required in each purge item.",
+      );
+      expect(() => validateConfig({ version: 6, purge: [{ items: ['a'] }] })).toThrow(
+        "The 'type and items' fields are required in each purge item.",
+      );
+    });
+
+    it('rejects an unknown type or layer', () => {
+      expect(() => validateConfig({ version: 6, purge: [{ type: 'tag', items: ['a'] }] })).toThrow(
+        "The 'type' field must be either 'url', 'cachekey' or 'wildcard'.",
+      );
+      expect(() => validateConfig({ version: 6, purge: [{ type: 'url', items: ['a'], layer: 'edge' }] })).toThrow(
+        "The 'layer' field must be either 'cache' or 'tiered_cache'.",
+      );
+    });
+
+    it('requires at least one item and rejects empty items (PurgeRequest)', () => {
+      expect(() => validateConfig({ version: 6, purge: [{ type: 'url', items: [] }] })).toThrow(
+        'The purge items array cannot be empty. At least one item must be specified.',
+      );
+      expect(() => validateConfig({ version: 6, purge: [{ type: 'url', items: [''] }] })).toThrow(
+        "Each item in 'items' must have at least 1 character.",
+      );
+    });
+
+    it('rejects unknown properties in a purge item', () => {
+      expect(() => validateConfig({ version: 6, purge: [{ type: 'url', items: ['a'], name: 'x' }] })).toThrow(
+        'No additional properties are allowed in purge items.',
+      );
+    });
+
+    it('rejects a purge that is not an array', () => {
+      expect(() => validateConfig({ version: 6, purge: {} })).toThrow(
+        "The 'purge' field must be an array of purge items.",
+      );
+    });
   });
 });

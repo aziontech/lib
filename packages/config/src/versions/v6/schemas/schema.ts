@@ -7,13 +7,13 @@ import environmentsSchema from './environments';
 import firewallSchema from './firewall';
 import functionsSchema from './functions';
 import networkListSchema from './networkList';
+import purgeSchema from './purge';
 import storageSchema from './storage';
 import wafSchema from './waf';
 import workloadsSchema from './workloads';
 
 /**
  * JSON Schema of the v6 config.
- * TODO: only `version`, `build`, `functions`, `storage`, `connectors`, `customPages`, `networkList`, `waf`, `firewall`, `applications`, `workloads`, `environments` and `deployments` are accepted until the schemas of the other v6 resources are defined.
  */
 const azionConfigSchema = {
   $id: 'azionConfig',
@@ -34,11 +34,12 @@ const azionConfigSchema = {
         workloads: workloadsSchema,
         environments: environmentsSchema,
         deployments: deploymentsSchema,
+        purge: purgeSchema,
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments',
+          'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments, purge',
         type: 'Configuration must be an object',
       },
     },

@@ -392,8 +392,19 @@ export type AzionWafV6 = {
 };
 
 /**
+ * Purge of the Azion API v6.
+ */
+export type AzionPurgeV6 = {
+  /** Items to be purged */
+  items: string[];
+  /** Cache layer to be purged */
+  layer?: 'cache' | 'tiered_cache';
+  /** Purge type */
+  type: 'url' | 'cachekey' | 'wildcard';
+};
+
+/**
  * Config of the Azion API v6.
- * TODO: structure placeholder. Add the remaining v6 resources once their schemas are defined.
  */
 export type AzionConfigV6 = {
   /** Azion API version this config targets. */
@@ -422,4 +433,6 @@ export type AzionConfigV6 = {
   environments?: AzionEnvironmentV6[];
   /** Deployments */
   deployments?: AzionDeploymentV6[];
+  /** Purge configurations */
+  purge?: AzionPurgeV6[];
 };
