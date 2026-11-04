@@ -6,7 +6,8 @@ import type { AzionConfigV6, AzionWorkloadV6 } from '../../types';
  * @class WorkloadProcessConfigStrategy
  * @description Converts the v6 workloads between the config and the manifest.
  * A binding references an environment and a deployment by the name it has in the config. The manifest keeps that name
- * in `environment_id` and `deployment_id`, which the Azion CLI resolves to the ids of the API.
+ * in `environment_name` and `deployment_name`: the Azion CLI creates the environment and the deployment, so it is the
+ * one that knows their ids and sends them to the API.
  */
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   /**
@@ -62,8 +63,8 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
             }
           : undefined,
         bindings: (workload.bindings ?? []).map((binding) => ({
-          environment_id: binding.environment,
-          deployment_id: binding.deployment,
+          environment_name: binding.environment,
+          deployment_name: binding.deployment,
           domains: (binding.domains ?? []).map((item) => ({
             domain: item.domain,
             certificate: item.certificate ?? null,
@@ -109,8 +110,8 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
       bindings: workload.bindings?.map(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (binding: any) => ({
-          environment: binding.environment_id,
-          deployment: binding.deployment_id,
+          environment: binding.environment_name,
+          deployment: binding.deployment_name,
           domains: binding.domains,
         }),
       ),

@@ -138,7 +138,7 @@ describe('preset configs by API version', () => {
         expect.objectContaining({ name: '$WORKLOAD_NAME', active: true, infrastructure: 1 }),
       );
       expect(manifest.workloads[0].bindings).toEqual([
-        { environment_id: '$ENVIRONMENT_NAME', deployment_id: '$DEPLOYMENT_NAME', domains: [] },
+        { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
       ]);
     });
   });

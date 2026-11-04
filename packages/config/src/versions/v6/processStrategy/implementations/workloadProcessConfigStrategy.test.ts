@@ -88,14 +88,23 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
       );
       expect(workload.bindings).toEqual([
         {
-          environment_id: 'production',
-          deployment_id: 'default-deployment',
+          environment_name: 'production',
+          deployment_name: 'default-deployment',
           domains: [
             { domain: 'example.com', certificate: 7 },
             { domain: 'www.example.com', certificate: null },
           ],
         },
       ]);
+    });
+
+    it('should name the environment and the deployment of a binding as names, not as ids (the CLI resolves the ids)', () => {
+      const [workload] = strategy.transformToManifest({
+        ...declared,
+        workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'default-deployment' }] }],
+      });
+
+      expect(Object.keys(workload.bindings[0])).toEqual(['environment_name', 'deployment_name', 'domains']);
     });
 
     it('should throw when a binding references an environment that is not declared', () => {
@@ -145,7 +154,11 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
               tls: { ciphers: 3, minimum_version: 'tls_1_2' },
               protocols: { http: { versions: ['http1'], http_ports: [80], https_ports: [443], quic_ports: null } },
               bindings: [
-                { environment_id: 'ENV01', deployment_id: 'DEP01', domains: [{ domain: 'a.com', certificate: 1 }] },
+                {
+                  environment_name: 'production',
+                  deployment_name: 'default-deployment',
+                  domains: [{ domain: 'a.com', certificate: 1 }],
+                },
               ],
             },
           ],
@@ -162,7 +175,13 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
           tls: { ciphers: 3, minimumVersion: 'tls_1_2' },
           protocols: { http: { versions: ['http1'], httpPorts: [80], httpsPorts: [443], quicPorts: null } },
           mtls: undefined,
-          bindings: [{ environment: 'ENV01', deployment: 'DEP01', domains: [{ domain: 'a.com', certificate: 1 }] }],
+          bindings: [
+            {
+              environment: 'production',
+              deployment: 'default-deployment',
+              domains: [{ domain: 'a.com', certificate: 1 }],
+            },
+          ],
         },
       ]);
     });
