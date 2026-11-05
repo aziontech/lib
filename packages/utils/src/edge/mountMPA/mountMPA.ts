@@ -30,7 +30,7 @@ const mountMPA: mountMPAFunction = (requestURL: RequestURL): Promise<Response> =
    * It looks for a dot followed by one or more non-dot characters at the end of the string.
    * This helps identify if the request is for a file (like .css, .js, .png) or a route.
    */
-  const fileExtensionRegex = /\.[^.]+$/;
+  const fileExtensionRegex = /\.[^./]+$/;
 
   let assetPath: AssetPath;
 

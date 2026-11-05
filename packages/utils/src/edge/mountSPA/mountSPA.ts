@@ -33,7 +33,7 @@ const mountSPA: MountSPAFunction = (requestURL: RequestURL): Promise<Response> =
    * It looks for a dot followed by one or more non-dot characters at the end of the string.
    * This helps identify if the request is for a file (like .css, .js, .png) or a route.
    */
-  const fileExtensionRegex = /\.[^.]+$/;
+  const fileExtensionRegex = /\.[^./]+$/;
 
   if (fileExtensionRegex.test(requestPath)) {
     // If the requestPath has a file extension, it is considered an asset.
