@@ -67,7 +67,11 @@ const parseRequest: ParseRequestFunction = async (request: AzionRuntimeRequest):
         headers
           .get('cookie')!
           .split(';')
-          .map((cookie) => cookie.trim().split('=')),
+          .map((cookie) => {
+            const trimmed = cookie.trim();
+            const index = trimmed.indexOf('=');
+            return index === -1 ? [trimmed, ''] : [trimmed.slice(0, index), trimmed.slice(index + 1)];
+          }),
       )
     : {};
 
