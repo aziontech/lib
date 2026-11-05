@@ -108,7 +108,7 @@ describe('validateConfig (v6)', () => {
 
   it('rejects properties the v6 schema does not know yet', () => {
     expect(() => validateConfig({ version: 6, kv: [] })).toThrow(
-      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments, purge',
+      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, purge',
     );
   });
 
@@ -309,7 +309,7 @@ describe('validateConfig (v6) application functionsInstances and rules', () => {
   });
 });
 
-describe('validateConfig (v6) workloads, environments and deployments', () => {
+describe('validateConfig (v6) workloads, workload deployments and environments', () => {
   const workload = (extra: Record<string, unknown> = {}) => ({
     version: 6,
     workloads: [{ name: 'my-workload', ...extra }],
@@ -318,10 +318,12 @@ describe('validateConfig (v6) workloads, environments and deployments', () => {
     version: 6,
     environments: [{ name: 'production', deploymentPolicy: 'single_version', ...extra }],
   });
-  const deployment = (extra: Record<string, unknown> = {}) => ({
-    version: 6,
-    deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE', ...extra }],
-  });
+  const workloadDeployment = (extra: Record<string, unknown> = {}) =>
+    workload({
+      deployments: [
+        { name: 'default-deployment', strategy: { type: 'default', attributes: { application: 'my-app' } }, ...extra },
+      ],
+    });
 
   describe('workloads', () => {
     it('accepts a complete workload', () => {
@@ -479,49 +481,70 @@ describe('validateConfig (v6) workloads, environments and deployments', () => {
   });
 
   describe('deployments', () => {
-    it('accepts a complete deployment', () => {
+    it('accepts a complete deployment, with the references as names or as IDs', () => {
       expect(() =>
         validateConfig(
-          deployment({
-            description: 'Default',
-            bindingPolicy: 'STRICT',
-            deploymentPolicy: 'single_version',
-            strategyDefaults: { skewProtection: { enabled: true, defaultTtlSeconds: 3600 } },
+          workloadDeployment({
+            current: true,
+            active: false,
+            strategy: {
+              type: 'default',
+              attributes: { application: 'my-app', firewall: 'my-firewall', customPage: 'my-page' },
+            },
+          }),
+        ),
+      ).not.toThrow();
+      expect(() =>
+        validateConfig(
+          workloadDeployment({
+            strategy: { type: 'default', attributes: { application: 10, firewall: 20, customPage: null } },
           }),
         ),
       ).not.toThrow();
     });
 
-    it('limits the name to 3-255 characters and requires it', () => {
-      expect(() => validateConfig({ version: 6, deployments: [{ bindingPolicy: 'STRICT' }] })).toThrow(
-        "The 'name' field is required in each deployment",
+    it('requires name and strategy and limits the name to 254 characters', () => {
+      expect(() => validateConfig(workload({ deployments: [{ name: 'd' }] }))).toThrow(
+        "The 'name' and 'strategy' fields are required in each deployment",
       );
-      expect(() => validateConfig({ version: 6, deployments: [{ name: 'ab', bindingPolicy: 'FLEXIBLE' }] })).toThrow(
-        "The 'name' field must be a string between 3 and 255 characters",
+      expect(() => validateConfig(workloadDeployment({ name: 'd'.repeat(254) }))).not.toThrow();
+      expect(() => validateConfig(workloadDeployment({ name: 'd'.repeat(255) }))).toThrow(
+        "The 'name' field must be a string between 1 and 254 characters",
       );
+      expect(() => validateConfig(workloadDeployment({ name: '' }))).toThrow();
     });
 
-    it('requires the bindingPolicy (the creation of a deployment requires it)', () => {
-      expect(() => validateConfig({ version: 6, deployments: [{ name: 'default-deployment' }] })).toThrow(
-        "The 'bindingPolicy' field is required in each deployment",
+    it('requires the type and the application of the strategy, and the type can only be default', () => {
+      expect(() => validateConfig(workloadDeployment({ strategy: { attributes: { application: 'a' } } }))).toThrow(
+        "The 'type' and 'attributes' fields are required in strategy",
       );
-      expect(() => validateConfig(deployment({ bindingPolicy: 'STRICT' }))).not.toThrow();
-      expect(() => validateConfig(deployment({ bindingPolicy: 'FLEXIBLE' }))).not.toThrow();
-    });
-
-    it('rejects values out of the enums and invalid skew protection', () => {
-      expect(() => validateConfig(deployment({ bindingPolicy: 'strict' }))).toThrow(
-        "The 'bindingPolicy' field must be one of: STRICT, FLEXIBLE",
-      );
-      expect(() => validateConfig(deployment({ deploymentPolicy: 'rolling' }))).toThrow(
-        "The 'deploymentPolicy' field must be one of: single_version, versioned_urls",
-      );
-      expect(() => validateConfig(deployment({ strategyDefaults: { skewProtection: { enabled: true } } }))).toThrow(
-        "The 'enabled' and 'defaultTtlSeconds' fields are required in skewProtection",
+      expect(() => validateConfig(workloadDeployment({ strategy: { type: 'default', attributes: {} } }))).toThrow(
+        "The 'application' field is required in strategy attributes",
       );
       expect(() =>
-        validateConfig(deployment({ strategyDefaults: { skewProtection: { enabled: true, defaultTtlSeconds: 0 } } })),
-      ).toThrow();
+        validateConfig(workloadDeployment({ strategy: { type: 'canary', attributes: { application: 'a' } } })),
+      ).toThrow("The 'type' field must be one of: default");
+    });
+
+    it('rejects an ID below 1, an empty name and unknown properties', () => {
+      const attributes = (extra: Record<string, unknown>) =>
+        workloadDeployment({ strategy: { type: 'default', attributes: { application: 'a', ...extra } } });
+
+      expect(() => validateConfig(attributes({ application: 0 }))).toThrow();
+      expect(() => validateConfig(attributes({ application: '' }))).toThrow();
+      expect(() => validateConfig(attributes({ customPage: 0 }))).toThrow();
+      expect(() => validateConfig(attributes({ unknown: 1 }))).toThrow(
+        'No additional properties are allowed in strategy attributes',
+      );
+      expect(() => validateConfig(workloadDeployment({ unknown: 1 }))).toThrow(
+        'No additional properties are allowed in deployment items',
+      );
+    });
+
+    it('does not accept the top-level deployments of the dev spec (the production API has no Deployments API)', () => {
+      expect(() => validateConfig({ version: 6, deployments: [{ name: 'default-deployment' }] })).toThrow(
+        'Config can only contain the following properties',
+      );
     });
   });
 });

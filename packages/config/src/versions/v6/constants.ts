@@ -110,7 +110,7 @@ export const ENVIRONMENT_BRANCH_TRACKING_MODES = ['branch_is', 'branch_starts_wi
 
 export const DEPLOYMENT_POLICIES = ['single_version', 'versioned_urls'] as const;
 
-export const DEPLOYMENT_BINDING_POLICIES = ['STRICT', 'FLEXIBLE'] as const;
+export const WORKLOAD_DEPLOYMENT_STRATEGY_TYPES = ['default'] as const;
 
 export const WORKLOADS_ACCESS_TYPES = ['read_only', 'read_write', 'restricted'] as const;
 

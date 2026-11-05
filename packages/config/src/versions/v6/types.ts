@@ -20,7 +20,6 @@ import type {
   CONNECTOR_TRANSPORT_POLICY,
   CUSTOM_PAGE_ERROR_CODES,
   CUSTOM_PAGE_TYPES,
-  DEPLOYMENT_BINDING_POLICIES,
   DEPLOYMENT_POLICIES,
   ENVIRONMENT_BRANCH_TRACKING_MODES,
   ENVIRONMENT_LOG_VERBOSITY,
@@ -37,6 +36,7 @@ import type {
   WAF_RULESETS,
   WAF_SENSITIVITY,
   WAF_THREAT_TYPES,
+  WORKLOAD_DEPLOYMENT_STRATEGY_TYPES,
   WORKLOADS_ACCESS_TYPES,
 } from './constants';
 
@@ -102,15 +102,39 @@ export type AzionWorkloadBindingDomainV6 = {
 };
 
 /**
- * Binding of a workload to an environment and a deployment.
+ * Binding of a workload to an environment and one of its deployments.
  */
 export type AzionWorkloadBindingV6 = {
   /** Name of an environment declared in `environments` */
   environment: string;
-  /** Name of a deployment declared in `deployments` */
+  /** Name of a deployment declared in the `deployments` of the same workload */
   deployment: string;
   /** Domains served by the binding */
   domains?: AzionWorkloadBindingDomainV6[];
+};
+
+/**
+ * Deployment of a workload of the Azion API v6.
+ */
+export type AzionWorkloadDeploymentV6 = {
+  /** Deployment name */
+  name: string;
+  /** Whether it is the current deployment of the workload */
+  current?: boolean;
+  /** Whether the deployment is active */
+  active?: boolean;
+  /** What the deployment serves */
+  strategy: {
+    type: (typeof WORKLOAD_DEPLOYMENT_STRATEGY_TYPES)[number];
+    attributes: {
+      /** Name or ID of the application */
+      application: string | number;
+      /** Name or ID of the firewall */
+      firewall?: string | number | null;
+      /** Name or ID of the custom page */
+      customPage?: string | number | null;
+    };
+  };
 };
 
 /**
@@ -124,6 +148,8 @@ export type AzionWorkloadV6 = {
   protocols?: AzionWorkloadProtocols;
   mtls?: AzionWorkloadMTLS;
   workloadDomainAllowAccess?: boolean;
+  /** Deployments of the workload: the application, firewall and custom page each one serves */
+  deployments?: AzionWorkloadDeploymentV6[];
   /** Environments and deployments the workload is bound to, with the domains of each binding */
   bindings?: AzionWorkloadBindingV6[];
 };
@@ -150,21 +176,6 @@ export type AzionEnvironmentV6 = {
   } | null;
   /** How the releases of the environment are served. Required by the API, and it cannot be changed afterwards */
   deploymentPolicy: (typeof DEPLOYMENT_POLICIES)[number];
-};
-
-/**
- * Deployment of the Azion API v6.
- */
-export type AzionDeploymentV6 = {
-  /** Deployment name */
-  name: string;
-  description?: string | null;
-  /** Whether a release can swap the resources of the deployment. Required by the API */
-  bindingPolicy: (typeof DEPLOYMENT_BINDING_POLICIES)[number];
-  deploymentPolicy?: (typeof DEPLOYMENT_POLICIES)[number];
-  strategyDefaults?: {
-    skewProtection?: { enabled: boolean; defaultTtlSeconds: number };
-  };
 };
 
 /**
@@ -431,8 +442,6 @@ export type AzionConfigV6 = {
   workloads?: AzionWorkloadV6[];
   /** Environments */
   environments?: AzionEnvironmentV6[];
-  /** Deployments */
-  deployments?: AzionDeploymentV6[];
   /** Purge configurations */
   purge?: AzionPurgeV6[];
 };

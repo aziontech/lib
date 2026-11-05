@@ -156,8 +156,8 @@ describe('v6 support', () => {
       firewall: [],
       custom_pages: [],
       environments: [],
-      deployments: [],
       workloads: [],
+      workload_deployments: [],
     });
   });
 

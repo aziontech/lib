@@ -5,13 +5,13 @@ import type { AzionConfigV6, AzionWorkloadV6 } from '../../types';
  * WorkloadProcessConfigStrategy V6
  * @class WorkloadProcessConfigStrategy
  * @description Converts the v6 workloads between the config and the manifest.
- * A binding references an environment and a deployment by the name it has in the config. The manifest keeps that name
- * in `environment_name` and `deployment_name`: the Azion CLI creates the environment and the deployment, so it is the
- * one that knows their ids and sends them to the API.
+ * A binding references an environment and a deployment of the workload by the name it has in the config. The manifest
+ * keeps that name in `environment_name` and `deployment_name`: the Azion CLI creates the environment and the deployment,
+ * so it is the one that knows their ids and sends them to the API.
  */
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   /**
-   * Validate that the environment and the deployment of the bindings are declared
+   * Validate that the environment of the bindings is declared and that the deployment is one of the workload
    */
   private validateBindingReferences(config: AzionConfigV6, workload: AzionWorkloadV6) {
     workload.bindings?.forEach((binding) => {
@@ -20,7 +20,7 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
           `Workload "${workload.name}" binding references non-existent Environment "${binding.environment}".`,
         );
       }
-      if (!config.deployments?.some((deployment) => deployment.name === binding.deployment)) {
+      if (!workload.deployments?.some((deployment) => deployment.name === binding.deployment)) {
         throw new Error(
           `Workload "${workload.name}" binding references non-existent Deployment "${binding.deployment}".`,
         );

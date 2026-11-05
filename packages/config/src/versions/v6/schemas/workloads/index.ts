@@ -1,4 +1,5 @@
 import {
+  WORKLOAD_DEPLOYMENT_STRATEGY_TYPES,
   WORKLOAD_HTTP_VERSIONS,
   WORKLOAD_INFRASTRUCTURE,
   WORKLOAD_MTLS_VERIFICATION,
@@ -10,6 +11,8 @@ import {
  * Schema of the v6 workloads.
  * Based on v4, checked against `WorkloadRequest` of the v6 API: the domains and the certificate moved to the
  * `bindings`, `tls.ciphers` is not nullable and the ports and versions of the http protocol have limits.
+ * `deployments` are the workload deployments (`WorkloadDeploymentRequest`): the strategy type can only be `default` and
+ * its application, firewall and custom page are IDs in the API, so the config accepts a name or an ID for each of them.
  */
 const workloadsSchema = {
   type: 'array',
@@ -139,6 +142,86 @@ const workloadsSchema = {
         },
         additionalProperties: false,
       },
+      deployments: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 254,
+              pattern: '.*',
+              errorMessage: "The 'name' field must be a string between 1 and 254 characters",
+            },
+            current: {
+              type: 'boolean',
+              default: true,
+              errorMessage: "The 'current' field must be a boolean",
+            },
+            active: {
+              type: 'boolean',
+              default: true,
+              errorMessage: "The 'active' field must be a boolean",
+            },
+            strategy: {
+              type: 'object',
+              properties: {
+                type: {
+                  type: 'string',
+                  enum: WORKLOAD_DEPLOYMENT_STRATEGY_TYPES,
+                  errorMessage: `The 'type' field must be one of: ${WORKLOAD_DEPLOYMENT_STRATEGY_TYPES.join(', ')}`,
+                },
+                attributes: {
+                  type: 'object',
+                  properties: {
+                    application: {
+                      type: ['string', 'integer'],
+                      minimum: 1,
+                      minLength: 1,
+                      errorMessage:
+                        "The 'application' field must be the name of an application declared in 'applications' or an application ID",
+                    },
+                    firewall: {
+                      type: ['string', 'integer', 'null'],
+                      minimum: 1,
+                      minLength: 1,
+                      errorMessage:
+                        "The 'firewall' field must be the name of a firewall declared in 'firewall', a firewall ID or null",
+                    },
+                    customPage: {
+                      type: ['string', 'integer', 'null'],
+                      minimum: 1,
+                      minLength: 1,
+                      errorMessage:
+                        "The 'customPage' field must be the name of a custom page declared in 'customPages', a custom page ID or null",
+                    },
+                  },
+                  required: ['application'],
+                  additionalProperties: false,
+                  errorMessage: {
+                    additionalProperties: 'No additional properties are allowed in strategy attributes',
+                    required: "The 'application' field is required in strategy attributes",
+                  },
+                },
+              },
+              required: ['type', 'attributes'],
+              additionalProperties: false,
+              errorMessage: {
+                additionalProperties: 'No additional properties are allowed in strategy',
+                required: "The 'type' and 'attributes' fields are required in strategy",
+              },
+            },
+          },
+          required: ['name', 'strategy'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in deployment items',
+            required: "The 'name' and 'strategy' fields are required in each deployment",
+          },
+        },
+        errorMessage: "The 'deployments' field must be an array of deployment objects",
+      },
       bindings: {
         type: 'array',
         items: {
@@ -152,7 +235,8 @@ const workloadsSchema = {
             deployment: {
               type: 'string',
               minLength: 1,
-              errorMessage: "The 'deployment' field must be the name of a deployment declared in 'deployments'",
+              errorMessage:
+                "The 'deployment' field must be the name of a deployment declared in the 'deployments' of the workload",
             },
             domains: {
               type: 'array',

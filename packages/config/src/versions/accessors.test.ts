@@ -82,7 +82,6 @@ describe('version accessors', () => {
       'connectors',
       'functions',
       'environments',
-      'deployments',
     ]);
   });
 

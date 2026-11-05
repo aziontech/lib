@@ -1,4 +1,4 @@
-import type { AzionConfigV6 } from '../../types';
+import type { AzionConfigV6, AzionWorkloadV6 } from '../../types';
 import WorkloadProcessConfigStrategy from './workloadProcessConfigStrategy';
 
 describe('WorkloadProcessConfigStrategy (v6)', () => {
@@ -7,8 +7,10 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
   const declared: AzionConfigV6 = {
     version: 6,
     environments: [{ name: 'production', deploymentPolicy: 'single_version' }],
-    deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE' }],
   };
+  const deployments: AzionWorkloadV6['deployments'] = [
+    { name: 'default-deployment', strategy: { type: 'default', attributes: { application: 'my-app' } } },
+  ];
 
   beforeEach(() => {
     strategy = new WorkloadProcessConfigStrategy();
@@ -61,6 +63,7 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
         workloads: [
           {
             name: 'my-workload',
+            deployments,
             active: false,
             infrastructure: 2,
             workloadDomainAllowAccess: false,
@@ -101,7 +104,9 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
     it('should name the environment and the deployment of a binding as names, not as ids (the CLI resolves the ids)', () => {
       const [workload] = strategy.transformToManifest({
         ...declared,
-        workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'default-deployment' }] }],
+        workloads: [
+          { name: 'w', deployments, bindings: [{ environment: 'production', deployment: 'default-deployment' }] },
+        ],
       });
 
       expect(Object.keys(workload.bindings[0])).toEqual(['environment_name', 'deployment_name', 'domains']);
@@ -111,24 +116,44 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
       expect(() =>
         strategy.transformToManifest({
           ...declared,
-          workloads: [{ name: 'w', bindings: [{ environment: 'staging', deployment: 'default-deployment' }] }],
+          workloads: [
+            { name: 'w', deployments, bindings: [{ environment: 'staging', deployment: 'default-deployment' }] },
+          ],
         }),
       ).toThrow('Workload "w" binding references non-existent Environment "staging".');
     });
 
-    it('should throw when a binding references a deployment that is not declared', () => {
+    it('should throw when a binding references a deployment that the workload does not declare', () => {
       expect(() =>
         strategy.transformToManifest({
           ...declared,
-          workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'other' }] }],
+          workloads: [{ name: 'w', deployments, bindings: [{ environment: 'production', deployment: 'other' }] }],
         }),
       ).toThrow('Workload "w" binding references non-existent Deployment "other".');
       expect(() =>
         strategy.transformToManifest({
+          ...declared,
+          workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'default-deployment' }] }],
+        }),
+      ).toThrow('Workload "w" binding references non-existent Deployment "default-deployment".');
+      expect(() =>
+        strategy.transformToManifest({
           version: 6,
-          workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'd' }] }],
+          workloads: [{ name: 'w', deployments, bindings: [{ environment: 'production', deployment: 'd' }] }],
         }),
       ).toThrow('non-existent Environment "production"');
+    });
+
+    it('should not accept a deployment of another workload in a binding', () => {
+      expect(() =>
+        strategy.transformToManifest({
+          ...declared,
+          workloads: [
+            { name: 'a', deployments },
+            { name: 'b', bindings: [{ environment: 'production', deployment: 'default-deployment' }] },
+          ],
+        }),
+      ).toThrow('Workload "b" binding references non-existent Deployment "default-deployment".');
     });
   });
 

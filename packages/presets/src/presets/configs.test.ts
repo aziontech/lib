@@ -120,7 +120,7 @@ describe('preset configs by API version', () => {
       expect(v6.applications).toEqual(v4.applications);
     });
 
-    it('javascript: binds the workload to an environment and a deployment declared in the config', () => {
+    it('javascript: binds the workload to an environment and to its own deployment', () => {
       const manifest = processConfig(resolvePresetConfig(byName('javascript'), 6));
 
       expect(manifest.environments.map((environment: { name: string }) => environment.name)).toEqual([
@@ -129,10 +129,7 @@ describe('preset configs by API version', () => {
       expect(
         manifest.environments.map((environment: { deployment_policy: string }) => environment.deployment_policy),
       ).toEqual(['single_version']);
-      expect(manifest.deployments.map((deployment: { name: string }) => deployment.name)).toEqual(['$DEPLOYMENT_NAME']);
-      expect(manifest.deployments.map((deployment: { binding_policy: string }) => deployment.binding_policy)).toEqual([
-        'FLEXIBLE',
-      ]);
+      expect(manifest).not.toHaveProperty('deployments');
       expect(manifest.workloads).toHaveLength(1);
       expect(manifest.workloads[0]).toEqual(
         expect.objectContaining({ name: '$WORKLOAD_NAME', active: true, infrastructure: 1 }),
@@ -141,6 +138,18 @@ describe('preset configs by API version', () => {
         { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
       ]);
     });
+
+    it.each(['javascript', 'react', 'opennextjs', 'eleventy'])(
+      '%s: the workload deployment of the v6 manifest is the one of the v4 manifest, with the workload it belongs to',
+      (name) => {
+        const v4 = processConfig(resolvePresetConfig(byName(name), 4));
+        const v6 = processConfig(resolvePresetConfig(byName(name), 6));
+
+        expect(v6.workload_deployments).toEqual(
+          v4.workload_deployments.map((deployment: object) => ({ workload_name: '$WORKLOAD_NAME', ...deployment })),
+        );
+      },
+    );
   });
 
   describe.each(goldenPresets)('%s (v3)', (name) => {
