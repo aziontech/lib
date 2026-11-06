@@ -55,8 +55,9 @@ describe('version dispatch', () => {
     expect(processConfig({ ...config, version: 4 })).toEqual(processConfig(config));
   });
 
-  it('does not leak version into the manifest', () => {
-    expect(processConfig({ ...config, version: 4 })).not.toHaveProperty('version');
+  it('writes the version to the manifest, the default one when it is not declared', () => {
+    expect(processConfig({ ...config, version: 4 })).toHaveProperty('version', 4);
+    expect(processConfig(config)).toHaveProperty('version', 4);
   });
 
   it('rejects a config that declares an unsupported version', () => {
@@ -106,7 +107,7 @@ describe('v3 support', () => {
     expect(manifest).toHaveProperty('origin');
     expect(manifest).toHaveProperty('rules');
     expect(manifest).not.toHaveProperty('applications');
-    expect(manifest).not.toHaveProperty('version');
+    expect(manifest).toHaveProperty('version', 3);
   });
 
   it('rejects v3-only fields on a v4 config and vice versa', () => {
@@ -119,5 +120,87 @@ describe('v3 support', () => {
     const v4 = defineConfig({ build: { bundler: 'esbuild' } });
     expect(v3.version).toBe(3);
     expect(v4.version).toBeUndefined();
+  });
+});
+
+describe('v6 support', () => {
+  const v6Config = { version: 6 as const, build: { bundler: 'esbuild' as const } };
+
+  it('is registered and selected by `version: 6`', () => {
+    expect(resolveApiVersion(v6Config)).toBe(6);
+    expect(getVersionModule(6).version).toBe(6);
+    expect(SUPPORTED_API_VERSIONS).toContain(6);
+  });
+
+  it('keeps v4 as the default when version is omitted', () => {
+    expect(DEFAULT_API_VERSION).toBe(4);
+    expect(resolveApiVersion({ build: {} })).toBe(4);
+  });
+
+  it('validates a v6 config and rejects fields the v6 schema does not know yet', () => {
+    expect(() => validateConfig(v6Config)).not.toThrow();
+    expect(() => validateConfig({ version: 6, kv: [] })).toThrow();
+  });
+
+  it('does not accept v6 on the v4 schema nor the other way around', () => {
+    expect(() => validateConfig({ version: 4, build: {} })).not.toThrow();
+    expect(() => validateConfig({ version: 6, origin: [] })).toThrow();
+  });
+
+  it('writes the version, the build and the applications to the v6 manifest', () => {
+    expect(processConfig(v6Config)).toEqual({
+      version: 6,
+      build: v6Config.build,
+      functions: [],
+      applications: [],
+      firewall: [],
+      custom_pages: [],
+      environments: [],
+      workloads: [],
+      workload_deployments: [],
+    });
+  });
+
+  it('processes the v6 applications into the manifest', () => {
+    const manifest = processConfig({ ...v6Config, applications: [{ name: 'my-app' }] });
+    expect(manifest.applications).toEqual([
+      {
+        name: 'my-app',
+        active: true,
+        debug: false,
+        modules: {
+          cache: { enabled: true },
+          functions: { enabled: false },
+          application_accelerator: { enabled: true },
+          image_processor: { enabled: false },
+        },
+      },
+    ]);
+  });
+
+  it('processes the v6 network lists into the network_list key of the manifest', () => {
+    const manifest = processConfig({
+      ...v6Config,
+      networkList: [{ name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'] }],
+    });
+
+    expect(manifest.network_list).toEqual([
+      { name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'], active: true },
+    ]);
+  });
+
+  it('forwards the version to manifest helpers', () => {
+    expect(() => validateManifest({}, undefined, { version: 6 })).not.toThrow();
+    expect(() => convertJsonConfigToObject('{', { version: 6 })).toThrow('Invalid JSON configuration.');
+    expect(convertJsonConfigToObject('{}', { version: 6 })).toEqual({ version: 6, firewall: [], applications: [] });
+    expect(convertJsonConfigToObject(JSON.stringify(processConfig(v6Config)), { version: 6 })).toEqual({
+      ...v6Config,
+      firewall: [],
+      applications: [],
+    });
+  });
+
+  it('types defineConfig by the declared version', () => {
+    expect(defineConfig(v6Config).version).toBe(6);
   });
 });
