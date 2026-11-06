@@ -29,8 +29,8 @@ describe('preset configs by API version', () => {
     },
   );
 
-  it('keeps nitro v4 only, as it did not exist on v3', () => {
-    expect(getPresetApiVersions(byName('nitro'))).toEqual([4]);
+  it('keeps nitro without a v3 config, as it did not exist on v3', () => {
+    expect(getPresetApiVersions(byName('nitro'))).toEqual([4, 6]);
     expect(() => resolvePresetConfig(byName('nitro'), 3)).toThrow('does not support config version 3');
   });
 
@@ -40,18 +40,41 @@ describe('preset configs by API version', () => {
   });
 
   describe('v6', () => {
-    it('is declared by eleventy, javascript, opennextjs and react only for now', () => {
-      const withV6 = presets
-        .filter((preset) => preset.configs?.[6])
-        .map((preset) => preset.metadata.name)
-        .sort();
-      expect(withV6).toEqual(['eleventy', 'javascript', 'opennextjs', 'react']);
-      expect(getPresetApiVersions(byName('eleventy'))).toEqual([3, 4, 6]);
-      expect(getPresetApiVersions(byName('opennextjs'))).toEqual([3, 4, 6]);
-      expect(getPresetApiVersions(byName('javascript'))).toEqual([3, 4, 6]);
-      expect(getPresetApiVersions(byName('react'))).toEqual([3, 4, 6]);
-      expect(() => resolvePresetConfig(byName('vue'), 6)).toThrow('does not support config version 6');
+    it('is declared by every preset, nitro without a v3 config as it did not exist on v3', () => {
+      const withoutV6 = presets.filter((preset) => !preset.configs?.[6]).map((preset) => preset.metadata.name);
+      expect(withoutV6).toEqual([]);
+      presets.forEach((preset) =>
+        expect(getPresetApiVersions(preset)).toEqual(preset.metadata.name === 'nitro' ? [4, 6] : [3, 4, 6]),
+      );
     });
+
+    it.each(presets.map((preset) => [preset.metadata.name, preset] as const))(
+      '%s: validates and produces the manifest of the v4 config, with the environment and the binding of the v6',
+      (name) => {
+        const config = resolvePresetConfig(byName(name), 6);
+        expect(config.version).toBe(6);
+        expect(() => validateConfig(config)).not.toThrow();
+
+        // functions (e.g. build.extend) are different instances in each config, so compare through JSON
+        const plain = (value: unknown) => JSON.parse(JSON.stringify(value));
+        const v4 = processConfig(resolvePresetConfig(byName(name), 4));
+        const v6 = processConfig(config);
+
+        expect(v6.version).toBe(6);
+        expect(plain(v6.build)).toEqual(plain(v4.build));
+        expect(v6.storage).toEqual(v4.storage);
+        expect(v6.connectors).toEqual(v4.connectors);
+        expect(plain(v6.functions)).toEqual(plain(v4.functions));
+        expect(v6.applications).toEqual(v4.applications);
+        expect(v6.workload_deployments).toEqual(
+          v4.workload_deployments.map((deployment: object) => ({ workload_name: '$WORKLOAD_NAME', ...deployment })),
+        );
+        expect(v6.environments.map((environment: { name: string }) => environment.name)).toEqual(['$ENVIRONMENT_NAME']);
+        expect(v6.workloads[0].bindings).toEqual([
+          { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
+        ]);
+      },
+    );
 
     it('javascript: validates and keeps the build of the v4 config', () => {
       const config = resolvePresetConfig(byName('javascript'), 6);
@@ -138,18 +161,6 @@ describe('preset configs by API version', () => {
         { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
       ]);
     });
-
-    it.each(['javascript', 'react', 'opennextjs', 'eleventy'])(
-      '%s: the workload deployment of the v6 manifest is the one of the v4 manifest, with the workload it belongs to',
-      (name) => {
-        const v4 = processConfig(resolvePresetConfig(byName(name), 4));
-        const v6 = processConfig(resolvePresetConfig(byName(name), 6));
-
-        expect(v6.workload_deployments).toEqual(
-          v4.workload_deployments.map((deployment: object) => ({ workload_name: '$WORKLOAD_NAME', ...deployment })),
-        );
-      },
-    );
   });
 
   describe.each(goldenPresets)('%s (v3)', (name) => {
