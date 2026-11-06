@@ -2,6 +2,9 @@
 
 This module provides comprehensive configuration and validation for the Azion Platform. It supports applications, workloads, connectors, functions, storage, firewall rules, WAF settings, network lists, custom pages, and purge operations.
 
+> **Config API versions:** the examples below are for the default config (Azion API v4). The package also processes the
+> v3 and v6 configs, selected with the `version` field of the config. See [Azion config for the API v6](https://github.com/aziontech/lib/blob/main/packages/config/docs/config-v6.md).
+
 ## Table of Contents
 
 - [Installation](#installation)
