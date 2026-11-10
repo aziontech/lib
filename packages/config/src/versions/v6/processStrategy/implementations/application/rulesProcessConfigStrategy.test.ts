@@ -16,7 +16,6 @@ describe('RulesProcessConfigStrategy (v6)', () => {
     response: [
       {
         name: 'Add header',
-        active: false,
         criteria: [[{ variable: 'status', conditional: 'if', operator: 'exists' }]],
         behaviors: [{ type: 'add_response_header', attributes: { value: 'x-test: 1' } }],
       },
@@ -29,7 +28,6 @@ describe('RulesProcessConfigStrategy (v6)', () => {
       rule: {
         name: 'Execute Function',
         description: 'Execute function for all requests',
-        active: true,
         criteria: [[{ variable: '${uri}', conditional: 'if', operator: 'matches', argument: '^/' }]],
         behaviors: [{ type: 'run_function', attributes: { value: 'fn' } }],
       },
@@ -39,7 +37,6 @@ describe('RulesProcessConfigStrategy (v6)', () => {
       rule: {
         name: 'Add header',
         description: undefined,
-        active: false,
         criteria: [[{ variable: '${status}', conditional: 'if', operator: 'exists' }]],
         behaviors: [{ type: 'add_response_header', attributes: { value: 'x-test: 1' } }],
       },
@@ -136,8 +133,8 @@ describe('RulesProcessConfigStrategy (v6)', () => {
 
       expect(result.request).toHaveLength(1);
       expect(result.response).toHaveLength(1);
-      expect(result.request![0]).toEqual(expect.objectContaining({ name: 'Execute Function', active: true }));
-      expect(result.response![0]).toEqual(expect.objectContaining({ name: 'Add header', active: false }));
+      expect(result.request![0]).toEqual(expect.objectContaining({ name: 'Execute Function' }));
+      expect(result.response![0]).toEqual(expect.objectContaining({ name: 'Add header' }));
     });
   });
 });

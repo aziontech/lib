@@ -40,19 +40,17 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
             waf: { enabled: false },
           },
           debug: false,
-          active: true,
         },
       ]);
     });
 
     it('should write active and debugRules to the manifest (v4 ignored them)', () => {
       const [firewall] = strategy.transformToManifest(
-        withFirewall({ name: 'my-firewall', active: false, debugRules: true, functions: false, waf: true }),
+        withFirewall({ name: 'my-firewall', debugRules: true, functions: false, waf: true }),
       );
 
       expect(firewall).toEqual(
         expect.objectContaining({
-          active: false,
           debug: true,
           modules: {
             functions: { enabled: false },
@@ -85,7 +83,6 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
         {
           name: 'rule',
           description: 'Block admin',
-          active: true,
           behaviors: [{ type: 'deny' }],
           criteria: [
             [
@@ -270,7 +267,7 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
         name: 'my-firewall',
         functionsInstances: [
           { name: 'instance', ref: 'fn', args: { a: 1 } },
-          { name: 'off', ref: 10, active: false },
+          { name: 'off', ref: 10 },
         ],
       };
 
@@ -278,8 +275,8 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
         strategy.transformToManifest(withFirewall(firewall, { functions: [{ name: 'fn', path: './fn.js' }] }))[0]
           .functions_instances,
       ).toEqual([
-        { name: 'instance', args: { a: 1 }, active: true, function: 'fn' },
-        { name: 'off', args: {}, active: false, function: 10 },
+        { name: 'instance', args: { a: 1 }, function: 'fn' },
+        { name: 'off', args: {}, function: 10 },
       ]);
       expect(() => strategy.transformToManifest(withFirewall(firewall))).toThrow(
         'Function instance "instance" references non-existent Function "fn".',
@@ -298,7 +295,6 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
     it('should round trip a firewall through the manifest', () => {
       const firewall: AzionFirewallV6 = {
         name: 'my-firewall',
-        active: true,
         debugRules: true,
         functions: true,
         networkProtection: true,
@@ -307,7 +303,6 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
           {
             name: 'rule',
             description: 'Block admin',
-            active: true,
             criteria: [{ variable: '${request_uri}', conditional: 'if', operator: 'starts_with', argument: '/admin' }],
             behaviors: [
               { type: 'set_waf', attributes: { mode: 'blocking', wafId: 'my-waf' } },
@@ -319,12 +314,11 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
           },
           {
             name: 'deny',
-            active: true,
             criteria: [{ variable: '${host}', conditional: 'if', operator: 'exists' }],
             behaviors: [{ type: 'deny' }],
           },
         ],
-        functionsInstances: [{ name: 'instance', ref: 'fn', args: { a: 1 }, active: true }],
+        functionsInstances: [{ name: 'instance', ref: 'fn', args: { a: 1 } }],
       };
       const config = withFirewall(firewall, { functions: [{ name: 'fn', path: './fn.js' }] });
       const transformedPayload: AzionConfigV6 = { version: 6 };
@@ -332,6 +326,48 @@ describe('FirewallProcessConfigStrategy (v6)', () => {
       strategy.transformToConfig({ firewall: strategy.transformToManifest(config) }, transformedPayload);
 
       expect(transformedPayload.firewall).toEqual([firewall]);
+    });
+  });
+
+  describe('modules the rules need', () => {
+    const rule = (variable: string, behaviors: AzionFirewallBehaviorV6[] = [{ type: 'deny' }]) => ({
+      name: 'rule',
+      criteria: [{ variable, conditional: 'if' as const, operator: 'matches' as const, argument: 'x' }],
+      behaviors,
+    });
+    const manifest = (firewall: Partial<AzionFirewallV6>) =>
+      strategy.transformToManifest(withFirewall({ name: 'my-firewall', ...firewall }));
+
+    it('should accept the default modules (functions and network protection) for the variables they cover', () => {
+      expect(() => manifest({ rules: [rule('request_uri')] })).not.toThrow();
+      expect(() => manifest({ rules: [rule('host', [{ type: 'drop' }])] })).not.toThrow();
+    });
+
+    it('should throw when a variable needs the waf module and it is disabled', () => {
+      expect(() => manifest({ rules: [rule('header_user_agent')] })).toThrow(
+        'Firewall "my-firewall" rule "rule" uses the variable "header_user_agent", which needs the waf (waf) module enabled.',
+      );
+      expect(() => manifest({ waf: true, rules: [rule('${request_method}')] })).not.toThrow();
+    });
+
+    it('should throw when the network variable needs the network protection module', () => {
+      expect(() => manifest({ networkProtection: false, rules: [rule('network')] })).toThrow(
+        'which needs the network_protection (networkProtection) module enabled',
+      );
+    });
+
+    it('should throw when no module is enabled for a behavior', () => {
+      expect(() =>
+        manifest({ functions: false, networkProtection: false, waf: false, rules: [rule('request_uri')] }),
+      ).toThrow(
+        'uses the behavior "deny", which needs one of the waf (waf), network_protection (networkProtection), functions (functions) modules enabled.',
+      );
+    });
+
+    it('should throw when run_function needs the functions module', () => {
+      expect(() =>
+        manifest({ functions: false, rules: [rule('network', [{ type: 'run_function', attributes: { value: 1 } }])] }),
+      ).toThrow('uses the behavior "run_function", which needs the functions (functions) module enabled.');
     });
   });
 });

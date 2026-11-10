@@ -16,7 +16,6 @@ const config: AzionConfigV6 = {
   connectors: [
     {
       name: '$CONNECTOR_NAME',
-      active: true,
       type: 'storage',
       attributes: {
         bucket: '$BUCKET_NAME',
@@ -55,7 +54,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Next.js Static Assets and set cache policy',
             description: 'Serve Next.js static assets through edge connector and set cache policy',
-            active: true,
             criteria: [
               [
                 {
@@ -87,7 +85,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Deliver Static Assets and set cache policy',
             description: 'Serve static assets through edge connector and set cache policy',
-            active: true,
             criteria: [
               [
                 {
@@ -119,7 +116,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Execute Next.js Function',
             description: 'Execute Next.js edge function for all requests',
-            active: true,
             criteria: [
               [
                 {
@@ -158,24 +154,17 @@ const config: AzionConfigV6 = {
       deploymentPolicy: 'single_version',
     },
   ],
+  // the application a deployment serves is set by the Azion CLI when it creates the release
+  deployments: [
+    {
+      name: '$DEPLOYMENT_NAME',
+      bindingPolicy: 'FLEXIBLE',
+    },
+  ],
   workloads: [
     {
       name: '$WORKLOAD_NAME',
-      active: true,
       infrastructure: 1,
-      deployments: [
-        {
-          name: '$DEPLOYMENT_NAME',
-          current: true,
-          active: true,
-          strategy: {
-            type: 'default',
-            attributes: {
-              application: '$APPLICATION_NAME',
-            },
-          },
-        },
-      ],
       bindings: [
         {
           environment: '$ENVIRONMENT_NAME',

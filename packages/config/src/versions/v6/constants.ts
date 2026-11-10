@@ -108,9 +108,76 @@ export const ENVIRONMENT_ROBOTS_POLICIES = ['index', 'noindex', 'respect_origin'
 
 export const ENVIRONMENT_BRANCH_TRACKING_MODES = ['branch_is', 'branch_starts_with', 'branch_ends_with'] as const;
 
-export const DEPLOYMENT_POLICIES = ['single_version', 'versioned_urls'] as const;
+export const ENVIRONMENT_DEPLOYMENT_POLICIES = ['single_version', 'versioned_urls'] as const;
 
-export const WORKLOAD_DEPLOYMENT_STRATEGY_TYPES = ['default'] as const;
+export const DEPLOYMENT_POLICIES = ['single_version', 'versioned_urls', 'latest'] as const;
+
+export const DEPLOYMENT_BINDING_POLICIES = ['STRICT', 'FLEXIBLE'] as const;
+
+export const FUNCTION_DEPENDENCY_TYPES = ['connector', 'network_list'] as const;
+
+/**
+ * Module of an application that each request phase behavior needs enabled (`RequestPhaseBehaviorRequest`).
+ */
+export const APPLICATION_REQUEST_BEHAVIOR_MODULES = {
+  forward_cookies: 'application_accelerator',
+  optimize_images: 'image_processor',
+  bypass_cache: 'cache',
+  filter_request_cookie: 'application_accelerator',
+  run_function: 'functions',
+  rewrite_request: 'application_accelerator',
+  capture_match_groups: 'application_accelerator',
+  add_request_cookie: 'application_accelerator',
+} as const;
+
+/**
+ * Module of an application that each response phase behavior needs enabled (`ResponsePhaseBehaviorRequest`).
+ */
+export const APPLICATION_RESPONSE_BEHAVIOR_MODULES = {
+  run_function: 'functions',
+  set_cookie: 'application_accelerator',
+  capture_match_groups: 'application_accelerator',
+} as const;
+
+/**
+ * Every criterion variable of an application rule except `${uri}` needs the application accelerator module.
+ */
+export const APPLICATION_ACCELERATOR_FREE_VARIABLES = ['uri'] as const;
+
+export const FIREWALL_MODULES = ['waf', 'network_protection', 'functions'] as const;
+
+/**
+ * Modules of a firewall of which at least one must be enabled for each behavior (`FirewallBehaviorRequest`).
+ */
+export const FIREWALL_BEHAVIOR_MODULES: Record<string, readonly (typeof FIREWALL_MODULES)[number][]> = {
+  deny: FIREWALL_MODULES,
+  drop: FIREWALL_MODULES,
+  bypass: FIREWALL_MODULES,
+  set_custom_response: FIREWALL_MODULES,
+  set_rate_limit: FIREWALL_MODULES,
+  set_waf: FIREWALL_MODULES,
+  run_function: ['functions'],
+};
+
+/**
+ * Modules of a firewall of which at least one must be enabled for each criterion variable
+ * (`FirewallCriterionFieldRequest`). A variable that is not listed does not need any module.
+ */
+export const FIREWALL_VARIABLE_MODULES: Record<string, readonly (typeof FIREWALL_MODULES)[number][]> = {
+  header_accept: ['waf'],
+  header_accept_encoding: ['waf'],
+  header_accept_language: ['waf'],
+  header_cookie: ['waf'],
+  header_origin: ['waf'],
+  header_referer: ['waf'],
+  header_user_agent: ['waf'],
+  host: FIREWALL_MODULES,
+  network: ['network_protection'],
+  request_args: ['waf'],
+  request_method: ['waf'],
+  request_uri: FIREWALL_MODULES,
+  scheme: FIREWALL_MODULES,
+};
 
 export const WORKLOADS_ACCESS_TYPES = ['read_only', 'read_write', 'restricted'] as const;
 

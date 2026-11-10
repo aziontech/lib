@@ -56,7 +56,6 @@ describe('validateConfig (v6)', () => {
           applications: [
             {
               name: 'my-app',
-              active: true,
               debug: false,
               edgeCacheEnabled: true,
               functionsEnabled: true,
@@ -69,7 +68,7 @@ describe('validateConfig (v6)', () => {
     });
 
     it('requires the name', () => {
-      expect(() => validateConfig({ version: 6, applications: [{ active: true }] })).toThrow(
+      expect(() => validateConfig({ version: 6, applications: [{}] })).toThrow(
         "The 'name' field is required in an application",
       );
     });
@@ -108,7 +107,7 @@ describe('validateConfig (v6)', () => {
 
   it('rejects properties the v6 schema does not know yet', () => {
     expect(() => validateConfig({ version: 6, kv: [] })).toThrow(
-      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, purge',
+      'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments, purge',
     );
   });
 
@@ -129,7 +128,6 @@ describe('validateConfig (v6) functions', () => {
             runtime: 'azion_js',
             defaultArgs: { key: 'value' },
             executionEnvironment: 'firewall',
-            active: false,
           },
         ],
       }),
@@ -192,7 +190,7 @@ describe('validateConfig (v6) application functionsInstances and rules', () => {
   describe('functionsInstances', () => {
     it('accepts an instance and requires name and ref', () => {
       expect(() =>
-        validateConfig(app({ functionsInstances: [{ name: 'i', ref: 'fn', args: { a: 1 }, active: true }] })),
+        validateConfig(app({ functionsInstances: [{ name: 'i', ref: 'fn', args: { a: 1 } }] })),
       ).not.toThrow();
       expect(() => validateConfig(app({ functionsInstances: [{ name: 'i', ref: 10 }] }))).not.toThrow();
       expect(() => validateConfig(app({ functionsInstances: [{ name: 'i' }] }))).toThrow(
@@ -214,7 +212,7 @@ describe('validateConfig (v6) application functionsInstances and rules', () => {
         validateConfig(
           app({
             rules: {
-              request: [requestRule({ description: 'd', active: true })],
+              request: [requestRule({ description: 'd' })],
               response: [requestRule({ behaviors: [{ type: 'add_response_header', attributes: { value: 'x: y' } }] })],
             },
           }),
@@ -309,7 +307,7 @@ describe('validateConfig (v6) application functionsInstances and rules', () => {
   });
 });
 
-describe('validateConfig (v6) workloads, workload deployments and environments', () => {
+describe('validateConfig (v6) workloads, environments and deployments', () => {
   const workload = (extra: Record<string, unknown> = {}) => ({
     version: 6,
     workloads: [{ name: 'my-workload', ...extra }],
@@ -318,19 +316,16 @@ describe('validateConfig (v6) workloads, workload deployments and environments',
     version: 6,
     environments: [{ name: 'production', deploymentPolicy: 'single_version', ...extra }],
   });
-  const workloadDeployment = (extra: Record<string, unknown> = {}) =>
-    workload({
-      deployments: [
-        { name: 'default-deployment', strategy: { type: 'default', attributes: { application: 'my-app' } }, ...extra },
-      ],
-    });
+  const deployment = (extra: Record<string, unknown> = {}) => ({
+    version: 6,
+    deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE', ...extra }],
+  });
 
   describe('workloads', () => {
     it('accepts a complete workload', () => {
       expect(() =>
         validateConfig(
           workload({
-            active: true,
             infrastructure: 2,
             workloadDomainAllowAccess: false,
             tls: { ciphers: 3, minimumVersion: 'tls_1_2' },
@@ -351,7 +346,7 @@ describe('validateConfig (v6) workloads, workload deployments and environments',
     });
 
     it('requires only the name', () => {
-      expect(() => validateConfig({ version: 6, workloads: [{ active: true }] })).toThrow(
+      expect(() => validateConfig({ version: 6, workloads: [{}] })).toThrow(
         "The 'name' field is required in workloads",
       );
       expect(() => validateConfig(workload())).not.toThrow();
@@ -382,9 +377,14 @@ describe('validateConfig (v6) workloads, workload deployments and environments',
 
     it('applies the limits of the http protocol of the v6 API', () => {
       const http = (extra: Record<string, unknown>) =>
-        workload({ protocols: { http: { versions: ['http1'], httpPorts: [80], httpsPorts: [443], ...extra } } });
+        workload({
+          protocols: { http: { versions: ['http1', 'http2'], httpPorts: [80], httpsPorts: [443], ...extra } },
+        });
 
       expect(() => validateConfig(http({}))).not.toThrow();
+      // the API requires http1 and http2
+      expect(() => validateConfig(http({ versions: ['http3'] }))).toThrow();
+      expect(() => validateConfig(http({ versions: ['http1', 'http3'] }))).toThrow();
       expect(() => validateConfig(http({ httpPorts: [] }))).toThrow();
       expect(() => validateConfig(http({ httpPorts: [80, 81, 82, 83, 84] }))).toThrow();
       expect(() => validateConfig(http({ httpsPorts: Array.from({ length: 13 }, (_, i) => 443 + i) }))).toThrow();
@@ -481,70 +481,49 @@ describe('validateConfig (v6) workloads, workload deployments and environments',
   });
 
   describe('deployments', () => {
-    it('accepts a complete deployment, with the references as names or as IDs', () => {
+    it('accepts a complete deployment', () => {
       expect(() =>
         validateConfig(
-          workloadDeployment({
-            current: true,
-            active: false,
-            strategy: {
-              type: 'default',
-              attributes: { application: 'my-app', firewall: 'my-firewall', customPage: 'my-page' },
-            },
-          }),
-        ),
-      ).not.toThrow();
-      expect(() =>
-        validateConfig(
-          workloadDeployment({
-            strategy: { type: 'default', attributes: { application: 10, firewall: 20, customPage: null } },
+          deployment({
+            description: 'Default',
+            bindingPolicy: 'STRICT',
+            deploymentPolicy: 'single_version',
+            strategyDefaults: { skewProtection: { enabled: true, defaultTtlSeconds: 3600 } },
           }),
         ),
       ).not.toThrow();
     });
 
-    it('requires name and strategy and limits the name to 254 characters', () => {
-      expect(() => validateConfig(workload({ deployments: [{ name: 'd' }] }))).toThrow(
-        "The 'name' and 'strategy' fields are required in each deployment",
+    it('limits the name to 3-255 characters and requires it', () => {
+      expect(() => validateConfig({ version: 6, deployments: [{ bindingPolicy: 'STRICT' }] })).toThrow(
+        "The 'name' field is required in each deployment",
       );
-      expect(() => validateConfig(workloadDeployment({ name: 'd'.repeat(254) }))).not.toThrow();
-      expect(() => validateConfig(workloadDeployment({ name: 'd'.repeat(255) }))).toThrow(
-        "The 'name' field must be a string between 1 and 254 characters",
-      );
-      expect(() => validateConfig(workloadDeployment({ name: '' }))).toThrow();
-    });
-
-    it('requires the type and the application of the strategy, and the type can only be default', () => {
-      expect(() => validateConfig(workloadDeployment({ strategy: { attributes: { application: 'a' } } }))).toThrow(
-        "The 'type' and 'attributes' fields are required in strategy",
-      );
-      expect(() => validateConfig(workloadDeployment({ strategy: { type: 'default', attributes: {} } }))).toThrow(
-        "The 'application' field is required in strategy attributes",
-      );
-      expect(() =>
-        validateConfig(workloadDeployment({ strategy: { type: 'canary', attributes: { application: 'a' } } })),
-      ).toThrow("The 'type' field must be one of: default");
-    });
-
-    it('rejects an ID below 1, an empty name and unknown properties', () => {
-      const attributes = (extra: Record<string, unknown>) =>
-        workloadDeployment({ strategy: { type: 'default', attributes: { application: 'a', ...extra } } });
-
-      expect(() => validateConfig(attributes({ application: 0 }))).toThrow();
-      expect(() => validateConfig(attributes({ application: '' }))).toThrow();
-      expect(() => validateConfig(attributes({ customPage: 0 }))).toThrow();
-      expect(() => validateConfig(attributes({ unknown: 1 }))).toThrow(
-        'No additional properties are allowed in strategy attributes',
-      );
-      expect(() => validateConfig(workloadDeployment({ unknown: 1 }))).toThrow(
-        'No additional properties are allowed in deployment items',
+      expect(() => validateConfig({ version: 6, deployments: [{ name: 'ab', bindingPolicy: 'FLEXIBLE' }] })).toThrow(
+        "The 'name' field must be a string between 3 and 255 characters",
       );
     });
 
-    it('does not accept the top-level deployments of the dev spec (the production API has no Deployments API)', () => {
+    it('requires the bindingPolicy (the creation of a deployment requires it)', () => {
       expect(() => validateConfig({ version: 6, deployments: [{ name: 'default-deployment' }] })).toThrow(
-        'Config can only contain the following properties',
+        "The 'bindingPolicy' field is required in each deployment",
       );
+      expect(() => validateConfig(deployment({ bindingPolicy: 'STRICT' }))).not.toThrow();
+      expect(() => validateConfig(deployment({ bindingPolicy: 'FLEXIBLE' }))).not.toThrow();
+    });
+
+    it('rejects values out of the enums and invalid skew protection', () => {
+      expect(() => validateConfig(deployment({ bindingPolicy: 'strict' }))).toThrow(
+        "The 'bindingPolicy' field must be one of: STRICT, FLEXIBLE",
+      );
+      expect(() => validateConfig(deployment({ deploymentPolicy: 'rolling' }))).toThrow(
+        "The 'deploymentPolicy' field must be one of: single_version, versioned_urls",
+      );
+      expect(() => validateConfig(deployment({ strategyDefaults: { skewProtection: { enabled: true } } }))).toThrow(
+        "The 'enabled' and 'defaultTtlSeconds' fields are required in skewProtection",
+      );
+      expect(() =>
+        validateConfig(deployment({ strategyDefaults: { skewProtection: { enabled: true, defaultTtlSeconds: 0 } } })),
+      ).toThrow();
     });
   });
 });
@@ -640,7 +619,6 @@ describe('validateConfig (v6) storage and connectors', () => {
           http({
             addresses: [
               {
-                active: true,
                 address: 'origin.example.com',
                 httpPort: 8080,
                 httpsPort: 8443,
@@ -859,7 +837,6 @@ describe('validateConfig (v6) waf and firewall', () => {
       expect(() =>
         validateConfig(
           waf({
-            active: false,
             engineSettings: {
               engineVersion: '2021-Q3',
               type: 'score',
@@ -874,9 +851,7 @@ describe('validateConfig (v6) waf and firewall', () => {
     });
 
     it('requires the name and limits it to 250 characters', () => {
-      expect(() => validateConfig({ version: 6, waf: [{ active: true }] })).toThrow(
-        "The 'name' field is required in the WAF object",
-      );
+      expect(() => validateConfig({ version: 6, waf: [{}] })).toThrow("The 'name' field is required in the WAF object");
       expect(() => validateConfig({ version: 6, waf: [{ name: 'a'.repeat(251) }] })).toThrow();
     });
 
@@ -920,7 +895,6 @@ describe('validateConfig (v6) waf and firewall', () => {
       expect(() =>
         validateConfig(
           firewall({
-            active: true,
             debugRules: false,
             functions: true,
             networkProtection: true,
@@ -929,12 +903,11 @@ describe('validateConfig (v6) waf and firewall', () => {
               {
                 name: 'rule',
                 description: 'Block admin',
-                active: true,
                 criteria: [{ variable: '${host}', conditional: 'if', operator: 'exists' }],
                 behaviors: [{ type: 'bypass' }],
               },
             ],
-            functionsInstances: [{ name: 'instance', ref: 'fn', args: {}, active: false }],
+            functionsInstances: [{ name: 'instance', ref: 'fn', args: {} }],
           }),
         ),
       ).not.toThrow();
@@ -1100,7 +1073,7 @@ describe('validateConfig (v6) waf and firewall', () => {
       const instance = (value: Record<string, unknown>) => firewall({ functionsInstances: [value] });
 
       it('accepts active (the v6 request has it) and limits the name to 100 characters', () => {
-        expect(() => validateConfig(instance({ name: 'i', ref: 'fn', active: false }))).not.toThrow();
+        expect(() => validateConfig(instance({ name: 'i', ref: 'fn' }))).not.toThrow();
         expect(() => validateConfig(instance({ name: 'a'.repeat(100), ref: 10 }))).not.toThrow();
         expect(() => validateConfig(instance({ name: 'a'.repeat(101), ref: 'fn' }))).toThrow(
           'The name must be a string between 1 and 100 characters long',
@@ -1125,7 +1098,7 @@ describe('validateConfig (v6) networkList', () => {
 
   it('accepts every type of list, with and without active', () => {
     expect(() => validateConfig(list())).not.toThrow();
-    expect(() => validateConfig(list({ type: 'asn', items: ['13335'], active: false }))).not.toThrow();
+    expect(() => validateConfig(list({ type: 'asn', items: ['13335'] }))).not.toThrow();
     expect(() => validateConfig(list({ type: 'countries', items: ['BR', 'US'] }))).not.toThrow();
   });
 
@@ -1213,7 +1186,7 @@ describe('validateConfig (v6) customPages', () => {
             entry({ type: 'page_connector' }, { connector: 10, ttl: 300, uri: '/error.html', customStatusCode: 200 }),
             { code: 'default', page: { attributes: { connector: 'my-connector', uri: null, customStatusCode: null } } },
           ],
-          { active: false },
+          {},
         ),
       ),
     ).not.toThrow();
@@ -1332,7 +1305,7 @@ describe('validateConfig (v6) purge', () => {
           version: 6,
           purge: [
             { type: 'url', items: ['https://example.com/a'], layer: 'cache' },
-            { type: 'cachekey', items: ['example.com/a'], layer: 'tiered_cache' },
+            { type: 'cachekey', items: ['example.com/a'], layer: 'cache' },
             { type: 'wildcard', items: ['https://example.com/*'] },
           ],
         }),
@@ -1353,7 +1326,7 @@ describe('validateConfig (v6) purge', () => {
         "The 'type' field must be either 'url', 'cachekey' or 'wildcard'.",
       );
       expect(() => validateConfig({ version: 6, purge: [{ type: 'url', items: ['a'], layer: 'edge' }] })).toThrow(
-        "The 'layer' field must be either 'cache' or 'tiered_cache'.",
+        "The 'layer' field must be 'cache'.",
       );
     });
 
@@ -1377,5 +1350,115 @@ describe('validateConfig (v6) purge', () => {
         "The 'purge' field must be an array of purge items.",
       );
     });
+  });
+});
+
+describe('validateConfig (v6) changes of the current openapi-v6-prod', () => {
+  describe('active was removed from the requests', () => {
+    const rejected: Array<[string, Record<string, unknown>]> = [
+      ['application', { applications: [{ name: 'a', active: true }] }],
+      [
+        'application rule',
+        {
+          applications: [
+            {
+              name: 'a',
+              rules: {
+                request: [
+                  {
+                    name: 'r',
+                    active: true,
+                    criteria: [[{ variable: '${uri}', conditional: 'if', operator: 'matches', argument: '^/' }]],
+                    behaviors: [{ type: 'deliver' }],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+      [
+        'function instance',
+        { applications: [{ name: 'a', functionsInstances: [{ name: 'i', ref: 1, active: true }] }] },
+      ],
+      ['function', { functions: [{ name: 'f', path: './f.js', active: true }] }],
+      [
+        'connector',
+        { connectors: [{ name: 'c', type: 'live_ingest', active: true, attributes: { region: 'us-east-1' } }] },
+      ],
+      [
+        'connector address',
+        { connectors: [{ name: 'c', type: 'http', attributes: { addresses: [{ address: 'a.com', active: true }] } }] },
+      ],
+      ['firewall', { firewall: [{ name: 'f', active: true }] }],
+      [
+        'firewall rule',
+        {
+          firewall: [{ name: 'f', rules: [{ name: 'r', active: true, criteria: [], behaviors: [{ type: 'deny' }] }] }],
+        },
+      ],
+      ['waf', { waf: [{ name: 'w', active: true }] }],
+      ['network list', { networkList: [{ name: 'n', type: 'countries', items: ['BR'], active: true }] }],
+      ['custom page', { customPages: [{ name: 'p', active: true, pages: [] }] }],
+      ['workload', { workloads: [{ name: 'w', active: true }] }],
+    ];
+
+    it.each(rejected)('rejects active in a %s', (_name, extra) => {
+      expect(() => validateConfig({ version: 6, ...extra })).toThrow();
+    });
+  });
+
+  it('accepts only true for edgeCacheEnabled (the cache module cannot be disabled)', () => {
+    expect(() => validateConfig({ version: 6, applications: [{ name: 'a', edgeCacheEnabled: true }] })).not.toThrow();
+    expect(() => validateConfig({ version: 6, applications: [{ name: 'a', edgeCacheEnabled: false }] })).toThrow();
+  });
+
+  it('limits the name of a device group to letters and numbers', () => {
+    const group = (name: string) => ({
+      version: 6,
+      applications: [{ name: 'a', deviceGroups: [{ name, userAgent: 'x' }] }],
+    });
+
+    expect(() => validateConfig(group('mobile1'))).not.toThrow();
+    expect(() => validateConfig(group('my mobile'))).toThrow();
+    expect(() => validateConfig(group('my-mobile'))).toThrow();
+  });
+
+  describe('function dependencies', () => {
+    const fn = (dependencies: unknown) => ({ version: 6, functions: [{ name: 'f', path: './f.js', dependencies }] });
+
+    it('accepts connectors and network lists by name or ID', () => {
+      expect(() =>
+        validateConfig(
+          fn([
+            { type: 'connector', ref: 'my-origin' },
+            { type: 'network_list', ref: 5 },
+          ]),
+        ),
+      ).not.toThrow();
+    });
+
+    it('requires type and ref, and rejects another type, an empty ref and more than 20 items', () => {
+      expect(() => validateConfig(fn([{ type: 'connector' }]))).toThrow();
+      expect(() => validateConfig(fn([{ type: 'waf', ref: 'x' }]))).toThrow();
+      expect(() => validateConfig(fn([{ type: 'connector', ref: 0 }]))).toThrow();
+      expect(() => validateConfig(fn([{ type: 'connector', ref: 1, id: 1 }]))).toThrow();
+      expect(() =>
+        validateConfig(fn(Array.from({ length: 21 }, (_, i) => ({ type: 'connector', ref: i + 1 })))),
+      ).toThrow();
+      expect(() =>
+        validateConfig(fn(Array.from({ length: 20 }, (_, i) => ({ type: 'connector', ref: i + 1 })))),
+      ).not.toThrow();
+    });
+  });
+
+  it('accepts the latest deployment policy only in a deployment, not in an environment', () => {
+    expect(() =>
+      validateConfig({
+        version: 6,
+        deployments: [{ name: 'abc', bindingPolicy: 'FLEXIBLE', deploymentPolicy: 'latest' }],
+      }),
+    ).not.toThrow();
+    expect(() => validateConfig({ version: 6, environments: [{ name: 'abc', deploymentPolicy: 'latest' }] })).toThrow();
   });
 });

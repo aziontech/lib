@@ -156,8 +156,8 @@ describe('v6 support', () => {
       firewall: [],
       custom_pages: [],
       environments: [],
+      deployments: [],
       workloads: [],
-      workload_deployments: [],
     });
   });
 
@@ -166,7 +166,6 @@ describe('v6 support', () => {
     expect(manifest.applications).toEqual([
       {
         name: 'my-app',
-        active: true,
         debug: false,
         modules: {
           cache: { enabled: true },
@@ -184,9 +183,7 @@ describe('v6 support', () => {
       networkList: [{ name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'] }],
     });
 
-    expect(manifest.network_list).toEqual([
-      { name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'], active: true },
-    ]);
+    expect(manifest.network_list).toEqual([{ name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'] }]);
   });
 
   it('forwards the version to manifest helpers', () => {

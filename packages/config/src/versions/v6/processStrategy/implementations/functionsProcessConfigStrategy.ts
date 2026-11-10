@@ -1,6 +1,6 @@
 import type { FunctionExecutionEnvironment, FunctionRuntime } from '../../../../types';
 import ProcessConfigStrategy from '../../../shared/processStrategy/processConfigStrategy';
-import type { AzionConfigV6 } from '../../types';
+import type { AzionConfigV6, AzionFunctionDependencyV6 } from '../../types';
 
 /**
  * FunctionsProcessConfigStrategy V6
@@ -18,6 +18,19 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
           `Function "${functionName}" references storage bucket "${bucketNameOrId}" which is not defined in the storage configuration.`,
         );
       }
+    }
+  }
+
+  /**
+   * Validate that the connector or network list of a dependency is declared. A number is an ID, which is not validated.
+   */
+  private validateDependency(config: AzionConfigV6, dependency: AzionFunctionDependencyV6, functionName: string) {
+    if (typeof dependency.ref !== 'string') return;
+
+    const declared = dependency.type === 'connector' ? config.connectors : config.networkList;
+    if (!declared?.some((resource) => resource.name === dependency.ref)) {
+      const label = dependency.type === 'connector' ? 'Connector' : 'Network List';
+      throw new Error(`Function "${functionName}" depends on non-existent ${label} "${dependency.ref}".`);
     }
   }
 
@@ -40,9 +53,15 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
         runtime: func.runtime || 'azion_js',
         default_args: func.defaultArgs || {},
         execution_environment: func.executionEnvironment || 'application',
-        active: func.active ?? true,
         path: func.path,
         bindings: func.bindings,
+        ...(func.dependencies &&
+          func.dependencies.length > 0 && {
+            dependencies: func.dependencies.map((dependency) => {
+              this.validateDependency(config, dependency, func.name);
+              return { type: dependency.type, id: dependency.ref };
+            }),
+          }),
       };
     });
   }
@@ -57,7 +76,7 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
         runtime?: string;
         default_args?: Record<string, unknown>;
         execution_environment?: string;
-        active?: boolean;
+        dependencies?: Array<{ type: string; id: string | number }>;
       }>;
     },
     transformedPayload: AzionConfigV6,
@@ -72,7 +91,12 @@ class FunctionsProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
       runtime: func.runtime as FunctionRuntime,
       defaultArgs: func.default_args,
       executionEnvironment: func.execution_environment as FunctionExecutionEnvironment,
-      active: func.active,
+      ...(func.dependencies && {
+        dependencies: func.dependencies.map((dependency) => ({
+          type: dependency.type as AzionFunctionDependencyV6['type'],
+          ref: dependency.id,
+        })),
+      }),
     }));
   }
 }

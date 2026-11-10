@@ -1,5 +1,6 @@
 import type { AzionFunction } from '../../../../../types';
 import ProcessConfigStrategy from '../../../../shared/processStrategy/processConfigStrategy';
+import { FIREWALL_BEHAVIOR_MODULES, FIREWALL_VARIABLE_MODULES } from '../../../constants';
 import type {
   AzionConfigV6,
   AzionFirewallBehaviorV6,
@@ -12,7 +13,9 @@ import type {
  * FirewallProcessConfigStrategy V6
  * @class FirewallProcessConfigStrategy
  * @description Converts the v6 firewalls between the config and the manifest.
- * Unlike v4, the `active` and `debugRules` of the firewall are written to the manifest.
+ * Unlike v4, the `debugRules` of the firewall is written to the manifest.
+ * The behaviors and criterion variables of the rules need the modules the API documents (`FirewallBehaviorRequest` and
+ * `FirewallCriterionFieldRequest`): at least one of the listed modules must be enabled.
  */
 class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   /**
@@ -47,6 +50,41 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
     }
   }
 
+  /**
+   * Validate that the modules the rules need are enabled
+   */
+  private validateModules(fw: AzionFirewallV6, modules: Record<string, { enabled: boolean }>) {
+    const flags: Record<string, string> = {
+      functions: 'functions',
+      network_protection: 'networkProtection',
+      waf: 'waf',
+    };
+    const requireOneOf = (needed: readonly string[], ruleName: string, what: string) => {
+      if (!needed.some((module) => modules[module]?.enabled)) {
+        throw new Error(
+          `Firewall "${fw.name}" rule "${ruleName}" uses ${what}, which needs ${
+            needed.length === 1 ? 'the' : 'one of the'
+          } ${needed.map((module) => `${module} (${flags[module]})`).join(', ')} module${
+            needed.length === 1 ? '' : 's'
+          } enabled.`,
+        );
+      }
+    };
+
+    fw.rules?.forEach((rule) => {
+      rule.behaviors.forEach((behavior) => {
+        const needed = FIREWALL_BEHAVIOR_MODULES[behavior.type];
+        if (needed) requireOneOf(needed, rule.name, `the behavior "${behavior.type}"`);
+      });
+      const variables = rule.criteria ? rule.criteria.map((criterion) => criterion.variable) : [rule.variable];
+      variables.forEach((variable) => {
+        const name = String(variable).replace(/^\$\{|\}$/g, '');
+        const needed = FIREWALL_VARIABLE_MODULES[name];
+        if (needed) requireOneOf(needed, rule.name, `the variable "${name}"`);
+      });
+    });
+  }
+
   transformToManifest(config: AzionConfigV6) {
     if (!config.firewall || !Array.isArray(config.firewall)) {
       return [];
@@ -68,8 +106,9 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
           },
         },
         debug: fw.debugRules ?? false,
-        active: fw.active ?? true,
       };
+
+      this.validateModules(fw, payload.modules);
 
       if (fw.rules && fw.rules.length > 0) {
         fw.rules.forEach((rule: AzionFirewallRuleV6) =>
@@ -87,7 +126,6 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
         payload.rules_engine = fw.rules.map((rule: AzionFirewallRuleV6) => ({
           name: rule.name,
           description: rule.description || '',
-          active: rule.active ?? true,
           behaviors: this.transformBehaviorsToManifest(rule.behaviors),
           criteria: rule.criteria
             ? [
@@ -117,7 +155,6 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
           return {
             name: instance.name,
             args: instance.args || {},
-            active: instance.active ?? true,
             function: instance.ref,
           };
         });
@@ -192,7 +229,6 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
     transformedPayload.firewall = payload.firewall.map((fw: any) => {
       const firewallConfig: AzionFirewallV6 = {
         name: fw?.name,
-        active: fw?.active ?? true,
         functions: fw?.modules?.functions?.enabled ?? false,
         networkProtection: fw?.modules?.network_protection?.enabled ?? false,
         waf: fw?.modules?.waf?.enabled ?? false,
@@ -204,7 +240,6 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
         firewallConfig.rules = fw.rules_engine.map((rule: any) => ({
           name: rule.name,
           description: rule.description || undefined,
-          active: rule.active ?? true,
           behaviors: this.transformBehaviorsToConfig(rule.behaviors),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           criteria: rule.criteria?.[0]?.map((criterion: any) => ({ ...criterion })) || [],
@@ -216,7 +251,6 @@ class FirewallProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
         firewallConfig.functionsInstances = fw.functions_instances.map((instance: any) => ({
           name: instance.name,
           args: instance.args || {},
-          active: instance.active ?? true,
           ref: instance.function,
         }));
       }

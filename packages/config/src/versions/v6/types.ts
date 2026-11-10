@@ -3,7 +3,7 @@ import type {
   AzionCache,
   AzionFunction,
   AzionFunctionInstance,
-  AzionRules,
+  AzionRule,
   AzionWorkloadMTLS,
   AzionWorkloadProtocols,
   WorkloadInfrastructure,
@@ -20,7 +20,9 @@ import type {
   CONNECTOR_TRANSPORT_POLICY,
   CUSTOM_PAGE_ERROR_CODES,
   CUSTOM_PAGE_TYPES,
+  DEPLOYMENT_BINDING_POLICIES,
   DEPLOYMENT_POLICIES,
+  ENVIRONMENT_DEPLOYMENT_POLICIES,
   ENVIRONMENT_BRANCH_TRACKING_MODES,
   ENVIRONMENT_LOG_VERBOSITY,
   ENVIRONMENT_ROBOTS_POLICIES,
@@ -30,20 +32,52 @@ import type {
   FIREWALL_RULE_CONDITIONAL,
   FIREWALL_RULE_OPERATORS,
   FIREWALL_WAF_MODES,
+  FUNCTION_DEPENDENCY_TYPES,
   NETWORK_LIST_TYPES,
   WAF_ENGINE_TYPES,
   WAF_ENGINE_VERSIONS,
   WAF_RULESETS,
   WAF_SENSITIVITY,
   WAF_THREAT_TYPES,
-  WORKLOAD_DEPLOYMENT_STRATEGY_TYPES,
   WORKLOADS_ACCESS_TYPES,
 } from './constants';
 
 /**
- * Function of the Azion API v6.
+ * Resource a function uses at runtime, which a release includes with the function.
  */
-export type AzionFunctionV6 = AzionFunction;
+export type AzionFunctionDependencyV6 = {
+  type: (typeof FUNCTION_DEPENDENCY_TYPES)[number];
+  /** Name of a connector or network list declared in the config, or its ID */
+  ref: string | number;
+};
+
+/**
+ * Function of the Azion API v6 (it has no `active`).
+ */
+export type AzionFunctionV6 = Omit<AzionFunction, 'active'> & {
+  /** Connectors and network lists the function uses at runtime (at most 20) */
+  dependencies?: AzionFunctionDependencyV6[];
+};
+
+/**
+ * Function instance of the Azion API v6 (it has no `active`).
+ */
+export type AzionFunctionInstanceV6 = Omit<AzionFunctionInstance, 'active'>;
+
+/**
+ * Rule of the Azion API v6 (it has no `active`).
+ */
+export type AzionRuleV6 = Omit<AzionRule, 'active'>;
+
+/**
+ * Rules of an application of the Azion API v6.
+ */
+export type AzionRulesV6 = {
+  /** Request rules */
+  request?: AzionRuleV6[];
+  /** Response rules */
+  response?: AzionRuleV6[];
+};
 
 /**
  * Device group of an application of the Azion API v6.
@@ -62,23 +96,22 @@ export type AzionApplicationV6 = {
   /** Application name */
   name: string;
   /** Enable edge cache */
-  edgeCacheEnabled?: boolean;
+  /** The cache module cannot be disabled, so it can only be true */
+  edgeCacheEnabled?: true;
   /** Enable functions */
   functionsEnabled?: boolean;
   /** Enable application accelerator */
   applicationAcceleratorEnabled?: boolean;
   /** Enable image processor */
   imageProcessorEnabled?: boolean;
-  /** Indicates if the application is active */
-  active?: boolean;
   /** Enable debug mode */
   debug?: boolean;
   /** Cache settings */
   cache?: AzionCache[];
   /** Rules configuration */
-  rules?: AzionRules;
+  rules?: AzionRulesV6;
   /** Function instances */
-  functionsInstances?: AzionFunctionInstance[];
+  functionsInstances?: AzionFunctionInstanceV6[];
   /** Device groups */
   deviceGroups?: AzionDeviceGroupV6[];
 };
@@ -102,39 +135,15 @@ export type AzionWorkloadBindingDomainV6 = {
 };
 
 /**
- * Binding of a workload to an environment and one of its deployments.
+ * Binding of a workload to an environment and a deployment.
  */
 export type AzionWorkloadBindingV6 = {
   /** Name of an environment declared in `environments` */
   environment: string;
-  /** Name of a deployment declared in the `deployments` of the same workload */
+  /** Name of a deployment declared in `deployments` */
   deployment: string;
   /** Domains served by the binding */
   domains?: AzionWorkloadBindingDomainV6[];
-};
-
-/**
- * Deployment of a workload of the Azion API v6.
- */
-export type AzionWorkloadDeploymentV6 = {
-  /** Deployment name */
-  name: string;
-  /** Whether it is the current deployment of the workload */
-  current?: boolean;
-  /** Whether the deployment is active */
-  active?: boolean;
-  /** What the deployment serves */
-  strategy: {
-    type: (typeof WORKLOAD_DEPLOYMENT_STRATEGY_TYPES)[number];
-    attributes: {
-      /** Name or ID of the application */
-      application: string | number;
-      /** Name or ID of the firewall */
-      firewall?: string | number | null;
-      /** Name or ID of the custom page */
-      customPage?: string | number | null;
-    };
-  };
 };
 
 /**
@@ -142,14 +151,11 @@ export type AzionWorkloadDeploymentV6 = {
  */
 export type AzionWorkloadV6 = {
   name: string;
-  active?: boolean;
   infrastructure?: WorkloadInfrastructure;
   tls?: AzionWorkloadTLSV6;
   protocols?: AzionWorkloadProtocols;
   mtls?: AzionWorkloadMTLS;
   workloadDomainAllowAccess?: boolean;
-  /** Deployments of the workload: the application, firewall and custom page each one serves */
-  deployments?: AzionWorkloadDeploymentV6[];
   /** Environments and deployments the workload is bound to, with the domains of each binding */
   bindings?: AzionWorkloadBindingV6[];
 };
@@ -175,7 +181,22 @@ export type AzionEnvironmentV6 = {
     branchMatch: string;
   } | null;
   /** How the releases of the environment are served. Required by the API, and it cannot be changed afterwards */
-  deploymentPolicy: (typeof DEPLOYMENT_POLICIES)[number];
+  deploymentPolicy: (typeof ENVIRONMENT_DEPLOYMENT_POLICIES)[number];
+};
+
+/**
+ * Deployment of the Azion API v6.
+ */
+export type AzionDeploymentV6 = {
+  /** Deployment name */
+  name: string;
+  description?: string | null;
+  /** Whether a release can swap the resources of the deployment. Required by the API */
+  bindingPolicy: (typeof DEPLOYMENT_BINDING_POLICIES)[number];
+  deploymentPolicy?: (typeof DEPLOYMENT_POLICIES)[number];
+  strategyDefaults?: {
+    skewProtection?: { enabled: boolean; defaultTtlSeconds: number };
+  };
 };
 
 /**
@@ -196,7 +217,6 @@ export type AzionStorageV6 = {
  * Address of an HTTP connector.
  */
 export type AzionConnectorAddressV6 = {
-  active?: boolean;
   /** IPv4/IPv6 address or CNAME */
   address: string;
   httpPort?: number;
@@ -259,8 +279,6 @@ export type AzionConnectorHttpAttributesV6 = {
 type AzionConnectorBaseV6 = {
   /** Connector name */
   name: string;
-  /** Indicates if the connector is active */
-  active?: boolean;
 };
 
 /**
@@ -300,8 +318,6 @@ export type AzionCustomPageEntryV6 = {
 export type AzionCustomPageV6 = {
   /** Custom page name */
   name: string;
-  /** Active status */
-  active?: boolean;
   /** Pages, one for each error code */
   pages: AzionCustomPageEntryV6[];
 };
@@ -316,8 +332,6 @@ export type AzionNetworkListV6 = {
   type: (typeof NETWORK_LIST_TYPES)[number];
   /** Items of the list */
   items: string[];
-  /** Active status */
-  active?: boolean;
 };
 
 /**
@@ -358,7 +372,6 @@ export type AzionFirewallBehaviorV6 =
 export type AzionFirewallRuleV6 = {
   name: string;
   description?: string;
-  active?: boolean;
   /** Regex the variable must match */
   match?: string;
   variable?: string;
@@ -371,7 +384,6 @@ export type AzionFirewallRuleV6 = {
  */
 export type AzionFirewallV6 = {
   name: string;
-  active?: boolean;
   debugRules?: boolean;
   /** Enable the functions module */
   functions?: boolean;
@@ -380,7 +392,7 @@ export type AzionFirewallV6 = {
   /** Enable the waf module */
   waf?: boolean;
   rules?: AzionFirewallRuleV6[];
-  functionsInstances?: AzionFunctionInstance[];
+  functionsInstances?: AzionFunctionInstanceV6[];
 };
 
 /**
@@ -388,7 +400,6 @@ export type AzionFirewallV6 = {
  */
 export type AzionWafV6 = {
   name: string;
-  active?: boolean;
   engineSettings?: {
     engineVersion?: (typeof WAF_ENGINE_VERSIONS)[number];
     type?: (typeof WAF_ENGINE_TYPES)[number];
@@ -409,7 +420,7 @@ export type AzionPurgeV6 = {
   /** Items to be purged */
   items: string[];
   /** Cache layer to be purged */
-  layer?: 'cache' | 'tiered_cache';
+  layer?: 'cache';
   /** Purge type */
   type: 'url' | 'cachekey' | 'wildcard';
 };
@@ -442,6 +453,8 @@ export type AzionConfigV6 = {
   workloads?: AzionWorkloadV6[];
   /** Environments */
   environments?: AzionEnvironmentV6[];
+  /** Deployments */
+  deployments?: AzionDeploymentV6[];
   /** Purge configurations */
   purge?: AzionPurgeV6[];
 };

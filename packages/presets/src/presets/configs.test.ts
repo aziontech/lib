@@ -18,6 +18,12 @@ const goldenPresets = readdirSync(goldenDir)
   .filter((file) => file.endsWith('.input.json'))
   .map((file) => file.replace('.input.json', ''));
 
+// the v6 API has no `active` in any resource, while the v4 manifest still writes it
+const withoutActive = (value: unknown) =>
+  value === undefined
+    ? undefined
+    : JSON.parse(JSON.stringify(value, (key, item) => (key === 'active' ? undefined : item)));
+
 const byName = (name: string) => presets.find((preset) => preset.metadata.name === name) as AzionBuildPreset;
 
 describe('preset configs by API version', () => {
@@ -49,7 +55,7 @@ describe('preset configs by API version', () => {
     });
 
     it.each(presets.map((preset) => [preset.metadata.name, preset] as const))(
-      '%s: validates and produces the manifest of the v4 config, with the environment and the binding of the v6',
+      '%s: validates and produces the manifest of the v4 config, with the environment, the deployment and the binding of the v6',
       (name) => {
         const config = resolvePresetConfig(byName(name), 6);
         expect(config.version).toBe(6);
@@ -63,12 +69,11 @@ describe('preset configs by API version', () => {
         expect(v6.version).toBe(6);
         expect(plain(v6.build)).toEqual(plain(v4.build));
         expect(v6.storage).toEqual(v4.storage);
-        expect(v6.connectors).toEqual(v4.connectors);
-        expect(plain(v6.functions)).toEqual(plain(v4.functions));
-        expect(v6.applications).toEqual(v4.applications);
-        expect(v6.workload_deployments).toEqual(
-          v4.workload_deployments.map((deployment: object) => ({ workload_name: '$WORKLOAD_NAME', ...deployment })),
-        );
+        expect(v6.connectors).toEqual(withoutActive(v4.connectors));
+        expect(plain(v6.functions)).toEqual(withoutActive(plain(v4.functions)));
+        expect(v6.applications).toEqual(withoutActive(v4.applications));
+        expect(v6).not.toHaveProperty('workload_deployments');
+        expect(v6.deployments.map((deployment: { name: string }) => deployment.name)).toEqual(['$DEPLOYMENT_NAME']);
         expect(v6.environments.map((environment: { name: string }) => environment.name)).toEqual(['$ENVIRONMENT_NAME']);
         expect(v6.workloads[0].bindings).toEqual([
           { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
@@ -90,8 +95,8 @@ describe('preset configs by API version', () => {
       const v4 = processConfig(resolvePresetConfig(byName('javascript'), 4));
       const v6 = processConfig(resolvePresetConfig(byName('javascript'), 6));
 
-      expect(v6.functions).toEqual(v4.functions);
-      expect(v6.applications).toEqual(v4.applications);
+      expect(v6.functions).toEqual(withoutActive(v4.functions));
+      expect(v6.applications).toEqual(withoutActive(v4.applications));
       expect(v6.applications[0].modules.functions.enabled).toBe(true);
     });
 
@@ -104,8 +109,8 @@ describe('preset configs by API version', () => {
 
       expect(v6.version).toBe(6);
       expect(v6.storage).toEqual(v4.storage);
-      expect(v6.connectors).toEqual(v4.connectors);
-      expect(v6.applications).toEqual(v4.applications);
+      expect(v6.connectors).toEqual(withoutActive(v4.connectors));
+      expect(v6.applications).toEqual(withoutActive(v4.applications));
       expect(v6.applications[0].cache_settings).toHaveLength(1);
       // the rules deliver the static assets from the storage connector
       expect(JSON.stringify(v6.applications[0].rules)).toContain('"set_connector"');
@@ -121,8 +126,8 @@ describe('preset configs by API version', () => {
 
       expect(v6.version).toBe(6);
       expect(v6.storage).toEqual(v4.storage);
-      expect(v6.connectors).toEqual(v4.connectors);
-      expect(v6.applications).toEqual(v4.applications);
+      expect(v6.connectors).toEqual(withoutActive(v4.connectors));
+      expect(v6.applications).toEqual(withoutActive(v4.applications));
       expect(v6.applications[0].cache_settings).toHaveLength(1);
       expect(v6.storage[0].dir).toBe('./_site');
     });
@@ -136,14 +141,14 @@ describe('preset configs by API version', () => {
 
       expect(v6.version).toBe(6);
       expect(v6.storage).toEqual(v4.storage);
-      expect(v6.connectors).toEqual(v4.connectors);
+      expect(v6.connectors).toEqual(withoutActive(v4.connectors));
       // the function keeps the storage binding
-      expect(v6.functions).toEqual(v4.functions);
+      expect(v6.functions).toEqual(withoutActive(v4.functions));
       expect(v6.functions[0].bindings).toEqual({ storage: { bucket: '$BUCKET_NAME', prefix: '$BUCKET_PREFIX' } });
-      expect(v6.applications).toEqual(v4.applications);
+      expect(v6.applications).toEqual(withoutActive(v4.applications));
     });
 
-    it('javascript: binds the workload to an environment and to its own deployment', () => {
+    it('javascript: binds the workload to an environment and a deployment declared in the config', () => {
       const manifest = processConfig(resolvePresetConfig(byName('javascript'), 6));
 
       expect(manifest.environments.map((environment: { name: string }) => environment.name)).toEqual([
@@ -152,11 +157,12 @@ describe('preset configs by API version', () => {
       expect(
         manifest.environments.map((environment: { deployment_policy: string }) => environment.deployment_policy),
       ).toEqual(['single_version']);
-      expect(manifest).not.toHaveProperty('deployments');
+      expect(manifest.deployments.map((deployment: { name: string }) => deployment.name)).toEqual(['$DEPLOYMENT_NAME']);
+      expect(manifest.deployments.map((deployment: { binding_policy: string }) => deployment.binding_policy)).toEqual([
+        'FLEXIBLE',
+      ]);
       expect(manifest.workloads).toHaveLength(1);
-      expect(manifest.workloads[0]).toEqual(
-        expect.objectContaining({ name: '$WORKLOAD_NAME', active: true, infrastructure: 1 }),
-      );
+      expect(manifest.workloads[0]).toEqual(expect.objectContaining({ name: '$WORKLOAD_NAME', infrastructure: 1 }));
       expect(manifest.workloads[0].bindings).toEqual([
         { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
       ]);

@@ -34,7 +34,6 @@ describe('CustomPagesProcessConfigStrategy (v6)', () => {
       ).toEqual([
         {
           name: 'errors',
-          active: true,
           pages: [
             {
               code: '404',
@@ -54,7 +53,6 @@ describe('CustomPagesProcessConfigStrategy (v6)', () => {
           withPages([
             {
               name: 'errors',
-              active: false,
               pages: [
                 {
                   code: 'default',
@@ -71,7 +69,6 @@ describe('CustomPagesProcessConfigStrategy (v6)', () => {
       ).toEqual([
         {
           name: 'errors',
-          active: false,
           pages: [
             {
               code: 'default',
@@ -129,7 +126,6 @@ describe('CustomPagesProcessConfigStrategy (v6)', () => {
           custom_pages: [
             {
               name: 'errors',
-              active: true,
               pages: [
                 {
                   code: '404',
@@ -148,7 +144,6 @@ describe('CustomPagesProcessConfigStrategy (v6)', () => {
       expect(transformedPayload.customPages).toEqual([
         {
           name: 'errors',
-          active: true,
           pages: [
             {
               code: '404',

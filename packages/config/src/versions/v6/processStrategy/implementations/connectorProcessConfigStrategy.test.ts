@@ -21,17 +21,17 @@ describe('ConnectorProcessConfigStrategy (v6)', () => {
       expect(
         toManifest([
           { name: 'with-prefix', type: 'storage', attributes: { bucket: 'my-bucket', prefix: 'p' } },
-          { name: 'no-prefix', type: 'storage', active: false, attributes: { bucket: 'my-bucket' } },
+          { name: 'no-prefix', type: 'storage', attributes: { bucket: 'my-bucket' } },
         ]),
       ).toEqual([
-        { name: 'with-prefix', active: true, type: 'storage', attributes: { bucket: 'my-bucket', prefix: 'p' } },
-        { name: 'no-prefix', active: false, type: 'storage', attributes: { bucket: 'my-bucket' } },
+        { name: 'with-prefix', type: 'storage', attributes: { bucket: 'my-bucket', prefix: 'p' } },
+        { name: 'no-prefix', type: 'storage', attributes: { bucket: 'my-bucket' } },
       ]);
     });
 
     it('should map a live ingest connector', () => {
       expect(toManifest([{ name: 'ingest', type: 'live_ingest', attributes: { region: 'br-east-1' } }])).toEqual([
-        { name: 'ingest', active: true, type: 'live_ingest', attributes: { region: 'br-east-1' } },
+        { name: 'ingest', type: 'live_ingest', attributes: { region: 'br-east-1' } },
       ]);
     });
 
@@ -42,10 +42,9 @@ describe('ConnectorProcessConfigStrategy (v6)', () => {
 
       expect(connector).toEqual({
         name: 'origin',
-        active: true,
         type: 'http',
         attributes: {
-          addresses: [{ active: true, address: 'origin.example.com', http_port: 80, https_port: 443 }],
+          addresses: [{ address: 'origin.example.com', http_port: 80, https_port: 443 }],
           connection_options: {
             dns_resolution: 'both',
             transport_policy: 'preserve',
@@ -69,11 +68,9 @@ describe('ConnectorProcessConfigStrategy (v6)', () => {
         {
           name: 'origin',
           type: 'http',
-          active: false,
           attributes: {
             addresses: [
               {
-                active: false,
                 address: 'origin.example.com',
                 httpPort: 8080,
                 httpsPort: 8443,
@@ -115,12 +112,10 @@ describe('ConnectorProcessConfigStrategy (v6)', () => {
 
       expect(connector).toEqual({
         name: 'origin',
-        active: false,
         type: 'http',
         attributes: {
           addresses: [
             {
-              active: false,
               address: 'origin.example.com',
               http_port: 8080,
               https_port: 8443,
@@ -171,16 +166,14 @@ describe('ConnectorProcessConfigStrategy (v6)', () => {
 
     it('should round trip storage, live ingest and http connectors through the manifest', () => {
       const connectors: AzionConnectorV6[] = [
-        { name: 'files', type: 'storage', active: true, attributes: { bucket: 'my-bucket', prefix: 'p' } },
-        { name: 'ingest', type: 'live_ingest', active: true, attributes: { region: 'us-east-2' } },
+        { name: 'files', type: 'storage', attributes: { bucket: 'my-bucket', prefix: 'p' } },
+        { name: 'ingest', type: 'live_ingest', attributes: { region: 'us-east-2' } },
         {
           name: 'origin',
           type: 'http',
-          active: true,
           attributes: {
             addresses: [
               {
-                active: true,
                 address: 'origin.example.com',
                 httpPort: 80,
                 httpsPort: 443,

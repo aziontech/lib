@@ -102,11 +102,6 @@ const createRuleSchema = (isRequestPhase = false) => ({
       maxLength: 1000,
       errorMessage: "The 'description' field must be a string with maximum 1000 characters.",
     },
-    active: {
-      type: 'boolean',
-      default: true,
-      errorMessage: "The 'active' field must be a boolean.",
-    },
     criteria: {
       type: 'array',
       items: {
@@ -150,11 +145,6 @@ const applicationsSchema = {
         maxLength: 100,
         errorMessage: "The 'name' field must be a string with 1 to 100 characters",
       },
-      active: {
-        type: 'boolean',
-        default: true,
-        errorMessage: "The 'active' field must be a boolean",
-      },
       debug: {
         type: 'boolean',
         default: false,
@@ -162,8 +152,9 @@ const applicationsSchema = {
       },
       edgeCacheEnabled: {
         type: 'boolean',
+        enum: [true],
         default: true,
-        errorMessage: "The 'edgeCacheEnabled' field must be a boolean",
+        errorMessage: "The 'edgeCacheEnabled' field can only be true: the cache module cannot be disabled",
       },
       functionsEnabled: {
         type: 'boolean',
@@ -407,8 +398,8 @@ const applicationsSchema = {
               type: 'string',
               minLength: 1,
               maxLength: 250,
-              pattern: '.*',
-              errorMessage: "The 'name' field must be a string between 1 and 250 characters",
+              pattern: '^[a-zA-Z0-9]+$',
+              errorMessage: "The 'name' field must be a string of 1 to 250 letters and numbers",
             },
             userAgent: {
               type: 'string',
@@ -447,11 +438,6 @@ const applicationsSchema = {
               type: 'object',
               default: {},
               errorMessage: "The 'args' field must be an object",
-            },
-            active: {
-              type: 'boolean',
-              default: true,
-              errorMessage: "The 'active' field must be a boolean",
             },
           },
           required: ['name', 'ref'],

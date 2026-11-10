@@ -2,6 +2,7 @@ import applicationsSchema from './applications';
 import buildSchema from './build';
 import connectorsSchema from './connectors';
 import customPagesSchema from './customPages';
+import deploymentsSchema from './deployments';
 import environmentsSchema from './environments';
 import firewallSchema from './firewall';
 import functionsSchema from './functions';
@@ -32,12 +33,13 @@ const azionConfigSchema = {
         applications: applicationsSchema,
         workloads: workloadsSchema,
         environments: environmentsSchema,
+        deployments: deploymentsSchema,
         purge: purgeSchema,
       },
       additionalProperties: false,
       errorMessage: {
         additionalProperties:
-          'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, purge',
+          'Config can only contain the following properties: version, build, functions, storage, connectors, customPages, networkList, waf, firewall, applications, workloads, environments, deployments, purge',
         type: 'Configuration must be an object',
       },
     },

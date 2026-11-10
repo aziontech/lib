@@ -36,11 +36,6 @@ const networkListSchema = {
         },
         errorMessage: "The 'items' field must be an array of strings with 1-20000 items.",
       },
-      active: {
-        type: 'boolean',
-        default: true,
-        errorMessage: "The 'active' field must be a boolean.",
-      },
     },
     required: ['name', 'type', 'items'],
     additionalProperties: false,

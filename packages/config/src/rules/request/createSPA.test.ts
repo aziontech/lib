@@ -19,7 +19,6 @@ describe('createSPARules', () => {
     expect(staticAssetsRule).toEqual({
       name: 'Deliver Static Assets and Set Cache Policy',
       description: 'Deliver static assets directly from storage and set cache policy',
-      active: true,
       criteria: [
         [
           {
@@ -54,7 +53,6 @@ describe('createSPARules', () => {
     expect(indexRedirectRule).toEqual({
       name: 'Redirect to index.html',
       description: 'Handle all routes by rewriting to index.html for client-side routing',
-      active: true,
       criteria: [
         [
           {

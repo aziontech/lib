@@ -16,10 +16,6 @@ const firewall = {
         maxLength: 250,
         errorMessage: "The firewall configuration must have a 'name' field of type string (1-250 characters)",
       },
-      active: {
-        type: 'boolean',
-        errorMessage: "The firewall's 'active' field must be a boolean",
-      },
       debugRules: {
         type: 'boolean',
         errorMessage: "The firewall's 'debugRules' field must be a boolean",
@@ -51,10 +47,6 @@ const firewall = {
               type: 'string',
               maxLength: 1000,
               errorMessage: "The rule's 'description' field must be a string of at most 1000 characters",
-            },
-            active: {
-              type: 'boolean',
-              errorMessage: "The rule's 'active' field must be a boolean",
             },
             match: {
               type: 'string',

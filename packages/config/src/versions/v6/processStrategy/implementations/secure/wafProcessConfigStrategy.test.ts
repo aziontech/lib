@@ -34,7 +34,6 @@ describe('WafProcessConfigStrategy (v6)', () => {
           waf: [
             {
               name: 'my-waf',
-              active: false,
               engineSettings: {
                 engineVersion: '2021-Q3',
                 type: 'score',
@@ -49,7 +48,6 @@ describe('WafProcessConfigStrategy (v6)', () => {
       ).toEqual([
         {
           name: 'my-waf',
-          active: false,
           engine_settings: {
             engine_version: '2021-Q3',
             type: 'score',
@@ -83,7 +81,6 @@ describe('WafProcessConfigStrategy (v6)', () => {
         waf: [
           {
             name: 'my-waf',
-            active: true,
             engineSettings: {
               engineVersion: '2021-Q3',
               type: 'score',

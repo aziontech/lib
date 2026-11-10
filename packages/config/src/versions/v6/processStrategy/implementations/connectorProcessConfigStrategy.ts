@@ -20,7 +20,6 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
     return connectors.map((connector: AzionConnectorV6) => {
       const baseConnector = {
         name: connector.name,
-        active: connector.active ?? true,
         type: connector.type,
       };
 
@@ -52,7 +51,6 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
         ...baseConnector,
         attributes: {
           addresses: addresses.map((addr) => ({
-            active: addr.active ?? true,
             address: addr.address,
             http_port: addr.httpPort ?? 80,
             https_port: addr.httpsPort ?? 443,
@@ -131,7 +129,6 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
     transformedPayload.connectors = payload.connectors.map((connector) => {
       const baseConnector = {
         name: connector.name,
-        active: connector.active,
         type: connector.type,
       };
 
@@ -162,7 +159,6 @@ class ConnectorProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6
         attributes: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           addresses: addresses.map((addr: any) => ({
-            active: addr.active,
             address: addr.address,
             httpPort: addr.http_port,
             httpsPort: addr.https_port,

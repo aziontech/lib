@@ -5,13 +5,13 @@ import type { AzionConfigV6, AzionWorkloadV6 } from '../../types';
  * WorkloadProcessConfigStrategy V6
  * @class WorkloadProcessConfigStrategy
  * @description Converts the v6 workloads between the config and the manifest.
- * A binding references an environment and a deployment of the workload by the name it has in the config. The manifest
- * keeps that name in `environment_name` and `deployment_name`: the Azion CLI creates the environment and the deployment,
- * so it is the one that knows their ids and sends them to the API.
+ * A binding references an environment and a deployment by the name it has in the config. The manifest keeps that name
+ * in `environment_name` and `deployment_name`: the Azion CLI creates the environment and the deployment, so it is the
+ * one that knows their ids and sends them to the API.
  */
 class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
   /**
-   * Validate that the environment of the bindings is declared and that the deployment is one of the workload
+   * Validate that the environment and the deployment of the bindings are declared
    */
   private validateBindingReferences(config: AzionConfigV6, workload: AzionWorkloadV6) {
     workload.bindings?.forEach((binding) => {
@@ -20,12 +20,32 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
           `Workload "${workload.name}" binding references non-existent Environment "${binding.environment}".`,
         );
       }
-      if (!workload.deployments?.some((deployment) => deployment.name === binding.deployment)) {
+      if (!config.deployments?.some((deployment) => deployment.name === binding.deployment)) {
         throw new Error(
           `Workload "${workload.name}" binding references non-existent Deployment "${binding.deployment}".`,
         );
       }
     });
+  }
+
+  /**
+   * `workload_domain_allow_access` needs the workload bound to single-version environments only: it is true by default,
+   * and it is false by default when a binding uses a `versioned_urls` environment.
+   */
+  private resolveWorkloadDomainAllowAccess(config: AzionConfigV6, workload: AzionWorkloadV6) {
+    const versionedUrls = workload.bindings?.some(
+      (binding) =>
+        config.environments?.find((environment) => environment.name === binding.environment)?.deploymentPolicy ===
+        'versioned_urls',
+    );
+
+    if (workload.workloadDomainAllowAccess && versionedUrls) {
+      throw new Error(
+        `Workload "${workload.name}" cannot set workloadDomainAllowAccess to true: it is bound to an environment whose deploymentPolicy is versioned_urls.`,
+      );
+    }
+
+    return workload.workloadDomainAllowAccess ?? !versionedUrls;
   }
 
   transformToManifest(config: AzionConfigV6) {
@@ -37,9 +57,8 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
 
       return {
         name: workload.name,
-        active: workload.active ?? true,
         infrastructure: workload.infrastructure || 1,
-        workload_domain_allow_access: workload.workloadDomainAllowAccess ?? true,
+        workload_domain_allow_access: this.resolveWorkloadDomainAllowAccess(config, workload),
         tls: {
           ...(workload.tls?.ciphers && { ciphers: workload.tls.ciphers }),
           minimum_version: workload.tls?.minimumVersion || 'tls_1_3',
@@ -82,7 +101,6 @@ class WorkloadProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6>
 
     transformedPayload.workloads = payload.workloads.map((workload) => ({
       name: workload.name,
-      active: workload.active,
       infrastructure: workload.infrastructure,
       workloadDomainAllowAccess: workload.workload_domain_allow_access,
       tls: {

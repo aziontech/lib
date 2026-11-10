@@ -19,7 +19,6 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       expect(result).toEqual([
         {
           name: 'my-app',
-          active: true,
           debug: false,
           modules: {
             cache: { enabled: true },
@@ -37,9 +36,8 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
         applications: [
           {
             name: 'my-app',
-            active: false,
             debug: true,
-            edgeCacheEnabled: false,
+            edgeCacheEnabled: true,
             functionsEnabled: true,
             applicationAcceleratorEnabled: false,
             imageProcessorEnabled: true,
@@ -50,10 +48,9 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       expect(result).toEqual([
         {
           name: 'my-app',
-          active: false,
           debug: true,
           modules: {
-            cache: { enabled: false },
+            cache: { enabled: true },
             functions: { enabled: true },
             application_accelerator: { enabled: false },
             image_processor: { enabled: true },
@@ -89,7 +86,7 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
 
       expect(application.rules).toHaveLength(1);
       expect(application.rules[0]).toEqual(expect.objectContaining({ phase: 'request' }));
-      expect(application.functions_instances).toEqual([{ name: 'instance', function: 'fn', args: {}, active: true }]);
+      expect(application.functions_instances).toEqual([{ name: 'instance', function: 'fn', args: {} }]);
     });
 
     it('should write the cache settings to the manifest as cache_settings and read them back', () => {
@@ -159,7 +156,7 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       const [application] = transformedPayload.applications!;
 
       expect(application.rules?.request?.[0].name).toBe('Execute Function');
-      expect(application.functionsInstances).toEqual([{ name: 'instance', ref: 'fn', args: {}, active: true }]);
+      expect(application.functionsInstances).toEqual([{ name: 'instance', ref: 'fn', args: {} }]);
       expect(application.functionsEnabled).toBe(true);
     });
   });
@@ -180,7 +177,6 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
         applications: [
           {
             name: 'my-app',
-            active: false,
             debug: true,
             modules: {
               cache: { enabled: false },
@@ -197,7 +193,6 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       expect(transformedPayload.applications).toEqual([
         {
           name: 'my-app',
-          active: false,
           debug: true,
           edgeCacheEnabled: false,
           functionsEnabled: true,
@@ -213,7 +208,6 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
         applications: [
           {
             name: 'my-app',
-            active: true,
             debug: false,
             edgeCacheEnabled: true,
             functionsEnabled: false,
@@ -228,6 +222,84 @@ describe('ApplicationProcessConfigStrategy (v6)', () => {
       strategy.transformToConfig(manifest, transformedPayload);
 
       expect(transformedPayload).toEqual(config);
+    });
+  });
+
+  describe('modules the rules need', () => {
+    const request = (behaviors: object[], variable = '${uri}') => ({
+      request: [
+        {
+          name: 'rule',
+          criteria: [[{ variable, conditional: 'if', operator: 'matches', argument: '^/' }]],
+          behaviors,
+        },
+      ],
+    });
+    const manifest = (application: object) =>
+      strategy.transformToManifest({ version: 6, applications: [{ name: 'my-app', ...application }] } as AzionConfigV6);
+
+    it('should write the cache module as enabled', () => {
+      expect(manifest({})[0].modules.cache).toEqual({ enabled: true });
+    });
+
+    it('should accept the behaviors of the modules that are enabled', () => {
+      expect(() =>
+        manifest({
+          imageProcessorEnabled: true,
+          functionsEnabled: true,
+          rules: request([{ type: 'optimize_images' }, { type: 'run_function', attributes: { value: 10 } }]),
+        }),
+      ).not.toThrow();
+    });
+
+    it('should throw when a behavior needs a module that is disabled', () => {
+      expect(() => manifest({ rules: request([{ type: 'optimize_images' }]) })).toThrow(
+        'Application "my-app" rule "rule" uses the behavior "optimize_images", which needs the image_processor module: enable it with imageProcessorEnabled.',
+      );
+      expect(() =>
+        manifest({
+          applicationAcceleratorEnabled: false,
+          rules: request([{ type: 'rewrite_request', attributes: { value: '/x' } }]),
+        }),
+      ).toThrow('which needs the application_accelerator module');
+      expect(() => manifest({ rules: request([{ type: 'run_function', attributes: { value: 10 } }]) })).toThrow(
+        'which needs the functions module',
+      );
+    });
+
+    it('should not need the functions module flag when the application has function instances', () => {
+      expect(() =>
+        manifest({
+          functionsInstances: [{ name: 'instance', ref: 10 }],
+          rules: request([{ type: 'run_function', attributes: { value: 10 } }]),
+        }),
+      ).not.toThrow();
+    });
+
+    it('should throw for a variable other than uri when the application accelerator is disabled', () => {
+      expect(() =>
+        manifest({ applicationAcceleratorEnabled: false, rules: request([{ type: 'deliver' }], '${host}') }),
+      ).toThrow('uses the variable "host", which needs the application_accelerator module');
+      expect(() =>
+        manifest({ applicationAcceleratorEnabled: false, rules: request([{ type: 'deliver' }]) }),
+      ).not.toThrow();
+    });
+
+    it('should check the response rules too', () => {
+      expect(() =>
+        manifest({
+          applicationAcceleratorEnabled: false,
+          rules: {
+            response: [
+              {
+                name: 'r',
+                criteria: [[{ variable: '${uri}', conditional: 'if', operator: 'matches', argument: '^/' }]],
+                behaviors: [{ type: 'set_cookie', attributes: { value: 'a=b' } }],
+              },
+            ],
+          },
+        }),
+      ).toThrow('uses the behavior "set_cookie", which needs the application_accelerator module');
     });
   });
 });

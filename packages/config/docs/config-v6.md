@@ -34,23 +34,40 @@ Every preset of `@aziontech/presets` has a v6 config (`configs[6]`).
 
 ## What changes from v4
 
-| v4                                                      | v6                                                                                                                            |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Saving publishes                                        | Saving writes a draft, and publishing is a separate step done by the CLI                                                      |
-| `workloads[].domains` and `workloads[].tls.certificate` | `workloads[].bindings[].domains[{ domain, certificate }]`: each binding has the domains and the certificate of an environment |
-| No environments                                         | `environments[]`: `name` and `deploymentPolicy` (`single_version` or `versioned_urls`, required and immutable)                |
-| `workloads[].deployments`                               | Same format, and `workloads[].bindings[]` binds one of them to an environment                                                 |
-| `tls.ciphers` can be `null`                             | `tls.ciphers` is not nullable                                                                                                 |
-| Rule variables of any phase                             | Each variable is valid only in the phases the API documents                                                                   |
-| Firewall `set_waf.mode`: `learning \| blocking`         | `logging \| blocking`                                                                                                         |
-| `kv`                                                    | Not available                                                                                                                 |
+| v4                                                                                                                                                | v6                                                                                                                                                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Saving publishes                                                                                                                                  | Saving writes a draft, and publishing is a separate step done by the CLI                                                                                                                                                                          |
+| `workloads[].domains` and `workloads[].tls.certificate`                                                                                           | `workloads[].bindings[].domains[{ domain, certificate }]`: each binding has the domains and the certificate of an environment                                                                                                                     |
+| No environments                                                                                                                                   | `environments[]`: `name` and `deploymentPolicy` (`single_version` or `versioned_urls`, required and immutable)                                                                                                                                    |
+| `workloads[].deployments` with the `strategy` (application, firewall, custom page)                                                                | `deployments[]`: `name`, `bindingPolicy` (required), `description`, `deploymentPolicy` (`single_version`, `versioned_urls` or `latest`) and `strategyDefaults.skewProtection`. The application a deployment serves is set by the CLI in a release |
+| `active` in applications, rules, functions, function instances, connectors, addresses, firewalls, WAFs, network lists, custom pages and workloads | Removed: the v6 API has no `active` in any resource                                                                                                                                                                                               |
+| `edgeCacheEnabled` can be `false`                                                                                                                 | The cache module cannot be disabled: only `true`                                                                                                                                                                                                  |
+| Purge `layer`: `cache` or `tiered_cache`                                                                                                          | `cache` only                                                                                                                                                                                                                                      |
+| Device group `name` of any text                                                                                                                   | Letters and numbers only (`^[a-zA-Z0-9]+$`)                                                                                                                                                                                                       |
+| Workload `protocols.http.versions` of any combination                                                                                             | Must include `http1` and `http2`                                                                                                                                                                                                                  |
+| Functions without dependencies                                                                                                                    | `functions[].dependencies`: up to 20 connectors or network lists the function uses at runtime                                                                                                                                                     |
+| `tls.ciphers` can be `null`                                                                                                                       | `tls.ciphers` is not nullable                                                                                                                                                                                                                     |
+| Rule variables of any phase                                                                                                                       | Each variable is valid only in the phases the API documents                                                                                                                                                                                       |
+| Firewall `set_waf.mode`: `learning \| blocking`                                                                                                   | `logging \| blocking`                                                                                                                                                                                                                             |
+| `kv`                                                                                                                                              | Not available                                                                                                                                                                                                                                     |
+
+The behaviors and criterion variables of the rules need the modules the API documents. An application needs
+`applicationAcceleratorEnabled` for every variable except `${uri}` and for `forward_cookies`, `filter_request_cookie`,
+`rewrite_request`, `capture_match_groups`, `add_request_cookie` and `set_cookie`, `imageProcessorEnabled` for
+`optimize_images`, and functions (`functionsEnabled`, or declared `functionsInstances`) for `run_function`. A firewall needs
+at least one of its modules (`functions`, `networkProtection`, `waf`) for each behavior, `waf` for the header, `request_args`
+and `request_method` variables, `networkProtection` for `network`, and `functions` for `run_function`. The config fails with
+a message naming the rule and the module when one is missing.
+
+A workload with `workloadDomainAllowAccess: true` (the default) cannot be bound to an environment whose `deploymentPolicy` is
+`versioned_urls`; for such a workload the default becomes `false`.
 
 Resource limits also follow the v6 API: names of 100 characters at most for applications and rules, cache max age up to one
 year, 23 pages at most in a custom page, storage names with the pattern `^[a-z0-9][a-z0-9-]*[a-z0-9]$`, and so on.
 
-A **binding** references an environment (declared in `environments`) and a deployment of the same workload by name. The
-`application`, `firewall` and `customPage` of a deployment `strategy`, the function and connector of the rules, and the WAF
-of a firewall rule accept the name of a resource declared in the config, or its ID (an ID is not validated).
+A **binding** references an environment (declared in `environments`) and a deployment (declared in `deployments`) by name. The
+function and connector of the rules, and the WAF of a firewall rule, accept the name of a resource declared in the config, or
+its ID (an ID is not validated).
 
 ## Complete example
 
@@ -74,6 +91,11 @@ const config: AzionConfigV6 = {
           prefix: 'v1',
         },
       },
+      // connectors and network lists the function uses at runtime, which a release includes with it
+      dependencies: [
+        { type: 'connector', ref: 'my-origin' },
+        { type: 'network_list', ref: 'my-ip-allowlist' },
+      ],
     },
   ],
   storage: [
@@ -87,7 +109,6 @@ const config: AzionConfigV6 = {
   connectors: [
     {
       name: 'my-storage-connector',
-      active: true,
       type: 'storage',
       attributes: {
         bucket: 'my-bucket-assets',
@@ -96,7 +117,6 @@ const config: AzionConfigV6 = {
     },
     {
       name: 'my-origin',
-      active: true,
       type: 'http',
       attributes: {
         addresses: [
@@ -124,7 +144,6 @@ const config: AzionConfigV6 = {
   applications: [
     {
       name: 'my-app',
-      active: true,
       debug: false,
       edgeCacheEnabled: true,
       functionsEnabled: true,
@@ -144,13 +163,11 @@ const config: AzionConfigV6 = {
           {
             name: 'Run the function',
             description: 'Run the function for the API paths',
-            active: true,
             criteria: [[{ variable: '${uri}', conditional: 'if', operator: 'matches', argument: '^/api' }]],
             behaviors: [{ type: 'run_function', attributes: { value: 'my-function' } }],
           },
           {
             name: 'Serve from the storage',
-            active: true,
             criteria: [[{ variable: '${uri}', conditional: 'if', operator: 'matches', argument: '^/' }]],
             behaviors: [
               { type: 'set_cache_policy', attributes: { value: 'my-cache' } },
@@ -161,7 +178,6 @@ const config: AzionConfigV6 = {
         response: [
           {
             name: 'Add a header',
-            active: true,
             criteria: [[{ variable: '${status}', conditional: 'if', operator: 'is_equal', argument: '200' }]],
             behaviors: [{ type: 'add_response_header', attributes: { value: 'X-Served-By: azion' } }],
           },
@@ -180,7 +196,6 @@ const config: AzionConfigV6 = {
   customPages: [
     {
       name: 'my-custom-pages',
-      active: true,
       pages: [
         {
           code: '404',
@@ -193,13 +208,12 @@ const config: AzionConfigV6 = {
     },
   ],
   networkList: [
-    { name: 'my-ip-allowlist', type: 'ip_cidr', items: ['10.0.0.1/32', '192.168.1.0/24'], active: true },
-    { name: 'allowed-countries', type: 'countries', items: ['US', 'BR'], active: true },
+    { name: 'my-ip-allowlist', type: 'ip_cidr', items: ['10.0.0.1/32', '192.168.1.0/24'] },
+    { name: 'allowed-countries', type: 'countries', items: ['US', 'BR'] },
   ],
   waf: [
     {
       name: 'my-waf',
-      active: true,
       engineSettings: {
         engineVersion: '2021-Q3',
         type: 'score',
@@ -216,7 +230,6 @@ const config: AzionConfigV6 = {
   firewall: [
     {
       name: 'my-firewall',
-      active: true,
       debugRules: false,
       functions: false,
       networkProtection: true,
@@ -224,13 +237,11 @@ const config: AzionConfigV6 = {
       rules: [
         {
           name: 'Allow the trusted networks',
-          active: true,
           criteria: [{ variable: 'network', conditional: 'if', operator: 'is_in_list', argument: 'my-ip-allowlist' }],
           behaviors: [{ type: 'bypass' }],
         },
         {
           name: 'Protect with the WAF',
-          active: true,
           criteria: [{ variable: 'request_uri', conditional: 'if', operator: 'starts_with', argument: '/admin' }],
           behaviors: [{ type: 'set_waf', attributes: { mode: 'blocking', wafId: 'my-waf' } }],
         },
@@ -246,27 +257,24 @@ const config: AzionConfigV6 = {
       robotsPolicy: 'respect_origin',
     },
   ],
+  // the application, firewall and custom page a deployment serves are set by the Azion CLI when it creates the release
+  deployments: [
+    {
+      name: 'my-deployment',
+      description: 'Main deployment',
+      bindingPolicy: 'FLEXIBLE',
+      strategyDefaults: { skewProtection: { enabled: true, defaultTtlSeconds: 3600 } },
+    },
+  ],
   workloads: [
     {
       name: 'my-workload',
-      active: true,
       infrastructure: 1,
       workloadDomainAllowAccess: true,
       tls: { minimumVersion: 'tls_1_3' },
       protocols: {
         http: { versions: ['http1', 'http2', 'http3'], httpPorts: [80], httpsPorts: [443], quicPorts: [443] },
       },
-      deployments: [
-        {
-          name: 'my-deployment',
-          current: true,
-          active: true,
-          strategy: {
-            type: 'default',
-            attributes: { application: 'my-app', firewall: 'my-firewall', customPage: 'my-custom-pages' },
-          },
-        },
-      ],
       bindings: [
         {
           environment: 'production',
@@ -286,10 +294,9 @@ const config: AzionConfigV6 = {
 `custom_pages`, ...) plus:
 
 - `version: 6`.
-- `environments`: the environments, with the fields the API requires filled with defaults.
+- `environments` and `deployments`: the environments and the deployments, with the fields the API requires filled with defaults.
 - `workloads[].bindings`: each binding names its environment and deployment in `environment_name` and `deployment_name`.
   The Azion CLI creates both and resolves the names to their IDs.
-- `workload_deployments`: the deployments of every workload (as in v4), each one with the `workload_name` it belongs to.
 
 The v6 `tls.ciphers` is left out of the workload when not set.
 

@@ -1,7 +1,7 @@
 /**
  * Schema of the v6 purge.
  * Based on v4, checked against `PurgeRequest` (`POST /workspace/purge/{purge_type}`): each item has at least 1 character
- * and `layer` is `cache` or `tiered_cache`. The `uri` format of the items is not enforced here: a `cachekey` item is not a URI,
+ * and `layer` is `cache`. The `uri` format of the items is not enforced here: a `cachekey` item is not a URI,
  * and the strategy already checks the protocol of a `url` and the asterisk of a `wildcard`.
  */
 const purgeSchema = {
@@ -32,8 +32,8 @@ const purgeSchema = {
       },
       layer: {
         type: 'string',
-        enum: ['cache', 'tiered_cache'],
-        errorMessage: "The 'layer' field must be either 'cache' or 'tiered_cache'.",
+        enum: ['cache'],
+        errorMessage: "The 'layer' field must be 'cache'.",
       },
     },
     required: ['type', 'items'],

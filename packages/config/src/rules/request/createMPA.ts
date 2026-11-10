@@ -30,7 +30,6 @@ export function createMPARules(
       {
         name: 'Deliver Static Assets and Set Cache Policy',
         description: 'Deliver static assets directly from storage and set cache policy',
-        active: true,
         criteria: [
           [
             {
@@ -62,7 +61,6 @@ export function createMPARules(
       {
         name: 'Redirect to index.html',
         description: 'Handle directory requests by rewriting to index.html',
-        active: true,
         criteria: [
           [
             {
@@ -91,7 +89,6 @@ export function createMPARules(
       {
         name: 'Redirect to index.html for Subpaths',
         description: 'Handle subpath requests by rewriting to index.html',
-        active: true,
         criteria: [
           [
             {

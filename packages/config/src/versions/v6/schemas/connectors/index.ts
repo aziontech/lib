@@ -61,11 +61,6 @@ const httpAttributesSchema = {
       items: {
         type: 'object',
         properties: {
-          active: {
-            type: 'boolean',
-            default: true,
-            errorMessage: "The 'active' field must be a boolean",
-          },
           address: {
             type: 'string',
             minLength: 1,
@@ -347,11 +342,6 @@ const connectorsSchema = {
         maxLength: 255,
         pattern: '.*',
         errorMessage: "The 'name' field must be a string between 1 and 255 characters",
-      },
-      active: {
-        type: 'boolean',
-        default: true,
-        errorMessage: "The 'active' field must be a boolean",
       },
       type: {
         type: 'string',

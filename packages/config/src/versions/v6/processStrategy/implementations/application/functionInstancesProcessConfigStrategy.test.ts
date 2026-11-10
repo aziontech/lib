@@ -16,10 +16,10 @@ describe('FunctionInstancesProcessConfigStrategy (v6)', () => {
 
     it('should map an instance to the manifest and apply the defaults', () => {
       expect(strategy.transformToManifest([{ name: 'instance', ref: 'fn' }], config)).toEqual([
-        { name: 'instance', function: 'fn', args: {}, active: true },
+        { name: 'instance', function: 'fn', args: {} },
       ]);
-      expect(strategy.transformToManifest([{ name: 'i', ref: 'fn', args: { a: 1 }, active: false }], config)).toEqual([
-        { name: 'i', function: 'fn', args: { a: 1 }, active: false },
+      expect(strategy.transformToManifest([{ name: 'i', ref: 'fn', args: { a: 1 } }], config)).toEqual([
+        { name: 'i', function: 'fn', args: { a: 1 } },
       ]);
     });
 
@@ -34,7 +34,7 @@ describe('FunctionInstancesProcessConfigStrategy (v6)', () => {
 
     it('should not validate a function referenced by id', () => {
       expect(strategy.transformToManifest([{ name: 'instance', ref: 10 }], { version: 6 })).toEqual([
-        { name: 'instance', function: 10, args: {}, active: true },
+        { name: 'instance', function: 10, args: {} },
       ]);
     });
   });
@@ -46,7 +46,7 @@ describe('FunctionInstancesProcessConfigStrategy (v6)', () => {
 
     it('should map the manifest instances back to the config', () => {
       expect(strategy.transformToConfig([{ name: 'i', function: 10, args: { a: 1 } }])).toEqual([
-        { name: 'i', ref: 10, args: { a: 1 }, active: true },
+        { name: 'i', ref: 10, args: { a: 1 } },
       ]);
     });
   });

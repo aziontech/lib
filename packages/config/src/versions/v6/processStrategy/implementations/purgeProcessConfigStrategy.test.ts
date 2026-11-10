@@ -19,14 +19,14 @@ describe('PurgeProcessConfigStrategy (v6)', () => {
         version: 6,
         purge: [
           { type: 'url', items: ['https://example.com/path'] },
-          { type: 'wildcard', items: ['https://example.com/path*'], layer: 'tiered_cache' },
+          { type: 'wildcard', items: ['https://example.com/path*'], layer: 'cache' },
           { type: 'cachekey', items: ['example.com/path'] },
         ],
       };
 
       expect(strategy.transformToManifest(config)).toEqual([
         { type: 'url', items: ['https://example.com/path'], layer: 'cache' },
-        { type: 'wildcard', items: ['https://example.com/path*'], layer: 'tiered_cache' },
+        { type: 'wildcard', items: ['https://example.com/path*'], layer: 'cache' },
         { type: 'cachekey', items: ['example.com/path'], layer: 'cache' },
       ]);
     });

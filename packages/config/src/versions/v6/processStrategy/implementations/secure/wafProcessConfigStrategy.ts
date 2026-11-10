@@ -20,7 +20,6 @@ class WafProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
 
     return waf.map((wafConfig) => ({
       name: wafConfig.name,
-      ...(wafConfig.active !== undefined && { active: wafConfig.active }),
       engine_settings: {
         engine_version: wafConfig.engineSettings?.engineVersion ?? '2021-Q3',
         type: wafConfig.engineSettings?.type ?? 'score',
@@ -48,7 +47,6 @@ class WafProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformedPayload.waf = waf.map((wafItem: any) => ({
       name: wafItem.name,
-      active: wafItem.active,
       engineSettings: wafItem.engine_settings && {
         engineVersion: wafItem.engine_settings.engine_version,
         type: wafItem.engine_settings.type,

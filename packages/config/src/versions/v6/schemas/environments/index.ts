@@ -1,5 +1,5 @@
 import {
-  DEPLOYMENT_POLICIES,
+  ENVIRONMENT_DEPLOYMENT_POLICIES,
   ENVIRONMENT_BRANCH_TRACKING_MODES,
   ENVIRONMENT_LOG_VERBOSITY,
   ENVIRONMENT_ROBOTS_POLICIES,
@@ -97,8 +97,8 @@ const environmentsSchema = {
       },
       deploymentPolicy: {
         type: 'string',
-        enum: DEPLOYMENT_POLICIES,
-        errorMessage: `The 'deploymentPolicy' field must be one of: ${DEPLOYMENT_POLICIES.join(', ')}`,
+        enum: ENVIRONMENT_DEPLOYMENT_POLICIES,
+        errorMessage: `The 'deploymentPolicy' field must be one of: ${ENVIRONMENT_DEPLOYMENT_POLICIES.join(', ')}`,
       },
     },
     required: ['name', 'deploymentPolicy'],

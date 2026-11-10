@@ -17,7 +17,6 @@ const config: AzionConfigV6 = {
   connectors: [
     {
       name: '$CONNECTOR_NAME',
-      active: true,
       type: 'storage',
       attributes: {
         bucket: '$BUCKET_NAME',
@@ -56,7 +55,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Nuxt Static Assets and set cache policy',
             description: 'Serve Nuxt static assets through edge connector and set cache policy',
-            active: true,
             criteria: [
               [
                 {
@@ -88,7 +86,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Redirect to index.html for Subpaths',
             description: 'Handle subpath requests by rewriting to index.html',
-            active: true,
             criteria: [
               [
                 {
@@ -117,7 +114,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Redirect to index.html',
             description: 'Handle directory requests by rewriting to index.html',
-            active: true,
             criteria: [
               [
                 {
@@ -147,7 +143,6 @@ const config: AzionConfigV6 = {
             name: 'Execute Nuxt Function when starts with /api/_content',
             description:
               'Handle @nuxt/content API requests - executes Nuxt function for content management endpoints. Remove this rule if your project does not use the @nuxt/content library.',
-            active: true,
             criteria: [
               [
                 {
@@ -176,7 +171,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Deliver Static Assets and set cache policy',
             description: 'Deliver static assets directly from storage and set cache policy',
-            active: true,
             criteria: [
               [
                 {
@@ -209,7 +203,6 @@ const config: AzionConfigV6 = {
           {
             name: 'Execute Nuxt Function',
             description: 'Execute Nuxt function for all requests',
-            active: true,
             criteria: [
               [
                 {
@@ -248,24 +241,17 @@ const config: AzionConfigV6 = {
       deploymentPolicy: 'single_version',
     },
   ],
+  // the application a deployment serves is set by the Azion CLI when it creates the release
+  deployments: [
+    {
+      name: '$DEPLOYMENT_NAME',
+      bindingPolicy: 'FLEXIBLE',
+    },
+  ],
   workloads: [
     {
       name: '$WORKLOAD_NAME',
-      active: true,
       infrastructure: 1,
-      deployments: [
-        {
-          name: '$DEPLOYMENT_NAME',
-          current: true,
-          active: true,
-          strategy: {
-            type: 'default',
-            attributes: {
-              application: '$APPLICATION_NAME',
-            },
-          },
-        },
-      ],
       bindings: [
         {
           environment: '$ENVIRONMENT_NAME',

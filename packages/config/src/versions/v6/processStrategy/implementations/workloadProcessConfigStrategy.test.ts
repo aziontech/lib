@@ -7,10 +7,8 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
   const declared: AzionConfigV6 = {
     version: 6,
     environments: [{ name: 'production', deploymentPolicy: 'single_version' }],
+    deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE' }],
   };
-  const deployments: AzionWorkloadV6['deployments'] = [
-    { name: 'default-deployment', strategy: { type: 'default', attributes: { application: 'my-app' } } },
-  ];
 
   beforeEach(() => {
     strategy = new WorkloadProcessConfigStrategy();
@@ -28,7 +26,6 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
       expect(result).toEqual([
         {
           name: 'my-workload',
-          active: true,
           infrastructure: 1,
           workload_domain_allow_access: true,
           tls: { minimum_version: 'tls_1_3' },
@@ -63,8 +60,6 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
         workloads: [
           {
             name: 'my-workload',
-            deployments,
-            active: false,
             infrastructure: 2,
             workloadDomainAllowAccess: false,
             protocols: { http: { versions: ['http2'], httpPorts: [8080], httpsPorts: [8443], quicPorts: [8443] } },
@@ -82,7 +77,6 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
 
       expect(workload).toEqual(
         expect.objectContaining({
-          active: false,
           infrastructure: 2,
           workload_domain_allow_access: false,
           protocols: { http: { versions: ['http2'], http_ports: [8080], https_ports: [8443], quic_ports: [8443] } },
@@ -104,9 +98,7 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
     it('should name the environment and the deployment of a binding as names, not as ids (the CLI resolves the ids)', () => {
       const [workload] = strategy.transformToManifest({
         ...declared,
-        workloads: [
-          { name: 'w', deployments, bindings: [{ environment: 'production', deployment: 'default-deployment' }] },
-        ],
+        workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'default-deployment' }] }],
       });
 
       expect(Object.keys(workload.bindings[0])).toEqual(['environment_name', 'deployment_name', 'domains']);
@@ -116,44 +108,24 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
       expect(() =>
         strategy.transformToManifest({
           ...declared,
-          workloads: [
-            { name: 'w', deployments, bindings: [{ environment: 'staging', deployment: 'default-deployment' }] },
-          ],
+          workloads: [{ name: 'w', bindings: [{ environment: 'staging', deployment: 'default-deployment' }] }],
         }),
       ).toThrow('Workload "w" binding references non-existent Environment "staging".');
     });
 
-    it('should throw when a binding references a deployment that the workload does not declare', () => {
+    it('should throw when a binding references a deployment that is not declared', () => {
       expect(() =>
         strategy.transformToManifest({
           ...declared,
-          workloads: [{ name: 'w', deployments, bindings: [{ environment: 'production', deployment: 'other' }] }],
+          workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'other' }] }],
         }),
       ).toThrow('Workload "w" binding references non-existent Deployment "other".');
       expect(() =>
         strategy.transformToManifest({
-          ...declared,
-          workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'default-deployment' }] }],
-        }),
-      ).toThrow('Workload "w" binding references non-existent Deployment "default-deployment".');
-      expect(() =>
-        strategy.transformToManifest({
           version: 6,
-          workloads: [{ name: 'w', deployments, bindings: [{ environment: 'production', deployment: 'd' }] }],
+          workloads: [{ name: 'w', bindings: [{ environment: 'production', deployment: 'd' }] }],
         }),
       ).toThrow('non-existent Environment "production"');
-    });
-
-    it('should not accept a deployment of another workload in a binding', () => {
-      expect(() =>
-        strategy.transformToManifest({
-          ...declared,
-          workloads: [
-            { name: 'a', deployments },
-            { name: 'b', bindings: [{ environment: 'production', deployment: 'default-deployment' }] },
-          ],
-        }),
-      ).toThrow('Workload "b" binding references non-existent Deployment "default-deployment".');
     });
   });
 
@@ -173,7 +145,6 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
           workloads: [
             {
               name: 'my-workload',
-              active: true,
               infrastructure: 1,
               workload_domain_allow_access: true,
               tls: { ciphers: 3, minimum_version: 'tls_1_2' },
@@ -194,7 +165,6 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
       expect(transformedPayload.workloads).toEqual([
         {
           name: 'my-workload',
-          active: true,
           infrastructure: 1,
           workloadDomainAllowAccess: true,
           tls: { ciphers: 3, minimumVersion: 'tls_1_2' },
@@ -209,6 +179,45 @@ describe('WorkloadProcessConfigStrategy (v6)', () => {
           ],
         },
       ]);
+    });
+  });
+
+  describe('workload_domain_allow_access', () => {
+    const config = (
+      policy: 'single_version' | 'versioned_urls',
+      workload: Partial<AzionWorkloadV6> = {},
+    ): AzionConfigV6 => ({
+      version: 6,
+      environments: [{ name: 'production', deploymentPolicy: policy }],
+      deployments: [{ name: 'default-deployment', bindingPolicy: 'FLEXIBLE' }],
+      workloads: [
+        { name: 'w', bindings: [{ environment: 'production', deployment: 'default-deployment' }], ...workload },
+      ],
+    });
+
+    it('should be true by default, and false by default when the workload is bound to a versioned_urls environment', () => {
+      expect(strategy.transformToManifest(config('single_version'))[0].workload_domain_allow_access).toBe(true);
+      expect(strategy.transformToManifest(config('versioned_urls'))[0].workload_domain_allow_access).toBe(false);
+      expect(
+        strategy.transformToManifest({ version: 6, workloads: [{ name: 'w' }] })[0].workload_domain_allow_access,
+      ).toBe(true);
+    });
+
+    it('should accept an explicit value for a single_version environment, and false for a versioned_urls one', () => {
+      expect(
+        strategy.transformToManifest(config('single_version', { workloadDomainAllowAccess: false }))[0]
+          .workload_domain_allow_access,
+      ).toBe(false);
+      expect(
+        strategy.transformToManifest(config('versioned_urls', { workloadDomainAllowAccess: false }))[0]
+          .workload_domain_allow_access,
+      ).toBe(false);
+    });
+
+    it('should throw when true is set for a workload bound to a versioned_urls environment', () => {
+      expect(() => strategy.transformToManifest(config('versioned_urls', { workloadDomainAllowAccess: true }))).toThrow(
+        'Workload "w" cannot set workloadDomainAllowAccess to true: it is bound to an environment whose deploymentPolicy is versioned_urls.',
+      );
     });
   });
 });

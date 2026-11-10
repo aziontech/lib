@@ -26,7 +26,6 @@ describe('FunctionsProcessConfigStrategy (v6)', () => {
           runtime: 'azion_js',
           default_args: {},
           execution_environment: 'application',
-          active: true,
           path: './functions/index.js',
         },
       ]);
@@ -42,7 +41,6 @@ describe('FunctionsProcessConfigStrategy (v6)', () => {
             runtime: 'azion_js',
             defaultArgs: { key: 'value' },
             executionEnvironment: 'firewall',
-            active: false,
           },
         ],
       });
@@ -53,7 +51,6 @@ describe('FunctionsProcessConfigStrategy (v6)', () => {
           runtime: 'azion_js',
           default_args: { key: 'value' },
           execution_environment: 'firewall',
-          active: false,
           path: './functions/index.js',
         },
       ]);
@@ -117,7 +114,6 @@ describe('FunctionsProcessConfigStrategy (v6)', () => {
               runtime: 'azion_js',
               default_args: { key: 'value' },
               execution_environment: 'firewall',
-              active: false,
             },
           ],
         },
@@ -131,9 +127,59 @@ describe('FunctionsProcessConfigStrategy (v6)', () => {
           runtime: 'azion_js',
           defaultArgs: { key: 'value' },
           executionEnvironment: 'firewall',
-          active: false,
         },
       ]);
+    });
+  });
+
+  describe('dependencies', () => {
+    const config = (dependencies: object[], extra: Partial<AzionConfigV6> = {}) =>
+      ({
+        version: 6,
+        connectors: [{ name: 'my-origin', type: 'live_ingest', attributes: { region: 'us-east-1' } }],
+        networkList: [{ name: 'my-list', type: 'countries', items: ['BR'] }],
+        functions: [{ name: 'fn', path: './fn.js', dependencies }],
+        ...extra,
+      }) as AzionConfigV6;
+
+    it('should write the dependencies with the name or the ID of the resource', () => {
+      const [fn] = strategy.transformToManifest(
+        config([
+          { type: 'connector', ref: 'my-origin' },
+          { type: 'network_list', ref: 'my-list' },
+          { type: 'connector', ref: 10 },
+        ]),
+      );
+
+      expect(fn.dependencies).toEqual([
+        { type: 'connector', id: 'my-origin' },
+        { type: 'network_list', id: 'my-list' },
+        { type: 'connector', id: 10 },
+      ]);
+    });
+
+    it('should not write dependencies when the function has none', () => {
+      expect(strategy.transformToManifest(config([]))[0]).not.toHaveProperty('dependencies');
+    });
+
+    it('should throw when the connector or network list is not declared', () => {
+      expect(() => strategy.transformToManifest(config([{ type: 'connector', ref: 'other' }]))).toThrow(
+        'Function "fn" depends on non-existent Connector "other".',
+      );
+      expect(() => strategy.transformToManifest(config([{ type: 'network_list', ref: 'my-origin' }]))).toThrow(
+        'Function "fn" depends on non-existent Network List "my-origin".',
+      );
+    });
+
+    it('should read the dependencies back from the manifest', () => {
+      const transformedPayload: AzionConfigV6 = { version: 6 };
+
+      strategy.transformToConfig(
+        { functions: [{ name: 'fn', dependencies: [{ type: 'connector', id: 'my-origin' }] }] },
+        transformedPayload,
+      );
+
+      expect(transformedPayload.functions?.[0].dependencies).toEqual([{ type: 'connector', ref: 'my-origin' }]);
     });
   });
 });

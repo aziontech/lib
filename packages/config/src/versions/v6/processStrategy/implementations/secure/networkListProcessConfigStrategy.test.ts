@@ -20,14 +20,14 @@ describe('NetworkListProcessConfigStrategy (v6)', () => {
           version: 6,
           networkList: [
             { name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8', '2001:db8::/32'] },
-            { name: 'blocked-countries', type: 'countries', items: ['BR', 'US'], active: false },
+            { name: 'blocked-countries', type: 'countries', items: ['BR', 'US'] },
             { name: 'blocked-asns', type: 'asn', items: ['13335'] },
           ],
         }),
       ).toEqual([
-        { name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8', '2001:db8::/32'], active: true },
-        { name: 'blocked-countries', type: 'countries', items: ['BR', 'US'], active: false },
-        { name: 'blocked-asns', type: 'asn', items: ['13335'], active: true },
+        { name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8', '2001:db8::/32'] },
+        { name: 'blocked-countries', type: 'countries', items: ['BR', 'US'] },
+        { name: 'blocked-asns', type: 'asn', items: ['13335'] },
       ]);
     });
   });
@@ -44,7 +44,7 @@ describe('NetworkListProcessConfigStrategy (v6)', () => {
     it('should read the network_list key of the manifest back into the config (v4 read the wrong key)', () => {
       const config: AzionConfigV6 = {
         version: 6,
-        networkList: [{ name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'], active: true }],
+        networkList: [{ name: 'blocked-ips', type: 'ip_cidr', items: ['10.0.0.0/8'] }],
       };
       const transformedPayload: AzionConfigV6 = { version: 6 };
 

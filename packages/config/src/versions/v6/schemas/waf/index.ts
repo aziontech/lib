@@ -22,11 +22,6 @@ const wafSchema = {
         pattern: '.*',
         errorMessage: "The WAF configuration must have a 'name' field of type string (1-250 characters)",
       },
-      active: {
-        type: 'boolean',
-        default: true,
-        errorMessage: "The 'active' field must be a boolean",
-      },
       engineSettings: {
         type: 'object',
         properties: {

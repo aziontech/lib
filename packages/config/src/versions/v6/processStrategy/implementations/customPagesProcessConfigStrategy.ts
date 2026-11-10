@@ -50,7 +50,6 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
 
       return {
         name: customPage.name,
-        active: customPage.active ?? true,
         pages: customPage.pages.map((pageEntry) => ({
           code: pageEntry.code,
           page: {
@@ -78,7 +77,6 @@ class CustomPagesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
 
     transformedPayload.customPages = payload.custom_pages.map((customPage) => ({
       name: customPage.name,
-      active: customPage.active,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       pages: customPage.pages.map((pageEntry: any) => ({
         code: pageEntry.code,

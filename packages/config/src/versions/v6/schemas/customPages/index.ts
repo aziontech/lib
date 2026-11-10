@@ -16,11 +16,6 @@ const customPagesSchema = {
         pattern: '.*',
         errorMessage: "The 'name' field must be a string between 1 and 255 characters",
       },
-      active: {
-        type: 'boolean',
-        default: true,
-        errorMessage: "The 'active' field must be a boolean",
-      },
       pages: {
         type: 'array',
         minItems: 1,

@@ -25,11 +25,12 @@ describe('complete azion.config example of the API v6', () => {
         'firewall',
         'environments',
         'workloads',
-        'workload_deployments',
+        'deployments',
         'purge',
       ]),
     );
-    expect(manifest.workload_deployments).toHaveLength(1);
+    expect(manifest.deployments).toHaveLength(1);
+    expect(manifest).not.toHaveProperty('workload_deployments');
     expect(manifest.workloads[0].bindings).toEqual([
       {
         environment_name: 'production',

@@ -4,6 +4,7 @@ import ApplicationProcessConfigStrategy from './implementations/application/appl
 import BuildProcessConfigStrategy from './implementations/buildProcessConfigStrategy';
 import ConnectorProcessConfigStrategy from './implementations/connectorProcessConfigStrategy';
 import CustomPagesProcessConfigStrategy from './implementations/customPagesProcessConfigStrategy';
+import DeploymentProcessConfigStrategy from './implementations/deploymentProcessConfigStrategy';
 import EnvironmentProcessConfigStrategy from './implementations/environmentProcessConfigStrategy';
 import FunctionsProcessConfigStrategy from './implementations/functionsProcessConfigStrategy';
 import PurgeProcessConfigStrategy from './implementations/purgeProcessConfigStrategy';
@@ -11,7 +12,6 @@ import FirewallProcessConfigStrategy from './implementations/secure/firewallProc
 import NetworkListProcessConfigStrategy from './implementations/secure/networkListProcessConfigStrategy';
 import WafProcessConfigStrategy from './implementations/secure/wafProcessConfigStrategy';
 import StorageProcessConfigStrategy from './implementations/storageProcessConfigStrategy';
-import WorkloadDeploymentsProcessConfigStrategy from './implementations/workloadDeploymentsProcessConfigStrategy';
 import WorkloadProcessConfigStrategy from './implementations/workloadProcessConfigStrategy';
 import VersionProcessConfigStrategy from './implementations/versionProcessConfigStrategy';
 
@@ -28,8 +28,8 @@ function factoryProcessContext() {
   processConfigContext.setStrategy('custom_pages', new CustomPagesProcessConfigStrategy());
   processConfigContext.setStrategy('applications', new ApplicationProcessConfigStrategy());
   processConfigContext.setStrategy('environments', new EnvironmentProcessConfigStrategy());
+  processConfigContext.setStrategy('deployments', new DeploymentProcessConfigStrategy());
   processConfigContext.setStrategy('workloads', new WorkloadProcessConfigStrategy());
-  processConfigContext.setStrategy('workload_deployments', new WorkloadDeploymentsProcessConfigStrategy());
   processConfigContext.setStrategy('purge', new PurgeProcessConfigStrategy());
   return processConfigContext;
 }

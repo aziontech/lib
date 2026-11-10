@@ -20,7 +20,6 @@ class NetworkListProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
       name: network.name,
       type: network.type,
       items: network.items,
-      active: network.active ?? true,
     }));
   }
 
@@ -39,7 +38,6 @@ class NetworkListProcessConfigStrategy extends ProcessConfigStrategy<AzionConfig
       name: network.name,
       type: network.type,
       items: network.items,
-      active: network.active,
     }));
 
     return transformedPayload.networkList;

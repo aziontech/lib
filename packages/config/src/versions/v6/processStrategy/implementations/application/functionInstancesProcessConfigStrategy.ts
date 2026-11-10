@@ -40,7 +40,6 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy<Azion
         name: instance.name,
         function: instance.ref,
         args: instance.args || {},
-        active: instance.active ?? true,
       };
     });
   }
@@ -51,7 +50,7 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy<Azion
    * The CLI should resolve ID to name before calling this method.
    */
   transformToConfig(
-    payload: Array<{ name: string; function: number | string; args?: Record<string, unknown>; active?: boolean }>,
+    payload: Array<{ name: string; function: number | string; args?: Record<string, unknown> }>,
   ): AzionFunctionInstance[] {
     if (!Array.isArray(payload) || payload.length === 0) {
       return [];
@@ -61,7 +60,6 @@ class FunctionInstancesProcessConfigStrategy extends ProcessConfigStrategy<Azion
       name: instance.name,
       ref: instance.function,
       args: instance.args,
-      active: instance.active ?? true,
     }));
   }
 }

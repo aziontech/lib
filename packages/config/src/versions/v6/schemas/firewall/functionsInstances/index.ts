@@ -1,6 +1,5 @@
 /**
- * Schema of the function instances of a v6 firewall, from `FirewallFunctionInstanceRequest` of the v6 API:
- * the request also has `active`.
+ * Schema of the function instances of a v6 firewall, from `FirewallFunctionInstanceRequest` of the v6 API.
  */
 const firewallFunctionsInstances = {
   type: 'object',
@@ -19,11 +18,6 @@ const firewallFunctionsInstances = {
     ref: {
       type: ['string', 'number'],
       errorMessage: "The 'ref' field must be a string or number referencing an existing Function name or ID",
-    },
-    active: {
-      type: 'boolean',
-      default: true,
-      errorMessage: "The 'active' field must be a boolean",
     },
   },
   required: ['name', 'ref'],

@@ -1,3 +1,5 @@
+import { FUNCTION_DEPENDENCY_TYPES } from '../../constants';
+
 const functionsSchema = {
   type: 'array',
   items: {
@@ -31,10 +33,36 @@ const functionsSchema = {
         default: 'application',
         errorMessage: "The 'executionEnvironment' field must be 'application' or 'firewall'",
       },
-      active: {
-        type: 'boolean',
-        default: true,
-        errorMessage: "The 'active' field must be a boolean",
+      dependencies: {
+        type: 'array',
+        maxItems: 20,
+        items: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: FUNCTION_DEPENDENCY_TYPES,
+              errorMessage: `The 'type' field must be one of: ${FUNCTION_DEPENDENCY_TYPES.join(', ')}`,
+            },
+            ref: {
+              type: ['string', 'integer'],
+              minimum: 1,
+              minLength: 1,
+              errorMessage:
+                "The 'ref' field must be the name of a connector or network list declared in the config, or its ID",
+            },
+          },
+          required: ['type', 'ref'],
+          additionalProperties: false,
+          errorMessage: {
+            additionalProperties: 'No additional properties are allowed in function dependencies',
+            required: "The 'type' and 'ref' fields are required in each function dependency",
+          },
+        },
+        errorMessage: {
+          maxItems: "The 'dependencies' field can have at most 20 items",
+          type: "The 'dependencies' field must be an array of dependency objects",
+        },
       },
       bindings: {
         type: 'object',

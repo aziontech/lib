@@ -106,7 +106,6 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
           rule: {
             name: rule.name,
             description: rule.description,
-            active: rule.active !== undefined ? rule.active : true,
             criteria: rule.criteria.map((criteriaGroup) =>
               criteriaGroup.map((criterion) => ({
                 variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
@@ -133,7 +132,6 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
           rule: {
             name: rule.name,
             description: rule.description,
-            active: rule.active !== undefined ? rule.active : true,
             criteria: rule.criteria.map((criteriaGroup) =>
               criteriaGroup.map((criterion) => ({
                 variable: criterion.variable.startsWith('${') ? criterion.variable : `\${${criterion.variable}}`,
@@ -172,7 +170,6 @@ class RulesProcessConfigStrategy extends ProcessConfigStrategy<AzionConfigV6> {
       const rule: AzionRule = {
         name: manifestRule.rule.name,
         description: manifestRule.rule.description,
-        active: manifestRule.rule.active !== undefined ? manifestRule.rule.active : true,
         criteria: manifestRule.rule.criteria.map((criteriaGroup) =>
           criteriaGroup.map((criterion) => {
             const baseCriterion = {
