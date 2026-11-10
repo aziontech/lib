@@ -161,6 +161,24 @@ describe('preset configs by API version', () => {
         { environment_name: '$ENVIRONMENT_NAME', deployment_name: '$DEPLOYMENT_NAME', domains: [] },
       ]);
     });
+    it.each(
+      ['nuxt', 'svelte', 'nitro'].flatMap((name) => ([4, 6] as const).map((version) => [name, version] as const)),
+    )(
+      '%s (v%s): the subpaths rule matches the paths without extension and not the files or the directories',
+      (name, version) => {
+        const manifest = processConfig(resolvePresetConfig(byName(name), version));
+        const rule = manifest.applications[0].rules.find(
+          (item: { phase: string; rule: { name: string } }) =>
+            item.phase === 'request' && item.rule.name === 'Redirect to index.html for Subpaths',
+        );
+        const regex = new RegExp(rule.rule.criteria[0][0].argument);
+
+        ['/about', '/docs/intro', '/a.b/c', '/v1.2/page'].forEach((uri) => expect(regex.test(uri)).toBe(true));
+        ['/logo.png', '/favicon.ico', '/_nuxt/entry.js', '/file.tar.gz', '/', '/docs/'].forEach((uri) =>
+          expect(regex.test(uri)).toBe(false),
+        );
+      },
+    );
   });
 
   describe.each(goldenPresets)('%s (v3)', (name) => {
