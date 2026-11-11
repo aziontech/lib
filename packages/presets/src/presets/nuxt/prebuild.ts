@@ -2,10 +2,19 @@ import { AzionPrebuildResult, BuildConfiguration, BuildContext } from '@aziontec
 import { exec } from '@aziontech/utils/node';
 import { existsSync } from 'fs';
 import { mkdir, readFile, readdir } from 'fs/promises';
+import { dirname, join } from 'path';
 
 const NUXT_CONFIG_FILES = ['nuxt.config.js', 'nuxt.config.ts', 'nuxt.config.mjs', 'nuxt.config.cjs'];
 const PATHS = {
-  MANIFEST_DIR: '.nuxt/manifest/meta',
+  // Candidate locations of the Nuxt app manifest (`<dir>/<buildId>.json`), in priority order:
+  // 1. final build output, independent of `buildDir` (Nuxt 4.5.x and 4.6.x)
+  // 2. Nuxt >= 4.6 builds into the cache dir when `.nuxt` already exists
+  // 3. default `buildDir` (Nuxt <= 4.5.x)
+  MANIFEST_DIRS: [
+    '.output/public/_nuxt/builds/meta',
+    'node_modules/.cache/nuxt/.nuxt/manifest/meta',
+    '.nuxt/manifest/meta',
+  ],
   OUTPUT_DIR: '.output/public',
   SERVER_ENTRY: '.output/server/index.mjs',
 } as const;
@@ -40,11 +49,40 @@ async function readNuxtPreset() {
   }
 }
 
-async function readManifest(dirManifest: string) {
-  const files = await readdir(dirManifest);
-  const manifestFile = files.find((file) => file.endsWith('.json'));
-  const manifest = await readFile(`${dirManifest}/${manifestFile}`, 'utf8');
-  return JSON.parse(manifest);
+async function readManifestFromDir(dirManifest: string) {
+  let manifestFile: string | undefined;
+
+  // `latest.json` sits next to the `meta` dir and points to the current build id.
+  // Prefer it to avoid reading a stale manifest when more than one build id is present.
+  try {
+    const latest = JSON.parse(await readFile(join(dirname(dirManifest), 'latest.json'), 'utf8'));
+    if (typeof latest?.id === 'string' && existsSync(join(dirManifest, `${latest.id}.json`))) {
+      manifestFile = `${latest.id}.json`;
+    }
+  } catch {
+    // no latest.json, fall back to the first manifest file found
+  }
+
+  if (!manifestFile) {
+    const files = await readdir(dirManifest);
+    manifestFile = files.find((file) => file.endsWith('.json'));
+  }
+  if (!manifestFile) {
+    throw new Error(`No manifest file found in ${dirManifest}`);
+  }
+
+  return JSON.parse(await readFile(join(dirManifest, manifestFile), 'utf8'));
+}
+
+async function readManifest(dirs: readonly string[] = PATHS.MANIFEST_DIRS) {
+  for (const dir of dirs) {
+    try {
+      return await readManifestFromDir(dir);
+    } catch {
+      // try next candidate
+    }
+  }
+  throw new Error(`Nuxt manifest not found in: ${dirs.join(', ')}`);
 }
 
 function createAzionPrebuildResult(manifest: Record<string, unknown>): AzionPrebuildResult {
@@ -79,7 +117,7 @@ async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Pro
     await mkdir(PATHS.OUTPUT_DIR, { recursive: true });
     if (hasNitroPreset) {
       try {
-        const manifest = await readManifest(PATHS.MANIFEST_DIR);
+        const manifest = await readManifest();
         configureNitroPreset(buildConfig);
         return createAzionPrebuildResult(manifest);
       } catch {
@@ -97,7 +135,7 @@ async function prebuild(buildConfig: BuildConfiguration, ctx: BuildContext): Pro
       verbose: true,
     });
     try {
-      const manifest = await readManifest(PATHS.MANIFEST_DIR);
+      const manifest = await readManifest();
       configureNitroPreset(buildConfig);
       return createAzionPrebuildResult(manifest);
     } catch {
