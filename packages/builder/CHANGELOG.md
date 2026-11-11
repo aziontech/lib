@@ -1,5 +1,13 @@
 # @aziontech/builder
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e), [`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e), [`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e)]:
+  - @aziontech/config@1.2.0
+  - @aziontech/presets@1.3.0
+
 ## 1.0.6
 
 ### Patch Changes

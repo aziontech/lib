@@ -1,5 +1,22 @@
 # @aziontech/presets
 
+## 1.3.0
+
+### Minor Changes
+
+- [#490](https://github.com/aziontech/lib/pull/490) [`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Support the Azion API v6 config in the same packages.
+  
+  - `@aziontech/config`: a config with `version: 6` is now validated and processed into a v6 manifest. v3 and v4 are unchanged, and a config without `version` is still the v4 one. v6 changes the publishing model: Save creates a Draft version and publishing is a separate step, so the config declares `environments` and `deployments` (the environment and deployment policies are required) and workloads with `bindings` (a binding references an environment and a deployment by name). Adds the build, applications (rules, cache settings, function instances and device groups), functions (with bindings), purge, storage, connectors, firewall, WAF, network lists and custom pages. `validateConfig`, `processConfig`, `validateManifest` and `convertJsonConfigToObject` accept v6, and `defineConfig` types the config as `AzionConfigV6`. The v3 and v4 manifests now carry the API version. The v6 API has no `active` in its resources, so the v6 config and manifest do not have it, and the `createSPARules` and `createMPARules` helpers no longer write `active: true` (it is the default of the v4 and v3 rules).
+  - `@aziontech/presets`: every preset now provides its v6 config in `configs[6]` (`nitro` has no v3 config, as it did not exist on v3). `config` remains the default (v4) config.
+
+### Patch Changes
+
+- [#490](https://github.com/aziontech/lib/pull/490) [`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Fix the `nuxt` preset prebuild reading a stale or missing manifest. Nuxt >= 4.6 builds into `node_modules/.cache/nuxt/.nuxt` when `.nuxt` already exists, so `.nuxt/manifest/meta` is no longer reliable. The manifest is now read from `.output/public/_nuxt/builds/meta` first, then from the cache dir and `.nuxt`, picking the file that `latest.json` references.
+
+- [#490](https://github.com/aziontech/lib/pull/490) [`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Fix the regex of the "Redirect to index.html for Subpaths" rule of the `nuxt`, `svelte` and `nitro` presets (v4 and v6 configs). It matched files such as `/logo.png` and skipped the paths without extension such as `/about`, because of `[sS]*` (instead of `[\s\S]*`) and an unescaped `.`. It now matches only the paths that do not end with `/` and have no file extension.
+- Updated dependencies [[`40d1833`](https://github.com/aziontech/lib/commit/40d1833f00b49760cf2622fc8095e809784e1d4e)]:
+  - @aziontech/config@1.2.0
+
 ## 1.2.0
 
 ### Minor Changes
