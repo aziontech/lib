@@ -19,7 +19,6 @@ describe('createMPARules', () => {
     expect(staticAssetsRule).toEqual({
       name: 'Deliver Static Assets and Set Cache Policy',
       description: 'Deliver static assets directly from storage and set cache policy',
-      active: true,
       criteria: [
         [
           {
@@ -54,7 +53,6 @@ describe('createMPARules', () => {
     expect(directoryIndexRule).toEqual({
       name: 'Redirect to index.html',
       description: 'Handle directory requests by rewriting to index.html',
-      active: true,
       criteria: [
         [
           {
@@ -86,7 +84,6 @@ describe('createMPARules', () => {
     expect(subpathIndexRule).toEqual({
       name: 'Redirect to index.html for Subpaths',
       description: 'Handle subpath requests by rewriting to index.html',
-      active: true,
       criteria: [
         [
           {

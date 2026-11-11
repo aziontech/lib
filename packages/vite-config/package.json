@@ -19,7 +19,7 @@
     "src"
   ],
   "peerDependencies": {
-    "vite": "^7.3.6",
+    "vite": "^7.3.7",
     "vite-plugin-dts": "^4.5.4"
   }
 }

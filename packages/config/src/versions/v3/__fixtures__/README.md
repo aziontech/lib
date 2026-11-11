@@ -22,4 +22,7 @@ generates:
 - `nuxt` does not declare `build.polyfills`, as its v4 config.
 - `emscripten` uses `bundler: 'webpack'`, as its v4 config (its `extend` is a webpack configuration).
 
+- The manifest of this implementation also carries `version: 3` (written by `VersionProcessConfigStrategy`). The fixtures
+  do not have it, so `golden.test.ts` and the presets test add it to the expected manifest instead of changing the files.
+
 Everything else is exactly what the original implementation produced.

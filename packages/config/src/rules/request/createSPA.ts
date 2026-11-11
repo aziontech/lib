@@ -30,7 +30,6 @@ export function createSPARules(
       {
         name: 'Deliver Static Assets and Set Cache Policy',
         description: 'Deliver static assets directly from storage and set cache policy',
-        active: true,
         criteria: [
           [
             {
@@ -62,7 +61,6 @@ export function createSPARules(
       {
         name: 'Redirect to index.html',
         description: 'Handle all routes by rewriting to index.html for client-side routing',
-        active: true,
         criteria: [
           [
             {

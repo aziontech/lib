@@ -64,7 +64,7 @@ const config: AzionConfig = {
                   variable: '${uri}',
                   conditional: 'if',
                   operator: 'matches',
-                  argument: '^(?!.*/$)(?![sS]*.[a-zA-Z0-9]+$).*',
+                  argument: '^(?!.*/$)(?!.*\\.[a-zA-Z0-9]+$).*',
                 },
               ],
             ],
