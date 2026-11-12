@@ -15,7 +15,9 @@ localStream.PassThrough = PassThrough;
 localStream.Stream = Stream;
 localStream.prototype = prototype;
 
-Readable.toWeb = function (readable) {
+// STREAM_CONTEXT is the real `node:stream` of the host Node.js, which already implements `Readable.toWeb` and
+// `Readable.fromWeb`. These fallbacks are only installed when the host does not have them, see below.
+const toWebFallback = function (readable) {
   let onData, onEnd, onError;
   let closed = false;
   const stream = new ReadableStream({
@@ -59,21 +61,36 @@ Readable.toWeb = function (readable) {
   return stream;
 };
 
-Readable.fromWeb = function (webStream) {
+const fromWebFallback = function (webStream) {
   const reader = webStream.getReader();
   return new Readable({
-    async read(size) {
-      const { done, value } = await reader.read();
-      if (done) {
-        return { done: true };
-      }
-      return { done: false, value };
+    read() {
+      // A Node.js Readable gets its data from `push()`, the return value of `read()` is ignored
+      reader.read().then(
+        ({ done, value }) => {
+          if (done) {
+            this.push(null);
+          } else {
+            this.push(value);
+          }
+        },
+        (error) => this.destroy(error),
+      );
     },
-    async destroy(error) {
-      await reader.cancel(error);
+    destroy(error, callback) {
+      reader.cancel(error).then(
+        () => callback(error),
+        () => callback(error),
+      );
     },
   });
 };
+
+// Do not replace the native implementations: the previous `Readable.fromWeb` never pushed any data, so a stream
+// created with it never emitted `data` or `end`. Next.js 16.4+ builds the HTML with `Readable.fromWeb`/`toWeb`
+// (`stream-ops.node.js`), so ISR revalidation hung on `azion dev`.
+if (typeof Readable.toWeb !== 'function') Readable.toWeb = toWebFallback;
+if (typeof Readable.fromWeb !== 'function') Readable.fromWeb = fromWebFallback;
 
 Writable.fromWeb = function (webStream) {
   const writer = webStream.getWriter();
