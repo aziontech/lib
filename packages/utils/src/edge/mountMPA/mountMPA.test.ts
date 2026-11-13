@@ -40,6 +40,15 @@ describe('mountMPA', () => {
     expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
   });
 
+  it('should treat routes with a dot in a parent segment as routes', async () => {
+    const requestURL = 'http://example.com/docs/v1.2/getting-started';
+    const expectedAssetPath = new URL('docs/v1.2/getting-started/index.html', 'file:///');
+
+    await mountMPA(requestURL);
+
+    expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
+  });
+
   it('should handle paths with trailing slashes correctly', async () => {
     const requestURL = 'http://example.com/about/';
     const expectedAssetPath = new URL('about/index.html', 'file:///');

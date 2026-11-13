@@ -31,6 +31,15 @@ describe('mountSPA', () => {
     expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
   });
 
+  it('should treat routes with a dot in a parent segment as routes', async () => {
+    const requestURL = 'http://example.com/docs/v1.2/getting-started';
+    const expectedAssetPath = new URL('index.html', 'file:///');
+
+    await mountSPA(requestURL);
+
+    expect(global.fetch).toHaveBeenCalledWith(expectedAssetPath);
+  });
+
   it('should handle the root path correctly', async () => {
     const requestURL = 'http://example.com/';
     const expectedAssetPath = new URL('index.html', 'file:///');
