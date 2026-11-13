@@ -27,6 +27,11 @@ describe('parse', () => {
     });
   });
 
+  it('should keep "=" characters in cookie values', () => {
+    expect(parseCookie('token=YWJjZA==; query=a=1&b=2')).toEqual({ token: 'YWJjZA==', query: 'a=1&b=2' });
+    expect(parseCookie('token=YWJjZA==', 'token')).toBe('YWJjZA==');
+  });
+
   it('should parse cookies with the __Secure- prefix', () => {
     expect(parseCookie('__Secure-key=value')).toEqual({ '__Secure-key': 'value' });
   });
