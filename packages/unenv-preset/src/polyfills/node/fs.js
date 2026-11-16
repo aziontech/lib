@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
 import bPath from 'path';
+import { notImplemented, notImplementedClass } from './_internal/not-implemented.js';
 
 /* eslint-disable */
 
@@ -403,9 +404,29 @@ fsPolyfill.readFileSync = readFileSync;
 fsPolyfill.readdirSync = readdirSync;
 fsPolyfill.existsSync = existsSync;
 
+// Node.js 24 APIs that unenv does not cover yet
+const mkdtempDisposable = notImplemented('fs.mkdtempDisposable');
+const mkdtempDisposableSync = notImplemented('fs.mkdtempDisposableSync');
+const Utf8Stream = notImplementedClass('fs.Utf8Stream');
+fsPolyfill.mkdtempDisposable = mkdtempDisposable;
+fsPolyfill.mkdtempDisposableSync = mkdtempDisposableSync;
+fsPolyfill.Utf8Stream = Utf8Stream;
+
 export default fsPolyfill;
 
-export { close, closeSync, existsSync, statSync as lstatSync, openSync, readdirSync, readFileSync, statSync };
+export {
+  close,
+  closeSync,
+  existsSync,
+  statSync as lstatSync,
+  mkdtempDisposable,
+  mkdtempDisposableSync,
+  openSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  Utf8Stream,
+};
 
 export const {
   access,
