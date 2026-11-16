@@ -88,7 +88,7 @@ const fromWebFallback = function (webStream) {
 
 // Do not replace the native implementations: the previous `Readable.fromWeb` never pushed any data, so a stream
 // created with it never emitted `data` or `end`. Next.js 16.4+ builds the HTML with `Readable.fromWeb`/`toWeb`
-// (`stream-ops.node.js`), so ISR revalidation hung on `azion dev`.
+// (`stream-ops.node.js`), so ISR revalidation hung on `azbundler dev`.
 if (typeof Readable.toWeb !== 'function') Readable.toWeb = toWebFallback;
 if (typeof Readable.fromWeb !== 'function') Readable.fromWeb = fromWebFallback;
 
