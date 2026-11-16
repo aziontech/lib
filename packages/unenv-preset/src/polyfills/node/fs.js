@@ -404,13 +404,14 @@ fsPolyfill.readFileSync = readFileSync;
 fsPolyfill.readdirSync = readdirSync;
 fsPolyfill.existsSync = existsSync;
 
-// Node.js 24 APIs that unenv does not cover yet
-const mkdtempDisposable = notImplemented('fs.mkdtempDisposable');
-const mkdtempDisposableSync = notImplemented('fs.mkdtempDisposableSync');
-const Utf8Stream = notImplementedClass('fs.Utf8Stream');
-fsPolyfill.mkdtempDisposable = mkdtempDisposable;
-fsPolyfill.mkdtempDisposableSync = mkdtempDisposableSync;
-fsPolyfill.Utf8Stream = Utf8Stream;
+// Node.js 24 APIs that unenv does not cover yet. They are stubs, unless the runtime already has them.
+// defineProperty because assigning fails when the runtime defines them as getters (as Node.js 24 does).
+const mkdtempDisposable = SRC_NODE_FS.mkdtempDisposable ?? notImplemented('fs.mkdtempDisposable');
+const mkdtempDisposableSync = SRC_NODE_FS.mkdtempDisposableSync ?? notImplemented('fs.mkdtempDisposableSync');
+const Utf8Stream = SRC_NODE_FS.Utf8Stream ?? notImplementedClass('fs.Utf8Stream');
+for (const [name, value] of Object.entries({ mkdtempDisposable, mkdtempDisposableSync, Utf8Stream })) {
+  Object.defineProperty(fsPolyfill, name, { value, writable: true, enumerable: true, configurable: true });
+}
 
 export default fsPolyfill;
 

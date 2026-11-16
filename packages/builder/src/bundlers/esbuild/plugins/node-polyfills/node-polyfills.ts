@@ -97,25 +97,52 @@ function handleAliasUnenv(build: PluginBuild) {
 }
 
 /**
+ * Built-in modules handled by default: the ones of the Node.js that runs the build plus the ones the
+ * alias map only knows with the `node:` prefix (`node:sqlite`, `node:test`, `node:sea`...).
+ * `builtinModules` changes between Node.js versions, the alias map does not, so the same modules are
+ * handled on any Node.js version.
+ */
+const DEFAULT_NODE_MODULES: readonly string[] = [
+  ...builtinModules,
+  ...Object.keys(alias).filter((name) => name.startsWith('node:')),
+];
+
+/**
  * Builds the regexp that matches the Node.js built-in modules handled by this plugin.
  *
- * `builtinModules` comes from the Node.js that runs the build, so it changes between versions
- * (Node.js 24 adds `node:sqlite`, `node:test`, `node:test/reporters` and `node:sea`, listed with the
- * `node:` prefix). A module is only handled when there is something to resolve it to (an unenv alias,
- * a polyfill or an external entry). The others are left to esbuild instead of failing in the plugin
- * trying to read a file that does not exist.
- * @param {readonly string[]} modules Built-in module names, defaults to the ones of the running Node.js
- * @returns {RegExp} Regexp that matches the module with or without the `node:` prefix
+ * A module is only handled when there is something to resolve it to (an unenv alias, a polyfill or an
+ * external entry). The others are left to esbuild instead of failing in the plugin trying to read a
+ * file that does not exist.
+ *
+ * Modules that exist only with the `node:` prefix (`node:test`, `node:sea`, `node:sqlite`...) only match
+ * with the prefix, so an npm package with the same name (`test`, `sea`, `sqlite`) is not taken as a
+ * built-in module.
+ * @param {readonly string[]} modules Built-in module names, as listed in `builtinModules`
+ * @returns {RegExp} Regexp that matches the modules
  */
-export function buildNodeModulesRegExp(modules: readonly string[] = builtinModules): RegExp {
+export function buildNodeModulesRegExp(modules: readonly string[] = DEFAULT_NODE_MODULES): RegExp {
   const hasResolution = (name: string): boolean =>
     Boolean(alias[name] ?? alias[`node:${name}`]) ||
     polyfill.some((p) => p.includes(`:${name}:`)) ||
     external.some((ext) => ext === name || ext === `node:${name}`);
 
-  const names = [...new Set(modules.map((name) => name.replace(/^node:/, '')))].filter(hasResolution);
+  const withoutPrefix = (name: string): string => name.replace(/^node:/, '');
+  const bareNames = new Set(modules.filter((name) => !name.startsWith('node:')));
 
-  return new RegExp(`^(node:)?(${names.join('|')})$`);
+  const names = new Set<string>();
+  const prefixOnlyNames = new Set<string>();
+  for (const module of modules) {
+    const name = withoutPrefix(module);
+    if (!hasResolution(name)) continue;
+    (bareNames.has(name) ? names : prefixOnlyNames).add(name);
+  }
+
+  const patterns = [];
+  if (names.size) patterns.push(`(node:)?(${[...names].join('|')})`);
+  if (prefixOnlyNames.size) patterns.push(`node:(${[...prefixOnlyNames].join('|')})`);
+
+  // `(?!)` never matches, for when there is no module to handle
+  return new RegExp(`^(?:${patterns.join('|') || '(?!)'})$`);
 }
 
 /**

@@ -24,6 +24,10 @@ export default {
     buffer: `${polyfillsPath}/node/buffer.js`,
     https: `${polyfillsPath}/node/https.js`,
     module: `${polyfillsPath}/node/module.js`,
+    // Only available with the node: prefix
+    'node:sea': `${polyfillsPath}/node/sea.js`,
+    'node:test': `${polyfillsPath}/node/test.js`,
+    'node:test/reporters': `${polyfillsPath}/node/test-reporters.js`,
     perf_hooks: `${polyfillsPath}/node/perf_hooks.js`,
     string_decoder: 'string_decoder/',
     timers: 'timers-browserify',
