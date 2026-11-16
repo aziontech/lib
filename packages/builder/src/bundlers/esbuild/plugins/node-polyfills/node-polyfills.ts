@@ -97,6 +97,28 @@ function handleAliasUnenv(build: PluginBuild) {
 }
 
 /**
+ * Builds the regexp that matches the Node.js built-in modules handled by this plugin.
+ *
+ * `builtinModules` comes from the Node.js that runs the build, so it changes between versions
+ * (Node.js 24 adds `node:sqlite`, `node:test`, `node:test/reporters` and `node:sea`, listed with the
+ * `node:` prefix). A module is only handled when there is something to resolve it to (an unenv alias,
+ * a polyfill or an external entry). The others are left to esbuild instead of failing in the plugin
+ * trying to read a file that does not exist.
+ * @param {readonly string[]} modules Built-in module names, defaults to the ones of the running Node.js
+ * @returns {RegExp} Regexp that matches the module with or without the `node:` prefix
+ */
+export function buildNodeModulesRegExp(modules: readonly string[] = builtinModules): RegExp {
+  const hasResolution = (name: string): boolean =>
+    Boolean(alias[name] ?? alias[`node:${name}`]) ||
+    polyfill.some((p) => p.includes(`:${name}:`)) ||
+    external.some((ext) => ext === name || ext === `node:${name}`);
+
+  const names = [...new Set(modules.map((name) => name.replace(/^node:/, '')))].filter(hasResolution);
+
+  return new RegExp(`^(node:)?(${names.join('|')})$`);
+}
+
+/**
  * Node built in modules
  * @param {*} build Build object
  * @param {*} isProd Is production build
@@ -111,7 +133,7 @@ function nodeBuiltInModules(
 ) {
   const IMPORTED_NODE_BUILT_IN_NAMESPACE = 'node-built-in-modules';
 
-  const NODEJS_MODULES_RE = new RegExp(`^(node:)?(${builtinModules.join('|')})$`);
+  const NODEJS_MODULES_RE = buildNodeModulesRegExp();
 
   build.onResolve({ filter: NODEJS_MODULES_RE }, (args) => {
     const nameModuleWithoutNode = args.path.replace('node:', '');
