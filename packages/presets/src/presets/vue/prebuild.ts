@@ -22,6 +22,18 @@ async function viteConfigExists(): Promise<boolean> {
 }
 
 /**
+ * Check if a path exists
+ */
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await lstat(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Read vite.config build output
  */
 async function readViteBuildOutput() {
@@ -57,9 +69,16 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
   const defaultViteOutDir = 'dist';
   const destPath = '.edge/assets';
 
-  // If skipFrameworkBuild is true, we need to create the dist folder
+  // If skipFrameworkBuild is true, reuse the output of a previous framework build
+  // (vite outDir, or the default `dist` for Vue CLI) and copy it to destPath
   if (ctx.skipFrameworkBuild) {
+    const config = (await viteConfigExists()) ? await readViteBuildOutput() : null;
+    const outDir = config?.build?.outDir || defaultViteOutDir;
+
     await mkdir(destPath, { recursive: true });
+    if (await pathExists(outDir)) {
+      copyDirectory(outDir, destPath);
+    }
     return;
   }
 

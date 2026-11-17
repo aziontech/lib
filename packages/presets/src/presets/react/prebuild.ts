@@ -22,6 +22,18 @@ async function viteConfigExists(): Promise<boolean> {
 }
 
 /**
+ * Check if a path exists
+ */
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await lstat(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Read vite.config build output
  */
 async function readViteBuildOutput() {
@@ -52,16 +64,27 @@ async function readViteBuildOutput() {
  * Runs custom prebuild actions for React
  */
 async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
-  // if skipFrameworkBuild is true, we need to create the dist folder
+  const defaultViteOutDir = 'dist';
+  const defaultCraOutDir = 'build';
+  const destPath = '.edge/assets';
+
+  // If skipFrameworkBuild is true, reuse the output of a previous framework build.
+  // Vite outputs to `outDir` (default `dist`) and CRA to `build` when run without BUILD_PATH.
   if (ctx.skipFrameworkBuild) {
-    await mkdir('.edge/assets', { recursive: true });
+    await mkdir(destPath, { recursive: true });
+    let outDir = defaultCraOutDir;
+    if (await viteConfigExists()) {
+      const config = await readViteBuildOutput();
+      outDir = config?.build?.outDir || defaultViteOutDir;
+    }
+    if (await pathExists(outDir)) {
+      copyDirectory(outDir, destPath);
+    }
     return;
   }
 
   const packageManager = await getPackageManager();
   const npmArgsForward = packageManager === 'npm' ? '--' : '';
-  const defaultViteOutDir = 'dist';
-  const destPath = '.edge/assets';
 
   const isViteProject = await viteConfigExists();
 
