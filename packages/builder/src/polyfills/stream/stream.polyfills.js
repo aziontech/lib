@@ -5,8 +5,11 @@
 
 const localStream = {};
 const { Duplex, Writable, Readable, Transform, PassThrough, Stream } = STREAM_CONTEXT;
-export const { prototype } = STREAM_CONTEXT;
+export const { prototype, pipeline, finished, promises } = STREAM_CONTEXT;
 
+localStream.pipeline = pipeline;
+localStream.finished = finished;
+localStream.promises = promises;
 localStream.Duplex = Duplex;
 localStream.Writable = Writable;
 localStream.Readable = Readable;
