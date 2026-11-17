@@ -15,6 +15,18 @@ async function docsFolderExists(): Promise<boolean> {
 }
 
 /**
+ * Check if a path exists
+ */
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await lstat(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Runs custom prebuild actions for VitePress
  */
 async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void> {
@@ -25,9 +37,12 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
   // however the users also might use the root folder
   const outDir = (await docsFolderExists()) ? 'docs/.vitepress/dist' : '.vitepress/dist';
 
-  // If skipFrameworkBuild is true, we need to create the dist folder
+  // If skipFrameworkBuild is true, reuse the output of a previous framework build
   if (ctx.skipFrameworkBuild) {
     await mkdir(newOutDir, { recursive: true });
+    if (await pathExists(outDir)) {
+      copyDirectory(outDir, newOutDir);
+    }
     return;
   }
 
