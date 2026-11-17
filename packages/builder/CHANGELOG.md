@@ -1,5 +1,12 @@
 # @aziontech/builder
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`4fe1f01`](https://github.com/aziontech/lib/commit/4fe1f012fcaeaf76cf1c4b6ab36cc0da171ec534)]:
+  - @aziontech/presets@1.3.1
+
 ## 1.0.7
 
 ### Patch Changes
