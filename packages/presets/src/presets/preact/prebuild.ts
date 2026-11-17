@@ -26,6 +26,18 @@ async function viteConfigExists() {
 }
 
 /**
+ * Check if a path exists
+ */
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await lstat(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Read vite.config build output
  * @returns {object} The parsed configuration object or null if the file doesn't exist.
  */
@@ -64,9 +76,17 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext) {
   const packageManager = await getPackageManager();
   const npmArgsForward = packageManager === 'npm' ? '--' : '';
 
-  // if skipFrameworkBuild is true, we need to create the dist folder
+  // If skipFrameworkBuild is true, reuse the output of a previous framework build.
+  // If the outDir is gone (a regular build removes it after copying), keep what is already in the storage dir.
   if (ctx.skipFrameworkBuild) {
     await mkdir(edgeStorageDir, { recursive: true });
+    if (await viteConfigExists()) {
+      const config = await readViteBuildOutput();
+      const outDir = config?.build?.outDir || defaultViteOutDir;
+      if (await pathExists(outDir)) {
+        copyDirectory(outDir, edgeStorageDir);
+      }
+    }
     return;
   }
 
