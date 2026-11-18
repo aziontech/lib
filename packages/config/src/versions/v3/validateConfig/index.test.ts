@@ -52,6 +52,20 @@ describe('generate', () => {
       const config: any = { build: { preset: { metadata: { name: 'custom' }, configs: { 3: { version: 3 } } } } };
       expect(() => validateConfig(config)).toThrow("Preset must contain both 'metadata' and 'config' properties");
     });
+    it('should accept the dir of an object_storage origin', () => {
+      const config: any = {
+        version: 3,
+        origin: [{ name: 'origin-storage-default', type: 'object_storage', dir: './www' }],
+      };
+      expect(() => validateConfig(config)).not.toThrow();
+    });
+    it('should reject a dir that is not a string', () => {
+      const config: any = {
+        version: 3,
+        origin: [{ name: 'origin-storage-default', type: 'object_storage', dir: 1 }],
+      };
+      expect(() => validateConfig(config)).toThrow("The 'dir' field must be a string.");
+    });
     it('should still reject unknown properties in a preset object', () => {
       const config: any = {
         build: { preset: { metadata: { name: 'custom' }, config: {}, unknown: {} } },

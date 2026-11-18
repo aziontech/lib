@@ -506,6 +506,10 @@ const azionConfigSchema = {
                 type: ['string', 'null'],
                 errorMessage: "The 'prefix' field must be a string or null.",
               },
+              dir: {
+                type: 'string',
+                errorMessage: "The 'dir' field must be a string.",
+              },
               addresses: {
                 anyOf: [
                   {

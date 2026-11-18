@@ -63,6 +63,11 @@ export type AzionOrigin = {
   bucket?: string | null;
   /** Prefix for S3-like origins */
   prefix?: string | null;
+  /**
+   * Local directory with the static files of an `object_storage` origin. The build copies it to `.edge/storage`.
+   * It is only used by the build and is not part of the manifest.
+   */
+  dir?: string;
   /** Addresses for the origin */
   addresses?:
     | string[]
