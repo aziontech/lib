@@ -1,29 +1,10 @@
 import { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { copyDirectory, exec, getPackageManager } from '@aziontech/utils/node';
-import { lstat, mkdir, readFile, rm } from 'fs/promises';
-import { join } from 'path';
+import { lstat, mkdir, rm } from 'fs/promises';
+import { assertOutDirExists, readViteOutDir, viteConfigExists } from '../../shared/viteBuildOutput';
 
 const edgeStorageDir = '.edge/assets';
 const defaultViteOutDir = 'dist';
-
-/**
- * Check if the vite.config file exists.
- * @returns {boolean} True if the file exists, false otherwise.
- */
-async function viteConfigExists() {
-  const files = ['./vite.config.js', './vite.config.ts'];
-  const checks = files.map(async (file) => {
-    try {
-      await lstat(file);
-      return true;
-    } catch {
-      return false;
-    }
-  });
-
-  const results = await Promise.all(checks);
-  return results.includes(true);
-}
 
 /**
  * Check if a path exists
@@ -34,38 +15,6 @@ async function pathExists(path: string): Promise<boolean> {
     return true;
   } catch {
     return false;
-  }
-}
-
-/**
- * Read vite.config build output
- * @returns {object} The parsed configuration object or null if the file doesn't exist.
- */
-async function readViteBuildOutput() {
-  try {
-    const isTypescript = await lstat('./vite.config.ts').then(
-      () => true,
-      () => false,
-    );
-    const pathConfigFile = join(process.cwd(), isTypescript ? 'vite.config.ts' : 'vite.config.js');
-    const configFileContent = await readFile(pathConfigFile, 'utf-8');
-    const defineConfig = configFileContent.match(/defineConfig\(([\s\S]*)\)/);
-
-    if (!defineConfig) {
-      throw new Error('defineConfig not found');
-    }
-
-    const buildConfig = defineConfig[1].match(/build: *({[\s\S]*?}),/);
-
-    if (!buildConfig) {
-      throw new Error('build config not found');
-    }
-
-    const buildConfigObject = JSON.parse(buildConfig[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
-
-    return Promise.resolve({ build: buildConfigObject });
-  } catch {
-    return null;
   }
 }
 
@@ -81,8 +30,7 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext) {
   if (ctx.skipFrameworkBuild) {
     await mkdir(edgeStorageDir, { recursive: true });
     if (await viteConfigExists()) {
-      const config = await readViteBuildOutput();
-      const outDir = config?.build?.outDir || defaultViteOutDir;
+      const outDir = (await readViteOutDir()) || defaultViteOutDir;
       if (await pathExists(outDir)) {
         copyDirectory(outDir, edgeStorageDir);
       }
@@ -90,7 +38,6 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext) {
     return;
   }
 
-  let outDir = defaultViteOutDir;
   const destPath = edgeStorageDir;
 
   const isViteProject = await viteConfigExists();
@@ -100,11 +47,8 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext) {
       await exec(`${packageManager} run build ${npmArgsForward}`);
     }
 
-    const config = await readViteBuildOutput();
-
-    if (config?.build?.outDir) {
-      outDir = config.build.outDir;
-    }
+    const outDir = (await readViteOutDir()) || defaultViteOutDir;
+    await assertOutDirExists(outDir);
 
     copyDirectory(outDir, destPath);
     rm(outDir, { recursive: true, force: true });

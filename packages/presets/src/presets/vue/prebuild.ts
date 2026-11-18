@@ -1,25 +1,7 @@
 import type { BuildConfiguration, BuildContext } from '@aziontech/config';
 import { copyDirectory, exec, getPackageManager } from '@aziontech/utils/node';
-import { lstat, mkdir, readFile } from 'fs/promises';
-import { join } from 'path';
-
-/**
- * Check if the vite.config file exists
- */
-async function viteConfigExists(): Promise<boolean> {
-  const files = ['./vite.config.js', './vite.config.ts'];
-  const checks = files.map(async (file) => {
-    try {
-      await lstat(file);
-      return true;
-    } catch {
-      return false;
-    }
-  });
-
-  const results = await Promise.all(checks);
-  return results.includes(true);
-}
+import { lstat, mkdir } from 'fs/promises';
+import { assertOutDirExists, readViteOutDir, viteConfigExists } from '../../shared/viteBuildOutput';
 
 /**
  * Check if a path exists
@@ -30,33 +12,6 @@ async function pathExists(path: string): Promise<boolean> {
     return true;
   } catch {
     return false;
-  }
-}
-
-/**
- * Read vite.config build output
- */
-async function readViteBuildOutput() {
-  try {
-    const isTypescript = await lstat('./vite.config.ts').then(
-      () => true,
-      () => false,
-    );
-    const pathConfigFile = join(process.cwd(), isTypescript ? 'vite.config.ts' : 'vite.config.js');
-    const configFileContent = await readFile(pathConfigFile, 'utf-8');
-    const defineConfig = configFileContent.match(/defineConfig\(([\s\S]*)\)/);
-    if (!defineConfig) {
-      throw new Error('defineConfig not found');
-    }
-    const buildConfig = defineConfig[1].match(/build: *({[\s\S]*?}),/);
-    if (!buildConfig) {
-      throw new Error('build config not found');
-    }
-
-    const buildConfigObject = JSON.parse(buildConfig[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
-    return Promise.resolve({ build: buildConfigObject });
-  } catch {
-    return null;
   }
 }
 
@@ -72,8 +27,7 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
   // If skipFrameworkBuild is true, reuse the output of a previous framework build
   // (vite outDir, or the default `dist` for Vue CLI) and copy it to destPath
   if (ctx.skipFrameworkBuild) {
-    const config = (await viteConfigExists()) ? await readViteBuildOutput() : null;
-    const outDir = config?.build?.outDir || defaultViteOutDir;
+    const outDir = (await readViteOutDir()) || defaultViteOutDir;
 
     await mkdir(destPath, { recursive: true });
     if (await pathExists(outDir)) {
@@ -90,8 +44,8 @@ async function prebuild(_: BuildConfiguration, ctx: BuildContext): Promise<void>
       verbose: true,
     });
 
-    const config = await readViteBuildOutput();
-    const outDir = config?.build?.outDir || defaultViteOutDir;
+    const outDir = (await readViteOutDir()) || defaultViteOutDir;
+    await assertOutDirExists(outDir);
 
     copyDirectory(outDir, destPath);
   }
