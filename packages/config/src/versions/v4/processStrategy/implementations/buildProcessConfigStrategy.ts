@@ -1,5 +1,6 @@
 import { AzionBuild, AzionConfig } from '../../../../types';
 import ProcessConfigStrategy from '../processConfigStrategy';
+import stripPresetConfigs from '../../../shared/processStrategy/stripPresetConfigs';
 
 /**
  * BuildProcessConfigStrategy
@@ -12,7 +13,7 @@ class BuildProcessConfigStrategy extends ProcessConfigStrategy {
     if (!build) {
       return;
     }
-    const payload: AzionBuild = build;
+    const payload: AzionBuild = stripPresetConfigs(build);
     return payload;
   }
 
