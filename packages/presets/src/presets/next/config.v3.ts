@@ -11,6 +11,7 @@ export default defineConfig({
     {
       name: 'origin-storage-default',
       type: 'object_storage',
+      dir: '.edge/next-build-assets',
     },
   ],
   functions: [

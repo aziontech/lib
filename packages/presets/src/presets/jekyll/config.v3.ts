@@ -1,3 +1,3 @@
 import { createMPAConfigV3 } from '../../shared/staticConfigV3';
 
-export default createMPAConfigV3('jekyll');
+export default createMPAConfigV3('jekyll', './_site');
