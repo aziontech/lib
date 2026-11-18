@@ -51,6 +51,10 @@ The Presets package provides pre-configured presets for different frameworks and
    azion deploy --local
    ```
 
+## Custom Preset
+
+You can pass your own preset object to `build.preset` in the `azion.config`, or change a built-in one. See [Custom Preset](./docs/custom-preset.md).
+
 ### Nuxt.js Custom Preset (Nitro)
 
 Supports both Server-Side Rendering (SSR) and Static Site Generation (SSG) for Nuxt.js applications.
