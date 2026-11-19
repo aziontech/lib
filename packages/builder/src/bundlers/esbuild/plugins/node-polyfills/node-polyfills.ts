@@ -232,6 +232,10 @@ function handleNodeJSGlobals(build: PluginBuild, getAbsolutePath: (moving: strin
   if (inject['import.meta.url']) {
     build.initialOptions.define = build.initialOptions.define ?? {};
     build.initialOptions.define['import.meta.url'] = JSON.stringify('file://' + process.cwd() + '/index.js');
+    // Node-style companions of import.meta.url (e.g. SvelteKit 3 reads import.meta.dirname).
+    // The output runs outside a module scope, so they must be resolved at build time too.
+    build.initialOptions.define['import.meta.dirname'] = JSON.stringify(process.cwd());
+    build.initialOptions.define['import.meta.filename'] = JSON.stringify(process.cwd() + '/index.js');
   }
 
   build.initialOptions.inject = [
