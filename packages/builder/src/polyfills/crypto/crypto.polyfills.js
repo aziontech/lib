@@ -39,6 +39,11 @@ export var { randomFillSync } = CRYPTO_CONTEXT.cryptoContext;
 export var { getRandomValues } = CRYPTO_CONTEXT.cryptoContext;
 export var { randomUUID } = CRYPTO_CONTEXT.cryptoContext;
 export var { generateKeyPair } = CRYPTO_CONTEXT.cryptoContext;
+// Node.js 24, undefined on a host that does not have them
+export var { argon2 } = CRYPTO_CONTEXT.cryptoContext;
+export var { argon2Sync } = CRYPTO_CONTEXT.cryptoContext;
+export var { encapsulate } = CRYPTO_CONTEXT.cryptoContext;
+export var { decapsulate } = CRYPTO_CONTEXT.cryptoContext;
 export var { CryptoKey } = CRYPTO_CONTEXT.cryptoContext;
 export var { KeyObject } = CRYPTO_CONTEXT.cryptoContext;
 export var { webcrypto } = CRYPTO_CONTEXT.cryptoContext;
@@ -79,6 +84,10 @@ export default {
   getRandomValues,
   randomUUID,
   generateKeyPair,
+  argon2,
+  argon2Sync,
+  encapsulate,
+  decapsulate,
   CryptoKey,
   KeyObject,
   subtle,

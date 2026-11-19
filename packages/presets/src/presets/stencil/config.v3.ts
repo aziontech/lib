@@ -9,6 +9,7 @@ export default defineConfig({
     {
       name: 'origin-storage-default',
       type: 'object_storage',
+      dir: './www',
     },
   ],
   rules: {

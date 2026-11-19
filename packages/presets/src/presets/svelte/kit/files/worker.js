@@ -1,10 +1,7 @@
 import { lookup as lookupCache, save as saveCache } from '@aziontech/presets/sveltekit/cache';
-import { base_path, manifest, prerendered } from 'MANIFEST';
-import { Server } from 'SERVER';
+import { app_path as appDir, assets, base_path, prerendered, server, server_assets } from 'MANIFEST';
 
-const server = new Server(manifest);
-
-const app_path = `/${manifest.appPath}`;
+const app_path = `/${appDir}`;
 
 const immutable = `${app_path}/immutable/`;
 const version_file = `${app_path}/version.json`;
@@ -103,10 +100,10 @@ export default {
     const filename = stripped_pathname.slice(base_path.length + 1);
     if (filename) {
       is_static_asset =
-        manifest.assets.has(filename) ||
-        manifest.assets.has(filename + '/index.html') ||
-        filename in manifest._.server_assets ||
-        filename + '/index.html' in manifest._.server_assets;
+        assets.has(filename) ||
+        assets.has(filename + '/index.html') ||
+        server_assets.has(filename) ||
+        server_assets.has(filename + '/index.html');
     }
 
     let location = pathname.at(-1) === '/' ? stripped_pathname : pathname + '/';

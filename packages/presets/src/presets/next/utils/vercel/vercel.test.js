@@ -3,31 +3,31 @@ import { jest } from '@jest/globals';
 import child_process from 'child_process';
 import fs from 'fs';
 import mockFs from 'mock-fs';
+import os from 'os';
+import path from 'path';
 import VercelUtils from './index';
 
 const { deleteTelemetryFiles, createVercelProjectConfig, runVercelBuild } = VercelUtils;
 
 describe('Vercel Utils', () => {
   it('Should delete telemtry files', () => {
-    mockFs({
-      '.vercel': {
-        output: {
-          static: {
-            _next: {
-              __private: {
-                'next-telemetry.js': 'telemetry',
-              },
-            },
-          },
-        },
-      },
-    });
+    // A real temporary directory: mock-fs does not intercept `fs.rmSync` on Node.js 24, where it is native
+    const originalCwd = process.cwd();
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vercel-utils-'));
+    const privateDir = path.join(tmpDir, '.vercel', 'output', 'static', '_next', '__private');
 
-    deleteTelemetryFiles();
+    try {
+      fs.mkdirSync(privateDir, { recursive: true });
+      fs.writeFileSync(path.join(privateDir, 'next-telemetry.js'), 'telemetry');
+      process.chdir(tmpDir);
 
-    expect(fs.existsSync('.vercel/output/static/_next/__private')).toBe(false);
+      deleteTelemetryFiles();
 
-    mockFs.restore();
+      expect(fs.existsSync('.vercel/output/static/_next/__private')).toBe(false);
+    } finally {
+      process.chdir(originalCwd);
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 
   it('Should create vercel project config', () => {

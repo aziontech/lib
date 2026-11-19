@@ -147,6 +147,26 @@ describe('processConfig', () => {
       expect(result.cache).toBeUndefined();
     });
 
+    it('should not write the dir of an object_storage origin to the manifest', () => {
+      const azionConfig: any = {
+        origin: [
+          {
+            name: 'my origin storage',
+            type: 'object_storage',
+            bucket: 'mybucket',
+            prefix: 'myfolder',
+            dir: './www',
+          },
+        ],
+      };
+
+      const result = processConfig(azionConfig);
+      expect(result.origin).toEqual([
+        expect.objectContaining({ name: 'my origin storage', bucket: 'mybucket', prefix: 'myfolder' }),
+      ]);
+      expect(result.origin?.[0]).not.toHaveProperty('dir');
+    });
+
     it('should correctly convert request rules', () => {
       const azionConfig: any = {
         origin: [

@@ -35,6 +35,11 @@ export var { randomFillSync } = crypto;
 export var { getRandomValues } = crypto;
 export var { randomUUID } = crypto;
 export var { generateKeyPair } = crypto;
+// Node.js 24, undefined on a host that does not have them
+export var { argon2 } = crypto;
+export var { argon2Sync } = crypto;
+export var { encapsulate } = crypto;
+export var { decapsulate } = crypto;
 
 // Export Web Crypto API from globalThis.crypto (edge runtime)
 export var webcrypto = (typeof globalThis !== 'undefined' && globalThis.crypto) || crypto.webcrypto;

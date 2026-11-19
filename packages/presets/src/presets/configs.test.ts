@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { getPresetApiVersions, processConfig, resolvePresetConfig, validateConfig } from '@aziontech/config';
-import type { AzionBuildPreset } from '@aziontech/config';
+import type { AzionBuildPreset, AzionConfig, AzionConfigV3 } from '@aziontech/config';
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import * as presetModules from '../index';
@@ -192,7 +192,16 @@ describe('preset configs by API version', () => {
       const { version, ...config } = resolvePresetConfig(byName(name), 3);
       expect(version).toBe(3);
       // functions (e.g. build.extend) are not serializable, the golden input does not carry them
-      expect(JSON.parse(JSON.stringify(config))).toEqual(golden(name, 'input'));
+      // the `dir` of the storage origin is new: the 1.20.x prebuilds wrote straight to .edge/storage (see below)
+      const withoutOriginDir = {
+        ...config,
+        origin: (config as { origin?: { dir?: string }[] }).origin?.map((origin) => {
+          const withoutDir = { ...origin };
+          delete withoutDir.dir;
+          return withoutDir;
+        }),
+      };
+      expect(JSON.parse(JSON.stringify(withoutOriginDir))).toEqual(golden(name, 'input'));
     });
 
     it('produces the manifest the 1.20.x implementation produced', () => {
@@ -203,6 +212,20 @@ describe('preset configs by API version', () => {
       expect(JSON.parse(JSON.stringify(processConfig(config)))).toEqual({ version: 3, ...golden(name, 'manifest') });
     });
   });
+
+  // The bundler copies the `dir` of the storage origin of the v3 config to .edge/storage, so it has to be the directory
+  // the preset writes the static files to, which the v4 config declares in `storage[].dir`.
+  it.each(presets.filter((preset) => preset.configs?.[3]).map((preset) => [preset.metadata.name, preset] as const))(
+    '%s: the storage origin of the v3 config has the same dir as the storage of the v4 config',
+    (_name, preset) => {
+      const v3Dirs = ((resolvePresetConfig(preset, 3) as AzionConfigV3).origin ?? [])
+        .filter((origin) => origin.type === 'object_storage')
+        .map((origin) => origin.dir);
+      const v4Dirs = ((resolvePresetConfig(preset, 4) as AzionConfig).storage ?? []).map((storage) => storage.dir);
+
+      expect(v3Dirs.length > 0 ? v3Dirs : undefined).toEqual(v4Dirs.length > 0 ? v4Dirs : undefined);
+    },
+  );
 
   // the bundler reads the default build (entry, bundler) from the config of the version of the project and falls back to
   // `preset.config` for what it does not declare (prebuilds such as nuxt and svelte change `preset.config`), so a version

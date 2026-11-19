@@ -15,6 +15,7 @@ import {
   WAF_MODE,
   WAF_SENSITIVITY,
 } from '../constants';
+import buildSchema from '../../shared/schemas/build';
 
 const criteriaBaseSchema = {
   type: 'object',
@@ -432,90 +433,7 @@ const azionConfigSchema = {
       type: 'object',
       properties: {
         version: { type: 'number', enum: [3] },
-        build: {
-          type: 'object',
-          properties: {
-            entry: {
-              oneOf: [
-                { type: 'string' },
-                { type: 'array', items: { type: 'string' } },
-                { type: 'object', additionalProperties: { type: 'string' } },
-              ],
-              errorMessage: "The 'build.entry' must be a string, array of strings, or object with string values",
-            },
-            bundler: {
-              type: 'string',
-              enum: ['webpack', 'esbuild'],
-              errorMessage: "The 'build.bundler' must be either 'webpack' or 'esbuild'",
-            },
-            preset: {
-              anyOf: [
-                { type: 'string' },
-                {
-                  type: 'object',
-                  properties: {
-                    metadata: {
-                      type: 'object',
-                      properties: {
-                        name: {
-                          type: 'string',
-                          errorMessage: "The 'name' field in preset metadata must be a string",
-                        },
-                        ext: {
-                          type: 'string',
-                          errorMessage: "The 'ext' field in preset metadata must be a string",
-                        },
-                      },
-                      required: ['name'],
-                      additionalProperties: false,
-                      errorMessage: {
-                        additionalProperties: 'No additional properties are allowed in preset metadata',
-                        required: "The 'name' field is required in preset metadata",
-                      },
-                    },
-                    config: {
-                      $ref: '#/definitions/mainConfig',
-                    },
-                    handler: { instanceof: 'Function' },
-                    prebuild: { instanceof: 'Function' },
-                    postbuild: { instanceof: 'Function' },
-                  },
-                  required: ['metadata', 'config'],
-                  additionalProperties: false,
-                  errorMessage: {
-                    additionalProperties: 'No additional properties are allowed in preset',
-                    required: "Preset must contain both 'metadata' and 'config' properties",
-                  },
-                },
-              ],
-              errorMessage: 'Preset must be either a string or an object with preset properties',
-            },
-            polyfills: {
-              type: 'boolean',
-              errorMessage: "The 'build.polyfills' must be a boolean",
-            },
-            extend: {
-              instanceof: 'Function',
-              errorMessage: "The 'build.extend' must be a function",
-            },
-            memoryFS: {
-              type: 'object',
-              properties: {
-                injectionDirs: {
-                  type: 'array',
-                  items: { type: 'string' },
-                },
-                removePathPrefix: { type: 'string' },
-              },
-              required: ['injectionDirs', 'removePathPrefix'],
-              additionalProperties: false,
-            },
-          },
-          additionalProperties: false,
-          errorMessage: {
-            additionalProperties: "No additional properties are allowed in the 'build' object",
-          },
-        },
+        build: buildSchema,
         functions: {
           type: 'array',
           items: {
@@ -587,6 +505,10 @@ const azionConfigSchema = {
               prefix: {
                 type: ['string', 'null'],
                 errorMessage: "The 'prefix' field must be a string or null.",
+              },
+              dir: {
+                type: 'string',
+                errorMessage: "The 'dir' field must be a string.",
               },
               addresses: {
                 anyOf: [
