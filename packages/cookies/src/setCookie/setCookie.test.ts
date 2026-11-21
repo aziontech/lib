@@ -45,6 +45,11 @@ describe('setCookie', () => {
     expect(response.headers.get('Set-Cookie')).toBe('key=value; Max-Age=60');
   });
 
+  it('should set Max-Age=0 to expire the cookie', () => {
+    setCookie(response, 'key', '', { maxAge: 0 });
+    expect(response.headers.get('Set-Cookie')).toBe('key=; Max-Age=0');
+  });
+
   it('should set the cookie with the key and value and path', () => {
     setCookie(response, 'key', 'value', { path: '/' });
     expect(response.headers.get('Set-Cookie')).toBe('key=value; Path=/');

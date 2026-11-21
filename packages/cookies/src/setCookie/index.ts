@@ -65,7 +65,7 @@ export const setCookie: SetCookie = (response, key, value, options) => {
   if (options?.httpOnly) {
     cookie += '; HttpOnly';
   }
-  if (options?.maxAge) {
+  if (options?.maxAge !== undefined) {
     if (options?.maxAge < 0) throw new Error('maxAge must be a positive number');
     if (options?.maxAge > 34560000) {
       throw new Error('maxAge must be less than or equal to (400 days) 34560000');
