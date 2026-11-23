@@ -1,5 +1,15 @@
 # @aziontech/config
 
+## 1.2.1
+
+### Patch Changes
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Stop writing `build.preset.config` and `build.preset.configs` to the manifest when `build.preset` is an object. They are inputs of the build, not part of the manifest, and the manifest ended up with the whole preset config for every API version. `build.preset.metadata` is still written, and a preset set by name is not changed.
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Fix the validation of a `build.preset` object that carries `configs`, such as `preset: { ...javascript }` in an `azion.config` with `version: 3`. The schema did not know the `configs` property of the preset, so it failed with "No additional properties are allowed in preset". `preset.config` is the config of the default API version, which can differ from the version of the file (a v4 `config` in a v3 file was rejected), so it is now only checked against the schema of the file version when the preset has no `configs`. The `build` schema of the v3 config now comes from the shared schema, as it already did for v4 and v6, which also makes it accept `build.worker`.
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Add `dir` to the `origin` of the v3 config. For an `object_storage` origin it is the local directory with the static files, which the build copies to `.edge/storage`. Before, the v3 config had no `storage` section, so the bundler had to read the directory from the v4 config of the preset, and a preset or an `azion.config` that only has the v3 config could not tell which directory to copy. The `dir` is only used by the build and is not written to the manifest.
+
 ## 1.2.0
 
 ### Minor Changes
