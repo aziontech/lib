@@ -161,6 +161,18 @@ const R_OK = 4;
 const W_OK = 2;
 const X_OK = 1;
 
+// Node.js 24 APIs that the fs of azbundler dev does not provide. They fail when called, not when imported, with
+// the same message the production polyfill (@aziontech/unenv-preset) uses.
+function mkdtempDisposableSync() {
+  throw new Error('[azion] fs.mkdtempDisposableSync is not implemented yet!');
+}
+
+class Utf8Stream {
+  constructor() {
+    throw new Error('[azion] fs.Utf8Stream is not implemented yet!');
+  }
+}
+
 export {
   close,
   closeSync,
@@ -172,6 +184,7 @@ export {
   lstat,
   lstatSync,
   mkdir,
+  mkdtempDisposableSync,
   O_APPEND,
   O_CREAT,
   O_DIRECTORY,
@@ -199,6 +212,7 @@ export {
   rmdir,
   stat,
   statSync,
+  Utf8Stream,
   W_OK,
   writeFile,
   X_OK,
@@ -220,6 +234,7 @@ localFs.readFileSync = readFileSync;
 localFs.readdir = readdir;
 localFs.readdirSync = readdirSync;
 localFs.mkdir = mkdir;
+localFs.mkdtempDisposableSync = mkdtempDisposableSync;
 localFs.rmdir = rmdir;
 localFs.copyFile = copyFile;
 localFs.cp = cp;
@@ -245,5 +260,6 @@ localFs.O_WRONLY = O_WRONLY;
 localFs.R_OK = R_OK;
 localFs.W_OK = W_OK;
 localFs.X_OK = X_OK;
+localFs.Utf8Stream = Utf8Stream;
 
 export default localFs;

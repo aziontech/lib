@@ -29,15 +29,21 @@ jobs:
         run: pnpm compile
 
   test_unit:
-    name: Unit Tests
+    name: Unit Tests (Node ${{ matrix.node-version }})
     needs: lint_and_build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
     steps:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Build
         run: pnpm compile

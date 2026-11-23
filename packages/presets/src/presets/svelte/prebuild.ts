@@ -4,6 +4,16 @@ import { existsSync } from 'fs';
 import { mkdir, readFile, rm } from 'fs/promises';
 
 const SVELTE_CONFIG_FILES = ['svelte.config.js', 'svelte.config.ts', 'svelte.config.mjs', 'svelte.config.cjs'];
+// SvelteKit 3 accepts the kit options (including `adapter`) directly in the Vite config
+const VITE_CONFIG_FILES = [
+  'vite.config.js',
+  'vite.config.ts',
+  'vite.config.mjs',
+  'vite.config.mts',
+  'vite.config.cjs',
+  'vite.config.cts',
+];
+const ADAPTER_PATTERN = /@aziontech\/presets\/sveltekit|@sveltejs\/adapter-azion|adapter-static/i;
 const AZION_CONFIG_FILES = ['azion.config.js', 'azion.config.ts', 'azion.config.mjs', 'azion.config.cjs'];
 const PATHS = {
   BUILD_DIR_DEFAULT: 'build',
@@ -13,19 +23,24 @@ const PATHS = {
 
 async function readSvelteConfig() {
   try {
-    let configPath = '';
-    for (const file of SVELTE_CONFIG_FILES) {
-      if (existsSync(file)) {
-        configPath = file;
+    // Use the first config file (svelte.config.* then vite.config.*) that declares an adapter
+    let content = '';
+    let foundConfigFile = false;
+    for (const file of [...SVELTE_CONFIG_FILES, ...VITE_CONFIG_FILES]) {
+      if (!existsSync(file)) continue;
+      foundConfigFile = true;
+      const fileContent = await readFile(file, 'utf8');
+      if (ADAPTER_PATTERN.test(fileContent)) {
+        content = fileContent;
         break;
       }
     }
 
-    if (!configPath) {
-      throw new Error('Svelte config file not found');
+    if (!content) {
+      if (!foundConfigFile) throw new Error('Svelte config file not found');
+      return null;
     }
 
-    const content = await readFile(configPath, 'utf8');
     const hasAzionPreset = /@aziontech\/presets\/sveltekit/i.test(content);
     const hasAzionAdapter = /@sveltejs\/adapter-azion/i.test(content);
     const hasAzionConfig = hasAzionPreset || hasAzionAdapter;

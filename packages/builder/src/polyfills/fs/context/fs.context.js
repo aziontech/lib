@@ -27,7 +27,6 @@ export const {
   Dirent,
   Stats,
   constants,
-  F_OK,
   O_APPEND,
   O_CREAT,
   O_DIRECTORY,
@@ -42,10 +41,11 @@ export const {
   O_SYNC,
   O_TRUNC,
   O_WRONLY,
-  R_OK,
-  W_OK,
-  X_OK,
 } = fs;
+
+// Node.js 24 removed F_OK, R_OK, W_OK and X_OK from the top level of `fs` (deprecated since 20, DEP0176), they are
+// only in `fs.constants`. Reading them from `fs` also logs a deprecation warning on Node.js 22.
+export const { F_OK, R_OK, W_OK, X_OK } = constants;
 
 export { promises } from 'fs';
 localFs.promises = fs.promises;

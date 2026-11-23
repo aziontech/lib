@@ -14,7 +14,7 @@ const name = 'sveltejs/adapter-azion';
 
 /**
  * We use a custom `Builder` type here to support the minimum version of SvelteKit.
- * @typedef {PartialExcept<import('@sveltejs/kit').Builder, 'log' | 'rimraf' | 'mkdirp' | 'config' | 'prerendered' | 'routes' | 'createEntries' | 'generateFallback' | 'generateEnvModule' | 'generateManifest' | 'getBuildDirectory' | 'getClientDirectory' | 'getServerDirectory' | 'getAppPath' | 'writeClient' | 'writePrerendered' | 'writePrerendered' | 'writeServer' | 'copy' | 'compress'>} Builder2_0_0
+ * @typedef {PartialExcept<import('@sveltejs/kit').Builder, 'log' | 'rimraf' | 'mkdirp' | 'config' | 'prerendered' | 'routes' | 'createEntries' | 'generateFallback' | 'generateEnvModule' | 'getBuildDirectory' | 'getClientDirectory' | 'getServerDirectory' | 'getAppPath' | 'writeClient' | 'writePrerendered' | 'writePrerendered' | 'writeServer' | 'copy' | 'compress'>} Builder2_0_0
  */
 
 /** @type {import('./index.js').default} */
@@ -31,15 +31,20 @@ export default function (options = {}) {
         );
       }
 
-      if (existsSync(`${builder.config.kit.files.assets}/_headers`)) {
+      // SvelteKit 3 removed `generateManifest` in favour of `generateServerInstance`
+      // and deprecated `config.kit` (the config is now flat). Support both shapes.
+      const useServerInstance = typeof builder.generateServerInstance === 'function';
+      const kitConfig = useServerInstance ? builder.config : builder.config.kit;
+
+      if (existsSync(`${kitConfig.files.assets}/_headers`)) {
         throw new Error(
-          `The _headers file should be placed in the project root rather than the ${builder.config.kit.files.assets} directory`,
+          `The _headers file should be placed in the project root rather than the ${kitConfig.files.assets} directory`,
         );
       }
 
-      if (existsSync(`${builder.config.kit.files.assets}/_redirects`)) {
+      if (existsSync(`${kitConfig.files.assets}/_redirects`)) {
         throw new Error(
-          `The _redirects file should be placed in the project root rather than the ${builder.config.kit.files.assets} directory`,
+          `The _redirects file should be placed in the project root rather than the ${kitConfig.files.assets} directory`,
         );
       }
 
@@ -65,17 +70,44 @@ export default function (options = {}) {
 
       // worker
       const workerDestDir = path.dirname(workerDest);
+      const serverDir = builder.getServerDirectory();
+      const relativeServer = posixify(path.relative(tmp, serverDir));
+
+      // `manifest.js` always exposes the same shape to the worker:
+      // server, assets, server_assets, app_path, prerendered, base_path
+      let manifestSource;
+      if (useServerInstance) {
+        // SvelteKit >= 3
+        builder.generateServerInstance(`${tmp}/server.js`);
+        const serverAssets = builder.findServerAssets(builder.routes.filter((route) => route.prerender !== true));
+
+        manifestSource =
+          `export { server } from './server.js';\n\n` +
+          `export const assets = new Set(${JSON.stringify(builder.manifest.assets.map((asset) => asset.path))});\n\n` +
+          `export const server_assets = new Set(${JSON.stringify(serverAssets)});\n\n` +
+          `export const app_path = ${JSON.stringify(kitConfig.appDir)};\n\n`;
+      } else {
+        // SvelteKit < 3
+        manifestSource =
+          `import { Server } from '${relativeServer}/index.js';\n\n` +
+          `const manifest = ${builder.generateManifest({ relativePath: relativeServer })};\n\n` +
+          `export const server = new Server(manifest);\n\n` +
+          `export const assets = manifest.assets;\n\n` +
+          `export const server_assets = new Set(Object.keys(manifest._.server_assets));\n\n` +
+          `export const app_path = manifest.appPath;\n\n`;
+      }
+
       writeFileSync(
         `${tmp}/manifest.js`,
-        `export const manifest = ${builder.generateManifest({ relativePath: path.posix.relative(tmp, builder.getServerDirectory()) })};\n\n` +
+        manifestSource +
           `export const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});\n\n` +
-          `export const base_path = ${JSON.stringify(builder.config.kit.paths.base)};\n`,
+          `export const base_path = ${JSON.stringify(kitConfig.paths.base)};\n`,
       );
 
       // make buildId unique, with builder version and id 10 characters
       let buildId = generateId(10);
       try {
-        const { name } = builder.config.kit.version;
+        const { name } = kitConfig.version;
         buildId = `${name}-${generateId(10)}`;
       } catch {
         console.log('Error parsing builder version, using random buildId');
@@ -86,7 +118,6 @@ export default function (options = {}) {
           // the paths returned by the Wrangler config might be Windows paths,
           // so we need to convert them to POSIX paths or else the backslashes
           // will be interpreted as escape characters and create an incorrect import path
-          SERVER: `${posixify(path.relative(workerDestDir, builder.getServerDirectory()))}/index.js`,
           MANIFEST: `${posixify(path.relative(workerDestDir, tmp))}/manifest.js`,
           ASSETS: assetsBinding,
           BUILD_ID: buildId,

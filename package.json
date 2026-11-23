@@ -12,7 +12,6 @@
     "format:check": "pnpm -r --if-present prettier:check",
     "test": "pnpm -r --if-present --workspace-concurrency=1 test",
     "test:e2e": "npx jest ./tests/e2e/*",
-    "download:cli": "node ./cli/scripts/download-cli.mjs",
     "build": "pnpm -r --if-present compile"
   },
   "keywords": [
@@ -42,7 +41,7 @@
     }
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",

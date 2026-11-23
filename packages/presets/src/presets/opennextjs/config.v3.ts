@@ -12,6 +12,7 @@ const config: AzionConfigV3 = {
     {
       name: 'origin-storage-default',
       type: 'object_storage',
+      dir: './.edge/assets',
     },
   ],
   functions: [

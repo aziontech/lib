@@ -177,7 +177,7 @@ Object.defineProperty(processShim, 'env', {
 
 processShim.argv = [];
 processShim.version = ''; // empty string to avoid regexp issues
-processShim.versions = { node: '18.3.1' };
+processShim.versions = { node: '22.23.4' };
 
 function noop() {}
 
