@@ -1,5 +1,22 @@
 # @aziontech/presets
 
+## 1.4.0
+
+### Minor Changes
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Support SvelteKit 3 in the `svelte` preset. SvelteKit 3 removed `builder.generateManifest` in favour of `builder.generateServerInstance` and deprecated `config.kit` (the config is now flat). The preset now detects which one the adapter receives and generates a `manifest.js` with the same shape for both (`server`, `assets`, `server_assets`, `app_path`, `prerendered` and `base_path`), and the worker reads from it instead of building the `Server` itself. SvelteKit 2 keeps working.
+
+### Patch Changes
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - The svelte preset now finds the Azion adapter in `vite.config.*` as well as in `svelte.config.*`. SvelteKit 3 accepts the kit options, including `adapter`, directly in the Vite config, and the prebuild only looked at `svelte.config.*`. Without a `svelte.config.*` it concluded that no adapter was set and fell back to the static MPA handler, so `azbundler dev` failed with `ENOENT ... index.html` instead of running the SvelteKit worker. The first config file that declares an adapter is used.
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - The v3 config of the presets that serve static files now declares the `dir` of its `object_storage` origin (for example `./www` for html and `./.edge/assets` for react), the same directory the v4 config declares in `storage[].dir`. The bundler copies that directory to `.edge/storage` for a v3 project, instead of reading it from the v4 config.
+
+- [#500](https://github.com/aziontech/lib/pull/500) [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047) Thanks [@jose-filho-azion](https://github.com/jose-filho-azion)! - Fix the `vue`, `react` and `preact` presets ignoring `build.outDir` from `vite.config` when the file is formatted with double quotes, trailing commas or `build` as the last property. The config was read with a regex and `JSON.parse`, which failed silently and fell back to `dist`, so the prebuild tried to copy a folder that did not exist. The `outDir` is now read by a tolerant parser shared by the three presets, and the prebuild fails with a clear message when the build output folder is not found.
+- Updated dependencies [[`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047), [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047), [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047), [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047), [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047), [`02eb4af`](https://github.com/aziontech/lib/commit/02eb4aff9d356f9319825061f7ef5e90a8066047)]:
+  - @aziontech/config@1.2.1
+  - @aziontech/unenv-preset@1.1.0
+
 ## 1.3.1
 
 ### Patch Changes
