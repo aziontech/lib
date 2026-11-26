@@ -90,6 +90,19 @@ describe('parseRequest', () => {
     expect(result.contentType).toBe('application/json');
   });
 
+  it('should keep "=" inside cookie values', async () => {
+    mockRequest = Object.assign(
+      new Request('https://example.com', {
+        headers: { Cookie: 'token=YWJjZA==; theme=dark' },
+      }),
+      { metadata: mockMetadata },
+    ) as AzionRuntimeRequest;
+
+    const result = await parseRequest(mockRequest);
+
+    expect(result.cookies).toEqual({ token: 'YWJjZA==', theme: 'dark' });
+  });
+
   it('should handle requests without cookies', async () => {
     mockRequest = Object.assign(new Request('https://example.com'), { metadata: mockMetadata }) as AzionRuntimeRequest;
 
