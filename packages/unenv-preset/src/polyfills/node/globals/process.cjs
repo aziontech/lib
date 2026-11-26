@@ -133,7 +133,7 @@ function drainQueue() {
   runClearTimeout(timeout);
 }
 
-processShim.nextTick = function (fun) {
+function queueNextTick(fun) {
   var args = new Array(arguments.length - 1);
   if (arguments.length > 1) {
     for (var i = 1; i < arguments.length; i++) {
@@ -144,6 +144,21 @@ processShim.nextTick = function (fun) {
   if (queue.length === 1 && !draining) {
     runTimeout(drainQueue);
   }
+}
+
+// Callbacks run as a microtask, before the next task, as in Node.js (frameworks like Next.js 16.4+ rely on it).
+// The queue above, which uses `setTimeout`, is only the fallback for when `queueMicrotask` is not available.
+processShim.nextTick = function (fun) {
+  if (typeof globalThis.queueMicrotask !== 'function') {
+    return queueNextTick.apply(this, arguments);
+  }
+  var args = new Array(arguments.length - 1);
+  for (var i = 1; i < arguments.length; i++) {
+    args[i - 1] = arguments[i];
+  }
+  globalThis.queueMicrotask(function () {
+    fun.apply(null, args);
+  });
 };
 
 // v8 likes predictible objects
