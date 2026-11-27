@@ -61,11 +61,6 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "pnpm": {
-    "auditConfig": {
-      "ignoreGhsas": [
-        "GHSA-gcqx-w48m-w2h4"
-      ]
-    },
     "overrides": {
       "lodash": ">=4.18.0",
       "postcss": ">=8.5.18",

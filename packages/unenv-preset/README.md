@@ -76,6 +76,18 @@ console.log(hash.digest('hex'));
 const uuid = randomUUID();
 ```
 
+### Runtime Polyfills
+
+The preset also fixes the differences between the Azion Edge Runtime and Node.js that frameworks such as Next.js 16.2 and 16.4 rely on. They are applied through the `inject` and `alias` entries of the preset:
+
+- `Buffer.prototype.indexOf` and `lastIndexOf` (so `includes` too) accept a `Uint8Array`.
+- `setImmediate` returns a Node-like `Immediate` (`ref()`, `unref()`, `hasRef()`) and `clearImmediate` cancels it. A native `Immediate` is kept when the host returns one.
+- `process.nextTick` runs the callback as a microtask, before the next task.
+- `AsyncLocalStorage.snapshot()` and `AsyncLocalStorage.bind()` are available as static methods.
+- `reportError` is defined when the runtime does not have it.
+- `queueMicrotask` is defined when the runtime does not have it, so the callback runs as a microtask and `process.nextTick` can use it.
+- `performance.timeOrigin` follows `Date.now()` when the runtime value is not an epoch time, so `performance.timeOrigin + performance.now()` is the current time.
+
 ### File System Polyfills
 
 The preset includes comprehensive file system polyfills that mirror Node.js's `fs` module functionality. These polyfills work with an in-memory file system when running in the Edge Runtime.

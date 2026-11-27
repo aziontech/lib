@@ -12,6 +12,18 @@ if (!originalBuffer.Buffer.prototype.utf8Slice) {
   };
 }
 
+// Node accepts a `Uint8Array` (that is not a `Buffer`) as the value of `indexOf`, `lastIndexOf` and `includes`
+// (Next.js 16.2+ calls `indexOf` with one), but the polyfill only accepts a string, a number or a Buffer.
+for (const method of ['indexOf', 'lastIndexOf']) {
+  const originalMethod = originalBuffer.Buffer.prototype[method];
+  originalBuffer.Buffer.prototype[method] = function (value, ...args) {
+    if (value instanceof Uint8Array && !originalBuffer.Buffer.isBuffer(value)) {
+      value = originalBuffer.Buffer.from(value.buffer, value.byteOffset, value.byteLength);
+    }
+    return originalMethod.call(this, value, ...args);
+  };
+}
+
 // Store original methods
 const originalToString = originalBuffer.Buffer.prototype.toString;
 const originalWrite = originalBuffer.Buffer.prototype.write;
