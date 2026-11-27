@@ -85,6 +85,7 @@ The preset also fixes the differences between the Azion Edge Runtime and Node.js
 - `process.nextTick` runs the callback as a microtask, before the next task.
 - `AsyncLocalStorage.snapshot()` and `AsyncLocalStorage.bind()` are available as static methods.
 - `reportError` is defined when the runtime does not have it.
+- `queueMicrotask` is defined when the runtime does not have it, so the callback runs as a microtask and `process.nextTick` can use it.
 - `performance.timeOrigin` follows `Date.now()` when the runtime value is not an epoch time, so `performance.timeOrigin + performance.now()` is the current time.
 
 ### File System Polyfills

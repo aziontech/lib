@@ -269,3 +269,72 @@ describe('AsyncLocalStorage static snapshot and bind', async () => {
     assert.doesNotThrow(() => addStaticSnapshot(undefined));
   });
 });
+
+describe('queueMicrotask', () => {
+  const load = async (query) => {
+    const original = globalThis.queueMicrotask;
+    delete globalThis.queueMicrotask;
+    try {
+      await import(`${new URL('globals/queue-microtask.js', polyfills)}?${query}`);
+      return { polyfill: globalThis.queueMicrotask, restore: () => (globalThis.queueMicrotask = original) };
+    } catch (error) {
+      globalThis.queueMicrotask = original;
+      throw error;
+    }
+  };
+
+  it('is defined when the runtime does not define it and runs the callback before the next task', async () => {
+    const { polyfill, restore } = await load('missing');
+    try {
+      assert.equal(typeof polyfill, 'function');
+      const order = [];
+      setTimeout(() => order.push('timeout'), 0);
+      assert.equal(polyfill(() => order.push('microtask')), undefined);
+      order.push('sync');
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      assert.deepEqual(order, ['sync', 'microtask', 'timeout']);
+    } finally {
+      restore();
+    }
+  });
+
+  it('throws a TypeError when the callback is not a function', async () => {
+    const { polyfill, restore } = await load('type-error');
+    try {
+      assert.throws(() => polyfill(undefined), TypeError);
+      assert.throws(() => polyfill('callback'), TypeError);
+    } finally {
+      restore();
+    }
+  });
+
+  it('reports the error thrown by the callback', async () => {
+    const { polyfill, restore } = await load('report');
+    const originalReportError = globalThis.reportError;
+    const reported = [];
+    globalThis.reportError = (error) => reported.push(error);
+    try {
+      const error = new Error('boom');
+      polyfill(() => {
+        throw error;
+      });
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      assert.deepEqual(reported, [error]);
+    } finally {
+      globalThis.reportError = originalReportError;
+      restore();
+    }
+  });
+
+  it('keeps the runtime implementation', async () => {
+    const original = globalThis.queueMicrotask;
+    const runtimeImplementation = () => {};
+    globalThis.queueMicrotask = runtimeImplementation;
+    try {
+      await import(`${new URL('globals/queue-microtask.js', polyfills)}?present`);
+      assert.equal(globalThis.queueMicrotask, runtimeImplementation);
+    } finally {
+      globalThis.queueMicrotask = original;
+    }
+  });
+});

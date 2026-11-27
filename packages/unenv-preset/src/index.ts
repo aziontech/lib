@@ -12,6 +12,7 @@ export default {
     clearInterval: `${polyfillsPath}/node/globals/clear-interval.js`,
     setImmediate: `${polyfillsPath}/node/globals/set-immediate.js`,
     reportError: `${polyfillsPath}/node/globals/report-error.js`,
+    queueMicrotask: `${polyfillsPath}/node/globals/queue-microtask.js`,
     console: `${polyfillsPath}/node/globals/console.js`,
     asyncStorage: `${polyfillsPath}/node/globals/async-storage.js`,
     dateToString: `${polyfillsPath}/node/globals/date-to-string.js`,
